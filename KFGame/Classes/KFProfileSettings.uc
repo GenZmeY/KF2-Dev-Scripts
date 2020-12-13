@@ -251,6 +251,9 @@ defaultproperties
 	ProfileMappings.Add((Id=KFID_SavedInProgressIndex, Name="SavedInProgressIndex", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_ControllerSoundEnabled, Name="Controller Sound Enabled", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_MatchmakingRegion, Name="Matchmaking Region", MappingType=PVMT_RawValue))
+	ProfileMappings.Add((Id=KFID_GamepadDeadzoneScale, Name="Gamepad Deadzone", MappingType=PVMT_RawValue))
+	ProfileMappings.Add((Id=KFID_GamepadAccelerationJumpScale, Name="Gamepad Acceleration Jump", MappingType=PVMT_RawValue))
+
 
 	//Added 7/11/2016
 	ProfileMappings.Add((Id=KFID_UseAltAimOnDuals, Name="Use alt Dual Aim", MappingType=PVMT_RawValue))
@@ -282,6 +285,8 @@ defaultproperties
 	//Added 3/6/2019 - Classic Player Info
 	ProfileMappings.Add((Id = KFID_ClassicPlayerInfo, Name = "Legacy Health Bars", MappingType = PVMT_RawValue))
 
+	//Added 10/15/2020 - Has Enter to Store Tab during sales
+	ProfileMappings.Add((Id = KFID_HasTabbedToStore, Name = "Has Tabbed To Store", MappingType = PVMT_RawValue))
 
 	// Hex values for SDT_Float values, I use http://www.h-schmidt.net/FloatConverter/IEEE754.html for conversion
 
@@ -364,4 +369,12 @@ defaultproperties
 
 	//Added 3/6/2019 - Classic Player Info
 	DefaultSettings.Add((Owner=OPPO_Game, ProfileSetting=(PropertyId=KFID_ClassicPlayerInfo, Data=(Type=SDT_INT32, Value1=0))))
+
+	//Added 10/1/2020 - Support for deadzone and acceleration jump gamepad settings
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_GamepadDeadzoneScale,Data=(Type=SDT_Float,Value1=0x3e4ccccd)))) // 0.20f
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_GamepadAccelerationJumpScale,Data=(Type=SDT_Float,Value1=0x3ecccccd)))) // 0.4f
+
+	//Saber Added 10/15/2020 - Has Enter to Store Tab during sales
+	ProfileMappings.Add((Id = KFID_HasTabbedToStore, Name = "Has Tabbed To Store", MappingType = PVMT_RawValue))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_HasTabbedToStore,Data=(Type=SDT_Int32,Value1=0))))
 }

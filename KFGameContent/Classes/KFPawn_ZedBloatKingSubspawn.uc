@@ -203,6 +203,9 @@ defaultproperties
 	DamageTypeModifiers.Add((DamageType=class'KFDT_Toxic_BloatPukeMine',        DamageScale=(0.00)))
 	DamageTypeModifiers.Add((DamageType=class'KFDT_Toxic_BloatKingPukeMine',    DamageScale=(0.00)))
 
+  //Special cases
+	DamageTypeModifiers.Add((DamageType=class'KFDT_Bleeding_HRG_Vampire_BloodSuck',		DamageScale=(2.0)))
+
 
 
 

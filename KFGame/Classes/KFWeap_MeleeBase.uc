@@ -35,6 +35,9 @@ var private const float ReloadCancelTimeLimit;
 /** Whether this can be interrupted by another attack/reload/etc. */
 var bool StartFireDisabled;
 
+/** Special flag in order to make weapons like the frost shotgun axe (frostfang) have the access to perk skills */
+var bool bHasToBeConsideredAsRangedWeaponForPerks;
+
 /*********************************************************************************************
  * @name Defensive Abilities
  *********************************************************************************************/
@@ -1382,4 +1385,6 @@ defaultproperties
 	UpgradeFireModes(CUSTOM_FIREMODE) = 1
 
 	ReloadCancelTimeLimit = 0.5f;
+
+	bHasToBeConsideredAsRangedWeaponForPerks=false;
 }

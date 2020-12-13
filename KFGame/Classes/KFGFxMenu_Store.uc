@@ -11,6 +11,8 @@
 class KFGFxMenu_Store extends KFGFxObject_Menu
 	native(UI);
 
+`include(KFProfileSettings.uci)
+
 var localized string ExitKF2;
 
 /** Caches a local reference to the online subsystem */
@@ -21,8 +23,6 @@ var KFGFxStoreContainer_Details DetailsContainer;
 var KFGFxStoreContainer_Cart	CartContainer;
 
 var GFxObject AddCartButton;
-
-
 
 struct StoreItem
 {
@@ -65,6 +65,9 @@ function InitializeMenu( KFGFxMoviePlayer_Manager InManager )
 
 function OnOpen()
 {
+	local KFProfileSettings ProfileSettings;
+	local bool bHasTabbedToStore;
+
 	if( class'WorldInfo'.static.IsConsoleBuild( CONSOLE_Orbis ) )
 	{
 		CheckForEmptyStore();
@@ -77,6 +80,17 @@ function OnOpen()
 	else if( OnlineSub != none )
 	{
 		OnlineSub.AddOnInventoryReadCompleteDelegate(OnInventoryReadComplete);
+	}
+	
+	ProfileSettings = Manager.CachedProfile;
+	bHasTabbedToStore = ProfileSettings != none ? ProfileSettings.GetProfileInt(KFID_HasTabbedToStore) != 0 : false;
+	if( Class'KFGameEngine'.static.IsSalesEventActive() && ProfileSettings != none && !bHasTabbedToStore )
+	{
+		ProfileSettings.SetProfileSettingValueInt(KFID_HasTabbedToStore, 1);
+	}
+	else if( !Class'KFGameEngine'.static.IsSalesEventActive() && Class'KFGameEngine'.static.IsSalesEventChecked() && ProfileSettings != none )
+	{
+		ProfileSettings.SetProfileSettingValueInt(KFID_HasTabbedToStore, 0);
 	}
 
 	RefreshItemList();

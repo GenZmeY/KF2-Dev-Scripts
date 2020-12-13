@@ -4401,9 +4401,9 @@ simulated function SetPawnAmbientSound(AkEvent NewAmbientSound)
 	}
 }
 
-simulated function bool IsWeaponAmbientSoundPlaying(AkEvent AmbientSound)
+simulated function bool IsWeaponAmbientSoundPlaying(AkEvent AmbientSoundToCheck)
 {
-	return WeaponAkComponent.IsPlaying(AmbientSound);
+	return WeaponAkComponent.IsPlaying(AmbientSoundToCheck);
 }
 
 /** starts playing the given sound via the WeaponAmbientSound AudioComponent and sets WeaponAmbientSoundCue for replicating to clients

@@ -9,8 +9,7 @@
 //=============================================================================
 
 class KFDT_Fire_Ground_DragonsBreath extends KFDT_Fire_Ground
-	abstract
-	hidedropdown;
+	abstract;
 
 static function int GetKillerDialogID()
 {

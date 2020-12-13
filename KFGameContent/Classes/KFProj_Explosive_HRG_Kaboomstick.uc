@@ -142,7 +142,7 @@ defaultproperties
 		FractureMeshRadius=200.0
 		FracturePartVel=500.0
 		//ExplosionEffects=KFImpactEffectInfo'WEP_HX25_Pistol_ARCH.HX25_Pistol_Submunition_Explosion'
-		ExplosionSound=AkEvent'WW_WEP_SA_HX25.Play_WEP_SA_HX25_Explosion'
+		ExplosionSound=AkEvent'ww_wep_hrg_kaboomstick.WEP_HRG_Kaboomstick_Projectile_Explo'
 		ExplosionEffects=KFImpactEffectInfo'WEP_HRG_Kaboomstick_ARCH.WEP_HRG_Kaboomstick_Explosion'
 		//ExplosionSound=AkEvent'WW_WEP_Seeker_6.Play_WEP_Seeker_6_Explosion'
 

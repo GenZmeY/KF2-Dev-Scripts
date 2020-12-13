@@ -599,6 +599,7 @@ defaultproperties
     HippedRecoilModifier=1.5
 
     SecondaryAmmoTexture=Texture2D'ui_firemodes_tex.UI_FireModeSelect_Grenade'
+	bUseGrenadeAsSecondaryAmmo=true
 
     // Inventory / Grouping
 	InventorySize=6

@@ -421,6 +421,10 @@ const KFACHID_HellmarkStationHard				=	274;
 const KFACHID_HellmarkStationHellOnEarth		=	275;
 const KFACHID_HellmarkStationCollectibles		=	276;
 
+const KFACHID_ElysiumHard						=	277;
+const KFACHID_ElysiumHellOnEarth				=	278;
+const KFACHID_ElysiumEndlessWaveFifteen			=	279;
+
 /* __TW_ANALYTICS_ */
 var int PerRoundWeldXP;
 var int PerRoundHealXP;
@@ -1698,14 +1702,17 @@ final function bool CanCacheSpecialEvent()
 /** Verify what event we're in and cache local event state.  If we've changed to a new event,
  *      clear out the status flags before caching new date value.
  */
-native final private function CacheSpecialEventState(int Value);
+native final private function CacheSpecialEventState(int Value, int Year, int Month);
 
 native final function int GetSpecialEventRewardValue();
 
 /** Triggered by KF PC when the special event ID is passed through as a valid value */
 final function UpdateSpecialEventState()
 {
-    CacheSpecialEventState(InitialSpecialEventInfo);
+	local int year, month, dayofweek, day, hour, minute, second, msec;
+	GetSystemTime(year, month, dayofweek, day, hour, minute, second, msec);
+
+    CacheSpecialEventState(InitialSpecialEventInfo, year, month);
 	if( InitialSpecialEventInfo != SpecialEventInfo )
 	{
 		// Flush stats write if we did a reset
@@ -1717,7 +1724,7 @@ final function UpdateSpecialEventState()
  *      special event index, do not update the stat.  Also, if the map name passed doesn't match
  *      the list of allowed maps in native, don't record.
  */
-native final function UpdateSpecialEvent(int EventIndex, int ObjectiveIndex);
+native final function UpdateSpecialEvent(int EventIndex, int ObjectiveIndex, int Year, int Month);
 
 /** Grab the state of a special event objective at a specific index. */
 native final function bool IsEventObjectiveComplete(int ObjectiveIndex);
@@ -1993,7 +2000,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Revolver_Buckshot, KFDT_Ballistic_HRGBuckshot, KFDT_Bludgeon_HRGBuckshot),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_HZ12, KFDT_Ballistic_HZ12,KFDT_Bludgeon_HZ12),CompletionAmount=10000)) //7000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_M4, KFDT_Ballistic_M4Shotgun,KFDT_Bludgeon_M4Shotgun),CompletionAmount=10000)) //7000
-    DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_AA12, KFDT_Ballistic_AA12Shotgun,KFDT_Bludgeon_AA12Shotgun),CompletionAmount=10000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_AA12, KFDT_Ballistic_AA12Shotgun,KFDT_Bludgeon_AA12Shotgun),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_ElephantGun, KFDT_Ballistic_ElephantGun,KFDT_Bludgeon_ElephantGun),CompletionAmount=10000))
 
     //Medic Weapons
@@ -2004,7 +2011,8 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_Hemogoblin, KFDT_Ballistic_Hemogoblin, KFDT_Bludgeon_Hemogoblin),CompletionAmount=9000)) //7000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_Medic, KFDT_Ballistic_Assault_Medic,KFDT_Bludgeon_Assault_Medic),CompletionAmount=9000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_HRGIncision, KFDT_Ballistic_HRGIncisionHurt, KFDT_Ballistic_HRGIncisionHeal,KFDT_Bludgeon_HRGIncision),CompletionAmount=5000))
-    DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_MedicRifleGrenadeLauncher, KFDT_Ballistic_MedicRifleGrenadeLauncher, KFDT_Bludgeon_MedicRifleGrenadeLauncher, KFDT_Toxic_MedicGrenadeLauncher, KFDT_Ballistic_MedicRifleGrenadeLauncherImpact),CompletionAmount=10000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Vampire, KFDT_Bleeding_HRG_Vampire_BloodSuck, KFDT_Ballistic_HRG_Vampire_BloodBallImpact, KFDT_Ballistic_HRG_Vampire_BloodBallHeavyImpact, KFDT_Toxic_HRG_Vampire_BloodBall, KFDT_Piercing_HRG_Vampire_CrystalSpike, KFDT_Bludgeon_HRG_Vampire),CompletionAmount=9000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_MedicRifleGrenadeLauncher, KFDT_Ballistic_MedicRifleGrenadeLauncher, KFDT_Bludgeon_MedicRifleGrenadeLauncher, KFDT_Toxic_MedicGrenadeLauncher, KFDT_Ballistic_MedicRifleGrenadeLauncherImpact),CompletionAmount=10000))
 
     //Demo Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_GrenadeLauncher_HX25, KFDT_ExplosiveSubmunition_HX25,KFDT_Ballistic_HX25Impact,KFDT_Ballistic_HX25SubmunitionImpact,KFDT_Bludgeon_HX25),CompletionAmount=5000)) //3000
@@ -2192,6 +2200,9 @@ defaultproperties
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-HELLMARKSTATION),CompletionAmount=1))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-HELLMARKSTATION),CompletionAmount=2))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-HELLMARKSTATION),CompletionAmount=3))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-ELYSIUM),CompletionAmount=1))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-ELYSIUM),CompletionAmount=2))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-ELYSIUM),CompletionAmount=3))
 
     //Versus Damage
     //    Per design doc that I have right now, these are x class damage y players, not damage y amount

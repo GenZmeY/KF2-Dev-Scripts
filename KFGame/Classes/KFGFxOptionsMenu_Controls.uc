@@ -20,6 +20,10 @@ var const float MinControllerLookSensitivity;
 var const float MaxControllerLookSensitivity;
 var const float MinControllerZoomLookSensitivity;
 var const float MaxControllerZoomLookSensitivity;
+var const float MinControllerDeadzone;
+var const float MaxControllerDeadzone;
+var const float MinControllerAccelerationJump;
+var const float MaxControllerAccelerationJump;
 var const float MinMouseLookSensitivity;
 var const float MaxMouseLookSensitivity;
 var const float MinMouseLookZoomSensitivity;
@@ -98,6 +102,7 @@ event bool WidgetInitialized(name WidgetName, name WidgetPath, GFxObject Widget)
         case ('inputContainer'):
 			if ( InputContainer == none )
 			{
+				//`log(`location@" case ('inputContainer') ");
 			    InputContainer = KFGFxControlsContainer_Input( Widget );
 			    InputContainer.Initialize( self );
 		    }
@@ -162,6 +167,26 @@ function Callback_ControllerZoomSensitivity( float NewSensitivity )
 
 	KFPI.GamepadZoomedSensitivityScale = NewSensitivity / 100;
 	Manager.CachedProfile.SetProfileSettingValueFloat(KFID_GamepadZoomedSensitivityScale, KFPI.GamepadZoomedSensitivityScale);
+}
+
+function Callback_ControllerDeadzone( float NewDeadzone )
+{
+	local KFPlayerInput KFPI;
+
+	KFPI = KFPlayerInput(GetPC().PlayerInput);
+
+	KFPI.GamepadDeadzoneScale = NewDeadzone / 100;
+	Manager.CachedProfile.SetProfileSettingValueFloat(KFID_GamepadDeadzoneScale, KFPI.GamepadDeadzoneScale);
+}
+
+function Callback_ControllerAccelerationJump( float NewAccelerationJump )
+{
+	local KFPlayerInput KFPI;
+
+	KFPI = KFPlayerInput(GetPC().PlayerInput);
+
+	KFPI.GamepadAccelerationJumpScale = NewAccelerationJump / 100;
+	Manager.CachedProfile.SetProfileSettingValueFloat(KFID_GamepadAccelerationJumpScale, KFPI.GamepadAccelerationJumpScale);
 }
 
 function Callback_ControllerInvertChanged( bool bInvertController )
@@ -311,6 +336,10 @@ defaultproperties
 	MaxControllerLookSensitivity=3.5
 	MinControllerZoomLookSensitivity=.1
 	MaxControllerZoomLookSensitivity=1
+	MinControllerDeadzone=.0
+	MaxControllerDeadzone=.3
+	MinControllerAccelerationJump=.0
+	MaxControllerAccelerationJump=1
 	MinMouseLookSensitivity=.01
 	MaxMouseLookSensitivity=.7
 	MinMouseLookZoomSensitivity=.2

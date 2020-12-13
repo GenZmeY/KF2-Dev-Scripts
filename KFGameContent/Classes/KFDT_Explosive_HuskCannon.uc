@@ -8,8 +8,7 @@
 //=============================================================================
 
 class KFDT_Explosive_HuskCannon extends KFDT_Explosive
-    abstract
-    hidedropdown;
+    abstract;
 
 // Damage type to use for the burning damage over time
 var class<KFDamageType> BurnDamageType;

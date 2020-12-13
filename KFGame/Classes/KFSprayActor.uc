@@ -480,6 +480,27 @@ simulated function SetFOV( float NewFOV )
     SkeletalSprayMesh.SetFOV(NewFOV);
 }
 
+simulated function vector GetLastContactPositionMeshHit()
+{
+	local KFPawn_Monster KFPM;
+	local vector ClosestBonePosition;
+
+	KFPM = KFPawn_Monster(HighestSprayMeshContactThisTick.Actor);
+
+	if (KFPM != none && KFPM.Mesh != none && HighestSprayMeshContactThisTick.BoneName != '')
+	{
+		return KFPM.Mesh.GetBoneLocation(HighestSprayMeshContactThisTick.BoneName);
+	}
+
+	if (KFPM != none && KFPM.Mesh != none)
+	{
+		KFPM.Mesh.FindClosestBone(HighestSprayMeshContactThisTick.ContactPosition, ClosestBonePosition);
+		return ClosestBonePosition;
+	}
+	//Based on KFSprayActor.cpp and value assigned to DesiredSplashLoc (however there it is adding instead of subtracting, worth taking a look)
+	return HighestSprayMeshContactThisTick.ContactPosition - HighestSprayMeshContactThisTick.ContactNormal * 32;
+}
+
 simulated function SetupFX()
 {
 	local int ChainIdx, Idx;
@@ -698,7 +719,6 @@ simulated function DetachAndFinish()
 simulated function CleanupEndFire()
 {
 	local int Idx;
-
 	// turn off fire particles
 	for (Idx=0; Idx<BoneChain.length; ++Idx)
 	{

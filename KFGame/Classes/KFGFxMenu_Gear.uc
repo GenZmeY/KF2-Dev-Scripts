@@ -45,6 +45,9 @@ var localized string BioString;
 var localized string HeadString;
 var localized string BodyString;
 var localized string AttachmentsString;
+var localized string Attachment0String;
+var localized string Attachment1String;
+var localized string Attachment2String;
 var localized string SkinsString;
 var localized string BackString;
 var localized string NoneString;
@@ -149,6 +152,9 @@ function LocalizeText()
 	LocalizedObject.SetString("bodiesString", BodyString);
 	LocalizedObject.SetString("skinsString", SkinsString);
 	LocalizedObject.SetString("attachmentsString", AttachmentsString);
+	LocalizedObject.SetString("attachment0String", Attachment0String);
+	LocalizedObject.SetString("attachment1String", Attachment1String);
+	LocalizedObject.SetString("attachment2String", Attachment2String);
 
 	SetObject("localizeText", LocalizedObject);
 }
@@ -498,7 +504,7 @@ function SetAttachmentButtons(string AttachmentMeshKey, string sectionFunctionNa
 
 	for(i = 0; i < `MAX_COSMETIC_ATTACHMENTS; i++)
 	{
-		AttachmentIndex = MyKFPRI.RepCustomizationInfo.AttachmentMeshIndices[i];		
+		AttachmentIndex = MyKFPRI.RepCustomizationInfo.AttachmentMeshIndices[i];
 		if( AttachmentIndex == `CLEARED_ATTACHMENT_INDEX )
 		{
 			DataObject.SetString("selectedAttachment_"$i, "----");
@@ -674,12 +680,25 @@ private function Callback_Body( int MeshIndex, int SkinIndex )
 	SetGearButtons(MeshIndex, SkinIndex, BodyMeshKey, BodySkinKey, BodyFunctionKey);
 }
 
-private function Callback_Attachment( int MeshIndex, int SkinIndex )
+private function Callback_Attachment1( int MeshIndex, int SkinIndex )
+{
+	Callback_AttachmentNumbered(MeshIndex, SkinIndex, 0);
+}
+private function Callback_Attachment2( int MeshIndex, int SkinIndex )
+{
+	Callback_AttachmentNumbered(MeshIndex, SkinIndex, 1);
+}
+private function Callback_Attachment3( int MeshIndex, int SkinIndex )
+{
+	Callback_AttachmentNumbered(MeshIndex, SkinIndex, 2);
+}
+
+private function Callback_AttachmentNumbered(int MeshIndex, int SkinIndex, int SlotIndex)
 {
 	local Pawn P;
 	local KFPawn KFP;
-	local int SlotIndex;
-
+	local int i;
+	local array<int> RemovedAttachments;
 	P = GetPC().Pawn;
 	if( P != none )
 	{
@@ -687,6 +706,29 @@ private function Callback_Attachment( int MeshIndex, int SkinIndex )
 
 		if ( KFP != none && MyKFPRI != None )
 		{
+			//CurrentCharInfo.RemoveAttachmentMeshAndSkin(SlotIndex, KFP, MyKFPRI);
+			CurrentCharInfo.DetachConflictingAttachments(MeshIndex, KFP, MyKFPRI, RemovedAttachments);
+
+			SelectCustomizationOption(KFP, CO_Attachment, MeshIndex, SkinIndex, SlotIndex);
+
+		}
+	}
+	SetAttachmentButtons(AttachmentKey, AttachmentFunctionKey);
+}
+
+private function Callback_Attachment( int MeshIndex, int SkinIndex )
+{
+	local Pawn P;
+	local KFPawn KFP;
+	local int SlotIndex;
+	P = GetPC().Pawn;
+	if( P != none )
+	{
+		KFP = KFPawn( P );
+
+		if ( KFP != none && MyKFPRI != None )
+		{
+			
 			CurrentCharInfo.DetachConflictingAttachments(MeshIndex, KFP, MyKFPRI);
 			SlotIndex = CurrentCharInfo.GetAttachmentSlotIndex(MeshIndex, KFP, MyKFPRI);
 			SelectCustomizationOption(KFP, CO_Attachment, MeshIndex, SkinIndex, SlotIndex);

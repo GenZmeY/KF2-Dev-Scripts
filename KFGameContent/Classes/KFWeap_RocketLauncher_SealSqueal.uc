@@ -157,7 +157,7 @@ simulated function PrepareAndDetonate()
 			PlayAnimation(SelectedAnim, AnimDuration);
 		}
 		else
-		{
+		{	
 			PlayAnimation(SelectedAnim);
 		}
 	}
@@ -170,7 +170,8 @@ simulated function PrepareAndDetonate()
 	// Don't want to play muzzle effects or shoot animation on detonate in 3p
 	//IncrementFlashCount();
 
-	AnimDuration = 1.f;
+	//AnimDuration value here representes the ALTFIRE FireInterval
+	AnimDuration = 0.75f; //1.f;
 	if (bInSprintState)
 	{
 		SetTimer(AnimDuration * 0.8f, false, nameof(PlaySprintStart));
@@ -223,6 +224,17 @@ function RemoveDeployedHarpoon(optional int HarpoonIndex = INDEX_NONE, optional 
 	}
 }
 
+/** Allow reloads for primary weapon to be interupted by firing secondary weapon. */
+simulated function bool CanOverrideMagReload(byte FireModeNum)
+{
+	if(FireModeNum == ALTFIRE_FIREMODE)
+	{
+		return true;
+	}
+
+	return Super.CanOverrideMagReload(FireModeNum);
+}
+
 defaultproperties
 {
 	// Content
@@ -234,7 +246,7 @@ defaultproperties
 	MuzzleFlashTemplateName="WEP_Seal_Squeal_ARCH.Wep_Seal_Squeal_MuzzleFlash" //@TODO: Replace me
 
 	// Inventory / Grouping
-	InventorySize=8
+	InventorySize=7 //8
 	GroupPriority=75
 	WeaponSelectTexture=Texture2D'WEP_UI_Seal_Squeal_TEX.UI_WeaponSelect_SealSqueal'
    	AssociatedPerkClasses(0)=class'KFPerk_Demolitionist'
@@ -250,7 +262,7 @@ defaultproperties
 
 	// Ammo
 	MagazineCapacity[0]=5
-	SpareAmmoCapacity[0]=25
+	SpareAmmoCapacity[0]=30 //25
 	InitialSpareMags[0]=1
 	bCanBeReloaded=true
 	bReloadFromMagazine=true
@@ -288,13 +300,12 @@ defaultproperties
 	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Rocket_SealSqueal'
 	InstantHitDamage(DEFAULT_FIREMODE)=125
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_SealSquealImpact'
-	FireInterval(DEFAULT_FIREMODE)=0.75
+	FireInterval(DEFAULT_FIREMODE)=0.5 //0.75
 	Spread(DEFAULT_FIREMODE)=0
 	PenetrationPower(DEFAULT_FIREMODE)=0
 	FireOffset=(X=25,Y=3.0,Z=-2.5)
 
 	// ALTFIRE_FIREMODE (remote detonate)
-	//FireModeIconPaths(ALTFIRE_FIREMODE)=Texture2D'ui_firemodes_tex.UI_FireModeSelect_BulletSingle'
 	FiringStatesArray(ALTFIRE_FIREMODE)=WeaponDetonating
 	WeaponFireTypes(ALTFIRE_FIREMODE)=EWFT_Custom
 	AmmoCost(ALTFIRE_FIREMODE)=0

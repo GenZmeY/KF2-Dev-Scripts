@@ -339,6 +339,18 @@ function GFxObject CreateStoreItem(ItemProperties StoreItem)
 				
 	DataObject.SetString("label", StoreItem.Name);
 	DataObject.SetString("description", StoreItem.Description);
+	//`log("Price"@StoreItem.Price@"- BasePrice"@StoreItem.BasePrice@"- DiscountRate"@StoreItem.DiscountRate@"- ItemOnSale"@StoreItem.ItemOnSale);
+
+	if( StoreItem.ItemOnSale )
+	{
+		DataObject.SetString("itemOnSale", StoreItem.ItemOnSale ? "1" : "0");
+		DataObject.SetString("itemPriceBase", StoreItem.BasePrice);
+		if(StoreItem.DiscountRate != "")
+		{
+			DataObject.SetString("discountRate", StoreItem.DiscountRate);
+		}
+	}
+
 	DataObject.SetString("price", class'WorldInfo'.static.IsConsoleBuild() ? "" : StoreItem.Price);
 	DataObject.SetString("imageURL", "img://"$StoreItem.IconURL);
 	DataObject.SetString("imageURLLarge", "img://"$StoreItem.IconURLLarge);
@@ -434,25 +446,19 @@ DefaultProperties
 
 	XboxFilterExceptions[0]="Wasteland Bundle" // Wasteland Outfit Bundle
 
-	FeaturedItemIDs[0]=8462
-	FeaturedItemIDs[1]=8463
-	FeaturedItemIDs[2]=8464
-	FeaturedItemIDs[3]=8465
-	FeaturedItemIDs[4]=8466
-	FeaturedItemIDs[5]=8468
-	FeaturedItemIDs[6]=8467
-	FeaturedItemIDs[7]=8469
-	FeaturedItemIDs[8]=7619
+	FeaturedItemIDs[0]=7944
+	FeaturedItemIDs[1]=8615
+	FeaturedItemIDs[2]=8616
+	FeaturedItemIDs[3]=8617
+	FeaturedItemIDs[4]=8618
+	FeaturedItemIDs[5]=8619
 
-	ConsoleFeaturedItemIDs[0]=8462
-	ConsoleFeaturedItemIDs[1]=8463
-	ConsoleFeaturedItemIDs[2]=8464
-	ConsoleFeaturedItemIDs[3]=8465
-	ConsoleFeaturedItemIDs[4]=8466
-	ConsoleFeaturedItemIDs[5]=8468
-	ConsoleFeaturedItemIDs[6]=8467
-	ConsoleFeaturedItemIDs[7]=8469
-	ConsoleFeaturedItemIDs[8]=7783
+	ConsoleFeaturedItemIDs[0]=7947
+	ConsoleFeaturedItemIDs[1]=8615
+	ConsoleFeaturedItemIDs[2]=8616
+	ConsoleFeaturedItemIDs[3]=8617
+	ConsoleFeaturedItemIDs[4]=8618
+	ConsoleFeaturedItemIDs[5]=8619
 
 	MaxFeaturedItems=5
 }

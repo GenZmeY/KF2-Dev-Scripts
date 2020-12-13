@@ -800,11 +800,11 @@ simulated function bool DrawFriendlyHumanPlayerInfo( KFPawn_Human KFPH )
 
 	// drop shadow for player name text
 	Canvas.SetDrawColorStruct(PlayerBarShadowColor);
-	Canvas.SetPos(ScreenPos.X - (BarLength * 0.5f) + 1, ScreenPos.Y + 8);
+	Canvas.SetPos(ScreenPos.X - (BarLength * 0.5f) + 1, ScreenPos.Y - 2.5f * BarHeight + (36 * FontScale * ResModifier) + 1); //KFII-52291: -2.5 is a bit of a magic number, but it works (intuition says it should be 0 if we look at where armor bar is being drawn).
 	Canvas.DrawText(KFPRI.PlayerName, , FontScale, FontScale, MyFontRenderInfo);
 
 	Canvas.SetDrawColorStruct(PlayerBarTextColor);
-	Canvas.SetPos(ScreenPos.X - (BarLength * 0.5f), ScreenPos.Y + 7);
+	Canvas.SetPos(ScreenPos.X - (BarLength * 0.5f), ScreenPos.Y - 2.5f * BarHeight + (36 * FontScale * ResModifier)); //KFII-52291: -2.5 is a bit of a magic number, but it works (intuition says it should be 0 if we look at where armor bar is being drawn).
 	Canvas.DrawText(KFPRI.PlayerName, , FontScale, FontScale, MyFontRenderInfo);
 
 	//Draw armor bar

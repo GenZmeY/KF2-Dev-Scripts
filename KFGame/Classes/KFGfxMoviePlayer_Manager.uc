@@ -245,6 +245,7 @@ var bool bMenusOpen;	// true if we're using menus, otherwise we're using the HUD
 var bool bMenusActive;  //@HSL - JRO - 6/21/2016 - Same as bMenusOpen but doesn't include the closing animation
 var bool bSearchingForGame; // true if we are in the process of finding a game
 var bool bCanCloseMenu;	// Set to true after a menu has been completely opened and allows a player to close the menu
+var bool bForceCloseMenuNextTime; // Allows the system to close the menu
 var bool bPlayerInLobby;
 //@HSL_MOD_BEGIN - amiller 5/11/2016 - Adding support to save extra data into profile settings - removing config
 var bool bSetGamma;	// Set to true if we've already set the gamma on the first launch
@@ -1278,6 +1279,7 @@ function CloseMenus(optional bool bForceClose=false)
 
 	if ( (bMenusOpen && bCanCloseMenu) || bForceClose)
 	{
+		bForceCloseMenuNextTime = false;
 		UnloadCurrentPopup();
 
 		if ( !bAfterLobby && PartyWidget != none || GetPC() == none || GetPC().WorldInfo.GRI == none || GetPC().WorldInfo.GRI.bMatchIsOver )
@@ -1303,6 +1305,10 @@ function CloseMenus(optional bool bForceClose=false)
 		ConditionalPauseGame(false);
 		SetMenuVisibility( false );
 		SetHUDVisiblity( true) ;
+	}
+	else if(bForceCloseMenuNextTime)
+	{
+		`TimerHelper.SetTimer( 0.1, false, nameof(CloseMenus), self );
 	}
 }
 
@@ -1851,6 +1857,7 @@ event bool FilterButtonInput(int ControllerId, name ButtonName, EInputEvent Inpu
 			}
 			else if(KFPRI.bHasSpawnedIn && !KFGRI.bMatchIsOver && KFGRI.bMatchHasBegun && KFGRI.bTraderIsOpen && CurrentMenu != TraderMenu && bMenusOpen)
 			{
+				bForceCloseMenuNextTime = true;
 				CurrentMenu.Callback_ReadyClicked(true);
 			}
 		}

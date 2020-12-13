@@ -58,6 +58,7 @@ var private 			int						HeadShotComboCountDisplay;
 /** The maximum number of headshots that count toward the Rhythm Method perk skill damage multiplier */
 var private const		int 					MaxHeadShotComboCount;
 var private const		float 					HeadShotCountdownIntervall;
+var private const		float					SteadySkillDamageModifier;
 
 /*********************************************************************************************
 * @name	 Perk init and spawning
@@ -133,10 +134,13 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 	local float TempDamage;
 
 	TempDamage = InDamage;
-
 	if( DamageCauser != none )
 	{
 		KFW = GetWeaponFromDamageCauser( DamageCauser );
+		if(KFW == none && DamageCauser.IsA('KFPawn_Human'))
+		{
+			KFW = KFWeapon(KFPawn_Human(DamageCauser).Weapon);
+		}
 	}
 
 	if( (KFW != none && IsWeaponOnPerk( KFW,, self.class )) || (DamageType != none && IsDamageTypeOnPerk( DamageType )) )
@@ -159,6 +163,11 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 		{
 			`QALog( "Bone Breaker arms and leg damage =" @ Indamage * static.GetBoneBreakerDamage(), bLogPerk );
 			TempDamage += Indamage * static.GetBoneBreakerDamage();
+		}
+
+		if( IsShootnMoveActive() && KFW.bUsingSights )
+		{
+			TempDamage += Indamage * SteadySkillDamageModifier;
 		}
 	}
 
@@ -801,6 +810,7 @@ DefaultProperties
    	PerkBuildStatID=STATID_Guns_Build
 
    	ShootnMooveBobDamp=1.11f
+	SteadySkillDamageModifier=0.075f
 
    	MaxHeadShotComboCount=5
    	RhytmMethodRTPCName="R_Method"

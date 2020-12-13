@@ -6,8 +6,7 @@
 //=============================================================================
 
 class KFDT_Piercing_IonThrusterStab extends KFDT_Piercing
-    abstract
-    hidedropdown;
+    abstract;
 
 // Damage type to use for the burning damage over time
 var class<KFDamageType> BurnDamageType;

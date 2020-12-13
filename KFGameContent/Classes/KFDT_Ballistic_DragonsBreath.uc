@@ -9,8 +9,7 @@
 //=============================================================================
 
 class KFDT_Ballistic_DragonsBreath extends KFDT_Ballistic_Shotgun
-	abstract
-	hidedropdown;
+	abstract;
 
 // Damage type to use for the burning damage over time
 var class<KFDamageType> BurnDamageType;

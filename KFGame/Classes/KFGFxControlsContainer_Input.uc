@@ -21,6 +21,12 @@ var localized string MouseString;
 var localized string MouseSmoothingString;
 var localized string ZoomSensitivityString;
 var localized string ControllerZoomSensitivityString;
+var localized string ControllerDeadzoneString;
+var localized string ControllerDeadzoneDescriptionString;
+var localized string ControllerDeadzoneDescriptionXboxString;
+var localized string ControllerAccelerationJumpString;
+var localized string ControllerAccelerationJumpDescriptionString;
+var localized string ControllerAccelerationJumpDescriptionXboxString;
 var localized string AimAssistLockOnString;
 var localized string AimAssistRotationString;
 var localized string AimAssistSlowDownString;
@@ -32,7 +38,6 @@ var KFGFxOptionsMenu_Controls ControlsMenu;
 function Initialize( KFGFxObject_Menu NewParentMenu )
 {
 	super.Initialize( NewParentMenu );
-
 	ControlsMenu = KFGFxOptionsMenu_Controls(NewParentMenu);
 	LocalizeText();
 	InitializeOptions();
@@ -43,20 +48,36 @@ function LocalizeText()
 	local GFxObject LocalizedObject;
 
 	LocalizedObject = CreateObject( "Object" );
-	LocalizedObject.SetString("sensitivityLabel"				, SensitivityString);
-	LocalizedObject.SetString("invertedLabel"					, InvertedString);
-	LocalizedObject.SetString("Mouse"							, MouseString);
-	LocalizedObject.SetString("controllerSensitivityLabel"		, SensitivityString);
-	LocalizedObject.SetString("controllerInvertedLabel"			, InvertedString);
-	LocalizedObject.SetString("controllerString"				, ControllerString);
+	LocalizedObject.SetString("sensitivityLabel"								, SensitivityString);
+	LocalizedObject.SetString("invertedLabel"									, InvertedString);
+	LocalizedObject.SetString("Mouse"											, MouseString);
+	LocalizedObject.SetString("controllerSensitivityLabel"						, SensitivityString);
+	LocalizedObject.SetString("controllerInvertedLabel"							, InvertedString);
+	LocalizedObject.SetString("controllerString"								, ControllerString);
 
-	LocalizedObject.SetString("mouseSmoothingLabel"				, MouseSmoothingString);
-	LocalizedObject.SetString("zoomSensitivityLabel"			, ZoomSensitivityString);
-	LocalizedObject.SetString("controllerZoomSensitivityLabel"	, ControllerZoomSensitivityString);
-	LocalizedObject.SetString("aimAssistLockOnLabel"			, aimAssistLockOnString);
-	LocalizedObject.SetString("aimAssistRotationLabel"			, aimAssistRotationString);
-	LocalizedObject.SetString("aimAssistSlowDownLabel"			, aimAssistSlowDownString);
-	LocalizedObject.SetString("forceFeedbackLabel"				, forceFeedbackString);
+	LocalizedObject.SetString("mouseSmoothingLabel"								, MouseSmoothingString);
+	LocalizedObject.SetString("zoomSensitivityLabel"							, ZoomSensitivityString);
+	LocalizedObject.SetString("controllerZoomSensitivityLabel"					, ControllerZoomSensitivityString);
+	LocalizedObject.SetString("controllerDeadzoneLabel"							, ControllerDeadzoneString);
+	LocalizedObject.SetString("controllerAccelerationJumpLabel"					, ControllerAccelerationJumpString);
+
+	// Localization alternative for Xbox
+	if( class'WorldInfo'.static.IsConsoleBuild(CONSOLE_Durango) )
+	{
+		LocalizedObject.SetString("controllerDeadzoneDescriptionLabel"			, ControllerDeadzoneDescriptionXboxString);
+		LocalizedObject.SetString("controllerAccelerationJumpDescriptionLabel"	, ControllerAccelerationJumpDescriptionXboxString);
+	}
+	else
+	{
+		LocalizedObject.SetString("controllerDeadzoneDescriptionLabel"			, ControllerDeadzoneDescriptionString);
+		LocalizedObject.SetString("controllerAccelerationJumpDescriptionLabel"	, ControllerAccelerationJumpDescriptionString);
+	}
+
+	LocalizedObject.SetString("aimAssistLockOnLabel"							, aimAssistLockOnString);
+	LocalizedObject.SetString("aimAssistRotationLabel"							, aimAssistRotationString);
+	LocalizedObject.SetString("aimAssistSlowDownLabel"							, aimAssistSlowDownString);
+	LocalizedObject.SetString("forceFeedbackLabel"								, forceFeedbackString);
+
 	LocalizedObject.SetString("resetDefault", Localize("KFGFxOptionsMenu_Graphics","DefaultString","KFGame"));
 
 	SetObject("localizedText", LocalizedObject);
@@ -94,6 +115,14 @@ function InitializeOptions()
 	ValuesObject.SetFloat("controllerZoomSensitivityValue"		, 100 * KFPI.GamepadZoomedSensitivityScale);
 	ValuesObject.SetFloat("controllerZoomSensitivityValueMin"	, 100 * ControlsMenu.MinControllerZoomLookSensitivity);
 	ValuesObject.SetFloat("controllerZoomSensitivityValueMax"	, 100 * ControlsMenu.MaxControllerZoomLookSensitivity);
+
+	ValuesObject.SetFloat("controllerDeadzoneValue"		, 100 * KFPI.GamepadDeadzoneScale);
+	ValuesObject.SetFloat("controllerDeadzoneValueMin"	, 100 * ControlsMenu.MinControllerDeadzone);
+	ValuesObject.SetFloat("controllerDeadzoneValueMax"	, 100 * ControlsMenu.MaxControllerDeadzone);
+
+	ValuesObject.SetFloat("controllerAccelerationJumpValue"		, 100 * KFPI.GamepadAccelerationJumpScale);
+	ValuesObject.SetFloat("controllerAccelerationJumpValueMin"	, 100 * ControlsMenu.MinControllerAccelerationJump);
+	ValuesObject.SetFloat("controllerAccelerationJumpValueMax"	, 100 * ControlsMenu.MaxControllerAccelerationJump);
 
 	ValuesObject.SetBool("controllerInvertedValue"				, KFPI.bInvertController);
 	ValuesObject.SetBool("aimAssistLockOnValue"					, KFPI.bAutoTargetEnabled);
@@ -137,6 +166,12 @@ function ResetInputOptions()
 
 	KFPI.GamepadZoomedSensitivityScale = ControlsMenu.Manager.CachedProfile.GetDefaultFloat(KFID_GamepadZoomedSensitivityScale);
 	ControlsMenu.Manager.CachedProfile.SetProfileSettingValueFloat(KFID_GamepadZoomedSensitivityScale, KFPI.GamepadZoomedSensitivityScale);
+
+	KFPI.GamepadDeadzoneScale = ControlsMenu.Manager.CachedProfile.GetDefaultFloat(KFID_GamepadDeadzoneScale);
+	ControlsMenu.Manager.CachedProfile.SetProfileSettingValueFloat(KFID_GamepadDeadzoneScale, KFPI.GamepadDeadzoneScale);
+
+	KFPI.GamepadAccelerationJumpScale = ControlsMenu.Manager.CachedProfile.GetDefaultFloat(KFID_GamepadAccelerationJumpScale);
+	ControlsMenu.Manager.CachedProfile.SetProfileSettingValueFloat(KFID_GamepadAccelerationJumpScale, KFPI.GamepadAccelerationJumpScale);
 	
 	KFPI.bInvertController = ControlsMenu.Manager.CachedProfile.GetDefaultBool(KFID_InvertController);
 	ControlsMenu.Manager.CachedProfile.SetProfileSettingValueBool(KFID_InvertController, KFPI.bInvertController);

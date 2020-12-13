@@ -10,6 +10,8 @@
 
 class KFGFxWidget_MenuBar extends KFGFxObject_Menu;
 
+`include(KFProfileSettings.uci)
+
 var localized array<string> MenuStrings;
 var localized string ExitString;
 var localized string CancelString;
@@ -93,6 +95,9 @@ function  UpdateMenu(byte CurrentMenuIndex)
 
 function HandleButtonSpecialCase(byte ButtonIndex, out GFxObject GfxButton)
 {
+	local KFProfileSettings ProfileSettings;
+	local bool bHasTabbedToStore;
+
 	GfxButton.SetInt( "index", ButtonIndex );
 
 	// For XB1, we change the EXIT button to logout while in the menus
@@ -133,6 +138,13 @@ function HandleButtonSpecialCase(byte ButtonIndex, out GFxObject GfxButton)
 				GfxButton.SetString( "label", ConsoleLocalize("StoreStringXB1", "KFGFxMenu_Store") );
 			}
 			GfxButton.SetBool("enabled", CanUseStore() ); // Disabled for E3 build
+			
+			ProfileSettings = Manager.CachedProfile;
+			bHasTabbedToStore = ProfileSettings != none ? ProfileSettings.GetProfileInt(KFID_HasTabbedToStore) != 0 : false;
+			if( CanUseStore() && Class'KFGameEngine'.static.IsSalesEventActive() && Class'KFGameEngine'.static.IsSalesEventChecked() && ProfileSettings != none && !bHasTabbedToStore)
+			{
+				GfxButton.SetBool( "bPulsing", true );
+			}
 			StoreButton = GfxButton;
 			return;
 		//@HSL_END

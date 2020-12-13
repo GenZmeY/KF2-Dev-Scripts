@@ -126,8 +126,9 @@ static simulated function ModifyDismembermentHitImpulse(KFPawn_Monster InPawn, n
 
 defaultproperties
 {
-	KDamageImpulse=200
-	KDeathUpKick=250
+	KDamageImpulse=2000
+	KDeathUpKick=500
+	KDeathVel=500
 
 	StumblePower=50
 	MeleeHitPower=150

@@ -259,5 +259,7 @@ defaultproperties
 	End Object
 	ExplosionTemplate=ExploTemplate0
 	ExplosionActorClass=class'KFExplosionActor'
+
+	bDamageDestructiblesOnTouch=true
 }
 

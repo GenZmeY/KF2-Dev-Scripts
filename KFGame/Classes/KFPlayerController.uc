@@ -1549,6 +1549,8 @@ function OnReadProfileSettingsComplete(byte LocalUserNum,bool bWasSuccessful)
 			KFInput.bTargetFrictionEnabled = Profile.GetProfileBool(KFID_TargetFrictionEnabled);
 			KFInput.GamepadSensitivityScale = Profile.GetProfileFloat(KFID_GamepadSensitivityScale);
 			KFInput.GamepadZoomedSensitivityScale = Profile.GetProfileFloat(KFID_GamepadZoomedSensitivityScale);
+			KFInput.GamepadDeadzoneScale = Profile.GetProfileFloat(KFID_GamepadDeadzoneScale);
+			KFInput.GamepadAccelerationJumpScale = Profile.GetProfileFloat(KFID_GamepadAccelerationJumpScale);
 			KFInput.SetGamepadLayout(Profile.GetProfileInt(KFID_CurrentLayoutIndex));
 			KFInput.bToggleToRun = Profile.GetProfileBool(KFID_ToggleToRun);
 
@@ -11430,6 +11432,67 @@ event ShowInviteMessage(string InviteMessageName)
 {
 	`log("KFPlayerController: ShowInviteMessage");
 	MyGFxHUD.ShowInviteMessage(InviteMessageName);
+}
+
+function OnDrawCountText(KFSeqAct_DrawCountText inAction)
+{
+	if(inAction.InputLinks[0].bHasImpulse)
+	{
+		if( WorldInfo.NetMode == NM_DedicatedServer )
+		{
+			DrawCountTextOnHud(inAction.DrawTextInfo.MessageText, inAction.DisplayTimeSeconds);
+		}
+		else if( MyGFxHUD != none )
+		{
+		    MyGFxHUD.DisplayMapCounterText(inAction.DrawTextInfo.MessageText, inAction.DisplayTimeSeconds);
+		}
+	}
+}
+
+reliable client function DrawCountTextOnHud(string Message, float DisplayTime)
+{
+	if( MyGFxHUD != none )
+	{
+	     MyGFxHUD.DisplayMapCounterText(Message, DisplayTime);
+	}
+}
+
+function OnDrawLocalizedText(KFSeqAct_DrawLocalizedText inAction)
+{
+	if(inAction.InputLinks[0].bHasImpulse)
+	{
+		if( WorldInfo.NetMode == NM_DedicatedServer )
+		{
+			DrawLocalizedTextOnHud(inAction.DrawTextInfo.MessageText, inAction.DisplayTimeSeconds);
+		}
+		else if( MyGFxHUD != none )
+		{
+		    MyGFxHUD.DisplayMapText(inAction.DrawTextInfo.MessageText, inAction.DisplayTimeSeconds, true);
+		}
+	}
+}
+
+function OnDrawRandomLocalizedText(KFSeqAct_DrawRandomLocalizedText inAction)
+{
+	if(inAction.InputLinks[0].bHasImpulse)
+	{
+		if( WorldInfo.NetMode == NM_DedicatedServer )
+		{
+			DrawLocalizedTextOnHud(inAction.DrawTextInfo.MessageText, inAction.DisplayTimeSeconds);
+		}
+		else if( MyGFxHUD != none )
+		{
+		    MyGFxHUD.DisplayMapText(inAction.DrawTextInfo.MessageText, inAction.DisplayTimeSeconds, true);
+		}
+	}
+}
+
+reliable client function DrawLocalizedTextOnHud(string Message, float DisplayTime)
+{
+	if( MyGFxHUD != none )
+	{
+	     MyGFxHUD.DisplayMapText(Message, DisplayTime, true);
+	}
 }
 
 event OnLoginOnOtherPlatformDoneAndFriendsReady()

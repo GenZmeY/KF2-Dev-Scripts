@@ -8,8 +8,7 @@
 // Tulio Beloqui (Saber Interactive)
 //=============================================================================
 class KFDT_Fire_Ground_FlareGun extends KFDT_Fire_Ground
-	abstract
-	hidedropdown;
+	abstract;
 
 static function int GetKillerDialogID()
 {

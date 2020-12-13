@@ -26,6 +26,7 @@ enum ESharedContentUnlock
 	SCU_Blunderbuss,
 	SCU_Minigun,
 	SCU_MineReconstructor,
+	SCU_FrostFang,
 };
 
 
@@ -320,4 +321,8 @@ defaultproperties
 		Name=KFWeap_Mine_Reconstructor,
 		IconPath="WEP_UI_Mine_Reconstructor_TEX.UI_WeaponSelect_HMTechMineReconstructor",
 		ID=8472)}
+	SharedContentList(SCU_FrostFang)={(
+		Name=KFWeap_Rifle_FrostShotgunAxe,
+		IconPath="WEP_UI_Frost_Shotgun_Axe_TEX.UI_WeaponSelect_FrostGun",
+		ID=8609)}
 }

@@ -6,8 +6,7 @@
 //=============================================================================
 
 class KFDT_Slashing_IonThruster extends KFDT_Slashing
-	abstract
-	hidedropdown;
+	abstract;
 
 // Damage type to use for the burning damage over time
 var class<KFDamageType> BurnDamageType;

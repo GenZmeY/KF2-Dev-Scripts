@@ -6,8 +6,7 @@
 //=============================================================================
 
 class KFDT_Slashing_IonThrusterSpecial extends KFDT_Slashing_IonThruster
-	abstract
-	hidedropdown;
+	abstract;
 
 /** Allows the damage type to customize exactly which hit zones it can dismember */
 static simulated function bool CanDismemberHitZone( name InHitZoneName )

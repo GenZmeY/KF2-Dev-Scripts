@@ -47,6 +47,7 @@ var private const int LoadedSeasonalEventId;
 /** Week index of the year - Used as index into weekly event */
 var private int WeeklyEventIndex;
 
+
 /************************************************************************************
 * @name		Content
 ***********************************************************************************/
@@ -469,7 +470,8 @@ function ClearOnlineDelegates()
 /** Static because these are both called on default object */
 native static function int GetSeasonalEventID();
 native static function int GetWeeklyEventIndex();
-
+native static function bool IsSalesEventActive();
+native static function bool IsSalesEventChecked();
 /***********************************************************************************
 * @name		Game Options
 ***********************************************************************************/

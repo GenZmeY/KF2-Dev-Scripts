@@ -90,6 +90,10 @@ var(Sensitivity) float SprintingSensitivityScale;
 var(Sensitivity) config float ZoomedSensitivityScale;
 /** Used to scale the sensitivity of the joystick based on how zoomed the player is. */
 var(Sensitivity) config float GamepadZoomedSensitivityScale;
+/** Used to scale when start detecting input for looking. */
+var(Sensitivity) config float GamepadDeadzoneScale;
+/** Used to scale when to start using acceleration jump */
+var(Sensitivity) config float GamepadAccelerationJumpScale;
 
 ////////////////////////////////
 // View Smoothing
@@ -115,10 +119,14 @@ var(ViewAcceleration) float ViewAccel_JoyMagThreshold;
 var(ViewAcceleration) float ViewAccel_JoyPitchThreshold;
 /** Max turn speed **/
 var(ViewAcceleration) float ViewAccel_MaxTurnSpeed;
+/** Min turn speed **/
+var(ViewAcceleration) float ViewAccel_MinTurnSpeed;
 /** How long to blend to max turn speed */
 var(ViewAcceleration) float ViewAccel_BlendTime;
 /** Timer for BlendTime */
 var transient float ViewAccel_BlendTimer;
+
+var float ViewAccel_TurnSpeed;
 
 var config protected bool bDebugViewAcceleration;
 /** Store previous remainder of aTurn for smoothing slow rotations. */
@@ -1750,6 +1758,7 @@ function PreProcessGamepadInput( float DeltaTime )
 	local KFPawn KFP;
 	local float FOVScale;
 	local float ScaledJoyMagnitude;
+	local vector RawJoyLookVector;
 
 	if( bExtendedSprinting )
     {
@@ -1771,6 +1780,16 @@ function PreProcessGamepadInput( float DeltaTime )
 		CurrLookUp = ScaledJoyMagnitude * (RawJoyLookUp/RawJoyLookMagnitude);
 	}
 
+	//Checking if values are inside circular deadzone
+	RawJoyLookVector.X = RawJoyLookRight;
+	RawJoyLookVector.Y = RawJoyLookUp;
+	if (VSize2D(RawJoyLookVector) < GamepadDeadzoneScale)
+	{
+		CurrTurn = 0;
+		CurrLookUp = 0;
+	}
+
+	ViewAccel_TurnSpeed = Lerp(ViewAccel_MinTurnSpeed, ViewAccel_MaxTurnSpeed, GamepadAccelerationJumpScale);
 	// sets CurrTurn/CurrLookUp directly if applicable, does not multiply (aka Turn Assist)
 	if( CanApplyViewAcceleration() )
 	{
@@ -1882,11 +1901,11 @@ function ApplyViewAcceleration( float DeltaTime )
 
 	if( CurrTurn > 0 )
 	{
-		CurrTurn = Lerp( CurrTurn, ViewAccel_MaxTurnSpeed, ViewAccel_BlendTimer / ViewAccel_BlendTime );
+		CurrTurn = Lerp( CurrTurn, ViewAccel_TurnSpeed, ViewAccel_BlendTimer / ViewAccel_BlendTime );
 	}
 	else
 	{
-		CurrTurn = Lerp( CurrTurn, -ViewAccel_MaxTurnSpeed, ViewAccel_BlendTimer / ViewAccel_BlendTime );
+		CurrTurn = Lerp( CurrTurn, -ViewAccel_TurnSpeed, ViewAccel_BlendTimer / ViewAccel_BlendTime );
 	}
 }
 
@@ -2952,8 +2971,9 @@ defaultproperties
 	ViewAccel_JoyMagThreshold=0.97
 	ViewAccel_JoyPitchThreshold=0.4
 	ViewAccel_BlendTime=0.25
-	ViewAccel_MaxTurnSpeed=2.4
-
+	ViewAccel_MaxTurnSpeed=4.5
+	ViewAccel_MinTurnSpeed=1.0
+	
 	ForceLookAtPawnMinAngle=0.9f
 	ForceLookAtPawnRotationRate=22
 	ForceLookAtPawnDampenedRotationRate=8

@@ -29,11 +29,12 @@ static simulated function bool CanDismemberHitZone(name InHitZoneName)
 
 defaultproperties
 {
-	KDamageImpulse=300
-	KDeathUpKick=400
+	KDamageImpulse=2500
+	KDeathUpKick=700
+	KDeathVel=700
 
 	StumblePower=75
-	StunPower=75
+	StunPower=100 //75
 	MeleeHitPower=100
 
 	WeaponDef=class'KFWeapDef_FireAxe'

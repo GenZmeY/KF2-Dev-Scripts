@@ -7,8 +7,7 @@
 // Copyright (C) 2017 Tripwire Interactive LLC
 //=============================================================================
 class KFDT_Fire_FlareGun_Dual extends KFDT_Fire_FlareGun
-	abstract
-	hidedropdown;
+	abstract;
 
 defaultproperties
 {

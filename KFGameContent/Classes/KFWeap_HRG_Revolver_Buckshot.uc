@@ -39,8 +39,8 @@ defaultproperties
 	GroupPriority=75
 
 	// Recoil
-	maxRecoilPitch=750
-	minRecoilPitch=675
+	maxRecoilPitch=525 //750
+	minRecoilPitch=472 //675
 	maxRecoilYaw=300
 	minRecoilYaw=-300
 	RecoilRate=0.1
@@ -63,7 +63,7 @@ defaultproperties
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_HRGBuckshot'
 	PenetrationPower(DEFAULT_FIREMODE)=2.0
 	NumPellets(DEFAULT_FIREMODE) = 5
-	Spread(DEFAULT_FIREMODE)=0.15
+	Spread(DEFAULT_FIREMODE)=0.12 //0.15
 
 	// ALTFIRE_FIREMODE
 	InstantHitDamageTypes(ALTFIRE_FIREMODE) = class'KFDT_Ballistic_HRGBuckshot'

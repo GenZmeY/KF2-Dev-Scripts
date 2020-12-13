@@ -1516,6 +1516,9 @@ struct native ItemProperties
 	var int  AltPerkId; //index bassed off our array
 	var int  WeaponType;
 	var int  FilterIdIndex;
+	var bool ItemOnSale;
+	var string BasePrice;
+	var string DiscountRate;
 
 	structcpptext
 	{
@@ -1536,6 +1539,9 @@ struct native ItemProperties
 	}
 };
 var array<ItemProperties> ItemPropertiesList;
+
+var bool bSalesEvent;
+var bool bSalesEventChecked;
 
 struct native ExchangeRule
 {

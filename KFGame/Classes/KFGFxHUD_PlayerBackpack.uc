@@ -32,11 +32,16 @@ var int                             LastWeight;
 var byte                            LastSecondaryAmmo;
 var bool                            bWasUsingAltFireMode;
 var bool                            bUsesSecondaryAmmo;
+var bool							bUsesGrenadesAsSecondaryAmmo;
 
 var class<KFPerk> LastPerkClass;
 var KFWeapon LastWeapon;
 
 var KFInventoryManager MyKFInvManager;
+
+var ASColorTransform DefaultColor;
+var ASColorTransform RedColor;
+var name OldState;
 
 function InitializeHUD()
 {
@@ -46,6 +51,9 @@ function InitializeHUD()
     {
         MyKFInvManager = KFInventoryManager(MyKFPC.Pawn.InvManager);
     }
+
+    DefaultColor = GetObject("secondaryAmmoContainer").GetColorTransform();
+    RedColor = GetObject("FlashlightContainer").GetColorTransform();
 }
 
 function TickHud(float DeltaTime)
@@ -132,6 +140,9 @@ function UpdateWeapon()
     local byte CurrentSecondaryAmmo;
 	local string CurrentSpecialAmmo;
     local KFWeapon CurrentWeapon;
+    local ASColorTransform ColorChange;
+    local name StateName;
+	local bool ForceSecondaryWeaponIconUpdate;
 
     if(MyKFPC != none && MyKFPC.Pawn != none && MyKFPC.Pawn.Weapon != none )
     {
@@ -143,6 +154,7 @@ function UpdateWeapon()
             {
                 LastWeapon = CurrentWeapon;
                 RefreshWeapon(CurrentWeapon);
+				ForceSecondaryWeaponIconUpdate = true;
             }
             else if( bWasUsingAltFireMode != CurrentWeapon.bUseAltFireMode )
             {
@@ -180,14 +192,40 @@ function UpdateWeapon()
 
 			// always reset the last special ammo since setting a new string turns the default "---" off
 			LastSpecialAmmo = CurrentSpecialAmmo;
-
+            StateName = CurrentWeapon.GetStateName();
             if (bUsesSecondaryAmmo)
             {
                 CurrentSecondaryAmmo = CurrentWeapon.GetSecondaryAmmoForHUD();
-                if (CurrentSecondaryAmmo != LastSecondaryAmmo)
+
+				// Update the amount of ammo
+				if (CurrentSecondaryAmmo != LastSecondaryAmmo)
                 {
                     SetInt("secondaryAmmo" , CurrentSecondaryAmmo);
                     LastSecondaryAmmo = CurrentSecondaryAmmo;
+                }
+
+				// Force the color of the background if we detect a weapon change and the weapon doesn't use secondary ammo
+				if( !bUsesGrenadesAsSecondaryAmmo && ForceSecondaryWeaponIconUpdate )
+				{
+					GetObject("secondaryAmmoContainer").SetColorTransform(DefaultColor);
+				}
+
+				// Update the aspect of the icon
+                if ( bUsesGrenadesAsSecondaryAmmo && StateName != OldState)
+                {
+                    OldState = StateName;
+                    if(CurrentWeapon.HasToReloadSecondaryAmmoForHUD())
+                    {
+                        ColorChange.Add = MakeLinearColor(0.65f,0.23f,0.00f,0.2f);
+                        GetObject("secondaryAmmoContainer").SetColorTransform(ColorChange);
+                        SetString("secondaryIcon", "img://"$CurrentWeapon.SecondaryAmmoTexture.GetPackageName()$".UI_FireModeSelect_BulletSingleProhibited");
+
+                    }
+                    else
+                    {
+                        SetString("secondaryIcon", "img://"$CurrentWeapon.SecondaryAmmoTexture.GetPackageName()$"."$CurrentWeapon.SecondaryAmmoTexture);
+                        GetObject("secondaryAmmoContainer").SetColorTransform(DefaultColor);
+                    }
                 }
             }
         }
@@ -213,6 +251,7 @@ function RefreshWeapon(KFWeapon CurrentWeapon)
     SetBool("bUsesAmmo", bUsesAmmo);
 
     bUsesSecondaryAmmo = CurrentWeapon.UsesSecondaryAmmo();
+	bUsesGrenadesAsSecondaryAmmo = CurrentWeapon.UsesGrenadesAsSecondaryAmmo();
     SetBool("bUsesSecondaryAmmo", bUsesSecondaryAmmo);
     if( bUsesSecondaryAmmo )
     {

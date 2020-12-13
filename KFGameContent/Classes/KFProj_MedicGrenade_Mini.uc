@@ -27,6 +27,7 @@ simulated event HitWall(vector HitNormal, actor Wall, PrimitiveComponent WallCom
   * Returns true if projectile actually bounced / was allowed to bounce */
 simulated function bool Bounce( vector HitNormal, Actor BouncedOff )
 {
+	SetLocation(Location + HitNormal);
 	super.Bounce(HitNormal, BouncedOff);
 
 	// stop and drop

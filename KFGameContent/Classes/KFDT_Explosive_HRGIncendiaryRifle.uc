@@ -7,8 +7,7 @@
 //=============================================================================
 
 class KFDT_Explosive_HRGIncendiaryRifle extends KFDT_Fire
-	abstract
-	hidedropdown;
+	abstract;
 
 // Damage type to use for the burning damage over time
 var class<KFDamageType> BurnDamageType;

@@ -320,6 +320,8 @@ var(Inventory) Texture2D WeaponSelectTexture;
 var(Inventory) Texture2D SecondaryAmmoTexture;
 /** The path that locates the image for this weapon */
 var(Inventory) bool bCanRefillSecondaryAmmo;
+/** Flag to know if the weapon uses grenades as secondary ammo to change the HUD display when not loaded or empty */
+var(Inventory) bool bUseGrenadeAsSecondaryAmmo;
 
 /** used when aborting a weapon switch (state WeaponAbortEquip) */
 var float EquipAbortTime;
@@ -4395,6 +4397,14 @@ static simulated event bool UsesSecondaryAmmo()
 }
 
  /**
+ * Returns true if this weapon uses greandes as secondary ammo
+ */
+static simulated event bool UsesGrenadesAsSecondaryAmmo()
+{
+    return default.bUseGrenadeAsSecondaryAmmo;
+}
+
+ /**
  * Returns true if this weapon uses a secondary ammo pool
  */
 static simulated event bool CanRefillSecondaryAmmo()
@@ -4742,6 +4752,12 @@ simulated function string GetSpecialAmmoForHUD();
 simulated function int GetSecondaryAmmoForHUD()
 {
     return AmmoCount[1] + SpareAmmoCount[1];
+}
+
+/** Determines if we have to reload the secondary ammo of the weapon (EX: m16 grenades)  */
+simulated function bool HasToReloadSecondaryAmmoForHUD()
+{
+	return AmmoCount[1] == 0;
 }
 
 /**
@@ -7907,6 +7923,7 @@ defaultproperties
 	WeaponSelectTexture=Texture2D'ui_weaponselect_tex.UI_WeaponSelect_AR15'
 	SecondaryAmmoTexture=Texture2D'UI_SecondaryAmmo_TEX.GasTank'
 	bCanRefillSecondaryAmmo=true
+	bUseGrenadeAsSecondaryAmmo=false
 	bNoMagazine=false
 	bAllowClientAmmoTracking=true
 

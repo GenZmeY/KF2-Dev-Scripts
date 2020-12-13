@@ -9,8 +9,7 @@
 //=============================================================================
 
 class KFDT_Fire_MolotovGrenade extends KFDT_Fire
-	abstract
-	hidedropdown;
+	abstract;
 
 defaultproperties
 {

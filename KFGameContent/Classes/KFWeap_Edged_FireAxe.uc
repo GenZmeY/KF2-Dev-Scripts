@@ -44,10 +44,10 @@ defaultproperties
 	End Object
 
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Slashing_FireAxe'
-	InstantHitDamage(DEFAULT_FIREMODE)=80  //90
+	InstantHitDamage(DEFAULT_FIREMODE)=90 //80
 
 	InstantHitDamageTypes(HEAVY_ATK_FIREMODE)=class'KFDT_Slashing_FireAxeHeavy'
-	InstantHitDamage(HEAVY_ATK_FIREMODE)=125  //135
+	InstantHitDamage(HEAVY_ATK_FIREMODE)=135 //125  //135
 
 	InstantHitDamageTypes(BASH_FIREMODE)=class'KFDT_Bludgeon_FireAxeBash'
 	InstantHitDamage(BASH_FIREMODE)=20

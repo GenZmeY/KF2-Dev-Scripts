@@ -310,8 +310,8 @@ function handleIPPolicy(WebAdminQuery q)
 		idx = InStr(policy, ",");
 		if (idx == INDEX_NONE) idx = InStr(policy, ";");
 		q.response.subst("policy.ipmask", `HTMLEscape(Mid(policy, idx+1)));
-		q.response.subst("policy.policy", `HTMLEscape(Left(policy, idx)));
-		q.response.subst("policy.selected."$Caps(Left(policy, idx)), "selected=\"selected\"");
+		//q.response.subst("policy.policy", `HTMLEscape(Left(policy, idx)));
+		q.response.subst("policy.selected", `HTMLEscape(Left(policy, idx)));
 		policies $= webadmin.include(q, "policy_row.inc");
 		q.response.subst("policy.selected."$Caps(Left(policy, idx)), "");
 	}

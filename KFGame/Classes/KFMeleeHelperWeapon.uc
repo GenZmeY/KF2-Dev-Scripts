@@ -88,6 +88,16 @@ var float MeleeImpactCamShakeScale;
  * Anim Notify / Impact Timing
  *********************************************************************************************/
 
+simulated function EPawnOctant GetNextAttackDir()
+{
+	return NextAttackDir;
+}
+
+simulated function SetNextAttackDir(EPawnOctant _nextAttackDir)
+{
+	NextAttackDir = _nextAttackDir;
+}
+
 /** Notification called from KFAnimNotify_MeleeImpact. */
 simulated function MeleeImpactNotify(KFAnimNotify_MeleeImpact_1P Notify)
 {
@@ -727,14 +737,19 @@ simulated function ProcessMeleeHit(byte FiringMode, ImpactInfo Impact)
 
 		// play effects before doing damage, because doing damage can change the actor (e.g. destructibles) and result in incorrect sounds
 		PlayMeleeHitEffects(Impact.HitActor, Impact.HitLocation, Impact.RayDir);
-
-		Impact.HitActor.TakeDamage( GetMeleeDamage(FiringMode, Impact.RayDir), Instigator.Controller,
-						Impact.HitLocation, Momentum,
-						GetDamageType(FiringMode), Impact.HitInfo, Outer );
+		
+		PawnTakeDamage(Impact, FiringMode, Momentum);
 
 		// notify weapon for custom code
 		NotifyMeleeCollision(Impact.HitActor, Impact.HitLocation);
 	}
+}
+
+simulated function PawnTakeDamage(ImpactInfo Impact,byte FiringMode, vector Momentum)
+{
+		Impact.HitActor.TakeDamage( GetMeleeDamage(FiringMode, Impact.RayDir), Instigator.Controller,
+						Impact.HitLocation, Momentum,
+						GetDamageType(FiringMode), Impact.HitInfo, Outer );
 }
 
 /** returns the damage type to use for this attack */

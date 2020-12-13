@@ -67,4 +67,5 @@ defaultproperties
 	Properties.Add((PropertyId = STATID_ACHIEVE_BiolapseCollectibles,Data = (Type = SDT_Int32,Value1 = 0)))
 	Properties.Add((PropertyId = STATID_ACHIEVE_DesolationCollectibles,Data = (Type = SDT_Int32,Value1 = 0)))
 	Properties.Add((PropertyId = STATID_ACHIEVE_HellmarkStationCollectibles,Data = (Type = SDT_Int32,Value1 = 0)))
+	Properties.Add((PropertyId = STATID_ACHIEVE_ElysiumEndlessWaveFifteen,Data = (Type = SDT_Int32,Value1 = 0)))
 }

@@ -34,6 +34,7 @@ private event GrantEventItems();
 final protected simulated function FinishedObjective(int EventIndex, int ObjectiveIndex)
 {
 	local KFPlayerController KFPC;
+	local int year, month, dayofweek, day, hour, minute, second, msec;
 
 	if (!IsValid())
 	{
@@ -45,7 +46,8 @@ final protected simulated function FinishedObjective(int EventIndex, int Objecti
 		!KFPC.PlayerReplicationInfo.bOnlySpectator && !Outer.HasCheated() &&
 		!Outer.IsEventObjectiveComplete(ObjectiveIndex))
 	{
-		Outer.UpdateSpecialEvent(EventIndex, ObjectiveIndex);
+		GetSystemTime(year, month, dayofweek, day, hour, minute, second, msec);
+		Outer.UpdateSpecialEvent(EventIndex, ObjectiveIndex, year, month);
 
 		if (KFPC.MyGFxHUD != none && KFPC.MyGFxHUD.LevelUpNotificationWidget != none &&
 			((class'KFGameEngine'.static.GetSeasonalEventID() % 10) == EventIndex))

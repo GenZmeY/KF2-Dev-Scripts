@@ -26,9 +26,8 @@ class KFWeap_HRG_EMP_ArcGenerator extends KFWeap_FlameBase;
 Replication
 {
 	if(role == role_authority && bNetDirty)
-		oZedCurrentlyBeingSprayed;
+		oZedCurrentlyBeingSprayed, MaxNumberOfZedsZapped, MaxDistanceToBeZapped, ZapInterval, ChainDamage;
 }
-
 /** Shoot animation to play when shooting secondary fire */
 var(Animations) const editconst	name	FireHeavyAnim;
 
@@ -319,7 +318,6 @@ simulated function int SpawnBeam(Actor _OriginActor, Actor _DestinationActor)
 
 simulated function MarkBeamToDeactivate(BeamAttachedToActor _BeamData)
 {
-	`log(_BeamData.oAttachedZed);
 	vAuxDeletionArray.AddItem(_BeamData);
 }
 

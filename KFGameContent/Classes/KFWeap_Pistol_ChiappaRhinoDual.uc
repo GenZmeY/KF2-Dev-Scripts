@@ -66,7 +66,7 @@ defaultproperties
     WeaponFireTypes(DEFAULT_FIREMODE)=EWFT_Projectile
     WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Bullet_Pistol_ChiappaRhino'
     FireInterval(DEFAULT_FIREMODE)=+0.1
-    InstantHitDamage(DEFAULT_FIREMODE)=70.0
+    InstantHitDamage(DEFAULT_FIREMODE)=75.0 //70.0
     InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_ChiappaRhino'
     PenetrationPower(DEFAULT_FIREMODE)=2.0
     Spread(DEFAULT_FIREMODE)=0.01
@@ -78,7 +78,7 @@ defaultproperties
     WeaponFireTypes(ALTFIRE_FIREMODE)= EWFT_Projectile
     WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_Bullet_Pistol_ChiappaRhino'
     FireInterval(ALTFIRE_FIREMODE)=+0.1
-    InstantHitDamage(ALTFIRE_FIREMODE)=70.0
+    InstantHitDamage(ALTFIRE_FIREMODE)=75.0 //70.0
     InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Ballistic_ChiappaRhino'
     PenetrationPower(ALTFIRE_FIREMODE)=2.0
     Spread(ALTFIRE_FIREMODE)=0.01

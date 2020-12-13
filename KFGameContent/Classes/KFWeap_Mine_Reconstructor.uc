@@ -399,6 +399,49 @@ simulated function ANIMNOTIFY_FILLMAG()
 	Control.BoneTranslation = vec;
 }
 
+/**
+ * @see Weapon::HasAmmo
+ */
+simulated event bool HasAmmo( byte FireModeNum, optional int Amount )
+{
+	local KFPerk InstigatorPerk;
+	// we can always do a melee attack
+	if( FireModeNum == BASH_FIREMODE )
+	{
+		return TRUE;
+	}
+	else if ( FireModeNum == RELOAD_FIREMODE )
+	{
+		return CanReload();
+	}
+	else if ( FireModeNum == GRENADE_FIREMODE )
+	{
+        if( KFInventoryManager(InvManager) != none )
+        {
+            return KFInventoryManager(InvManager).HasGrenadeAmmo(Amount);
+        }
+	}
+	else if(FireModeNum == ALTFIRE_FIREMODE)
+	{
+		return true;
+	}
+	
+	InstigatorPerk = GetPerk();
+	if( InstigatorPerk != none && InstigatorPerk.GetIsUberAmmoActive( self ) )
+	{
+		return true;
+	}
+
+	// If passed in ammo isn't set, use default ammo cost.
+	if( Amount == 0 )
+	{
+		Amount = AmmoCost[FireModeNum];
+	}
+
+	return AmmoCount[GetAmmoType(FireModeNum)] >= Amount;
+}
+
+
 simulated state MineReconstructorCharge extends WeaponFiring
 {
     //For minimal code purposes, I'll directly call global.FireAmmunition after charging is released

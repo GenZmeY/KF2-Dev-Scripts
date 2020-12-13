@@ -216,11 +216,10 @@ function CreatePlayerOptions(UniqueNetId PlayerID, int SlotIndex)
 	if( ProfileString != "" )
 	{
 		//View profile option Added at the end if we are on PC but first on console.
-		if (isPlayerFromSteam(PlayerID))
+		if (isPlayerFromSteam(PlayerID) || class'WorldInfo'.static.IsConsoleBuild(CONSOLE_Orbis) || class'WorldInfo'.static.IsConsoleBuild(CONSOLE_Durango))
 		{
 			AddStringOptionToList(ViewProfileKey, OptionIndex, ProfileString, DataProvider);
 		}
-		
 	}
 
 	OptionIndex++;

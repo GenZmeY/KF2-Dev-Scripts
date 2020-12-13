@@ -109,6 +109,8 @@ var array<string> playerActions;
  */
 var bool separateSpectators;
 
+var array<string> notAllowedBanConsoleCommands;
+
 function init(WebAdmin webapp)
 {
 	local class<AdminCommandHandler> achc;
@@ -783,7 +785,8 @@ function int handleCurrentPlayersAction(WebAdminQuery q)
 			{
 				webadmin.addMessage(q, msgNoHumanPlayer, MT_Warning);
 			}
-			else {
+			else 
+			{
 				// Default to just the normal kick message
 				kickMessage = "Engine.AccessControl.KickedMsg";
 				if (action ~= "mutevoice")
@@ -820,53 +823,10 @@ function int handleCurrentPlayersAction(WebAdminQuery q)
 				}
 				`endif
 
-				else if (action ~= "banip" || action ~= "ban ip")
+				else if (action ~= "banip" || action ~= "ban ip" || action ~= "banid" || action ~= "ban unique id" || action ~= "banhash" || 
+						action ~= "ban client hash" || action ~= "sessionban" || action ~= "session ban")
 				{
-					banByIP(PC);
-					kickMessage = "Engine.AccessControl.KickAndPermaBan";
-				}
-				else if (action ~= "banid" || action ~= "ban unique id")
-				{
-					banByID(PC);
-					kickMessage = "Engine.AccessControl.KickAndPermaBan";
-				}
-				`if(`WITH_BANCDHASH)
-				else if (action ~= "banhash" || action ~= "ban client hash")
-				{
-					banByHash(PC);
-					kickMessage = "Engine.AccessControl.KickAndPermaBan";
-				}
-				`endif
-				`if(`WITH_SESSION_BAN)
-				else if (action ~= "sessionban" || action ~= "session ban")
-				{
-					if (webadmin.WorldInfo.Game.AccessControl.IsAdmin(PC))
-					{
-						webadmin.addMessage(q, repl(msgCantBanAdmin, "%s", PRI.PlayerName), MT_Error);
-						return 0;
-					}
-					else {
-						if (`{AccessControl} (webadmin.WorldInfo.Game.AccessControl) != none)
-						{
-							`{AccessControl} (webadmin.WorldInfo.Game.AccessControl).KickSessionBanPlayer(PC, PC.PlayerReplicationInfo.UniqueId, "Engine.AccessControl.KickAndSessionBan");
-							webadmin.addMessage(q, repl(msgSessionBanned, "%s", PRI.PlayerName));
-							return 1;
-						}
-						else {
-							webadmin.addMessage(q, msgSessionBanNoROAC, MT_Error);
-							return 1;
-						}
-					}
-				}
-				`endif
-
-				if (!webadmin.WorldInfo.Game.AccessControl.KickPlayer(PC, kickMessage))
-				{
-					webadmin.addMessage(q, repl(msgCantKickAdmin, "%s", PRI.PlayerName), MT_Error);
-				}
-				else {
-					webadmin.addMessage(q, repl(msgPlayerRemoved, "%s", PRI.PlayerName));
-					return 1;
+					webadmin.addMessage(q, msgNotAllowed, MT_Error);
 				}
 			}
 		}
@@ -1195,6 +1155,7 @@ function handleConsole(WebAdminQuery q)
 	local bool denied;
 
 	cmd = q.request.getVariable("command");
+	
 	if (len(cmd) > 0)
 	{
 		denied = false;
@@ -1206,6 +1167,15 @@ function handleConsole(WebAdminQuery q)
 				break;
 			}
 		}
+		for (i = 0; i < notAllowedBanConsoleCommands.length; i++)
+		{
+			if (notAllowedBanConsoleCommands[i] ~= locs(cmd) || InStr(locs(cmd)$" ", notAllowedBanConsoleCommands[i]$" ") >= 0)
+			{
+				denied = true;
+				break;
+			}
+		}
+		
 
 		if (!denied)
 		{
@@ -1730,10 +1700,13 @@ defaultproperties
 	cssVisible=""
 	cssHidden="display: none;"
 
-	playerActions.Add("kick")
-	playerActions.Add("sessionban")
-	playerActions.Add("banip")
-	playerActions.Add("banid")
+	//playerActions.Add("kick")
+	//playerActions.Add("sessionban")
+	//playerActions.Add("banip")
+	//playerActions.Add("banid")
 	playerActions.Add("mutevoice")
 	playerActions.Add("unmutevoice")
+
+	notAllowedBanConsoleCommands.Add("kick")
+	notAllowedBanConsoleCommands.Add("kickban")
 }
