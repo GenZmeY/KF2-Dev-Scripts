@@ -1,0 +1,49 @@
+/**
+ * Expands to an in-line if statement with a log if debug is defined;
+ * it expands to nothing if debug is not defined. The debug macro takes
+ * its value from the -debug flag on the script compilation command line.
+ *
+ * Also demonstrates how to use backslashes to declare a multi-line macro.
+ *
+ * @param	msg		the string that should be logged
+ * @param	cond	[opt] the condition that is used to evaluate whether the message should be written
+ * @param	tag		[opt] the tag for the log statement
+ */
+`if(`isdefined(debug))
+`define logd(msg,cond,tag)\
+  `if(`cond)\
+	if (`cond)\
+  `{endif}\
+	log(`msg`if(`tag),`tag`endif)
+`else
+`define logd
+`endif
+
+/**
+ * Expands to an in-line if statement with a log unless FINAL_RELEASE is defined;
+ *
+ *
+ * @param	msg		the string that should be logged
+ * @param	cond	[opt] the condition that is used to evaluate whether the message should be written
+ * @param	tag		[opt] the tag for the log statement
+ */
+`if(`isdefined(FINAL_RELEASE))
+`define	log(msg,cond,tag)
+`else
+`define	log(msg,cond,tag)	`if(`cond)if(`cond)`{endif}log(`msg`if(`tag),`tag`endif)
+`endif
+
+`if(`isdefined(FINAL_RELEASE))
+`define	warn(msg,cond)
+`else
+`define	warn(msg,cond)	`if(`cond)if(`cond)`{endif}warn(`msg)
+`endif
+
+`if(`isdefined(FINAL_RELEASE))
+`define	assert(cond)
+`else
+`define	assert(cond)	Assert(`cond)
+`endif
+
+`define ConditionalExtends(x)
+

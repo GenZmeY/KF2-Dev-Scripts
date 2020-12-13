@@ -1,0 +1,53 @@
+//=============================================================================
+// MatchStats
+//=============================================================================
+// Contains ID for weapons to be recorded in the AAR (EphemeralMatchStats) 
+//=============================================================================
+// Killing Floor 2
+// Copyright (C) 2015 Tripwire Interactive LLC
+// - Zane Gholson
+//=============================================================================
+/**
+ * Copyright 1998-2013 Epic Games, Inc. All Rights Reserved.
+ */
+
+// Global gameplay stat defines
+
+`if(`isdefined(INCLUDE_MATCH_STATS_EVENT))
+
+	const MATCH_EVENT_HEADSHOT 		= 0;
+
+	const MATCH_EVENT_DOSH_EARNED 		= 1;
+
+	const MATCH_EVENT_DAMAGE_DEALT 	= 2;
+
+	const MATCH_EVENT_DAMAGE_TAKEN 	= 3;
+
+	const MATCH_EVENT_HEAL_GIVEN 		= 4;
+
+	const MATCH_EVENT_HEAL_RECEIVED 	= 5;
+
+	/** Match has ended */
+	
+	const MATCH_EVENT_MAX_EVENTID 	= 0x0000FFFF;
+
+`endif
+
+// Change this or predefine it to your class type
+`if(`notdefined(MatchStatsClass))
+	`define MatchStatsClass class'EphemeralMatchStats'
+`endif
+
+`define MatchStatId(ID) `MatchStatsClass.const.MATCH_EVENT_`ID
+
+`define GetKFPC(C) if(P!=None && P.PlayerControlled()) KFPlayerController(C).MatchStats
+
+//Take in playercontroller to access the MatchStats object on it.
+`define RecordBossMurderer(KFPC)					if(`KFPC != none && `KFPC.MatchStats != none ){`KFPC.MatchStats.bKilledBoss = true;}
+`define RecordAARIntStat(KFPC,ID,Value) 			if(`KFPC != none && `KFPC.MatchStats != none ){`KFPC.MatchStats.RecordIntStat(`MatchStatId(`ID),`Value);}
+`define RecordAARZedKill(KFPC,MonsterClass,DT) 		if(`KFPC != none && `KFPC.MatchStats != none ){`KFPC.MatchStats.RecordZedKill(`MonsterClass,`DT);}
+`define RecordAARPerkXPGain(KFPC,PerkClass,Value,BonusValue) 	if(`KFPC != none && `KFPC.MatchStats != none && `PerkClass != none){`KFPC.MatchStats.RecordPerkXPGain(`PerkClass,`Value,`BonusValue);}
+`define RecordSecondaryXPGain(KFPC,PerkClass,Value) if(`KFPC != none && `KFPC.MatchStats != none && `PerkClass != none){`KFPC.MatchStats.RecordSecondaryXPGain(`PerkClass,`Value);}
+//Each Damage Type is going to have an ID that we are setting here.  We pass this id in to the function RecordWeaponDamage.  From there it is resolved 
+`define RecordWeaponDamage(InstigatedBy,KFDT,DamageValue,TargetPawn,HitZoneIdx)	if(`KFDT != none){`MatchStatsClass.static.RecordWeaponDamage(`InstigatedBy,`KFDT,`KFDT.default.WeaponDef,`DamageValue,`TargetPawn,`HitZoneIdx);}
+`define RecordWeaponHeadShot(PC,DT)	if(`PC != none && `DT != none){`MatchStatsClass.static.RecordWeaponHeadShot(`PC,`DT);}

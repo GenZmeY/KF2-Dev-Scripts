@@ -1,0 +1,45 @@
+//=============================================================================
+// KFMapObjective_CommonVars
+//=============================================================================
+// Variables common to all map objectives. These would normally go in single
+// base class for objectives, but we have two base classes
+// (KFMapObjective_VolumeBase and KFMapObjective_ActorBase) because the original
+// objective code was split into objectives based on Actor and objectives based
+// on Volume and we couldn't completely refactor that after the fact. This is
+// part of an attempt to consolidate objective code into fewer places.
+//=============================================================================
+// Killing Floor 2
+// Copyright (C) 2018 Tripwire Interactive LLC
+//=============================================================================
+
+var() string LocalizationKey;
+var() string NameShortLocKey;
+var() string DescriptionLocKey;
+var() string DescriptionShortLocKey;
+var() string LocalizationPackageName;
+var() string RequirementsLocKey;
+var() bool bIsMissionCriticalObjective;
+var Texture2D DefaultIcon;
+
+/** Trader trail object being used */
+var transient KFReplicatedShowPathActor TrailActor;
+/** Texture to use for the actor icon */
+var() Texture2D ObjectiveIcon;
+/** Which game modes should this objective not support. */
+var() array<class<KFGameInfo> > GameModeBlacklist;
+/** Modify Spawn Rate based on how many players are alive. */
+var() array<float> PerPlayerSpawnRateMod;
+
+/** A sound to play when this objective is activated */
+var() AkEvent ActivationSoundEvent;
+/** A sound to play when the objective is failed */
+var() AkEvent FailureSoundEvent;
+
+/** Color of the icon displayed in the objective progress bar or above certain objectives */
+var const color ObjectiveIconColor;
+
+replication
+{
+	if (bNetInitial)
+		ObjectiveIcon, bIsMissionCriticalObjective, LocalizationKey, DescriptionLocKey, LocalizationPackageName;
+}

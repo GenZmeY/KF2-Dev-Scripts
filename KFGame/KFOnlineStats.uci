@@ -1,0 +1,154 @@
+const KFMAX_Perks = 					10;
+
+/** Views used by KF2 game */
+const VIEWID_KFGameStats =				1;
+
+/** Stat IDs used by KF2 game */
+const STATID_None 			 =			0;
+
+/** Commando 1 */
+const STATID_Cmdo_Progress	 =			1;
+const STATID_Cmdo_Build      =				2;
+
+/** Berserker 10 */
+const STATID_Bsrk_Progress	 =			10;
+const STATID_Bsrk_Build		 =			11;
+
+/** Support 20 */
+const STATID_Sup_Progress	 =				20;
+const STATID_Sup_Build		 =			21;
+const STATID_Sup_WeldPoints	 =			22;
+
+/** Firebug 30 */
+const STATID_Fire_Progress	 =			30;
+const STATID_Fire_Build		 =			31;
+
+/** Medic 40 */
+const STATID_Medic_Progress		 =		40;
+const STATID_Medic_Build	 =				41;
+const STATID_Medic_HealPoints =				42;
+
+/** SharpShooter 50 */
+const STATID_Shrp_Progress	 =			50;
+const STATID_Shrp_Build		 =			51;
+
+/** Demolition 60 */
+const STATID_Demo_Progress	=			60;
+const STATID_Demo_Build		=			61;
+
+/** Ninja 70 */
+const STATID_Surv_Progress	 =			70;
+const STATID_Surv_Build		 =			71;
+
+/** Gunslinger 80 */
+const STATID_Guns_Progress	 =			80;
+const STATID_Guns_Build		 =			81;
+
+/** Swat 90 */
+const STATID_SWAT_Progress	 =			90;
+const STATID_SWAT_Build		 =			91;
+
+/** General */
+const STATID_Kills 			 =			200;
+const STATID_StalkerKills 	 =			201;
+const STATID_CrawlerKills 	 =			202;
+const STATID_FleshpoundKills	 =			203;
+
+/** Events */
+const STATID_SpecialEventProgress =     300;
+const STATID_WeeklyEventProgress =      301;
+const STATID_DailyEventInfo =           302;
+const STATID_DailyEventIDs =            303;
+const STATID_DailyEventStats1 =         304;
+const STATID_DailyEventStats2 =         305;
+const STATID_SpecialEventKills_DEPRECATED =		306;
+const STATID_SeasonalEventStats1 =		307;
+const STATID_SeasonalEventStats2 =		308;
+const STATID_SeasonalEventStats3 =		309;
+const STATID_SeasonalEventStats4 =		310;
+const STATID_SeasonalEventStats5 =		311;
+
+/** Dosh Vault */
+const STATID_DoshVaultTotal =           400;
+const STATID_LastViewedDoshVaultTotal = 401;
+const STATID_DoshVaultProgress =		402;
+const STATID_DoshVaultRecovered =		403;
+
+/** Achievement Progress */
+const STATID_AchievementPlaceholder	 =	500;
+
+/** Player analytics/trend data */
+const STATID_AnalyticsPlaceholder	 =		800;
+
+/** Personal Bests (AAR) */
+const STATID_PersonalBest_KnifeKills =		2000;
+const STATID_PersonalBest_PistolKills	 =	2001;
+const STATID_PersonalBest_HeadShots	 =		2002;
+const STATID_PersonalBest_Healing	 =		2003;
+const STATID_PersonalBest_Kills	 =		2004;
+const STATID_PersonalBest_Assists =			2005;
+const STATID_PersonalBest_LargeZedKill =	2006;
+const STATID_PersonalBest_Dosh =			2007;
+
+/** Progress stats for achievements */
+const STATID_MatchWins =					3000;
+
+/** `if(`isdefined(DINGO)) */
+const STATID_DingoAchievementStart	= 4000;
+const STATID_ACHIEVE_MrPerky5		= 4001;
+const STATID_ACHIEVE_MrPerky10		= 4002;
+const STATID_ACHIEVE_MrPerky15		= 4003;
+const STATID_ACHIEVE_MrPerky20		= 4004;
+const STATID_ACHIEVE_MrPerky25		= 4005;
+
+const STATID_ACHIEVE_HardWins		= 4015;
+const STATID_ACHIEVE_SuicidalWins	= 4016;
+const STATID_ACHIEVE_HellWins		= 4017;
+
+const STATID_ACHIEVE_VSZedWins		= 4009;
+const STATID_ACHIEVE_VSHumanWins	= 4010;
+
+const STATID_ACHIEVE_HoldOut			= 4011;
+const STATID_ACHIEVE_DieVolter			= 4012;
+const STATID_ACHIEVE_FleshPoundKill		= 4013;
+const STATID_ACHIEVE_ShrikeKill			= 4014;
+const STATID_ACHIEVE_SirenKill			= 4018;
+const STATID_ACHIEVE_Benefactor			= 4019;
+const STATID_ACHIEVE_HealTeam			= 4020;
+const STATID_ACHIEVE_QuickOnTheTrigger	= 4033;
+
+const STATID_ACHIEVE_CollectCatacolmbs		= 4021;
+const STATID_ACHIEVE_BioticsCollectibles	= 4022;
+const STATID_ACHIEVE_EvacsCollectibles		= 4023;
+const STATID_ACHIEVE_OutpostCollectibles	= 4024;
+const STATID_ACHIEVE_PrisonCollectibles		= 4025;
+const STATID_ACHIEVE_ManorCollectibles		= 4026;
+const STATID_ACHIEVE_ParisCollectibles		= 4027;
+const STATID_ACHIEVE_FarmhouseCollectibles	= 4028;
+const STATID_ACHIEVE_BlackForestCollectibles= 4029;
+const STATID_ACHIEVE_ContainmentStationCollectibles	= 4030;
+const STATID_ACHIEVE_InfernalRealmCollectibles		= 4031;
+const STATID_ACHIEVE_HostileGroundsCollectibles		= 4032;
+const STATID_ACHIEVE_ZedLandingCollectibles			= 4035;
+const STATID_ACHIEVE_DescentCollectibles			= 4036;
+const STATID_ACHIEVE_NukedCollectibles				= 4037;
+const STATID_ACHIEVE_TragicKingdomCollectibles		= 4038;
+const STATID_ACHIEVE_NightmareCollectibles			= 4039;
+const STATID_ACHIEVE_KrampusCollectibles			= 4040;
+const STATID_ACHIEVE_ArenaCollectibles				= 4041;
+const STATID_ACHIEVE_PowercoreCollectibles			= 4042;
+const STATID_ACHIEVE_AirshipCollectibles			= 4043;
+const STATID_ACHIEVE_LockdownCollectibles			= 4044;
+const STATID_ACHIEVE_MonsterBallCollectibles		= 4045;
+const STATID_ACHIEVE_MonsterBallSecretRoom			= 4046;
+const STATID_ACHIEVE_SantasWorkshopCollectibles		= 4047;
+const STATID_ACHIEVE_ShoppingSpreeCollectibles		= 4048;
+const STATID_ACHIEVE_SpillwayCollectibles			= 4049;
+const STATID_ACHIEVE_SteamFortressCollectibles		= 4050;
+const STATID_ACHIEVE_AsylumCollectibles				= 4051;
+const STATID_ACHIEVE_SanitariumCollectibles			= 4052;
+const STATID_ACHIEVE_DefeatMatriarch				= 4053;
+const STATID_ACHIEVE_BiolapseCollectibles			= 4054;
+const STATID_ACHIEVE_DesolationCollectibles			= 4055;
+const STATID_ACHIEVE_HellmarkStationCollectibles	= 4056;
+/** `endif */

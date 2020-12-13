@@ -1,0 +1,66 @@
+//=============================================================================
+// Globals
+//=============================================================================
+// /* MessageSystem macros */
+//=============================================================================
+// Killing Floor 2
+// Copyright (C) 2015 Tripwire Interactive LLC
+//=============================================================================
+
+`define MsgSystem					class'MessageSystem'.static.GetInstance()
+
+
+/* Behavior tree macros */
+
+`if(`isdefined(FINAL_RELEASE))
+
+`define BTLog(msg)
+`define BTLog_Ext(msg, object)
+
+`define AILog(text)
+`define AILog(text, category)
+`define AILog(text, category, bForce)
+`define AILog_Ext(text, category, object)
+
+`define AILogNativeCallStack()
+`define AILogScriptCallStack()
+`define AILogNativeCallStack_Ext(actor)
+`define AILogScriptCallStack_Ext(actor)
+`define AILogSpaceLine(Owner, Start, End)
+`define AILogSpaceLine(Owner, Start, End, Type)
+`define AILogSpaceLine(Owner, Start, End, Type, Comment)
+`define AILogSpaceLine(Owner, Start, End, Type, Comment, Category)
+
+`define AILogSetContext(Owner)
+
+`define DEBUGSTATE
+
+`else
+
+`define BTLog(msg)					AILog_Internal(`msg, 'BehaviorTree')
+`define BTLog_Ext(msg, object)		if (`object != none) { `object.AILog_Internal(`msg, 'BehaviorTree' ); }
+
+`define StaticEngineContext class'Engine'.static.GetEngine()
+`define AILog(text)							if( ! `StaticEngineContext.bDisableAILogging) {AILog_Internal(`text);}
+`define AILog(text, category)				if( ! `StaticEngineContext.bDisableAILogging) {AILog_Internal(`text,`category);}
+`define AILog(text, category, bForce)		if( ! `StaticEngineContext.bDisableAILogging) {AILog_Internal(`text,`category,`bForce);}
+`define AILog_Ext(text, category, object)  if( !`StaticEngineContext.bDIsableAILogging && `object != None ) { `object.AILog_Internal(`text,`category); }
+
+`define AILogNativeCallStack() class'BaseAISubsystem'.static.GetAIDebugTool().DumpNativeCallStack(self)
+`define AILogScriptCallStack() AILog_Internal(GetScriptTrace(),'CallStack')
+
+`define AILogNativeCallStack_Ext(actor) class'BaseAISubsystem'.static.GetAIDebugTool().DumpNativeCallStack(`actor)
+`define AILogScriptCallStack_Ext(actor) `actor.AILog_Internal(GetScriptTrace(),'CallStack')
+
+`define AILogSpaceLine(Owner, Start, End)                           class'BaseAISubsystem'.static.GetAIDebugTool().LogSpaceLine(`Owner, `Start, `End, DLT_Generic)
+`define AILogSpaceLine(Owner, Start, End, Type)                     class'BaseAISubsystem'.static.GetAIDebugTool().LogSpaceLine(`Owner, `Start, `End, `Type)
+`define AILogSpaceLine(Owner, Start, End, Type, Comment)            class'BaseAISubsystem'.static.GetAIDebugTool().LogSpaceLine(`Owner, `Start, `End, `Type, `Comment)
+`define AILogSpaceLine(Owner, Start, End, Type, Comment, Category)  class'BaseAISubsystem'.static.GetAIDebugTool().LogSpaceLine(`Owner, `Start, `End, `Type, `Comment, `Category)
+
+
+`define AILogSetContext(Owner) class'BaseAISubsystem'.static.GetAIDebugTool().SetContext(`Owner)
+
+`define DEBUGSTATE              extends DEBUGSTATE
+
+`endif
+

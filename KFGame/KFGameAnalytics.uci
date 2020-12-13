@@ -1,0 +1,53 @@
+/**
+ * Copyright 1998-2011 Epic Games, Inc. All Rights Reserved.
+ */
+
+// Change this or predefine it to your class type
+`if(`notdefined(StatsClass))
+	`define StatsClass class'KFGameplayEventsWriter'
+`endif
+
+`define GET_ZedDeath 			1001
+`define GET_KFDamage			1002
+
+`if(`notdefined(StatsContext))
+
+	 `if(`isdefined(GAMEINFO))
+		`define StatsContext		GameplayEventsWriter
+		`define ValidStatsContext	GameplayEventsWriter != None && GameplayEventsWriter.IsSessionInProgress()
+	 `else
+		`define StatsContext		KFGameInfo(WorldInfo.Game).GameplayEventsWriter
+		`define ValidStatsContext	WorldInfo.Game != None && KFGameInfo(WorldInfo.Game).GameplayEventsWriter != None && KFGameInfo(WorldInfo.Game).GameplayEventsWriter.IsSessionInProgress()
+	`endif
+
+`endif
+
+/** Gameplay */
+`define RecordZedSpawn(KFPC) if(`ValidStatsContext){`StatsContext.LogPlayerIntEvent(`StatId(ZED_SPAWNED),`KFPC,0);}
+
+/** AI */
+`define RecordSpawnVolumeRating(SpawnVolume,FinalRating,UsageRating,LocationRating) if(`ValidStatsContext){`StatsContext.LogSpawnVolumeRating(`SpawnVolume,`FinalRating,`UsageRating,`LocationRating);}
+`define RecordPlayersAtSpawn(Player,ViewLoc,ViewRot) if(`ValidStatsContext){`StatsContext.LogPlayersAtSpawn(`Player,`ViewLoc,`ViewRot);}
+`define RecordBestSpawnVolume(SpawnVolume, WaveNum, Count) if(`ValidStatsContext){`StatsContext.LogBestSpawnVolume(`SpawnVolume, `WaveNum, `Count);}
+
+`define RecordAIMoveFailure(NPC,ViewLoc,ViewRot,MoveGoal,Msg) if(`ValidStatsContext){`StatsContext.LogAIMoveFailure(`NPC,`ViewLoc,`ViewRot,`MoveGoal,`Msg);}
+`define RecordAIGetNextMoveGoalFailure(NPC,ViewLoc,ViewRot,MoveGoal,Msg) if(`ValidStatsContext){`StatsContext.LogAIGetNextMoveGoalFailure(`NPC,`ViewLoc,`ViewRot,`MoveGoal,`Msg);}
+`define RecordAIBump(EventID,NPC,NPCLocation,NPCRotation,BumpedActor,Msg) if(`ValidStatsContext){`StatsContext.LogAIBump(`EventID,`NPC,`NPCLocation,`NPCRotation,`BumpedActor,`Msg);}
+`define RecordAIJumpSpot(NPC,NPCLocation,NPCRotation,JumpSpot,Msg) if(`ValidStatsContext){`StatsContext.LogAIJumpSpot(`NPC,`NPCLocation,`NPCRotation,`JumpSpot,`Msg);}
+`define RecordAIWall(EventID,NPC,NPCLocation,NPCRotation,Wall,Msg) if(`ValidStatsContext){`StatsContext.LogAIWall(`EventID,`NPC,`NPCLocation,`NPCRotation,`Wall,`Msg);}
+`define RecordAIDoor(EventID,NPC,NPCLocation,Door,Msg) if(`ValidStatsContext){`StatsContext.LogAIDoor(`EventID,`NPC,`NPCLocation,`Door,`Msg);}
+`define RecordAIChargeAttack(NPC,StartLoc,EndLoc,Msg) if(`ValidStatsContext){`StatsContext.LogAIChargeAttack(`NPC,`StartLoc,`EndLoc,`Msg);}
+`define RecordAIChangedEnemy(NPC,NewEnemy,OldEnemy,Msg) if(`ValidStatsContext){`StatsContext.LogAIChangedEnemy(`NPC,`NewEnemy,`OldEnemy,`Msg);}
+`define RecordAIRedirectedPath(NPC,MoveGoal,Msg) if(`ValidStatsContext){`StatsContext.LogAIRedirectedPath(`NPC,`MoveGoal,`Msg);}
+`define RecordAIBlockedPath(NPC,Start,End,Msg) if(`ValidStatsContext){`StatsContext.LogAIBlockedPath(`NPC,`Start,`End,`Msg);}
+`define RecordAIPathObstruction(EventID,NPC,Obstruction,Msg) if(`ValidStatsContext){`StatsContext.LogAIPathObstruction(`EventID,`NPC,`Obstruction,`Msg);}
+`define RecordAIMoveTimeOut(NPC,MoveTarget,Msg) if(`ValidStatsContext){`StatsContext.LogAIMoveTimeOut(`NPC,`MoveTarget,`Msg);}
+`define RecordAIFailedAnchor(EventID,NPC,MoveTarget,Msg) if(`ValidStatsContext){`StatsContext.LogAIFailedAnchor(`EventID,`NPC,`MoveTarget,`Msg);}
+`define RecordAIBasedOnPawn(NPC,BasePawn,Msg) if(`ValidStatsContext){`StatsContext.LogAIBasedOnPawn(`NPC,`BasePawn,`Msg);}
+`define RecordAIHeadlessWander(NPC,Msg) if(`ValidStatsContext){`StatsContext.LogAIHeadlessWander(`NPC,`Msg);}
+`define RecordAIDestroyedDoor(NPC,Door,Msg) if(`ValidStatsContext){`StatsContext.LogAIDestroyedDoor(`NPC,`Door,`Msg);}
+`define RecordAIPathGoalEvalAbort(NPC,Eval,StartNav,Msg) if(`ValidStatsContext){`StatsContext.LogAIPathGoalEvalAbort(`NPC,`Eval,`StartNav,`Msg);}
+`define RecordAIPathFailure(NPC,Anchor,Goal,Msg) if(`ValidStatsContext){`StatsContext.LogAIPathFailure(`NPC,`Anchor,`Goal,`Msg);}
+
+`include(Engine\Classes\GameStats.uci);
+

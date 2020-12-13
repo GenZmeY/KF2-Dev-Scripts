@@ -1,0 +1,81 @@
+//=============================================================================
+// KF Globals
+//=============================================================================
+// Script include file loaded by ProcessGlobalInclude.  Not used often, but
+// sometimes there aren't many options (e.g. sharing static array sizes)
+//=============================================================================
+// Killing Floor 2
+// Copyright (C) 2015 Tripwire Interactive LLC
+//=============================================================================
+
+ /** Same as cpp */
+`define NAME_NONE ''
+
+/** Difficulty setting consts, don't want to use arbitrary numbers all over the place */
+`define	DIFFICULTY_NORMAL		0.0
+`define	DIFFICULTY_HARD 		1.0
+`define	DIFFICULTY_SUICIDAL		2.0
+`define	DIFFICULTY_HELLONEARTH	3.0
+
+/** The maximum number of players allowed in a regular KF Game*/
+`define KF_MAX_PLAYERS	6
+`define KF_MAX_PLAYERS_VERSUS	12
+
+/** The maximum number of skill tiers in each perk */
+`define MAX_PERK_SKILLS 5
+
+/** The maximum number of level available in each perk */
+`define MAX_PERK_LEVEL	25
+
+/** The maximum number of prestige level available in each perk */
+`define MAX_PRESTIGE_LEVEL	5
+
+/** The maximum number of simultaneous cosmetic attachments supported for a character */
+`define MAX_COSMETIC_ATTACHMENTS 3
+/** When the attachment mesh is none the value will be reflected at -1 */
+`define CLEARED_ATTACHMENT_INDEX -1
+
+/** Uncompression scale for PRI ping value used in every Unreal game */
+`define PING_SCALE	4.f
+
+`define IFX_NONE		0
+`define IFX_LOW_HEALTH	200
+`define IFX_NIGHTVISION	100
+
+/** internal */
+`define CheckDialogManager Role == ROLE_Authority && KFGameInfo(WorldInfo.Game) != none && KFGameInfo(WorldInfo.Game).DialogManager != none
+`define CheckTraderDialogManager WorldInfo.NetMode != NM_DedicatedServer && KFGameReplicationInfo(WorldInfo.GRI) != none && KFGameReplicationInfo(WorldInfo.GRI).TraderDialogManager != none
+
+/** Shortcut frequently used references */
+`define GoreManager KFGoreManager(WorldInfo.MyGoreEffectManager)
+`define LightPool KFLightPool(WorldInfo.MyLightPool)
+`define DeferredWorkManager TWDeferredWorkManager(WorldInfo.DeferredWorkManager)
+`define ImpactEffectManager KFImpactEffectManager(WorldInfo.MyImpactEffectManager)
+`define DialogManager if( `CheckDialogManager ) KFGameInfo(WorldInfo.Game).DialogManager
+`define TraderDialogManager if( `CheckTraderDialogManager ) KFGameReplicationInfo(WorldInfo.GRI).TraderDialogManager
+`define TimerHelper class'WorldInfo'.static.GetWorldInfo().TimerHelper
+
+/** This is a slick way to to do thing like:  TimeSince(LastFoo) < Delta  where the macro makes it a lot easier to read what the code is doing **/
+`define RealTimeSince(Time)	 (WorldInfo.RealTimeSeconds - `Time)
+/** This is used for classes which are object derived and do not have access to WorldInfo so we need to pass in the Actor to get a worldinfo **/
+`define RealTimeSinceEx(Actor,Time)	 (`Actor.WorldInfo.RealTimeSeconds - `Time)
+
+/** Helper function for the speedier FastTrace_PhysX */
+`define FastTracePhysX(traceend,tracestart) class'KFGameEngine'.static.FastTrace_PhysX(`traceend, `tracestart)
+
+/** Zed-time helper, halfway between normal time and full zedtime */
+`define IsInZedTime(Actor) (`Actor.WorldInfo.TimeDilation < 1.f)
+`define NotInZedTime(Actor) !`IsInZedTime(`Actor)
+
+`define AnalyticsLog( arg ) if(WorldInfo.GRI != none && WorldInfo.GRI.GameClass.static.AllowAnalyticsLogging()) WorldInfo.TWLogEvent `arg
+`define BalanceLog(tag,pri,text) if(class'KFGameInfo'.static.AllowBalanceLogging()) WorldInfo.LogGameBalance(`tag$","$`PRI.PlayerName$","$`text)
+
+/** dev-only logs */
+`if(`isdefined(ShippingPC))
+`define QALog(text)
+`else
+`define QALog(text,cond) if(`cond) `log(GetFuncName()@`text,, 'QALog')
+`endif
+
+`define REMOVEMESOON_ServerTakeoverLog(text) `log("(TW TAKEOVER LOG)"@`text)
+`define REMOVEMESOON_ZombieServerLog(text) `log("(TW ZOMBIE SERVER LOG)"@`text)
