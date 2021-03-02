@@ -115,6 +115,10 @@ var databinding int BotPlayers;
 var databinding string SteamServerUID;
 //@SABER_EGS_END
 
+//@SABER_BEGIN "Exiling" servers which kicks/bans
+var databinding bool bServerExiled;
+//@SABER_END
+
 `if (`__TW_ONLINESUBSYSTEM_)
 
 //used to keep track of the gfx objects in the serverbrowser's list
@@ -176,4 +180,7 @@ defaultproperties
 	//@SABER_EGS_BEGIN Crossplay support
 	BotPlayers=0
 	//@SABER_EGS_END
+	//@SABER_BEGIN "Exiling" servers which kicks/bans
+	bServerExiled=false
+	//@SABER_END
 }

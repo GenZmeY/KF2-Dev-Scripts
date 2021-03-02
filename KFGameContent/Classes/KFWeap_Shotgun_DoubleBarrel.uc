@@ -75,7 +75,14 @@ simulated state WeaponDoubleBarrelFiring extends WeaponSingleFiring
 	simulated function BeginState(name PreviousStateName)
     {
    	    local vector UsedKickMomentum;
+		local KFMapInfo KFMI; 
        	Super.BeginState(PreviousStateName);
+
+		KFMI = KFMapInfo(WorldInfo.GetMapInfo());
+		if(KFMI != none && !KFMI.bAllowShootgunJump)
+		{
+			return;
+		}
 
     	// Push the player back when they fire both barrels
         if (Instigator != none )

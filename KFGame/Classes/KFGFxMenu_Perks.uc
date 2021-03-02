@@ -224,8 +224,18 @@ function bool IsMatchStarted()
 
 function PerkChanged( byte NewPerkIndex, bool bClickedIndex)
 {
+	local KFGameReplicationInfo KFGRI;
+
   	if( KFPC != none )
   	{
+		KFGRI = KFGameReplicationInfo( KFPC.WorldInfo.GRI );
+
+		// If the perk is not allowed stop the change process
+		if( KFGRI != none && !KFGRI.IsPerkAllowed(KFPC.PerkList[NewPerkIndex].PerkClass) )
+		{
+			return;
+		}
+
 		// We aren't actually changing our selected perk so don't save stuff.
 		UpdateSkillsHolder( KFPC.PerkList[NewPerkIndex].PerkClass );
   		

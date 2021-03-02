@@ -443,4 +443,6 @@ defaultproperties
 	SpeedLimitScalar=1.30
 
 	bCanBePinned=false
+
+	VortexAttracionModifier=0.3f
 }

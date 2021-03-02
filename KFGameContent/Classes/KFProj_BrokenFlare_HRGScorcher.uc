@@ -163,6 +163,24 @@ simulated function SpawnFlightEffects()
 	}
 }
 
+simulated function SyncOriginalLocation()
+{
+	local Actor HitActor;
+	local vector HitLocation, HitNormal;
+	local TraceHitInfo HitInfo;
+
+	if (Role < ROLE_Authority && Instigator != none && Instigator.IsLocallyControlled())
+	{
+		HitActor = Trace(HitLocation, HitNormal, OriginalLocation, Location,,, HitInfo, TRACEFLAG_Bullet);
+		if (HitActor != none)
+		{
+			Explode(HitLocation, HitNormal);
+		}
+	}
+
+    Super.SyncOriginalLocation();
+}
+
 defaultproperties
 {
 	Physics=PHYS_Falling

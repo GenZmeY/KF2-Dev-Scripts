@@ -8,7 +8,7 @@
 // Roberto Moreno (Saber Interactive)
 //=============================================================================
 
-class KFProj_LightingFlare_HRGScorcher extends KFProj_RicochetBullet
+class KFProj_LightingFlare_HRGScorcher extends KFProjectile
 	hidedropdown;
 
 /** Time projectile is alive after being sticked to an actor or a pawn */
@@ -120,6 +120,10 @@ simulated event HitWall( vector HitNormal, actor Wall, PrimitiveComponent WallCo
 simulated function ProcessTouch(Actor Other, Vector HitLocation, Vector HitNormal)
 {
 	LastHitNormal = HitNormal;
+	if (Other != Instigator && !Other.bStatic && DamageRadius == 0.0 )
+	{
+		ProcessBulletTouch(Other, HitLocation, HitNormal);
+	}
 	super.ProcessTouch(Other, HitLocation, HitNormal);
 	SetTimer(StickedTime, false, nameof(Timer_Explode));
 	StartStickedEffects();
@@ -165,6 +169,23 @@ simulated event Tick( float DeltaTime )
 	}
 }
 
+// Last location needs to be correct, even on first tick.
+simulated function SyncOriginalLocation()
+{
+	local Actor HitActor;
+	local vector HitLocation, HitNormal;
+	local TraceHitInfo HitInfo;
+
+	if (Role < ROLE_Authority && Instigator != none && Instigator.IsLocallyControlled())
+	{
+		HitActor = Trace(HitLocation, HitNormal, OriginalLocation, Location,,, HitInfo, TRACEFLAG_Bullet);
+		if (HitActor != none)
+		{
+			StickHelper.TryStick(HitNormal, HitLocation, HitActor);
+		}
+	}
+}
+
 defaultproperties
 {
 	Physics=PHYS_Falling
@@ -186,7 +207,6 @@ defaultproperties
 	CurrentStickedTime=0.0
 	StickedLightFadeStartTime=4.0
 	StickedLightFadeTime=1.0
-    BouncesLeft=0
     TouchTimeThreshhold=0.15
 
 	//Sticking to environment or pinning to enemies
@@ -197,6 +217,10 @@ defaultproperties
     bCollideActors=true
     bCollideComplex=true
 
+	bPushedByEncroachers=false
+	bDamageDestructiblesOnTouch=true
+	bWaitForEffects=true
+	ProjEffectsFadeOutDuration=0.25
 	//Network due to sticking feature
 	bNetTemporary=false
 	NetPriority=5

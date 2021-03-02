@@ -116,6 +116,8 @@ var() EBossAIType SurvivalBossOverride<EditCondition=bOverrideSurvivalBoss>;
 var() SeasonalEventIndex ZedSeasonalThemeId;
 // Mutator code class that can override various map settings
 var() class<KFMapMutator> MapMutatorClass;
+// Whether to allow shotgun jumps
+var() bool bAllowShootgunJump;
 
 // Objectives to use in Objective Mode
 var(ObjectiveMode) array<WaveObjectivePair> ObjectiveModeObjectives;
@@ -451,4 +453,6 @@ DefaultProperties
 	AmbientMusicTracks.Add(KFMusicTrackInfo'WW_MAMB_Default.TI_SJ_Menace')
 
 	TraderVoiceGroupClassPath="KFGameContent.KFTraderVoiceGroup_Default"
+
+	bAllowShootgunJump=true
 }

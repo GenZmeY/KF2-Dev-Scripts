@@ -209,8 +209,8 @@ defaultproperties
 	// Recoil
 	maxRecoilPitch=150
 	minRecoilPitch=115
-	maxRecoilYaw=115
-	minRecoilYaw=-115
+	maxRecoilYaw=80 //115
+	minRecoilYaw=-80 //-115
 	RecoilRate=0.085
 	RecoilMaxYawLimit=500
 	RecoilMinYawLimit=65035
@@ -223,7 +223,7 @@ defaultproperties
 	RecoilViewRotationScale=0.25
 	IronSightMeshFOVCompensationScale=1.5
     HippedRecoilModifier=1.5
-	AltFireRecoilScale=4.0f
+	AltFireRecoilScale=6.0f //4.0f
 
     // Inventory
 	InventorySize=7
@@ -234,23 +234,23 @@ defaultproperties
 	FireModeIconPaths(DEFAULT_FIREMODE)=Texture2D'wep_ui_cryogun_tex.UI_FireModeSelect_Cryogun'
 	FiringStatesArray(DEFAULT_FIREMODE)=SprayingFire
 	WeaponFireTypes(DEFAULT_FIREMODE)=EWFT_Custom
-	FireInterval(DEFAULT_FIREMODE)=+0.07 // 850 RPM
+	FireInterval(DEFAULT_FIREMODE)=+0.1 //+0.07 // 850 RPM
 	FireOffset=(X=30,Y=4.5,Z=-5)
 	//MinFireDuration=0.25
-	MinAmmoConsumed=4
+	MinAmmoConsumed=3 //4
 
 	// ALT_FIREMODE
 	FireModeIconPaths(ALTFIRE_FIREMODE)=Texture2D'wep_ui_cryogun_tex.UI_FireModeSelect_2nd_Cryogun'
 	FiringStatesArray(ALTFIRE_FIREMODE)=WeaponSingleFiring
 	WeaponFireTypes(ALTFIRE_FIREMODE)=EWFT_Projectile
 	WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_FreezeThrower_IceShards'
-	InstantHitDamage(ALTFIRE_FIREMODE)=20.0
+	InstantHitDamage(ALTFIRE_FIREMODE)=35.0 //20.0
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Freeze_FreezeThrower_IceShards'
 	FireInterval(ALTFIRE_FIREMODE)=0.6f
 	PenetrationPower(ALTFIRE_FIREMODE)=4.0
 	AmmoCost(ALTFIRE_FIREMODE)=10
-	NumPellets(ALTFIRE_FIREMODE)=12
-	Spread(ALTFIRE_FIREMODE)=0.15f
+	NumPellets(ALTFIRE_FIREMODE)=8 //12
+	Spread(ALTFIRE_FIREMODE)=0.12f //0.15f
 
 	// BASH_FIREMODE
 	InstantHitDamageTypes(BASH_FIREMODE)=class'KFDT_Bludgeon_Freezethrower'

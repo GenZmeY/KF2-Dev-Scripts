@@ -440,7 +440,6 @@ simulated function UpdateInteractionMessage()
 {
 	local KFPlayerController InstigatorKFPC;
 	local bool bCannotBeHealed;
-	local KFPowerUp PowerUp;
 
 	//Update Interaction message	
 	if (Instigator != none && Instigator.IsLocallyControlled() && Instigator.Health > 0)
@@ -452,9 +451,8 @@ simulated function UpdateInteractionMessage()
 			return;
 		}
 		
-		//Check if we have a power up that disables healing
-		PowerUp = InstigatorKFPC.GetPowerUp();
-		bCannotBeHealed = PowerUp != none && !PowerUp.CanBeHealedWhilePowerUpIsActive;
+		//Check if the player can heal
+		bCannotBeHealed = !InstigatorKFPC.CanUseHealObject();
 
 		if (bIsQuickHealMessageShowing)
 		{

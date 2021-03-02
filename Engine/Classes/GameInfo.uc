@@ -2173,6 +2173,22 @@ function Logout( Controller Exiting )
 	}
 }
 
+simulated function ExileServerUsingKickBan()
+{
+	local OnlineGameSettings GameSettings;
+	
+	if (GameInterface != None)
+	{
+		GameSettings = GameInterface.GetGameSettings(PlayerReplicationInfoClass.default.SessionName);
+	}
+
+	if (GameSettings != None)
+	{
+		GameSettings.bServerExiled = true;
+	}
+	
+}
+
 /**
  * Removes the player from the named session when they leave
  *

@@ -2301,6 +2301,7 @@ static function DumpGameSettings(const OnlineGameSettings GameSettings)
 	`Log("      bIsLanMatch: "$GameSettings.bIsLanMatch);
 	`Log("      bIsDedicated: "$GameSettings.bIsDedicated);
 	`Log("      bUsesStats: "$GameSettings.bUsesStats);
+	`Log("      bServerExiled: "$GameSettings.bServerExiled);
 	`Log("      bUsesArbitration: "$GameSettings.bUsesArbitration);
 	`Log("      bAntiCheatProtected: "$GameSettings.bAntiCheatProtected);
 	`Log("      bShouldAdvertise: "$GameSettings.bShouldAdvertise);

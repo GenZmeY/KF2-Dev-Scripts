@@ -298,6 +298,8 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 	local KFWeapon KFW;
 	local float TempDamage;
 
+	super.ModifyDamageGiven(InDamage, DamageCauser, MyKFPM, DamageInstigator, DamageType, HitZoneIdx);
+
 	TempDamage = InDamage;
 
 	if( DamageCauser != none )
@@ -646,7 +648,7 @@ DefaultProperties
    	PerkBuildStatID=STATID_Medic_Build
 
   	SelfHealingSurgePct=0.1f
-	MaxSurvivalistResistance=0.5f //0.8
+	MaxSurvivalistResistance=0.70f //0.5f //0.8
 	CombatantSpeedModifier=0.1f
 
 	MaxHealingSpeedBoost=30 //15 //50

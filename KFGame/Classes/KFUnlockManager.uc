@@ -27,6 +27,7 @@ enum ESharedContentUnlock
 	SCU_Minigun,
 	SCU_MineReconstructor,
 	SCU_FrostFang,
+	SCU_GravityImploder,
 };
 
 
@@ -325,4 +326,8 @@ defaultproperties
 		Name=KFWeap_Rifle_FrostShotgunAxe,
 		IconPath="WEP_UI_Frost_Shotgun_Axe_TEX.UI_WeaponSelect_FrostGun",
 		ID=8609)}
+	SharedContentList(SCU_GravityImploder)={(
+		Name=KFWeap_GravityImploder,
+		IconPath="WEP_UI_Gravity_Imploder_TEX.UI_WeaponSelect_Gravity_Imploder",
+		ID=8778)}
 }

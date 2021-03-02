@@ -348,7 +348,7 @@ cpptext
 
 defaultproperties
 {
-	// as of August 2020
+	// as of January 2021
 	ConsumablesCount=80
-	DurablesCount=49
+	DurablesCount=54
 }

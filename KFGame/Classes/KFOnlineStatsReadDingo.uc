@@ -66,6 +66,7 @@ defaultproperties
 	ColumnIds.Add(STATID_ACHIEVE_DesolationCollectibles)
 	ColumnIds.Add(STATID_ACHIEVE_HellmarkStationCollectibles)
 	ColumnIds.Add(STATID_ACHIEVE_ElysiumEndlessWaveFifteen)
+	ColumnIds.Add(STATID_ACHIEVE_Dystopia2029Collectibles)
 
 	ColumnMappings.Add((Id=STATID_ACHIEVE_MrPerky5, Name="AchievementMrPerky5"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_MrPerky10, Name = "AchievementMrPerky10"))
@@ -120,4 +121,5 @@ defaultproperties
 	ColumnMappings.Add((Id=STATID_ACHIEVE_DesolationCollectibles,Name="AchievementCollectDesolation"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_HellmarkStationCollectibles,Name="AchievementCollectHellmarkStation"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_ElysiumEndlessWaveFifteen,Name="AchievementEndlessElysium"))
+	ColumnMappings.Add((Id=STATID_ACHIEVE_Dystopia2029Collectibles,NAme="AchievementCollectDystopia2029"))
 }

@@ -2672,9 +2672,6 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 	OldHealth = Health;
 	Super.TakeDamage(Damage, InstigatedBy, HitLocation, Momentum, DamageType, HitInfo, DamageCauser);
 
-	// using the passed in damage type instead of the hitfxinfo since that doesn't get updated when zero damage is done
-	HandleAfflictionsOnHit(InstigatedBy, Normal(Momentum), class<KFDamageType>(DamageType), DamageCauser);
-
 	ActualDamage = OldHealth - Health;
 	if( ActualDamage > 0 )
 	{
@@ -3999,12 +3996,12 @@ simulated function KFSkinTypeEffects GetHitZoneSkinTypeEffects( int HitZoneIdx )
  */
 simulated function AdjustAffliction(out float AfflictionPower);
 
-function HandleAfflictionsOnHit(Controller DamageInstigator, vector HitDir, class<KFDamageType> DamageType, Actor DamageCauser)
+function HandleAfflictionsOnHit(Controller DamageInstigator, vector HitDir, class<DamageType> DamageType, Actor DamageCauser)
 {
 	//Handle afflictions
     if (AfflictionHandler != None)
     {
-        AfflictionHandler.NotifyTakeHit(DamageInstigator, HitDir, DamageType, DamageCauser);
+        AfflictionHandler.NotifyTakeHit(DamageInstigator, HitDir, class<KFDamageType>(DamageType), DamageCauser);
     }
 }
 

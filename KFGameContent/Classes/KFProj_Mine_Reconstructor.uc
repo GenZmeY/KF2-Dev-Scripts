@@ -228,7 +228,8 @@ simulated event HitWall( vector HitNormal, Actor Wall, PrimitiveComponent WallCo
 		return;
 	}
 
-	if( CanStick(Wall, HitNormal) && Wall.bStatic == true )
+	// Stick to static walls and destructible environment objects.
+	if( CanStick(Wall, HitNormal) && (Wall.bStatic == true || (Wall.bCanBeDamaged && KFPawn(Wall) == none)) )
 	{
 		Stick( Location, HitNormal );
 	}

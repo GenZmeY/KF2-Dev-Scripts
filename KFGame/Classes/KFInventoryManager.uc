@@ -1121,7 +1121,6 @@ simulated function AttemptQuickHeal()
 {
 	local KFWeap_HealerBase W;
 	local KFPlayerController KFPC;
-	local class<KFPowerUp> KFPowerUpClass;
 
 	// Do not heal if we have full health
 	if ( Instigator.Health >= Instigator.HealthMax )
@@ -1138,8 +1137,7 @@ simulated function AttemptQuickHeal()
 	KFPC = KFPlayerController(Instigator.Owner);
 	if( KFPC != none )
 	{
-		KFPowerUpClass = KFPC.GetPowerUpClass();
-		if( KFPowerUpClass != none && !KFPowerUpClass.default.CanBeHealedWhilePowerUpIsActive )
+		if(!KFPC.CanUseHealObject())
 		{
 			return;
 		}

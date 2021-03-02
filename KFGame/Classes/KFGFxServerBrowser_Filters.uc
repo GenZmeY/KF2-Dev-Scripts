@@ -13,13 +13,13 @@ class KFGFxServerBrowser_Filters extends KFGFxObject_Container
 	config(UI);
 
 var KFGFxMenu_ServerBrowser ServerMenu;
-var localized string NoPasswordString, NoMutatorsString, NotFullString, NotEmptyString, NoRankedStandardString, NoRankedCustomString, NoUnrankedString, DedicatedString, VACSecureString, InLobbyString, InProgressString, OnlyStockMapsString, OnlyCustomMapsString, LimitServerResultsString;
+var localized string NoPasswordString, NoMutatorsString, NotFullString, NotEmptyString, NoRankedStandardString, NoRankedCustomString, NoUnrankedString, DedicatedString, VACSecureString, InLobbyString, InProgressString, OnlyStockMapsString, OnlyCustomMapsString, LimitServerResultsString, NotServerExiledString;
 var array<string> FilterStrings;
 
-var config Bool bNoPassword, bNoMutators, bNotFull, bNotEmpty, bUsesStats, bCustom, bDedicated, bVAC_Secure, bInLobby, bInProgress, bOnlyStockMaps, bOnlyCustomMaps, bLimitServerResults;
+var config Bool bNoPassword, bNoMutators, bNotFull, bNotEmpty, bUsesStats, bCustom, bDedicated, bVAC_Secure, bInLobby, bInProgress, bOnlyStockMaps, bOnlyCustomMaps, bLimitServerResults, bNoLocalAdmin;
 var config byte SavedGameModeIndex, SavedMapIndex, SavedDifficultyIndex, SavedLengthIndex, SavedPingIndex;
 
-var  Bool bNoPasswordPending, bNoMutatorsPending, bNotFullPending, bNotEmptyPending, bUsesStatsPending, bCustomPending, bDedicatedPending, bVAC_SecurePending, bInLobbyPending, bInProgressPending, bOnlyStockMapsPending, bOnlyCustomMapsPending, bLimitServerResultsPending;
+var  Bool bNoPasswordPending, bNoMutatorsPending, bNotFullPending, bNotEmptyPending, bUsesStatsPending, bCustomPending, bDedicatedPending, bVAC_SecurePending, bInLobbyPending, bInProgressPending, bOnlyStockMapsPending, bOnlyCustomMapsPending, bLimitServerResultsPending, bNoLocalAdminPending;
 var  byte SavedGameModeIndexPending, SavedMapIndexPending, SavedDifficultyIndexPending, SavedLengthIndexPending, SavedPingIndexPending;
 
 var transient string CachedMapName, CachedModeName;
@@ -45,6 +45,7 @@ enum EFilter_Key
 	LIMIT_SERVER_RESULTS,
 	/*ONLY_STOCK_MAPS,		//Not using for EA
 	ONLY_CUSTOM_MAPS,*/		//Not using for EA
+	NO_LOCAL_ADMIN,
 	FILTERS_MAX,
 };
 
@@ -115,6 +116,7 @@ function InitFiltersArray()
 	FilterStrings[IN_LOBBY] 			= InLobbyString;
 	FilterStrings[IN_PROGRESS] 			= InProgressString;
 	FilterStrings[LIMIT_SERVER_RESULTS] 	= LimitServerResultsString @class'KFGFxServerBrowser_ServerList'.default.MaxSearchResults;
+	FilterStrings[NO_LOCAL_ADMIN]			= NotServerExiledString;
 	/*FilterStrings[ONLY_STOCK_MAPS] 		= OnlyStockMapsString;
 	FilterStrings[ONLY_CUSTOM_MAPS] 	= OnlyCustomMapsString;*/
 }
@@ -316,6 +318,7 @@ function ApplyFilters()
 	bOnlyStockMaps 	= bOnlyStockMapsPending;
 	bOnlyCustomMaps = bOnlyCustomMapsPending;
 	bLimitServerResults = bLimitServerResultsPending;
+	bNoLocalAdmin 	= bNoLocalAdminPending;
 
 	SavedGameModeIndex 		= SavedGameModeIndexPending;
 	SavedMapIndex 			= SavedMapIndexPending;
@@ -340,7 +343,8 @@ function ClearPendingValues()
 	bInProgressPending 				= bInProgress;
 	bOnlyStockMapsPending 			= bOnlyStockMaps;
 	bOnlyCustomMapsPending 			= bOnlyCustomMaps;
-	bLimitServerResultsPending 			= bLimitServerResults;
+	bLimitServerResultsPending 		= bLimitServerResults;
+	bNoLocalAdminPending			= bNoLocalAdmin;
  	SavedGameModeIndexPending 		= SavedGameModeIndex;
 	SavedMapIndexPending 			= SavedMapIndex;
 	SavedDifficultyIndexPending 	= SavedDifficultyIndex;
@@ -364,6 +368,7 @@ function ResetFilters()
 	bOnlyStockMaps 		= false;
 	bOnlyCustomMaps 	= false;
 	bLimitServerResults = true;
+	bNoLocalAdmin 		= true;
 
 	SavedGameModeIndex = 255;
 	SavedMapIndex = 255;
@@ -420,6 +425,9 @@ function SetBoolByEFilter_Key(EFilter_Key Filter, bool FilterValue)
 		case LIMIT_SERVER_RESULTS:
 			bLimitServerResultsPending = FilterValue;
 			break;
+		case NO_LOCAL_ADMIN:
+			bNoLocalAdminPending = FilterValue;
+			break;
 		/*case ONLY_STOCK_MAPS:
 			bOnlyStockMapsPending 	= FilterValue;
 			break;
@@ -467,6 +475,9 @@ function bool GetBoolByEFilter_Key(EFilter_Key Filter)
 
 		case LIMIT_SERVER_RESULTS:
 			return bLimitServerResults;
+		
+		case NO_LOCAL_ADMIN:
+			return bNoLocalAdmin;
 
 		/*case ONLY_STOCK_MAPS:
 			return bOnlyStockMaps;

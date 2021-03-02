@@ -86,7 +86,7 @@ function UpdatePerkSelection(byte SelectedPerkIndex)
 		    TempObj.SetString( "Title",  PerkClass.default.PerkName );	
 			TempObj.SetString( "iconSource",  "img://"$PerkClass.static.GetPerkIconPath() );
 			TempObj.SetBool("bTierUnlocked", bool(bTierUnlocked) && KFPC.PerkList[i].PerkLevel >= UnlockedPerkLevel);
-			
+			TempObj.SetBool("bPerkAllowed", true);
 		    DataProvider.SetElementObject( i, TempObj );
 		}	
 		SetObject( "perkData", DataProvider );
@@ -111,7 +111,7 @@ function UpdatePendingPerkInfo(byte SelectedPerkIndex)
 	local KFPlayerController KFPC;
 
 	KFPC = KFPlayerController( GetPC() );
-	
+
 	if( KFPC != none && KFGRI != none )
 	{
 		if(!class'WorldInfo'.static.IsMenuLevel())

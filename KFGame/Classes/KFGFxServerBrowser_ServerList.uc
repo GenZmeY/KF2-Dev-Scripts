@@ -278,6 +278,7 @@ function BuildServerFilters(KFGFxServerBrowser_Filters Filters, OnlineGameSearch
 	Search.AddServerFilter("version_match", string(class'KFGameEngine'.static.GetKFGameVersion()));
 	Search.TestAddServerFilter( Filters.bNotFull, "notfull");
 	Search.TestAddServerFilter( Filters.bNotEmpty, "hasplayers");
+	Search.TestAddBoolGametagFilter(GametagSearch, Filters.bNoLocalAdmin, 'bServerExiled', 0);
 
 	if( !class'WorldInfo'.static.IsConsoleBuild() )
 	{
@@ -972,6 +973,7 @@ function UpdateListDataProvider()
 				TempObj.SetString("mode",           	class'KFCommon_LocalizedStrings'.static.GetGameModeString(TempOnlineGamesSettings.Mode) );
 				TempObj.SetString("map",           		TempOnlineGamesSettings.MapName);
 				TempObj.SetBool("locked",           	TempOnlineGamesSettings.bRequiresPassword);
+				TempObj.SetBool("serverExiled",           	TempOnlineGamesSettings.bServerExiled);
 				//Get Game State from var const databinding EOnlineGameState GameState;
 				TempObj.SetString("gameStatus",         String(TempOnlineGamesSettings.GameState));		
 

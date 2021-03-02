@@ -697,7 +697,6 @@ private function Callback_AttachmentNumbered(int MeshIndex, int SkinIndex, int S
 {
 	local Pawn P;
 	local KFPawn KFP;
-	local int i;
 	local array<int> RemovedAttachments;
 	P = GetPC().Pawn;
 	if( P != none )

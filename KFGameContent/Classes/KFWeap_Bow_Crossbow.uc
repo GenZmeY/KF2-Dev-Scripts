@@ -39,6 +39,24 @@ static simulated event EFilterTypeUI GetTraderFilter()
     return FT_Projectile;
 }
 
+simulated function float GetUpgradedAfflictionPower(EAfflictionType AfflictionType, float InPower, optional int FireMode = INDEX_NONE, optional int UpgradeIndex = INDEX_NONE)
+{
+	local class<KFDT_Piercing_Crossbow> DT;
+	local KFPerk Perk;
+
+	Perk = GetPerk();
+	if(AfflictionType == AF_Stun && Perk != none && Perk.bWasLastHitAHeadshot)
+	{
+		DT = class<KFDT_Piercing_Crossbow>(InstantHitDamageTypes[DEFAULT_FIREMODE]);
+		if (DT != none)
+		{
+			return super.GetUpgradedAfflictionPower(AfflictionType, DT.default.HeadStunPower, FireMode, UpgradeIndex);
+		}
+	}
+
+	return super.GetUpgradedAfflictionPower(AfflictionType, InPower, FireMode, UpgradeIndex);
+}
+
 defaultproperties
 {
 	// Inventory

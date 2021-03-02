@@ -77,6 +77,25 @@ var bool bMatchVictory;
 //Whether or not traders are enabled
 var bool bTradersEnabled;
 
+struct native PerkAvailableData
+{
+	var bool bPerksAvailableLimited;
+
+	var bool bBerserkerAvailable;
+	var bool bCommandoAvailable;
+	var bool bSupportAvailable;
+	var bool bFieldMedicAvailable;
+	var bool bDemolitionistAvailable;
+	var bool bFirebugAvailable;
+	var bool bGunslingerAvailable;
+	var bool bSharpshooterAvailable;
+	var bool bSwatAvailable;
+	var bool bSurvivalistAvailable;
+};
+
+//Wheter or not some perks are not allowed
+var repnotify PerkAvailableData PerksAvailableData;
+
 /************************************
 * Spawning
 ************************************/
@@ -275,6 +294,10 @@ var float           VersusZedDamageMod;
 /** The current game is a versus game */
 var bool            bVersusGame;
 
+/** The current game has global damage*/
+var bool			bGlobalDamage;
+
+
 /************************************
 * Team Management
 ************************************/
@@ -350,11 +373,13 @@ cpptext
 replication
 {
 	if ( bNetDirty )
-		TraderVolume, TraderVolumeCheckType, bTraderIsOpen, NextTrader, WaveNum, bWaveIsEndless, AIRemaining, WaveTotalAICount, bWaveIsActive, MaxHumanCount,
+		TraderVolume, TraderVolumeCheckType, bTraderIsOpen, NextTrader, WaveNum, bWaveIsEndless, AIRemaining, WaveTotalAICount, bWaveIsActive, MaxHumanCount, bGlobalDamage, 
 		CurrentObjective, PreviousObjective, PreviousObjectiveResult, PreviousObjectiveXPResult, PreviousObjectiveVoshResult, MusicIntensity, ReplicatedMusicTrackInfo, MusicTrackRepCount,
 		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective; //@HSL - JRO - 3/21/2016 - PS4 Sessions
 	if ( bNetInitial )
 		GameLength, WaveMax, bCustom, bVersusGame, TraderItems, GameAmmoCostScale, bAllowGrenadePurchase, MaxPerkLevel, bTradersEnabled;
+	if ( bNetInitial || bNetDirty )
+		PerksAvailableData;
 	if ( bNetInitial && Role == ROLE_Authority )
 		ServerAdInfo;
 
@@ -491,6 +516,10 @@ simulated event ReplicatedEvent(name VarName)
 	else if (VarName == nameof(GameLength))
 	{
 		ReceivedGameLength();
+	}
+	else if(VarName == nameof(PerksAvailableData))
+	{
+		UpdatePerksAvailable();
 	}
 	else
 	{
@@ -2106,6 +2135,39 @@ simulated function int GetFinalWaveNum()
 simulated function bool IsObjectiveMode()
 {
 	return false;
+}
+
+function SetGlobalDamage(bool bEnable)
+{
+	bGlobalDamage = bEnable;
+}
+
+simulated function bool IsGlobalDamage()
+{
+	return bGlobalDamage;
+}
+
+simulated function bool IsPerkAllowed(class<KFPerk> PerkClass)
+{
+	if(PerksAvailableData.bPerksAvailableLimited)
+	{
+		if(PerkClass == class'KFPerk_Berserker')			return PerksAvailableData.bBerserkerAvailable;
+		else if(PerkClass == class'KFPerk_Commando')		return PerksAvailableData.bCommandoAvailable;
+		else if(PerkClass == class'KFPerk_Support')			return PerksAvailableData.bSupportAvailable;
+		else if(PerkClass == class'KFPerk_FieldMedic')		return PerksAvailableData.bFieldMedicAvailable;
+		else if(PerkClass == class'KFPerk_Demolitionist')	return PerksAvailableData.bDemolitionistAvailable;
+		else if(PerkClass == class'KFPerk_Firebug')			return PerksAvailableData.bFirebugAvailable;
+		else if(PerkClass == class'KFPerk_Gunslinger')		return PerksAvailableData.bGunslingerAvailable;
+		else if(PerkClass == class'KFPerk_Sharpshooter')	return PerksAvailableData.bSharpshooterAvailable;
+		else if(PerkClass == class'KFPerk_Swat')			return PerksAvailableData.bSwatAvailable;
+		else if(PerkClass == class'KFPerk_Survivalist')		return PerksAvailableData.bSurvivalistAvailable;
+	}
+    return true;
+}
+
+simulated function UpdatePerksAvailable()
+{
+	KFPlayerController(GetALocalPlayerController()).UpdatePerkOnInit();
 }
 
 defaultproperties

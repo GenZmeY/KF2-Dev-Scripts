@@ -26,13 +26,8 @@ simulated function AltFireMode()
 	{
 		return;
 	}
-	if (ReloadStatus == RS_Reloading)
-	{
-		return;
-	}
-	
 
-	if (AmmoCount[0] <= 1)
+	if (AmmoCount[0] == 1)
 	{
 		StartFire(DEFAULT_FIREMODE);
 	}
@@ -93,7 +88,14 @@ simulated state WeaponQuadBarrelFiring extends WeaponSingleFiring
 	simulated function BeginState(name PreviousStateName)
 	{
 		local vector UsedKickMomentum;
+		local KFMapInfo KFMI; 
 		Super.BeginState(PreviousStateName);
+
+		KFMI = KFMapInfo(WorldInfo.GetMapInfo());
+		if(KFMI != none && !KFMI.bAllowShootgunJump)
+		{
+			return;
+		}
 
 		// Push the player back when they fire both barrels
 		if (Instigator != none)

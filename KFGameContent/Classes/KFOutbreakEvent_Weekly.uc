@@ -100,7 +100,7 @@ defaultproperties
                                     (ClassToAdjust=class'KFGameContent.KFPawn_ZedSiren',bExplosiveDeath=true,ExplosionTemplate=KFGameExplosion'GP_Weekly_ARCH.PawnExplosionTemplate',ExplosionIgnoreClass=class'KFPawn_Monster'),
                                     (ClassToAdjust=class'KFGameContent.KFPawn_ZedStalker',bExplosiveDeath=true,ExplosionTemplate=KFGameExplosion'GP_Weekly_ARCH.PawnExplosionTemplate',ExplosionIgnoreClass=class'KFPawn_Monster'),
                                     (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpound',bStartEnraged=true,bExplosiveDeath=true,ExplosionTemplate=KFGameExplosion'GP_Weekly_ARCH.BigPawnExplosionTemplate',ExplosionIgnoreClass=class'KFPawn_Monster')
-                    )},
+                    )}
     )}
 
     //Zombies
@@ -310,8 +310,103 @@ defaultproperties
                                 (ClassToAdjust=class'KFGameContent.KFPawn_ZedMatriarch',BeefcakeScaleIncreases=(0.01,0.01,0.01,0.01),MaxBeefcake=1.25,BeefcakeHealthIncreases=(0.0,0.0,0.0,0.0),MaxBeefcakeHealth=1.0),
                                 (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpoundKing',BeefcakeScaleIncreases=(0.01,0.01,0.01,0.01),MaxBeefcake=1.25,BeefcakeHealthIncreases=(0.0,0.0,0.0,0.0),MaxBeefcakeHealth=1.0),
 								(ClassToAdjust=class'KFGameContent.KFPawn_ZedBloatKing',BeefcakeScaleIncreases=(0.01,0.01,0.01,0.01),MaxBeefcake=1.25,BeefcakeHealthIncreases=(0.0,0.0,0.0,0.0),MaxBeefcakeHealth=1.0)
-					)},
+					)}
     )}
+
+    //Blood Thirst
+    SetEvents[8]={(
+                    EventDifficulty = 1, //2
+                    GameLength = GL_Normal,
+                    GlobalDamageTickRate = 2.0,
+                    GlobalDamageTickAmount = 6.0, //5.0,
+                    bHealAfterKill = true,
+                    bCannotBeHealed = true,
+                    bGlobalDamageAffectsShield = false,
+                    bHealPlayerAfterWave = true,
+                    bApplyGlobalDamageBossWave = false,
+                    DamageDelayAfterWaveStarted = 10.0f,
+                    SpawnRateMultiplier=6.0, //8.0,
+                    ZedsToAdjust={(
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedPatriarch',HealthScale=1.0,DamageDealtScale=0.75),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedMatriarch',HealthScale=1.0,DamageDealtScale=0.75),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedHans',HealthScale=1.0,DamageDealtScale=0.75),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpoundKing',HealthScale=1.0,DamageDealtScale=0.75),
+									(ClassToAdjust=class'KFGameContent.KFPawn_ZedBloatKing',HealthScale=1.0,DamageDealtScale=0.75)
+                    )},
+                    ZedsToAdjust={(
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Cyst',HealByKill=5,HealByAssistance=3, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Alpha',HealByKill=5,HealByAssistance=3, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_AlphaKing',HealByKill=10,HealByAssistance=7, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Slasher',HealByKill=5,HealByAssistance=3, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedSiren',HealByKill=12,HealByAssistance=8, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedStalker',HealByKill=7,HealByAssistance=5, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedCrawler',HealByKill=5,HealByAssistance=3, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedCrawlerKing',HealByKill=10,HealByAssistance=7, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedGorefast',HealByKill=7,HealByAssistance=5, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedGorefastDualBlade',HealByKill=10,HealByAssistance=7, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedBloat',HealByKill=16, HealByAssistance=11, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedHusk',HealByKill=12,HealByAssistance=8, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedDAR_EMP',HealByKill=10,HealByAssistance=7, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedDAR_Laser',HealByKill=10,HealByAssistance=7, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedDAR_Rocket',HealByKill=10,HealByAssistance=7, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedScrake',HealByKill=50,HealByAssistance=35, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpound',HealByKill=60,HealByAssistance=42, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpoundMini',HealByKill=36,HealByAssistance=25, InitialGroundSpeedModifierScale=1.20)
+					)}
+    
+    )}
+
+
+    //Coliseum
+    SetEvents[9]={(
+                    EventDifficulty=3,
+                    GameLength=GL_Normal,
+					PerksAvailableList=(class'KFPerk_Berserker'),
+                    SpawnWeaponList=KFGFxObject_TraderItems'GP_Trader_ARCH.ColliseumWeeklySpawnList',
+					bSpawnWeaponListAffectsSecondaryWeapons=true,
+                    TraderWeaponList=KFGFxObject_TraderItems'GP_Trader_ARCH.ColliseumWeeklyTraderList',
+					bColliseumSkillConditionsActive=true,
+					bModifyZedTimeOnANearZedKill=true,
+					ZedTimeOnANearZedKill=0.6,
+                    PickupResetTime=PRS_Wave,
+                    OverrideItemPickupModifier=0,
+                    DoshOnKillGlobalModifier=0.7,
+                    SpawnRateMultiplier=2.0,
+                    WaveAICountScale=(0.75, 0.7, 0.65, 0.6, 0.55, 0.5),
+                    ZedsToAdjust={(
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedPatriarch',HealthScale=0.75,DamageDealtScale=0.6),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedMatriarch',HealthScale=0.75,DamageDealtScale=0.6),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedHans',HealthScale=0.75,DamageDealtScale=0.6),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpoundKing',HealthScale=0.75,DamageDealtScale=0.6),
+									(ClassToAdjust=class'KFGameContent.KFPawn_ZedBloatKing',HealthScale=0.75,DamageDealtScale=0.6),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedScrake',HealthScale=0.75,DamageDealtScale=0.6),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpound',HealthScale=0.75,DamageDealtScale=0.6),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpoundMini',HealthScale=0.75,DamageDealtScale=0.6),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedGorefast',HealthScale=1.0,DamageDealtScale=0.75),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedGorefastDualBlade',HealthScale=1.0,DamageDealtScale=0.75),                             
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Cyst',HealthScale=1.0,DamageDealtScale=0.75),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Alpha',HealthScale=1.0,DamageDealtScale=0.75),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_AlphaKing',HealthScale=1.0,DamageDealtScale=0.75),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Slasher',HealthScale=1.0,DamageDealtScale=0.75),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedBloat',HealthScale=1.0,DamageDealtScale=0.75),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedSiren',HealthScale=1.0,DamageDealtScale=0.75)
+                    )},
+                    SpawnReplacementList={(
+                                            (SpawnEntry=AT_AlphaClot,NewClass=(class'KFGameContent.KFPawn_ZedGorefast'),PercentChance=0.1),
+                                            (SpawnEntry=AT_SlasherClot,NewClass=(class'KFGameContent.KFPawn_ZedGorefast'),PercentChance=0.1),
+                                            (SpawnEntry=AT_Crawler,NewClass=(class'KFGameContent.KFPawn_ZedGorefast'),PercentChance=1.0),
+                                            (SpawnEntry=AT_Stalker,NewClass=(class'KFGameContent.KFPawn_ZedGorefast'),PercentChance=1.0),
+                                            (SpawnEntry=AT_Bloat,NewClass=(class'KFGameContent.KFPawn_ZedFleshpoundMini'),PercentChance=0.5),
+                                            (SpawnEntry=AT_Siren,NewClass=(class'KFGameContent.KFPawn_ZedFleshpoundMini'),PercentChance=0.5),
+                                            (SpawnEntry=AT_Husk,NewClass=(class'KFGameContent.KFPawn_ZedScrake'),PercentChance=1.0),
+                                            (SpawnEntry=AT_GoreFast,NewClass=(class'KFGameContent.KFPawn_ZedGorefastDualBlade'),PercentChance=0.3),
+                                            (SpawnEntry=AT_Scrake,NewClass=(class'KFGameContent.KFPawn_ZedFleshpound'),PercentChance=0.5)
+                                            
+                    )}
+
+    )}
+
+
 
     //Test events from here down.  These don't end up in the regular rotation.
     //      The override ID starts from one higher than the last SetEvents entry above.

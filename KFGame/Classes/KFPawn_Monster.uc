@@ -88,6 +88,10 @@ var private const 	float	XPValues[4];
 /** List of sockets representing weakpoint zone locations */
 var() array<name> WeakSpotSocketNames;
 
+/** Heal after die */
+var int	HealByKill;
+var int	HealByAssistance;
+
 /**
  * Information on resistant or vulnerable damage types
  * @todo: This is all static data so we should consider moving to the archetype
@@ -318,8 +322,11 @@ var protected const float BlockSprintSpeedModifier;
 /** The last time a successful block ended */
 var transient float LastBlockTime;
 
+/** Multiplier applied to the vortex attraction force */
+var protected float VortexAttracionModifier;
+
 var				float	KnockedDownBySonicWaveOdds;
-var 			bool 				bCloakOnMeleeEnd;
+var 			bool 	bCloakOnMeleeEnd;
 var				bool	bIsCloakingSpottedByLP;
 var	repnotify	bool	bIsCloakingSpottedByTeam;
 var				float	LastSpottedStatusUpdate;
@@ -2366,6 +2373,11 @@ function BleedOutTimer()
 		`log(GetFuncName() @ "LastHitBy" @ LastHitBy, bLogTakeDamage);
 		Died(LastHitBy, class'KFDT_Bleeding', Location);
 	}
+}
+
+function float GetVortexAttractionModifier ()
+{
+	return VortexAttracionModifier;
 }
 
 /** Applies the rally buff and spawns a rally effect */
@@ -4852,4 +4864,6 @@ DefaultProperties
     Components.Add(HeadshotAkComponent0)
 
 	bSprintOverride=false
+
+	VortexAttracionModifier=1.0f
 }

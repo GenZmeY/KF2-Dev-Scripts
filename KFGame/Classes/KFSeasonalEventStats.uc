@@ -72,3 +72,4 @@ simulated function OnBossDied();
 simulated event OnWaveCompleted(class<GameInfo> GameClass, int Difficulty, int WaveNum);
 simulated event OnTriggerUsed(class<Trigger_PawnsOnly> TriggerClass);
 simulated event OnTryCompleteObjective(int ObjectiveIndex, int EventIndex);
+simulated function OnHitTaken();

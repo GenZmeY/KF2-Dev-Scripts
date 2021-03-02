@@ -425,6 +425,10 @@ const KFACHID_ElysiumHard						=	277;
 const KFACHID_ElysiumHellOnEarth				=	278;
 const KFACHID_ElysiumEndlessWaveFifteen			=	279;
 
+const KFACHID_Dystopia2029Hard                  =   280;
+const KFACHID_Dystopia2029HellOnEarth  			=   281;
+const KFACHID_Dystopia2029Collectibles 			=   282;
+
 /* __TW_ANALYTICS_ */
 var int PerRoundWeldXP;
 var int PerRoundHealXP;
@@ -1073,6 +1077,12 @@ function SavePersonalBest( EPersonalBests PersonalBestID, int Value )
 /*********************************************************************************************
 * @name Gameplay
 ********************************************************************************************* */
+
+private event AddToHitsTaken()
+{
+	SeasonalEventStats_OnHitTaken();
+}
+
 /**
  * @brief Add a kill and give some EXP tp the player
  * @param MonsterClass The killed monster's class
@@ -1792,6 +1802,14 @@ final native simulated event SeasonalEventStats_OnGameWon(class<GameInfo> GameCl
 
 final native simulated event SeasonalEventStats_OnGameEnd(class<GameInfo> GameClass);
 
+final simulated function SeasonalEventStats_OnHitTaken()
+{
+	if (SeasonalEventIsValid())
+	{
+		SeasonalEvent.OnHitTaken();
+	}
+}
+
 final simulated function SeasonalEventStats_OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT)
 {
 	if (SeasonalEventIsValid())
@@ -2062,6 +2080,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_Winchester1894, KFDT_Bludgeon_Winchester,KFDT_Ballistic_Winchester),CompletionAmount=5000)) //2000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Bow_Crossbow, KFDT_Bludgeon_Crossbow,KFDT_Piercing_Crossbow),CompletionAmount=7000)) //5000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_M14EBR, KFDT_Bludgeon_M14EBR,KFDT_Ballistic_M14EBR),CompletionAmount=9000)) //7000
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_SonicGun, KFDT_Bludgeon_HRG_SonicGun, KFDT_Ballistic_HRG_SonicGun_SonicBlastUncharged, KFDT_Ballistic_HRG_SonicGun_SonicBlastHalfCharged, KFDT_Ballistic_HRG_SonicGun_SonicBlastFullyCharged),CompletionAmount=7000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_RailGun, KFDT_Bludgeon_RailGun,KFDT_Ballistic_RailGun),CompletionAmount=5000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_CenterfireMB464, KFDT_Bludgeon_CenterfireMB464,KFDT_Ballistic_CenterfireMB464),CompletionAmount=7000)) //5000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_M99, KFDT_Bludgeon_M99,KFDT_Ballistic_M99),CompletionAmount=5000))
@@ -2203,6 +2222,9 @@ defaultproperties
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-ELYSIUM),CompletionAmount=1))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-ELYSIUM),CompletionAmount=2))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-ELYSIUM),CompletionAmount=3))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-DYSTOPIA2029),CompletionAmount=1))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-DYSTOPIA2029),CompletionAmount=2))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-DYSTOPIA2029),CompletionAmount=3))
 
     //Versus Damage
     //    Per design doc that I have right now, these are x class damage y players, not damage y amount

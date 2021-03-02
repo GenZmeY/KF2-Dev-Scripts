@@ -74,6 +74,8 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 {
 	local KFWeapon KFW;
 	local float TempDamage;
+	
+	super.ModifyDamageGiven(InDamage, DamageCauser, MyKFPM, DamageInstigator, DamageType, HitZoneIdx);
 
 	TempDamage = InDamage;
 
@@ -82,7 +84,7 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 		KFW = GetWeaponFromDamageCauser( DamageCauser );
 	}
 
-	if( (KFW != none && IsWeaponOnPerk( KFW,, self.class )) || (DamageType != none && IsDamageTypeOnPerk( DamageType )) )
+	if( (KFW != none && (IsWeaponOnPerk( KFW,, self.class ) || IsDual9mm(KFW) || Is9mm(KFW))) || (DamageType != none && IsDamageTypeOnPerk( DamageType )) )
 	{
 		TempDamage += InDamage * GetPassiveValue( WeaponDamage, CurrentLevel );
 		if( IsRapidFireActive() )
@@ -97,7 +99,7 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 	//		have the perks so tied into using that, it's easier to just specifically fix commando here.
 	if( KFW != none && !DamageCauser.IsA('KFProj_Grenade'))
 	{
-		if( IsBackupActive() && (IsBackupWeapon( KFW ) || KFW.Class.Name == 'KFWeap_Pistol_Dual9mm') )
+		if( IsBackupActive() && (IsBackupWeapon( KFW ) || IsDual9mm( KFW )) )
 		{
 			`QALog( "Backup Damage" @ KFW @ GetPercentage( InDamage, InDamage * GetSkillValue( PerkSkills[ECommandoBackup] )), bLogPerk );
 			TempDamage += InDamage * GetSkillValue( PerkSkills[ECommandoBackup] );
@@ -234,7 +236,7 @@ function ModifyArmor( out byte MaxArmor )
  */
 simulated function bool GetUsingTactialReload( KFWeapon KFW )
 {
-	return ( IsTacticalReloadActive() && (IsWeaponOnPerk( KFW,, self.class ) || IsBackupWeapon( KFW )) );
+	return ( IsTacticalReloadActive() && (IsWeaponOnPerk( KFW,, self.class ) || IsBackupWeapon( KFW ) || IsDual9mm( KFW )) );
 }
 
 /**
@@ -278,7 +280,7 @@ simulated function ModifyMaxSpareAmmoAmount( KFWeapon KFW, out int MaxSpareAmmo,
 	local float TempMaxSpareAmmoAmount;
 
 	if( IsAmmoVestActive() && (IsWeaponOnPerk( KFW, TraderItem.AssociatedPerkClasses, self.class ) ||
-		IsBackupWeapon( KFW )) )
+		IsBackupWeapon( KFW ) || IsDual9mm( KFW )) )
 	{
 		TempMaxSpareAmmoAmount = MaxSpareAmmo;
 		TempMaxSpareAmmoAmount += MaxSpareAmmo * GetSkillValue( PerkSkills[ECommandoAmmoVest] );
@@ -302,7 +304,7 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 	local name StateName;
 	StateName = W.GetStateName();
 
-	if( IsProfessionalActive() && (IsWeaponOnPerk( W,, self.class ) || IsBackupWeapon( W )) )
+	if( IsProfessionalActive() && (IsWeaponOnPerk( W,, self.class ) || IsBackupWeapon( W ) || IsDual9mm( W )) )
 	{
 		if( StateName == 'Reloading' ||
 			StateName == 'AltReloading' )
@@ -315,7 +317,7 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 		}
 	}
 
-	if( CouldRapidFireActive() && (Is9mm(W) || IsWeaponOnPerk( W,, self.class )) && ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE )
+	if( CouldRapidFireActive() && (Is9mm(W) || IsDual9mm( W ) || IsWeaponOnPerk( W,, self.class )) && ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE )
 	{
 		return RapidFireFiringRate;
 	}

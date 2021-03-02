@@ -9,6 +9,8 @@
 class KFAfflictionManager extends Object within KFPawn
 	native(Pawn);
 
+const STUN_GUARANTEED_POWER = 10000.f;
+
 /** Abstracted body parts that can be associated with multiple zones */
 enum EHitZoneBodyPart
 {
@@ -246,11 +248,12 @@ protected function ProcessSpecialMoveAfflictions(KFPerk InstigatorPerk, vector H
     StumblePower *= StumbleModifier;
     StunPower *= StunModifier;
 
-	// [FFERRANDO @ SABER3D] INCAP MASTER NOW MODIFIES THE STUN POWER BY SETTING IT TO THE GIVEN VALUE
-    if (InstigatorPerk != None && InstigatorPerk.GetIncapMasterActive())
+	// [RMORENO @ SABER3D] //Overriding stun power with a High number so we can assure the stun independently of weapon, Zed resistances, body part hit. This does NOT ignores other factors like cooldowns.
+    if (InstigatorPerk != None && InstigatorPerk.IsStunGuaranteed( DamageType, HitZoneIdx ))
     {
-        StunPower += InstigatorPerk.GetStunPowerModifier( DamageType, HitZoneIdx );
+        StunPower = STUN_GUARANTEED_POWER;
     }
+
     // increment affliction power
 	if (KnockdownPower > 0 && CanDoSpecialmove(SM_Knockdown))
 	{

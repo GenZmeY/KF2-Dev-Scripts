@@ -415,7 +415,9 @@ DefaultProperties
 	Begin Object Name=KFPawnSkeletalMeshComponent
 		// Enabling kinematic for physics interaction while alive.  (see also MinDistFactorForKinematicUpdate)
 		bUpdateKinematicBonesFromAnimation=true
-	End Object
+		// Beam weapons (microwave gun, flamey things, etc.) won't hit his head without this
+		BlockNonZeroExtent=true
+End Object
 
 	// ---------------------------------------------
 	// Stats

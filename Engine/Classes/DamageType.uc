@@ -13,7 +13,8 @@ class DamageType extends object
 	native
 	abstract;
 
-var() bool					bArmorStops;				// does regular armor provide protection against this damage
+var() bool					bArmorStops;				// does regular armor provide protection against this damage (only affects KFPawn_Human)
+var   float					ArmorDamageModifier;		// modifier for armor damage (only affects KFPawn_Monster)
 
 var   bool					bCausedByWorld;				//this damage was caused by the world (falling off level, into lava, etc)
 var   bool					bExtraMomentumZ;			// Add extra Z to momentum on walking pawns to throw them up into the air
@@ -54,6 +55,7 @@ static function float VehicleDamageScalingFor(Vehicle V)
 defaultproperties
 {
 	bArmorStops=true
+	ArmorDamageModifier=1
 	KDamageImpulse=800
 	VehicleDamageScaling=+1.0
 	VehicleMomentumScaling=+1.0

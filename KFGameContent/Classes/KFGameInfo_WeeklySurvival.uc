@@ -129,6 +129,13 @@ function SetPickupItemList()
         //So many loops
         foreach AllActors(class'KFPickupFactory_Item', ItemFactory)
         {
+            //we dont want item pickups, so kiss them goodbye
+            if(OutbreakEvent.ActiveEvent.OverrideItemPickupModifier == 0)
+            {
+                ItemFactory.ShutDown();
+                ItemFactory.ItemPickups.Remove(0, ItemFactory.ItemPickups.Length);
+                continue;
+            }
             foreach OutbreakEvent.ActiveEvent.TraderWeaponList.SaleItems(TraderItem)
             {
                 for (Idx = ItemFactory.ItemPickups.Length - 1; Idx >= 0; --Idx)
@@ -211,15 +218,81 @@ function ResetPermanentZed()
     }
 }
 
+function float GetAdjustedAIDoshValue( class<KFPawn_Monster> MonsterClass )
+{
+	return super.GetAdjustedAIDoshValue(MonsterClass) * OutbreakEvent.ActiveEvent.DoshOnKillGlobalModifier;
+}
+
+protected function ScoreMonsterKill( Controller Killer, Controller Monster, KFPawn_Monster MonsterPawn )
+{
+    super.ScoreMonsterKill(Killer, Monster, MonsterPawn);
+
+	if(OutbreakEvent.ActiveEvent.bHealAfterKill)
+    {
+    	if( MonsterPawn != none && MonsterPawn.DamageHistory.Length > 0 )
+		{
+			HealAfterKilling( MonsterPawn, Killer );
+        }
+	}
+}
+
+
+/** Heal players after a Zed was killed, based in more heal to the player that was the killer and less heal to the players that damaged the Zed */
+function HealAfterKilling(KFPawn_Monster MonsterPawn , Controller Killer)
+{
+	local int i;
+	local KFPlayerController KFPC;
+	local KFPlayerReplicationInfo DamagerKFPRI;
+    local array<DamageInfo> DamageHistory;
+    local array<KFPlayerController> Attackers;
+    local KFPawn_Human PawnHuman;
+
+    DamageHistory = MonsterPawn.DamageHistory;
+
+	for ( i = 0; i < DamageHistory.Length; i++ )
+	{
+		if( DamageHistory[i].DamagerController != none
+			&& DamageHistory[i].DamagerController.bIsPlayer
+			&& DamageHistory[i].DamagerPRI.GetTeamNum() == 0
+			&& DamageHistory[i].DamagerPRI != none )
+		{
+			DamagerKFPRI = KFPlayerReplicationInfo(DamageHistory[i].DamagerPRI);
+			if( DamagerKFPRI != none )
+			{
+                KFPC = KFPlayerController(DamagerKFPRI.Owner);
+                if( KFPC != none )
+                {
+                    if(Attackers.Find(KFPC) < 0)
+                    {
+                    	PawnHuman = KFPawn_Human(KFPC.Pawn);
+                        Attackers.AddItem(KFPC);
+                        if( KFPC == Killer )
+                        {
+                            `Log("Heal by Kill: "$MonsterPawn.HealByKill);
+            				PawnHuman.HealDamageForce(MonsterPawn.HealByKill, KFPC, class'KFDT_Healing', false, false );
+                            
+                            if( KFPawn_ZedFleshpound(MonsterPawn) != none || KFPawn_ZedScrake(MonsterPawn) != none )
+                            {
+                                KFPC.ReceivePowerUp(class'KFPowerUp_HellishRage_NoCostHeal');
+                            }
+                        }
+                        else
+                        {
+                            `Log("Heal by Assistance: "$MonsterPawn.HealByAssistance);
+            				PawnHuman.HealDamageForce(MonsterPawn.HealByAssistance, KFPC, class'KFDT_Healing', false, false );
+                        }
+                    }
+				}
+			}
+		}
+	}
+
+}
+
+
 function StartMatch()
 {
     super.StartMatch();
-
-    //Set timer for global ticking damage
-    if (OutbreakEvent.ActiveEvent.GlobalDamageTickRate > 0.f && OutbreakEvent.ActiveEvent.GlobalDamageTickAmount > 0.f)
-    {
-        SetTimer(OutbreakEvent.ActiveEvent.GlobalDamageTickRate, true, 'ApplyGlobalDamage', OutbreakEvent);
-    }
 }
 
 function CreateDifficultyInfo(string Options)
@@ -321,6 +394,8 @@ function TickZedTime( float DeltaTime )
 
 function WaveEnded(EWaveEndCondition WinCondition)
 {
+    local KFPawn_Human Pawn;
+
     super.WaveEnded(WinCondition);
 
     if (OutbreakEvent.ActiveEvent.bPermanentZedTime && ZedTimeRemaining > ZedTimeBlendOutTime)
@@ -328,6 +403,16 @@ function WaveEnded(EWaveEndCondition WinCondition)
         ClearZedTimePCTimers();
         ZedTimeRemaining = ZedTimeBlendOutTime;
     }
+
+    if (OutbreakEvent.ActiveEvent.bHealPlayerAfterWave)
+    {
+        foreach WorldInfo.AllPawns(class'KFPawn_Human', Pawn)
+	    {
+		    Pawn.Health = Pawn.HealthMax;
+	    }
+    }
+
+    DisableGlobalDamage();
 }
 
 function ClearZedTimePCTimers()
@@ -360,6 +445,24 @@ function EndOfMatch(bool bVictory)
 function StartWave()
 {
     super.StartWave();
+
+    // Stop Global Damage for boss wave
+    if (!OutbreakEvent.ActiveEvent.bApplyGlobalDamageBossWave && WaveNum == WaveMax)
+    {
+        DisableGlobalDamage();
+    }
+    // In case there was a previous boss wave. Not sure if possible
+    else if (OutbreakEvent.ActiveEvent.GlobalDamageTickRate > 0.f && OutbreakEvent.ActiveEvent.GlobalDamageTickAmount > 0.f)
+    {
+        if(!IsTimerActive('EnableGlobalDamage', self))
+        {
+            SetTimer(OutbreakEvent.ActiveEvent.DamageDelayAfterWaveStarted, false, 'EnableGlobalDamage', self);
+        }
+
+            // Check if we are in the zed frustration time to stop applying damage
+        SetTimer(1.0f, true, 'CheckForZedFrustrationMode', self);
+    }
+
     if (OutbreakEvent.ActiveEvent.bPermanentZedTime)
     {
         //If we're a boss wave, wait until the camera animation is going
@@ -377,6 +480,40 @@ function StartWave()
     if (OutbreakEvent.ActiveEvent.AdditionalBossWaveInfo != none && WaveNum == WaveMax)
     {
         SetTimer(OutbreakEvent.ActiveEvent.AdditionalBossWaveStartDelay, true, nameof(SpawnBossWave));
+    }
+
+}
+
+function EnableGlobalDamage()
+{
+    MyKFGRI.SetGlobalDamage(true);
+    SetTimer(OutbreakEvent.ActiveEvent.GlobalDamageTickRate, true, 'ApplyGlobalDamage', OutbreakEvent);
+}
+
+function DisableGlobalDamage()
+{
+    MyKFGRI.SetGlobalDamage(false);
+
+    if (IsTimerActive('ApplyGlobalDamage', OutbreakEvent))
+    {
+        ClearTimer('ApplyGlobalDamage', OutbreakEvent);
+    }
+
+    if (IsTimerActive('EnableGlobalDamage', self))
+    {
+        ClearTimer('EnableGlobalDamage', self);
+    }
+}
+
+function CheckForZedFrustrationMode()
+{
+    if(IsTimerActive('ApplyGlobalDamage', OutbreakEvent))
+    {
+        if(class'KFAIController'.default.FrustrationThreshold > 0 && MyKFGRI.AIRemaining <= class'KFAIController'.default.FrustrationThreshold)
+        {
+            DisableGlobalDamage();
+            ClearTimer('CheckForZedFrustrationMode', self);
+        }
     }
 }
 
@@ -477,6 +614,8 @@ function InitAllPickups()
     {
         NumWeaponPickups = ItemPickups.Length * (OutbreakEvent.ActiveEvent.OverrideItemPickupModifier >= 0.f ? OutbreakEvent.ActiveEvent.OverrideItemPickupModifier : DifficultyInfo.GetItemPickupModifier());
 		NumAmmoPickups = AmmoPickups.Length * (OutbreakEvent.ActiveEvent.OverrideAmmoPickupModifier >= 0.f ? OutbreakEvent.ActiveEvent.OverrideAmmoPickupModifier : DifficultyInfo.GetAmmoPickupModifier());
+        `log("OutbreakEvent.ActiveEvent.OverrideItemPickupModifier"@OutbreakEvent.ActiveEvent.OverrideItemPickupModifier);
+        `log("NumWeaponPickups"@NumWeaponPickups);
 
 `if(`__TW_SDK_)
 	if( BaseMutator != none )
@@ -528,6 +667,7 @@ function ResetPickups( array<KFPickupFactory> PickupList, int NumPickups )
     else if (OutbreakEvent.ActiveEvent.WaveItemPickupModifiers.Length >= WaveMax && KFPickupFactory_Item(PickupList[0]) != none)
     {
         NumPickups *= OutbreakEvent.ActiveEvent.WaveItemPickupModifiers[WaveNum];
+        if(OutbreakEvent.ActiveEvent.OverrideItemPickupModifier == 0) NumPickups = 0;
         super(KFGameInfo).ResetPickups(PickupList, NumPickups);
     }
     //Otherwise, use normal path
@@ -560,7 +700,25 @@ function bool AllowPrimaryWeapon(string ClassPath)
     {
         foreach OutbreakEvent.ActiveEvent.SpawnWeaponList.SaleItems(Item)
         {
-            if (Item.ClassName == name(ClassPath))
+            if ( name(Item.WeaponDef.default.WeaponClassPath) == name(ClassPath) )
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+    return true;
+}
+
+/** Whether or not a specific secondary weapon is allowed.  Called at player spawn time while setting inventory. */
+function bool AllowSecondaryWeapon(string ClassPath)
+{
+    local STraderItem Item;
+    if (OutbreakEvent.ActiveEvent.SpawnWeaponList != none && OutbreakEvent.ActiveEvent.bSpawnWeaponListAffectsSecondaryWeapons)
+    {
+        foreach OutbreakEvent.ActiveEvent.SpawnWeaponList.SaleItems(Item)
+        {
+            if ( name(Item.WeaponDef.default.WeaponClassPath) == name(ClassPath) )
             {
                 return true;
             }
@@ -578,6 +736,27 @@ function int AdjustStartingGrenadeCount(int CurrentCount)
         return 0;
     }
     return CurrentCount;
+}
+
+/** Allows gametype to validate a perk for the current match */
+function bool IsPerkAllowed(class<KFPerk> PerkClass)
+{
+	Local int index;
+
+	if(OutbreakEvent.ActiveEvent.PerksAvailableList.length == 0)
+	{
+		return true;
+	}
+
+	for( index=0 ; index<OutbreakEvent.ActiveEvent.PerksAvailableList.length ; index++)
+	{
+		if(OutbreakEvent.ActiveEvent.PerksAvailableList[index] == PerkClass)
+		{
+			return true;
+		}
+	}
+
+    return false;
 }
 
 function RestartPlayer(Controller NewPlayer)
@@ -608,6 +787,7 @@ function DoDeathExplosion(Pawn DeadPawn, KFGameExplosion ExplosionTemplate, clas
         }
     }
 }
+
 
 defaultproperties
 {

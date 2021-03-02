@@ -39,7 +39,7 @@ defaultproperties
 	// Ammo
 	MagazineCapacity[0]=30
 	SpareAmmoCapacity[0]=270
-	InitialSpareMags[0]=4
+	InitialSpareMags[0]=3 //4
 	bCanBeReloaded=true
 	bReloadFromMagazine=true
 
@@ -62,7 +62,7 @@ defaultproperties
     HippedRecoilModifier=1.5
 
     // Inventory / Grouping
-	InventorySize=6
+	InventorySize=5 //6
 	GroupPriority=50
 	WeaponSelectTexture=Texture2D'ui_weaponselect_tex.UI_WeaponSelect_Bullpup'
    	AssociatedPerkClasses(0)=class'KFPerk_Commando'
@@ -75,7 +75,7 @@ defaultproperties
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_Bullpup'
 	FireInterval(DEFAULT_FIREMODE)=+0.0909 // 660 RPM
 	Spread(DEFAULT_FIREMODE)=0.0085
-	InstantHitDamage(DEFAULT_FIREMODE)=30.0 //25
+	InstantHitDamage(DEFAULT_FIREMODE)=32.0 //30.0 //25
 	FireOffset=(X=30,Y=4.5,Z=-5)
 
 	// ALT_FIREMODE
@@ -85,7 +85,7 @@ defaultproperties
 	WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_Bullet_AssaultRifle'
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Ballistic_Bullpup'
 	FireInterval(ALTFIRE_FIREMODE)=+0.1
-	InstantHitDamage(ALTFIRE_FIREMODE)=30.0 //25
+	InstantHitDamage(ALTFIRE_FIREMODE)=32.0 //30.0 //25
 	Spread(ALTFIRE_FIREMODE)=0.0085
 
 	// BASH_FIREMODE

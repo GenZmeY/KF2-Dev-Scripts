@@ -53,6 +53,11 @@ enum EBerserkPerkSkills
 	EBerserkerSpartan
 };
 
+/** The last time a zed was bumped using battering ram */
+var float LastBumpTime;
+/** The unique list of actors that have been bumped before the last cooldown reset */
+var array<Actor> CurrentBumpedActors;
+
 cpptext
 {
 	// specific abilities
@@ -71,7 +76,7 @@ function ApplySkillsToPawn()
 
 	if( OwnerPawn != none )
 	{
-		OwnerPawn.bMovesFastInZedTime = IsFastInZedTime();
+		OwnerPawn.bMovesFastInZedTime = IsFastInZedTime() || IsSWATEnforcerActiveForWeekly();
 	}
 }
 
@@ -112,11 +117,15 @@ reliable client function ClientClearPerkEffects()
 event Tick( float DeltaTime )
 {
 	super.Tick( DeltaTime );
-
 	if( IsNinjaActive() )
 	{
 		TickRegen( DeltaTime );
 	}
+}
+
+simulated event float GetZedTimeSpeedScale()
+{
+	return GetZedTimeSpeedScaleForColliseum();
 }
 
 /*********************************************************************************************
@@ -135,6 +144,8 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 {
 	local KFWeapon MyKFWeapon;
 	local float TempDamage;
+
+	super.ModifyDamageGiven(InDamage, DamageCauser, MyKFPM, DamageInstigator, DamageType, HitZoneIdx);
 
 	TempDamage = InDamage;
 
@@ -540,6 +551,7 @@ function NotifyZedTimeStarted()
 	local KFPlayerController KFPC;
 	local KFPowerUp PowerUp;
 	local KFAIController KFAIC;
+	local KFGameInfo GameInfo;
 	local bool bScaredAI;
 	local bool bCannotBeHealed;
 
@@ -549,9 +561,15 @@ function NotifyZedTimeStarted()
 		if( KFPC != none )
 		{
 			PowerUp = KFPC.GetPowerUp();
-			bCannotBeHealed = PowerUp != none && !PowerUp.CanBeHealedWhilePowerUpIsActive;
+			bCannotBeHealed = (PowerUp != none && !PowerUp.CanBeHealedWhilePowerUpIsActive);
+
+			GameInfo = KFGameInfo(WorldInfo.Game);
+			if(GameInfo != none)
+			{
+				bCannotBeHealed = bCannotBeHealed ||(GameInfo.OutbreakEvent != none && GameInfo.OutbreakEvent.ActiveEvent.bCannotBeHealed);
+			}
 		}
-		
+
 		if( bCannotBeHealed == false )
 		{
 			OwnerPawn.Health += OwnerPawn.HealthMax * GetSkillValue( PerkSkills[EBerserkerRage] );
@@ -637,10 +655,10 @@ private static function float GetParryDamageModifier()
 {
 	return default.ParryDamageReduction;
 }
+
 /*********************************************************************************************
 * @name	 Getters / Setters
 ********************************************************************************************* */
-
 
 /**
  * @brief Checks if the fortitude skill is active
@@ -789,7 +807,7 @@ function bool CanNotBeGrabbed()
  */
 simulated private event bool IsRageActive()
 {
-	return PerkSkills[EBerserkerRage].bActive && WorldInfo.TimeDilation < 1.f && IsPerkLevelAllowed(EBerserkerRage);
+	return PerkSkills[EBerserkerRage].bActive && WorldInfo.TimeDilation < 1.f && IsPerkLevelAllowed(EBerserkerRage) && !ShouldDisableZedTimeSkillsForWeekly();
 }
 
 /**
@@ -799,12 +817,12 @@ simulated private event bool IsRageActive()
  */
 simulated final private event bool IsSpartanActive()
 {
-	return PerkSkills[EBerserkerSpartan].bActive && WorldInfo.TimeDilation < 1.f && IsPerkLevelAllowed(EBerserkerSpartan);
+	return PerkSkills[EBerserkerSpartan].bActive && WorldInfo.TimeDilation < 1.f && IsPerkLevelAllowed(EBerserkerSpartan) && !ShouldDisableZedTimeSkillsForWeekly();
 }
 
 simulated private event bool CouldSpartanBeActive()
 {
-	return PerkSkills[EBerserkerSpartan].bActive && IsPerkLevelAllowed(EBerserkerSpartan);
+	return PerkSkills[EBerserkerSpartan].bActive && IsPerkLevelAllowed(EBerserkerSpartan) && !ShouldDisableZedTimeSkillsForWeekly();
 }
 
 /**
@@ -814,7 +832,12 @@ simulated private event bool CouldSpartanBeActive()
  */
 simulated function bool IsFastInZedTime()
 {
-	return PerkSkills[EBerserkerSpartan].bActive && IsPerkLevelAllowed(EBerserkerSpartan);
+	return PerkSkills[EBerserkerSpartan].bActive && IsPerkLevelAllowed(EBerserkerSpartan) && !ShouldDisableZedTimeSkillsForWeekly();
+}
+
+simulated function bool IsFastInZedTimeOutbreak()
+{
+	return ShouldDisableZedTimeSkillsForWeekly();
 }
 
 /**
@@ -825,12 +848,81 @@ simulated function bool IsFastInZedTime()
  */
 simulated event bool ShouldUseFastInstigatorDilation(KFWeapon Weap)
 {
-    if (PerkSkills[EBerserkerSpartan].bActive && Weap != none && IsPerkLevelAllowed(EBerserkerSpartan))
+    if (PerkSkills[EBerserkerSpartan].bActive && Weap != none && IsPerkLevelAllowed(EBerserkerSpartan) && !ShouldDisableZedTimeSkillsForWeekly())
     {
         return Weap.GetWeaponPerkClass(default.Class) == default.Class;
     }
 
     return false;
+}
+
+/*********************************************************************************************
+* @name	 Special Weekly Modes
+********************************************************************************************* */
+
+simulated event float GetZedTimeSpeedScaleForColliseum()
+{
+	return IsSWATEnforcerActiveForWeekly() ? class'KFPerk_Swat'.default.SWATEnforcerZedTimeSpeedScale : 1.f;
+}
+
+function bool ShouldDisableZedTimeSkillsForWeekly()
+{
+	return MyKFGI != none && MyKFGI.OutbreakEvent != none && MyKFGI.OutbreakEvent.ActiveEvent.bColliseumSkillConditionsActive;
+}
+
+function bool IsSWATEnforcerActiveForWeekly()
+{
+	return MyKFGI != none && MyKFGI.OutbreakEvent != none && MyKFGI.OutbreakEvent.ActiveEvent.bColliseumSkillConditionsActive;
+}
+
+simulated function bool ShouldKnockDownOnBump()
+{
+	return IsSWATEnforcerActiveForWeekly() && WorldInfo.TimeDilation < 1.f;
+}
+
+simulated function OnBump(Actor BumpedActor, KFPawn_Human BumpInstigator, vector BumpedVelocity, rotator BumpedRotation)
+{
+	local KFPawn_Monster KFPM;
+	local bool CanBump;
+
+	if (ShouldKnockDownOnBump() && Normal(BumpedVelocity) dot Vector(BumpedRotation) > 0.7f)
+	{
+		KFPM = KFPawn_Monster(BumpedActor);
+		if (KFPM != none)
+		{
+			// cooldown so that the same zed can't be bumped multiple frames back to back
+			//	especially relevant if they can't be knocked down or stumbled so the player is always bumping them
+			if (WorldInfo.TimeSeconds - LastBumpTime > class'KFPerk_Swat'.default.BumpCooldown)
+			{
+				CurrentBumpedActors.length = 0;
+				CurrentBumpedActors.AddItem(BumpedActor);
+				CanBump = true;
+			}
+			// if still within the cooldown time, can still bump the actor as long as it hasn't been bumped yet
+			else if (CurrentBumpedActors.Find(BumpedActor) == INDEX_NONE)
+			{
+				CurrentBumpedActors.AddItem(BumpedActor);
+				CanBump = true;
+			}
+
+			LastBumpTime = WorldInfo.TimeSeconds;
+
+			if (CanBump)
+			{
+				if (KFPM.IsHeadless())
+				{
+					KFPM.TakeDamage(KFPM.HealthMax, BumpInstigator.Controller, BumpInstigator.Location,
+						Normal(vector(BumpedRotation)) * class'KFPerk_Swat'.default.BumpMomentum, class'KFPerk_Swat'.default.BumpDamageType);
+				}
+				else
+				{
+					KFPM.TakeDamage(class'KFPerk_Swat'.default.BumpDamageAmount, BumpInstigator.Controller, BumpInstigator.Location,
+						Normal(vector(BumpedRotation)) * class'KFPerk_Swat'.default.BumpMomentum, class'KFPerk_Swat'.default.BumpDamageType);
+					KFPM.Knockdown(BumpedVelocity * 3, vect(1, 1, 1), KFPM.Location, 1000, 100);
+				}
+			}
+		}
+	}
 }
 
 /*********************************************************************************************
@@ -926,11 +1018,11 @@ DefaultProperties
 	DamageResistance=(Name="Damage Resistance",Increment=0.03f,Rank=0,StartingValue=0.f,MaxValue=0.15f)
 	NightVision=(Name="Night Vision",Increment=0.f,Rank=0,StartingValue=0.f,MaxValue=0.f)
 
-	PerkSkills(EBerserkerFortitude)=(Name="Fortitude",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Fortitude",Increment=0.f,Rank=0,StartingValue=0.75,MaxValue=0.75)
+	PerkSkills(EBerserkerFortitude)=(Name="Fortitude",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Fortitude",Increment=0.f,Rank=0,StartingValue=1.0,MaxValue=1.0) //0.75
 	PerkSkills(EBerserkerNinja)=(Name="Ninja",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Ninja",Increment=0.f,Rank=0,StartingValue=0.2f,MaxValue=0.2f)
 	PerkSkills(EBerserkerVampire)=(Name="Vampire",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Vampire",Increment=0.f,Rank=0,StartingValue=4.f,MaxValue=4.f)
 	PerkSkills(EBerserkerSpeed)=(Name="Speed",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Speed",Increment=0.f,Rank=0,StartingValue=0.2f,MaxValue=0.2f)
-	PerkSkills(EBerserkerResistance)=(Name="Resistance",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_PoisonResistance",Increment=0.f,Rank=0,StartingValue=0.2f,MaxValue=0.2f)
+	PerkSkills(EBerserkerResistance)=(Name="Resistance",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_PoisonResistance",Increment=0.f,Rank=0,StartingValue=0.25f,MaxValue=0.25f) //0.2
 	PerkSkills(EBerserkerParry)=(Name="Parry",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Parry",Increment=0.f,Rank=0,StartingValue=0.35,MaxValue=0.35)
 	PerkSkills(EBerserkerSmash)=(Name="Smash",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Smash",Increment=0.f,Rank=0,StartingValue=0.5f,MaxValue=0.5f)
 	PerkSkills(EBerserkerFury)=(Name="Fury",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Intimidate",Increment=0.f,Rank=0,StartingValue=0.3f,MaxValue=0.3f)

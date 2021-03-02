@@ -703,6 +703,12 @@ var int BeginningRoundVaultAmount;
 var transient	float 	NoGoStartTime;
 var transient 	bool	bNoGoActive;
 
+/*********************************************************************************************
+ * @name Profile Stored values
+********************************************************************************************* */
+
+var transient byte StoredLocalUserNum;
+
 cpptext
 {
 	virtual UBOOL Tick( FLOAT DeltaSeconds, ELevelTick TickType );
@@ -821,6 +827,32 @@ simulated event PostBeginPlay()
 	{
 		OnlineSub.AddOnReadOnlineAvatarCompleteDelegate(OnAvatarReceived);
 		OnlineSub.AddOnReadOnlineAvatarByNameCompleteDelegate(OnAvatarURLPS4Received);
+	}
+}
+
+function UpdateVOIP()
+{
+	local KFPlayerInput KFPI;
+	local KFPlayerReplicationInfo KFPRI;
+
+	KFPRI = KFPlayerReplicationInfo( PlayerReplicationInfo );
+	KFPI  = KFPlayerInput(PlayerInput);
+
+	if(KFPI == None || KFPRI == None)
+	{
+		// Retry
+		SetTimer(0.1f, false, nameof(UpdateVOIP) );
+	}
+	else
+	{
+		if(KFPI.bRequiresPushToTalk)
+		{
+			ClientStopNetworkedVoice();
+		}
+		else
+		{
+			ClientStartNetworkedVoice();
+		}
 	}
 }
 
@@ -1018,6 +1050,7 @@ simulated event ReceivedPlayer()
 					KFEngine.LastURL.Op.Remove(i, 1);
 				}
 			}
+			UpdateVOIP();
 		}
 	}
 
@@ -1512,11 +1545,14 @@ function OnReadProfileSettingsComplete(byte LocalUserNum,bool bWasSuccessful)
 	local KFProfileSettings Profile;
 	local KFPlayerInput KFInput;
 	local KFGameInfo KFGI;
+	local KFGameReplicationInfo KFGRI;
 	local KFGameEngine KFEngine;
 	local KFPlayerReplicationInfo KFPRI;
 	local string MatchmakingRegion;
 	local KFGoreManager GoreMgr;
 	local UniqueNetId LobbyId, Zero;
+
+	StoredLocalUserNum = LocalUserNum;
 
 	Profile = KFProfileSettings(OnlineSub.PlayerInterface.GetProfileSettings(LocalUserNum));
 	`QAlog(`location@`showvar(Profile)@`showvar(bWasSuccessful), true);
@@ -1648,10 +1684,56 @@ function OnReadProfileSettingsComplete(byte LocalUserNum,bool bWasSuccessful)
 	{
 		OnlineSub.GetLobbyInterface().LobbyInvite(LobbyId, Zero, true);
 	}
+	
+	// If the perk is not allowed for this game mode, search for one that is available starting from the index 0
+	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	if( KFGRI != none && !KFGRI.IsPerkAllowed(PerkList[SavedPerkIndex].PerkClass) )
+	{
+		SavedPerkIndex = 0;
+		for(SavedPerkIndex=0 ; SavedPerkIndex<PerkList.length ; SavedPerkIndex++)
+		{
+			if( KFGRI.IsPerkAllowed(PerkList[SavedPerkIndex].PerkClass) )
+			{
+				continue;
+			}
+		}
+		
+		// Save the new perk selected in the the profile settings
+		Profile.SetProfileSettingValueInt( KFID_SavedPerkIndex, SavedPerkIndex );
+	}
 
 	// Update our cached Emote Id
 	class'KFEmoteList'.static.RefreshCachedEmoteId();
 	class'KFHeadShotEffectList'.static.RefreshCachedHeadShotEffectId();
+}
+
+function UpdatePerkOnInit()
+{
+	local KFGameReplicationInfo KFGRI;
+	local KFProfileSettings Profile;
+
+	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+	
+	// If the perk is not allowed for this game mode, search for one that is available starting from the index 0
+	if( KFGRI != none && !KFGRI.IsPerkAllowed(PerkList[SavedPerkIndex].PerkClass) )
+	{
+		SavedPerkIndex = 0;
+		for(SavedPerkIndex=0 ; SavedPerkIndex<PerkList.length ; SavedPerkIndex++)
+		{
+			if( KFGRI.IsPerkAllowed(PerkList[SavedPerkIndex].PerkClass) )
+			{
+				continue;
+			}
+		}
+		
+		// Save the new perk selected in the the profile settings
+		Profile = KFProfileSettings(OnlineSub.PlayerInterface.GetProfileSettings(StoredLocalUserNum));
+		if( Profile != None )
+		{
+			Profile.SetProfileSettingValueInt( KFID_SavedPerkIndex, SavedPerkIndex );
+		}
+	}
 }
 
 
@@ -7268,6 +7350,13 @@ event  byte GetPerkLevelFromPerkList(Class<KFPerk> PerkClass)
 	return 0;
 }
 
+/** hit stat */
+function NotifyHitTaken()
+{
+	ClientNotifyHitTaken();
+}
+native reliable client private function ClientNotifyHitTaken();
+
 /** Kill stat */
 function AddZedKill( class<KFPawn_Monster> MonsterClass, byte Difficulty, class<DamageType> DT, bool bKiller )
 {
@@ -11493,6 +11582,22 @@ reliable client function DrawLocalizedTextOnHud(string Message, float DisplayTim
 	{
 	     MyGFxHUD.DisplayMapText(Message, DisplayTime, true);
 	}
+}
+
+function bool CanUseHealObject()
+{
+	local class<KFPowerUp> KFPowerUpClass;
+	local KFGameInfo GameInfo;
+	local bool CanHealPowerUp;
+	local bool CanHealGameMode;
+
+	GameInfo = KFGameInfo(WorldInfo.Game);
+	KFPowerUpClass = GetPowerUpClass();
+
+	CanHealPowerUp = KFPowerUpClass == none || KFPowerUpClass.default.CanBeHealedWhilePowerUpIsActive;
+	CanHealGameMode = GameInfo == none || GameInfo.OutbreakEvent == none || !GameInfo.OutbreakEvent.ActiveEvent.bCannotBeHealed;
+
+	return CanHealPowerUp && CanHealGameMode;
 }
 
 event OnLoginOnOtherPlatformDoneAndFriendsReady()

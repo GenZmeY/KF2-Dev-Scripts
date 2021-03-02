@@ -125,6 +125,8 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 	local KFWeapon KFW;
 	local float TempDamage;
 
+	super.ModifyDamageGiven(InDamage, DamageCauser, MyKFPM, DamageInstigator, DamageType, HitZoneIdx);
+
 	TempDamage = InDamage;
 
 	if( DamageCauser != none )
@@ -315,7 +317,7 @@ event Destroyed()
 simulated function bool GetUsingTactialReload( KFWeapon KFW )
 {
 	`QALog( "Tactical Reload Active =" @ (IsTacticalReloadActive() && IsWeaponOnPerk( KFW,, self.class )), bLogPerk );
-	return IsTacticalReloadActive() && (IsWeaponOnPerk( KFW, , self.class) || IsBackupWeapon( KFW ));
+	return IsTacticalReloadActive() && (IsWeaponOnPerk( KFW, , self.class) || IsBackupWeapon( KFW ) || IsDual9mm( KFW ));
 }
 
 /**
@@ -324,21 +326,27 @@ simulated function bool GetUsingTactialReload( KFWeapon KFW )
  */
 function float GetStunPowerModifier( optional class<DamageType> DamageType, optional byte HitZoneIdx )
 {
-	if( IsDamageTypeOnPerk(class<KFDamageType>(DamageType)) )
+	if( IsDamageTypeOnPerk(class<KFDamageType>(DamageType)) && IsStunActive())
 	{
-		if( HitZoneIdx == HZI_Head && GetZTStunActive() )
-		{
-			`QALog( "(ZT Stun)" @ GetSkillValue(PerkSkills[ESharpshooterZTStun]), bLogPerk );
-			return GetSkillValue( PerkSkills[ESharpshooterZTStun] );
-		}
-		else if( IsStunActive() )
-		{
-			`QALog( "(Stun)" @ GetSkillValue( PerkSkills[ESharpshooterStun] ), bLogPerk );
-        	return GetSkillValue( PerkSkills[ESharpshooterStun] );
-		}
+		`QALog( "(Stun)" @ GetSkillValue( PerkSkills[ESharpshooterStun] ), bLogPerk );
+		return GetSkillValue( PerkSkills[ESharpshooterStun] );
 	}
 
     return 0.f;
+}
+
+/**
+ * @brief skills and weapons can guarantee a stun
+ * @return true/false
+ */
+function bool IsStunGuaranteed( optional class<DamageType> DamageType, optional byte HitZoneIdx )
+{
+	if( IsDamageTypeOnPerk(class<KFDamageType>(DamageType)) && GetZTStunActive())
+	{
+		return bWasLastHitAHeadshot;
+	}
+
+    return false;
 }
 
 /**

@@ -26,18 +26,18 @@ defaultproperties
 
 	DoshValue=75 //200 //25 //50
 
-        // Stats
+    // Stats
     XPValues(0)=17
     XPValues(1)=22
     XPValues(2)=30
     XPValues(3)=34
 
-        Begin Object Name=MeleeHelper_0
+    Begin Object Name=MeleeHelper_0
         BaseDamage=49.f
         MaxHitRange=250.f
         MomentumTransfer=55000.f
         MyDamageType=class'KFDT_Bludgeon_Fleshpound'
-        End Object
+    End Object
 
 
 	DamageTypeModifiers.Add((DamageType=class'KFDT_Ballistic_Submachinegun', 	DamageScale=(0.62)))

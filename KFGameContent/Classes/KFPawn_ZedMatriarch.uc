@@ -692,6 +692,9 @@ function SetBattlePhase(int Phase)
 			ArmorInfo.ExplodeArmor(HEAD_ARMOR_IDX);
 			ArmorInfo.ExplodeArmor(CLAW_ARMOR_IDX);
 			ArmorInfo.UpdateArmorUI();
+			
+			// Forcing armor to be updated.
+			OnArmorZoneStatusUpdated();
 		}
 
 		DoStumble();

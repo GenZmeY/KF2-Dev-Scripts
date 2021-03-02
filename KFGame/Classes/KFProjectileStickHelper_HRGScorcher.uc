@@ -100,7 +100,7 @@ simulated function bool GetImpactResult(Actor HitActor, PrimitiveComponent HitCo
 		// NOTE: Door actors fall into this category!
 
 		// pass through meshes that can move
-		return !StaticMeshComp.CanBecomeDynamic();
+		return true;
 	}
 
 	KFP = KFPawn_Human(HitActor);
@@ -108,16 +108,16 @@ simulated function bool GetImpactResult(Actor HitActor, PrimitiveComponent HitCo
 	{
 		// bounce off of player pawns, stick to other pawns
 		return false;
-	}
+	}	
 
 	D = KFDestructibleActor(HitActor);
 
 	if (D != none)
 	{
-
+		
 		// don't react to client-side-only destructibles, stick to others
 		return D.ReplicationMode != RT_ClientSide;
-	}
+	}	
 
 
 	return true;

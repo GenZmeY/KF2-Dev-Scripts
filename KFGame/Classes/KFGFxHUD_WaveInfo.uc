@@ -12,6 +12,7 @@ class KFGFxHUD_WaveInfo extends GFxObject;
 
 /** Cached KFPlayerController */
 var KFGameReplicationinfo 				KFGRI;
+
 //
 var int LastWaveMax;
 //
@@ -50,10 +51,10 @@ function TickHud(float DeltaTime)
     {
 		if (KFGRI.bWaveIsActive && !KFGRI.bWaveStarted)
 		{
-			SetString("waitingForWaveStart", "-----");
+            SetString("waitingForWaveStart", "-----");
 		}
 		else if (!KFGRI.bWaveIsActive)
-		{
+        {
 			UpdateTraderTimeRemaining();
 		}
 		else
@@ -81,7 +82,6 @@ function UpdateWaveCount()
     {
         return;
     }
-
 
     // Max # of waves.
 	CurrentWaveMax = KFGRI.GetFinalWaveNum();
@@ -155,7 +155,6 @@ function UpdateTraderTimeRemaining()
 		}
     }
 }
-
 
 DefaultProperties
 {

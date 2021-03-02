@@ -1165,8 +1165,14 @@ function ResetAllPickups()
  	 	AllPickupFactories.AddItem( AmmoPickups[i] );
  	}
 
-	ResetPickups( ItemPickups, NumWeaponPickups );
-	ResetPickups( AmmoPickups, NumAmmoPickups );
+	if(NumWeaponPickups > 0 )
+	{
+		ResetPickups( ItemPickups, NumWeaponPickups );
+	}
+	if(NumAmmoPickups > 0)
+	{
+		ResetPickups( AmmoPickups, NumAmmoPickups );
+	}
 }
 
 /** Pick random pickup items to enable and put all others to sleep */
@@ -1632,10 +1638,22 @@ function bool AllowPrimaryWeapon(string ClassPath)
     return true;
 }
 
+/** Whether or not a specific secondary weapon is allowed.  Called at player spawn time while setting inventory. */
+function bool AllowSecondaryWeapon(string ClassPath)
+{
+    return true;
+}
+
 /** Allows gametype to adjust starting grenade count.  Called at player spawn time from GiveInitialGrenadeCount in the inventory. */
 function int AdjustStartingGrenadeCount(int CurrentCount)
 {
     return CurrentCount;
+}
+
+/** Allows gametype to validate a perk for the current match */
+function bool IsPerkAllowed(class<KFPerk> PerkClass)
+{
+    return true;
 }
 
 /************************************************************************************
@@ -2719,7 +2737,14 @@ function CheckZedTimeOnKill(Controller Killer, Controller KilledPlayer, Pawn Kil
 		// Handle monster/zed kills - increased probability if closer to the player
 		if( Killer != none && Killer.Pawn != none && VSizeSq(Killer.Pawn.Location - KilledPawn.Location) < 90000 ) // 3 meters
 		{
-			DramaticEvent(0.05);
+			if(OutbreakEvent != none && Role == ROLE_Authority && OutbreakEvent.ActiveEvent.bModifyZedTimeOnANearZedKill)
+			{
+				DramaticEvent(OutbreakEvent.ActiveEvent.ZedTimeOnANearZedKill);
+			}
+			else
+			{
+				DramaticEvent(0.05);
+			}
 		}
 		else
 		{

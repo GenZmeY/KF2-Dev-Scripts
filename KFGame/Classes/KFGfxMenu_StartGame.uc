@@ -202,7 +202,7 @@ static function class<KFGFxSpecialeventObjectivesContainer> GetSpecialEventClass
 	switch (SpecialEventID)
 	{
 		case SEI_Spring:
-			return class'KFGFxSpecialEventObjectivesContainer_Spring2020';
+			return class'KFGFxSpecialEventObjectivesContainer_Spring2021';
 		case SEI_Summer:
 			return class'KFGFxSpecialEventObjectivesContainer_Summer2020';
 		case SEI_Fall:
@@ -1480,6 +1480,8 @@ function BuildServerFilters(OnlineGameInterface GameInterfaceSteam, KFGFxStartGa
 	else
 	{
 		Search.AddServerFilter("version_match", string(class'KFGameEngine'.static.GetKFGameVersion()));
+		Search.TestAddBoolGametagFilter(GameTagFilters, true, 'bServerExiled', 0);//Consoles does NOT have this property, so only in PC matchmaking search variables has to be added
+		//TestAddBoolGametagFilter Explanation: if set to true the second param, it will add the property to the search filters. But this property may interest us to search it as "false" or "true" so that is the purpose of the fourth param.
 	}
 
 	if (OptionsComponent.GetMakeNewServer() || bAttemptingServerCreate )
