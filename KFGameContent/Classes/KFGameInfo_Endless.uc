@@ -170,6 +170,11 @@ function bool TrySetNextWaveSpecial()
 
 function WaveEnded(EWaveEndCondition WinCondition)
 {
+	if(!bWaveStarted)
+	{
+		return;
+	}
+
 	WaveMax = WaveNum + 2;
 	MyKFGRI.WaveMax = WaveMax;
 

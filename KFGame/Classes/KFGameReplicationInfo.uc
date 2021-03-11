@@ -775,7 +775,7 @@ simulated function EndGame()
 	bMatchHasBegun = false;
 	bMatchIsOver = true;
 
-	class'KFGameEngine'.static.RefreshOnlineGameData();
+	class'KFGameEngine'.static.RefreshOnlineGameData(false);
 }
 
 /* Welcome screen shenanigans */

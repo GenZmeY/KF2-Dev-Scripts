@@ -58,7 +58,7 @@ defaultproperties
 
 	bWarnAIWhenFired=true
 
-    Lifespan=1.5 //1.25
+    Lifespan=1.3 //1.5 //1.25
 	TouchTimeThreshhold=0.4
 
 	MaxSpeed=2000.0 //1400.0

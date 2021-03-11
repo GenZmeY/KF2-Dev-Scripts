@@ -145,8 +145,6 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 	local KFWeapon MyKFWeapon;
 	local float TempDamage;
 
-	super.ModifyDamageGiven(InDamage, DamageCauser, MyKFPM, DamageInstigator, DamageType, HitZoneIdx);
-
 	TempDamage = InDamage;
 
 	if( DamageCauser != none )

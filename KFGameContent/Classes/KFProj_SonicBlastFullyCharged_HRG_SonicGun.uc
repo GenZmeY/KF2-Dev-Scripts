@@ -43,9 +43,9 @@ defaultproperties
 
     Lifespan=10.0
 
-	MaxSpeed=10000.0 //7200.0
-	Speed=10000.0 //7200.0
-	TerminalVelocity=7200
+	MaxSpeed=12000.0	//10000.0 //7200.0
+	Speed=12000.0	//10000.0 //7200.0
+	TerminalVelocity=12000.0	//7200
 
     GravityScale=0.0//0.7
 

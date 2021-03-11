@@ -50,6 +50,8 @@ var	private const array<Name>	AdditionalOnPerkDTNames;
 /** The % chance that zed time will be activated when damage is done when the Zed Time perk skills are active */
 var float SkillZedTimeChance;
 
+var private transient bool bWasHeadshot;
+
 /*********************************************************************************************
 * @name	 Stats/XP
 ********************************************************************************************* */
@@ -125,8 +127,7 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 	local KFWeapon KFW;
 	local float TempDamage;
 
-	super.ModifyDamageGiven(InDamage, DamageCauser, MyKFPM, DamageInstigator, DamageType, HitZoneIdx);
-
+	bWasHeadshot = false;
 	TempDamage = InDamage;
 
 	if( DamageCauser != none )
@@ -138,6 +139,8 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 	{
 		if( MyKFPM != none && HitZoneIdx == HZI_HEAD )
 		{
+			bWasHeadshot = true;
+
 			`QALog( "(Headshot), damage mod=" $GetPassiveValue( HeadshotDamage, CurrentLevel ), bLogPerk );
 			TempDamage += InDamage * GetPassiveValue( HeadshotDamage, CurrentLevel );
 
@@ -343,7 +346,9 @@ function bool IsStunGuaranteed( optional class<DamageType> DamageType, optional 
 {
 	if( IsDamageTypeOnPerk(class<KFDamageType>(DamageType)) && GetZTStunActive())
 	{
-		return bWasLastHitAHeadshot;
+		// At this point, HitZoneIdx is already modified to point to the armor rather the pawn's body part. 
+		// Caching in ModifyDamageGiven if it was a headshot will be based on the original bone index.
+		return bWasHeadshot;
 	}
 
     return false;
@@ -725,4 +730,6 @@ DefaultProperties
    	CameraViewShakeScale=0.5
    	AutoBuyLoadOutPath=(class'KFWeapDef_Winchester1894', class'KFWeapDef_Crossbow', class'KFWeapDef_M14EBR', class'KFWeapDef_RailGun', class'KFWeapDef_M99')
    	AssistDoshModifier=1.1f
+
+	bWasHeadshot = false;
 }

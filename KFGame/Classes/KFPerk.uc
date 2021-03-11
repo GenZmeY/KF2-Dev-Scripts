@@ -190,17 +190,6 @@ var float 						HeadshotAccuracyHandicap;
 var array<string> PrestigeRewardItemIconPaths;
 
 /*********************************************************************************************
-* Transient vars
-********************************************************************************************* */
-/**
-	Indicates if the last hit was a headshot.
-	This is added for the crossbow to apply the stun on enemies only if hit in the head. 
-	Afflictions are calculated after adjusting the damage, so the bone is not necessary
-	indicating a headshot anymore. 
- */
-var transient bool bWasLastHitAHeadshot; 
-
-/*********************************************************************************************
 * Caching
 ********************************************************************************************* */
 var 		KFPlayerReplicationInfo	MyPRI;
@@ -1100,7 +1089,8 @@ simulated function ModifySprintSpeed( out float Speed ){ ModifySpeed( Speed ); }
 function FinalizeSpeedVariables();
 /** Kickback - recaoil bonus */
 simulated function ModifyRecoil( out float CurrentRecoilModifier, KFWeapon KFW );
-/** Allows to modify the damage taken */
+/** Allow perk to adjust damage given */
+function ModifyDamageGiven( out int InDamage, optional Actor DamageCauser, optional KFPawn_Monster MyKFPM, optional KFPlayerController DamageInstigator, optional class<KFDamageType> DamageType, optional int HitZoneIdx );
 function ModifyDamageTaken( out int InDamage, optional class<DamageType> DamageType, optional Controller InstigatedBy );
 /** Ammunition capacity and mag count increased */
 simulated function ModifyMagSizeAndNumber( KFWeapon KFW, out int MagazineCapacity, optional array< Class<KFPerk> > WeaponPerkClass, optional bool bSecondary=false, optional name WeaponClassname );
@@ -1400,12 +1390,6 @@ simulated function class<KFWeaponDefinition> GetGrenadeWeaponDef()
 	return default.GrenadeWeaponDef;
 }
 
-/** Allow perk to adjust damage given */
-function ModifyDamageGiven( out int InDamage, optional Actor DamageCauser, optional KFPawn_Monster MyKFPM, optional KFPlayerController DamageInstigator, optional class<KFDamageType> DamageType, optional int HitZoneIdx )
-{
-	bWasLastHitAHeadshot = MyKFPM != none && HitZoneIdx == HZI_HEAD;
-}
-
 /*********************************************************************************************
 * @name	 Debug
 ********************************************************************************************* */
@@ -1519,6 +1503,4 @@ DefaultProperties
 	AssistDoshModifier=1.f
 
 	PrestigeRewardItemIconPaths[0]="Xmas_UI.UI_Objectives_Xmas_Krampus"
-
-	bWasLastHitAHeadshot=false
 }

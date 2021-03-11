@@ -11,17 +11,16 @@ class KFDT_Piercing_Crossbow extends KFDT_Piercing
 	abstract
 	hidedropdown;
 
-var float HeadStunPower;
-
 defaultproperties
 {
 	KDamageImpulse=1500
 	KDeathUpKick=250
 	KDeathVel=150
 
+
+
     KnockdownPower=20
-	HeadStunPower=1000 // Stun ensured when hit in the head
-	StunPower=30       // Stun used otherwise
+	StunPower=101 //90
 	StumblePower=250
 	GunHitPower=100
 	MeleeHitPower=40

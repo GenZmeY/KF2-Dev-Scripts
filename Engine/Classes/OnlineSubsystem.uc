@@ -1558,6 +1558,7 @@ struct native ExchangeRuleSets
 var array<ExchangeRuleSets> ExchangeRuleSetList;
 
 native function OpenMarketPlaceSearch(ItemProperties Item);
+native function OpenMarketPlaceSearchBySignedOfferId(string SignedOfferId);
 native function OpenItemPurchaseOverlay(int SKU);
 native function OpenURL(string WebsiteLink);
 native function OpenGameStorePage();

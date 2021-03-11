@@ -35,7 +35,7 @@ defaultproperties
 
 	StumblePower=0
 	GunHitPower=30
-	MicrowavePower=75
+	MicrowavePower=50 //75
 	bHasToSpawnMicrowaveFire=false
 
 	EffectGroup=FXG_MicrowaveBlast

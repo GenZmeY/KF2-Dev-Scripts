@@ -87,7 +87,7 @@ defaultproperties
 	MuzzleFlashTemplateName="WEP_Gravity_Imploder_ARCH.Wep_Gravity_Imploder_MuzzleFlash"
 
 	// Inventory / Grouping
-	InventorySize=7 //8
+	InventorySize=8 //7
 	GroupPriority=125 //75
 	WeaponSelectTexture=Texture2D'WEP_UI_Gravity_Imploder_TEX.UI_WeaponSelect_Gravity_Imploder'
    	AssociatedPerkClasses(0)=class'KFPerk_Demolitionist'
@@ -175,7 +175,7 @@ defaultproperties
 
 	WeaponFireWaveForm=ForceFeedbackWaveform'FX_ForceFeedback_ARCH.Gunfire.Medium_Recoil'
 
-	SelfDamageReductionValue=0.f //0.25f
+	SelfDamageReductionValue=0.075f //0.f
     
 	bLastFireWasAlt=false
 	DefaultFireMaterialColor	= (R = 0.965f,G = 0.2972f, B = 0.0f)

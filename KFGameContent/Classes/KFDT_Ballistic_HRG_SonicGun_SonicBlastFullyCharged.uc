@@ -26,17 +26,17 @@ defaultproperties
 {
 	OverrideImpactEffect=ParticleSystem'WEP_HRG_SonicGun_EMIT.FX_SonicGun_Impact_AltFire'
 	OverrideImpactSound=AkEvent'WW_WEP_HRG_SonicGun.Play_WEP_HRG_SonicGun_Hit_Surface'
-	ArmorDamageModifier=1.5f
+	ArmorDamageModifier=1.0f
 
-	KDamageImpulse=0
-	KDeathUpKick=0
-	KDeathVel=0
+	KDamageImpulse=1750	//0
+	KDeathUpKick=400 //0
+	KDeathVel=325 //0
 	RadialDamageImpulse=5000
 	bExtraMomentumZ=True
 	
 	StumblePower=250
 	GunHitPower=120
-	MicrowavePower=25
+	MicrowavePower=0 //25
 	bHasToSpawnMicrowaveFire=false
 
 	EffectGroup=FXG_MicrowaveBlast

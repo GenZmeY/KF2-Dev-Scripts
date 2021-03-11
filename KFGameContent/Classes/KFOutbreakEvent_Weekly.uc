@@ -351,7 +351,8 @@ defaultproperties
                                 (ClassToAdjust=class'KFGameContent.KFPawn_ZedDAR_Rocket',HealByKill=10,HealByAssistance=7, InitialGroundSpeedModifierScale=1.20),
                                 (ClassToAdjust=class'KFGameContent.KFPawn_ZedScrake',HealByKill=50,HealByAssistance=35, InitialGroundSpeedModifierScale=1.20),
                                 (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpound',HealByKill=60,HealByAssistance=42, InitialGroundSpeedModifierScale=1.20),
-                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpoundMini',HealByKill=36,HealByAssistance=25, InitialGroundSpeedModifierScale=1.20)
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpoundMini',HealByKill=36,HealByAssistance=25, InitialGroundSpeedModifierScale=1.20),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedBloatKingSubspawn',HealByKill=7,HealByAssistance=5)
 					)}
     
     )}

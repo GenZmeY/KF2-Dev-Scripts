@@ -1117,7 +1117,7 @@ function WaveEnded(EWaveEndCondition WinCondition)
 	local int i;
 	local KFPlayerController KFPC;
 
-	if(!bWaveStarted)
+	if(!bWaveStarted && !MyKFGRI.bTraderIsOpen)
 		return;
 
 	if (WorldInfo.NetMode == NM_DedicatedServer)

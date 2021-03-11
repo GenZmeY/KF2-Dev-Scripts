@@ -19,6 +19,13 @@ struct SWhatsNew
     var string TextField;
     var string RedirectURL;
 	var string PSNProductId;
+    /** Used for those entitlements which does not have a "linked" Playfab item (like Armory Season Pass 2021)*/
+	var bool bPlayfabItemPairedUp;
+
+    structdefaultproperties
+   {
+      bPlayfabItemPairedUp=true
+   }
 };
 
 var array<SWhatsNew> WhatsNewItems;

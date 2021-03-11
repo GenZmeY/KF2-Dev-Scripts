@@ -219,7 +219,7 @@ native static function InitEventContent();
 native static function RefreshEventContent();
 
 // make sure our current tweak values are up-to-date with global
-native static function RefreshOnlineGameData();
+native static function RefreshOnlineGameData(bool RefreshTimeEvent = true);
 native static function ApplyTweaks(string MapName);
 native static function bool IsLastRefreshTweakParamsSuccessful();
 

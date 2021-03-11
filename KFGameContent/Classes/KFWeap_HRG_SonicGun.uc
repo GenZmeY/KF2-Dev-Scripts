@@ -529,8 +529,8 @@ defaultproperties
 	ChargeAnimIron=Alt_Fire_Iron
 	ChargeAnimIronLast=Alt_Fire_Iron_Last
 
-	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.15f), (Stat=EWUS_Weight, Add=1)))
-	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.3f), (Stat=EWUS_Weight, Add=2)))
+	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.1f), (Stat=EWUS_Weight, Add=1)))
+	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.2f), (Stat=EWUS_Weight, Add=2)))
 
     ForceReloadTime=0.3
     bAllowClientAmmoTracking=true
@@ -539,9 +539,9 @@ defaultproperties
 	MuzzleEffectDefaultFire=ParticleSystem'WEP_HRG_SonicGun_EMIT.FX_SonicGun_Muzzle'
 	MuzzleEffectChargedFire=ParticleSystem'WEP_HRG_SonicGun_EMIT.FX_SonicGun_Muzzle_AltFire'
     
-	SonicBlastDamageByChargeLevel(0)=110 //100
+	SonicBlastDamageByChargeLevel(0)=100 //110 //100
     //SonicBlastDamageByChargeLevel(1)=170 //160
-    SonicBlastDamageByChargeLevel(1)=280 //310 //280
+    SonicBlastDamageByChargeLevel(1)=240 //280 //310 //280
 
     SonicBlastPenetrationPowerByChargeLevel(0)=4.0
     //SonicBlastPenetrationPowerByChargeLevel(1)=3.0 //1.0
@@ -579,9 +579,9 @@ defaultproperties
 	MomentumMultiplierByZedArray(3)=(ZedClassName="KFPawn_ZedCrawler", MomentumMultiplier=1.0)
 	MomentumMultiplierByZedArray(4)=(ZedClassName="KFPawn_ZedGorefast", MomentumMultiplier=1.2)
 	MomentumMultiplierByZedArray(5)=(ZedClassName="KFPawn_ZedStalker", MomentumMultiplier=1.0)
-	MomentumMultiplierByZedArray(6)=(ZedClassName="KFPawn_ZedScrake", MomentumMultiplier=1.2)
-	MomentumMultiplierByZedArray(7)=(ZedClassName="KFPawn_ZedFleshpound", MomentumMultiplier=1.3)
-	MomentumMultiplierByZedArray(8)=(ZedClassName="KFPawn_ZedFleshpoundMini", MomentumMultiplier=1.3)
+	MomentumMultiplierByZedArray(6)=(ZedClassName="KFPawn_ZedScrake", MomentumMultiplier=0.8) //1.2
+	MomentumMultiplierByZedArray(7)=(ZedClassName="KFPawn_ZedFleshpound", MomentumMultiplier=0.7) //1.3
+	MomentumMultiplierByZedArray(8)=(ZedClassName="KFPawn_ZedFleshpoundMini", MomentumMultiplier=0.7) //1.3
 	MomentumMultiplierByZedArray(9)=(ZedClassName="KFPawn_ZedBloat", MomentumMultiplier=1.7)
 	MomentumMultiplierByZedArray(10)=(ZedClassName="KFPawn_ZedSiren", MomentumMultiplier=0.8)
 	MomentumMultiplierByZedArray(11)=(ZedClassName="KFPawn_ZedHusk", MomentumMultiplier=0.8)
