@@ -937,16 +937,19 @@ function ResetAllPickups()
 /** Overridden to scale the number of active pickups by wave */
 function ResetPickups( array<KFPickupFactory> PickupList, int NumPickups )
 {
-	if(NumPickups != 0)
+	NumPickups *= (float(WaveNum) / float(WaveMax));
+	
+	// make sure to have at least 1 ammo pickup in the level, and if it's wave 2 or later make sure there's
+	// at least one weapon pickup. Also, we need to ensure if OverrideItemPickupModifier is set to 0 we really
+	// don't want any item pickups.
+	if( NumPickups == 0 && PickupList.Length > 0
+		&& (WaveNum > 1 
+			|| KFPickupFactory_Ammo(PickupList[0]) != none
+			|| (KFPickupFactory_Item(PickupList[0]) != none && (OutbreakEvent == none || OutbreakEvent.ActiveEvent.OverrideItemPickupModifier != 0))
+			)
+	)
 	{
-		NumPickups *= (float(WaveNum) / float(WaveMax));
-		
-		// make sure to have at least 1 ammo pickup in the level, and if it's wave 2 or later make sure there's
-		// at least one weapon pickup
-		if( NumPickups == 0 && PickupList.Length > 0 && (WaveNum > 1 || KFPickupFactory_Ammo(PickupList[0]) != none) )
-		{
-			NumPickups = 1;
-		}
+		NumPickups = 1;
 	}
 	super.ResetPickups( PickupList, NumPickups );
 }
@@ -1117,8 +1120,10 @@ function WaveEnded(EWaveEndCondition WinCondition)
 	local int i;
 	local KFPlayerController KFPC;
 
-	if(!bWaveStarted && !MyKFGRI.bTraderIsOpen)
+	if(!bWaveStarted && !MyKFGRI.bTraderIsOpen && WinCondition != WEC_TeamWipedOut)
+	{
 		return;
+	}
 
 	if (WorldInfo.NetMode == NM_DedicatedServer)
 	{

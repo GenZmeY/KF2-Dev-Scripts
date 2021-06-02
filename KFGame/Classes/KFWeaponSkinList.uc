@@ -3522,4 +3522,103 @@ defaultproperties
 
 //Coliseum Zweihander
  	Skins.Add((Id=8791, Weapondef=class'KFWeapDef_Zweihander', MIC_1P=("WEP_SkinSet42_MAT.coliseum_zweihander.Coliseum_Zweihander_1P_Mint_MIC"), MIC_3P="WEP_SkinSet42_MAT.coliseum_zweihander.Coliseum_Zweihander_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet42_MAT.coliseum_zweihander.Coliseum_Zweihander_3P_Pickup_MIC"));
+
+//Famas Standard
+    Skins.Add((Id=8934, Weapondef=class'KFWeapDef_FAMAS', MIC_1P=("WEP_1P_Famas_MAT.Wep_1stP_Famas_MIC"), MIC_3P="WEP_3P_Famas_MAT.Wep_3rdP_Famas_MIC", MIC_Pickup="WEP_3P_Famas_MAT.Wep_3rdP_Famas_Pickup_MIC"));
+
+//Famas Flourished
+	Skins.Add((Id=8935, Weapondef=class'KFWeapDef_FAMAS', MIC_1P=("WEP_SkinSet45_MAT.Wep_1stP_Famas_Flourished_MIC"), MIC_3P="WEP_SkinSet45_MAT.Wep_3rdP_Famas_Flourished_MIC", MIC_Pickup="WEP_SkinSet45_MAT.Wep_3rdP_Famas_Pickup_Flourished_MIC"));
+
+//Famas Jagged Wars
+	Skins.Add((Id=8936, Weapondef=class'KFWeapDef_FAMAS', MIC_1P=("WEP_SkinSet45_MAT.Wep_1stP_Famas_JaggedWars_MIC"), MIC_3P="WEP_SkinSet45_MAT.Wep_3rdP_Famas_JaggedWars_MIC", MIC_Pickup="WEP_SkinSet45_MAT.Wep_3rdP_Famas_Pickup_JaggedWars_MIC"));
+
+//Famas Japped
+	Skins.Add((Id=8937, Weapondef=class'KFWeapDef_FAMAS', MIC_1P=("WEP_SkinSet45_MAT.Wep_1stP_Famas_Japped_MIC"), MIC_3P="WEP_SkinSet45_MAT.Wep_3rdP_Famas_Japped_MIC", MIC_Pickup="WEP_SkinSet45_MAT.Wep_3rdP_Famas_Pickup_Japped_MIC"));
+
+//Famas Skull Candy
+	Skins.Add((Id=8938, Weapondef=class'KFWeapDef_FAMAS', MIC_1P=("WEP_SkinSet45_MAT.Wep_1stP_Famas_SkullCandy_MIC"), MIC_3P="WEP_SkinSet45_MAT.Wep_3rdP_Famas_SkullCandy_MIC", MIC_Pickup="WEP_SkinSet45_MAT.Wep_3rdP_Famas_Pickup_SkullCandy_MIC"));
+
+//Famas Turfed
+ 	Skins.Add((Id=8939, Weapondef=class'KFWeapDef_FAMAS', MIC_1P=("WEP_SkinSet45_MAT.Wep_1stP_Famas_Turfed_MIC"), MIC_3P="WEP_SkinSet45_MAT.Wep_3rdP_Famas_Turfed_MIC", MIC_Pickup="WEP_SkinSet45_MAT.Wep_3rdP_Famas_Pickup_Turfed_MIC"));
+
+//Thermite Standard
+    Skins.Add((Id=8940, Weapondef=class'KFWeapDef_ThermiteBore', MIC_1P=("WEP_1P_Thermite_MAT.Wep_1P_Thermite_MIC"), MIC_3P="WEP_3P_Thermite_MAT.WEP_3P_Thermite_MIC", MIC_Pickup="WEP_3p_Gravity_Imploder_MAT.Wep_3rdP_Gravity_Imploder_Pickup_MIC")) 
+
+//Thermite Japped
+	Skins.Add((Id=8941, Weapondef=class'KFWeapDef_ThermiteBore', MIC_1P=("WEP_SkinSet46_MAT.Wep_1stP_Thermite_Japped_MIC"), MIC_3P="WEP_SkinSet46_MAT.Wep_3rdP_Thermite_Japped_MIC", MIC_Pickup="WEP_SkinSet46_MAT.Wep_3rdP_Thermite_Pickup_Japped_MIC"));
+
+//Thermite Much Danger
+	Skins.Add((Id=8942, Weapondef=class'KFWeapDef_ThermiteBore', MIC_1P=("WEP_SkinSet46_MAT.Wep_1stP_Thermite_MuchDanger_MIC"), MIC_3P="WEP_SkinSet46_MAT.Wep_3rdP_Thermite_MuchDanger_MIC", MIC_Pickup="WEP_SkinSet46_MAT.Wep_3rdP_Thermite_Pickup_MuchDanger_MIC"));
+
+//Thermite Not Liandri
+	Skins.Add((Id=8943, Weapondef=class'KFWeapDef_ThermiteBore', MIC_1P=("WEP_SkinSet46_MAT.Wep_1stP_Thermite_NotLiandri_MIC"), MIC_3P="WEP_SkinSet46_MAT.Wep_3rdP_Thermite_NotLiandri_MIC", MIC_Pickup="WEP_SkinSet46_MAT.Wep_3rdP_Thermite_Pickup_NotLiandri_MIC"));
+
+//Thermite Rusted
+	Skins.Add((Id=8944, Weapondef=class'KFWeapDef_ThermiteBore', MIC_1P=("WEP_SkinSet46_MAT.Wep_1stP_Thermite_Rusted_MIC"), MIC_3P="WEP_SkinSet46_MAT.Wep_3rdP_Thermite_Rusted_MIC", MIC_Pickup="WEP_SkinSet46_MAT.Wep_3rdP_Thermite_Pickup_Rusted_MIC"));
+
+//Thermite Thunder Jaws
+ 	Skins.Add((Id=8945, Weapondef=class'KFWeapDef_ThermiteBore', MIC_1P=("WEP_SkinSet46_MAT.Wep_1stP_Thermite_ThunderJaws_MIC"), MIC_3P="WEP_SkinSet46_MAT.Wep_3rdP_Thermite_ThunderJaws_MIC", MIC_Pickup="WEP_SkinSet46_MAT.Wep_3rdP_Thermite_Pickup_ThunderJaws_MIC"));
+
+//BeyondHorizon AA12
+    Skins.Add((Id=8845, Weapondef=class'KFWeapDef_AA12', MIC_1P=("WEP_SkinSet43_MAT.space_aa12.Space_AA12_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.space_aa12.Space_AA12_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.space_aa12.Space_AA12_3P_Pickup_MIC")) 
+
+//BeyondHorizon AK12
+    Skins.Add((Id=8846, Weapondef=class'KFWeapDef_Ak12', MIC_1P=("WEP_SkinSet43_MAT.space_ak12.Space_AK12_1P_Mint_MIC", "WEP_SkinSet43_MAT.space_ak12.Space_AK12_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.space_ak12.Space_AK12_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.space_ak12.Space_AK12_3P_Pickup_MIC")) 
+
+//BeyondHorizon Desert Eagle
+    Skins.Add((Id=8847, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet43_MAT.space_deagle.Space_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.space_deagle.Space_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.space_deagle.Space_Deagle_3P_Pickup_MIC")) 
+
+//BeyondHorizon Doomstick
+    Skins.Add((Id=8848, Weapondef=class'KFWeapDef_ElephantGun', MIC_1P=("WEP_SkinSet43_MAT.space_quadbarrel.Space_QuadBarrel_Main_1P_Mint_MIC", "WEP_SkinSet43_MAT.space_quadbarrel.Space_QuadBarrel_Barrel_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.space_quadbarrel.Space_QuadBarrel_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.space_quadbarrel.Space_QuadBarrel_3P_Pickup_MIC")) 
+
+//BeyondHorizon Hemoclobber
+    Skins.Add((Id=8849, Weapondef=class'KFWeapDef_MedicBat', MIC_1P=("WEP_SkinSet43_MAT.space_medicbat.Space_MedicBat_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.space_medicbat.Space_MedicBat_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.space_medicbat.Space_MedicBat_3P_Pickup_MIC")) 
+
+//BeyondHorizon HMTech-501 Grenade Rifle
+    Skins.Add((Id=8850, Weapondef=class'KFWeapDef_MedicRifleGrenadeLauncher', MIC_1P=("WEP_SkinSet43_MAT.space_medicgrenadelauncher.Space_MedicGrenadeLauncher_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.space_medicgrenadelauncher.Space_MedicGrenadeLauncher_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.space_medicgrenadelauncher.Space_MedicGrenadeLauncher_3P_Pickup_MIC")) 
+
+//BeyondHorizon M32
+    Skins.Add((Id=8851, Weapondef=class'KFWeapDef_M32', MIC_1P=("WEP_SkinSet43_MAT.space_m32.Space_M32_1P_Mint_MIC", "WEP_SkinSet43_MAT.space_m32.Space_M32_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.space_m32.Space_M32_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.space_m32.Space_M32_3P_Pickup_MIC")) 
+
+//BeyondHorizon MAC 10
+    Skins.Add((Id=8852, Weapondef=class'KFWeapDef_Mac10', MIC_1P=("WEP_SkinSet43_MAT.space_mac10.Space_MAC10_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.space_mac10.Space_MAC10_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.space_mac10.Space_MAC10_3P_Pickup_MIC")) 
+
+//BeyondHorizon Microwave Gun
+    Skins.Add((Id=8853, Weapondef=class'KFWeapDef_MicrowaveGun', MIC_1P=("WEP_SkinSet43_MAT.space_microwavegun.Space_MicrowaveGun_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.space_microwavegun.Space_MicrowaveGun_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.space_microwavegun.Space_MicrowaveGun_3P_Pickup_MIC")) 
+
+//BeyondHorizon P90
+    Skins.Add((Id=8854, Weapondef=class'KFWeapDef_P90', MIC_1P=("WEP_SkinSet43_MAT.space_p90.Space_P90_1P_Mint_MIC", "WEP_SkinSet43_MAT.space_p90.Space_P90_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.space_p90.Space_P90_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.space_p90.Space_P90_3P_Pickup_MIC")) 
+
+//BeyondHorizon AA12
+    Skins.Add((Id=8855, Weapondef=class'KFWeapDef_AA12', MIC_1P=("WEP_SkinSet43_MAT.spaceelite_aa12.SpaceElite_AA12_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.spaceelite_aa12.SpaceElite_AA12_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.spaceelite_aa12.SpaceElite_AA12_3P_Pickup_MIC")) 
+
+//BeyondHorizon AK12
+    Skins.Add((Id=8856, Weapondef=class'KFWeapDef_Ak12', MIC_1P=("WEP_SkinSet43_MAT.spaceelite_ak12.SpaceElite_AK12_1P_Mint_MIC", "WEP_SkinSet43_MAT.spaceelite_ak12.SpaceElite_AK12_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.spaceelite_ak12.SpaceElite_AK12_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.spaceelite_ak12.SpaceElite_AK12_3P_Pickup_MIC")) 
+
+//BeyondHorizon Desert Eagle
+    Skins.Add((Id=8857, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet43_MAT.spaceelite_deagle.SpaceElite_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.spaceelite_deagle.SpaceElite_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.spaceelite_deagle.SpaceElite_Deagle_3P_Pickup_MIC")) 
+
+//BeyondHorizon Doomstick
+    Skins.Add((Id=8858, Weapondef=class'KFWeapDef_ElephantGun', MIC_1P=("WEP_SkinSet43_MAT.spaceelite_quadbarrel.SpaceElite_QuadBarrel_Main_1P_Mint_MIC", "WEP_SkinSet43_MAT.spaceelite_quadbarrel.SpaceElite_QuadBarrel_Barrel_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.spaceelite_quadbarrel.SpaceElite_QuadBarrel_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.spaceelite_quadbarrel.SpaceElite_QuadBarrel_3P_Pickup_MIC")) 
+
+//BeyondHorizon Hemoclobber
+    Skins.Add((Id=8859, Weapondef=class'KFWeapDef_MedicBat', MIC_1P=("WEP_SkinSet43_MAT.spaceelite_medicbat.SpaceElite_MedicBat_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.spaceelite_medicbat.SpaceElite_MedicBat_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.spaceelite_medicbat.SpaceElite_MedicBat_3P_Pickup_MIC")) 
+
+//BeyondHorizon HMTech-501 Grenade Rifle
+    Skins.Add((Id=8860, Weapondef=class'KFWeapDef_MedicRifleGrenadeLauncher', MIC_1P=("WEP_SkinSet43_MAT.spaceelite_medicgrenadelauncher.SpaceElite_MedicGrenadeLauncher_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.spaceelite_medicgrenadelauncher.SpaceElite_MedicGrenadeLauncher_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.spaceelite_medicgrenadelauncher.SpaceElite_MedicGrenadeLauncher_3P_Pickup_MIC")) 
+
+//BeyondHorizon M32
+    Skins.Add((Id=8861, Weapondef=class'KFWeapDef_M32', MIC_1P=("WEP_SkinSet43_MAT.spaceelite_m32.SpaceElite_M32_1P_Mint_MIC", "WEP_SkinSet43_MAT.spaceelite_m32.SpaceElite_M32_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.spaceelite_m32.SpaceElite_M32_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.spaceelite_m32.SpaceElite_M32_3P_Pickup_MIC")) 
+
+//BeyondHorizon MAC 10
+    Skins.Add((Id=8862, Weapondef=class'KFWeapDef_Mac10', MIC_1P=("WEP_SkinSet43_MAT.spaceelite_mac10.SpaceElite_MAC10_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.spaceelite_mac10.SpaceElite_MAC10_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.spaceelite_mac10.SpaceElite_MAC10_3P_Pickup_MIC")) 
+
+//BeyondHorizon Microwave Gun
+    Skins.Add((Id=8863, Weapondef=class'KFWeapDef_MicrowaveGun', MIC_1P=("WEP_SkinSet43_MAT.spaceelite_microwavegun.SpaceElite_MicrowaveGun_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.spaceelite_microwavegun.SpaceElite_MicrowaveGun_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.spaceelite_microwavegun.SpaceElite_MicrowaveGun_3P_Pickup_MIC")) 
+
+//BeyondHorizon P90
+    Skins.Add((Id=8864, Weapondef=class'KFWeapDef_P90', MIC_1P=("WEP_SkinSet43_MAT.spaceelite_p90.SpaceElite_P90_1P_Mint_MIC", "WEP_SkinSet43_MAT.spaceelite_p90.SpaceElite_P90_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.spaceelite_p90.SpaceElite_P90_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.spaceelite_p90.SpaceElite_P90_3P_Pickup_MIC")) 
+
+//Scavenger AK12
+	Skins.Add((Id=8921, Weapondef=class'KFWeapDef_Ak12', MIC_1P=("wep_skinset44_mat.scavenger_ak12.Scavenger_AK12_1P_Mint_MIC", "wep_skinset44_mat.scavenger_ak12.Scavenger_AK12_Scope_1P_Mint_MIC"), MIC_3P="wep_skinset44_mat.scavenger_ak12.Scavenger_AK12_3P_Mint_MIC", MIC_Pickup="wep_skinset44_mat.scavenger_ak12.Scavenger_AK12_3P_Pickup_MIC")) 
 }

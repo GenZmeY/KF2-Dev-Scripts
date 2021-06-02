@@ -468,7 +468,7 @@ function ServerStartVoteSkipTrader(PlayerReplicationInfo PRI)
 		GetKFPRIArray(PRIs);
 		for (i = 0; i < PRIs.Length; i++)
 		{
-			PRIs[i].ShowSkipTraderVote(PRI, CurrentVoteTime, !(PRIs[i] == PRI));
+			PRIs[i].ShowSkipTraderVote(PRI, CurrentVoteTime, !(PRIs[i] == PRI) && PRI.GetTeamNum() != 255);
 		}
 		KFGI.BroadcastLocalized(KFGI, class'KFLocalMessage', LMT_SkipTraderVoteStarted, CurrentSkipTraderVote.PlayerPRI);
 		SetTimer( CurrentVoteTime, false, nameof(ConcludeVoteSkipTrader), self );

@@ -42,7 +42,7 @@ simulated function ProcessInstantHitEx(byte FiringMode, ImpactInfo Impact, optio
 defaultproperties
 {
     //Healing
-    HealAmount=20
+    HealAmount=25 //20
     HealFullRechargeSeconds=10
 
     // Inventory / Grouping
@@ -84,7 +84,7 @@ defaultproperties
 
     // Ammo
     MagazineCapacity[0]=7
-    SpareAmmoCapacity[0]=98
+    SpareAmmoCapacity[0]=112 //98
     InitialSpareMags[0]=4
     bCanBeReloaded=true
     bReloadFromMagazine=true
@@ -119,7 +119,7 @@ defaultproperties
     FiringStatesArray(DEFAULT_FIREMODE)=WeaponSingleFiring
     WeaponFireTypes(DEFAULT_FIREMODE)=EWFT_InstantHit
     WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Bullet_Hemogoblin'
-    InstantHitDamage(DEFAULT_FIREMODE)=100.0
+    InstantHitDamage(DEFAULT_FIREMODE)=120.0 //100.0
     InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_Hemogoblin'
     FireInterval(DEFAULT_FIREMODE)=0.25
     PenetrationPower(DEFAULT_FIREMODE)=0.0 //2.0

@@ -182,28 +182,31 @@ function FillWhatsNew()
     local SWhatsNew item;
     WhatsNewItems.Remove(0, WhatsNewItems.Length);
 // Latest Update
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_DystopianDevastation_Event", "LatestUpdate", "http://www.tripwireinteractive.com/redirect/KF2LatestUpdate/");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer_InterstellarInsanity_Event", "LatestUpdate", "http://www.tripwireinteractive.com/redirect/KF2LatestUpdate/");
     WhatsNewItems.AddItem(item);
 // KF2 Armory Season Pass 2021
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_Armory_Season_Pass", "ArmorySeasonPass", "https://store.steampowered.com/app/1524820/Killing_Floor_2__Armory_Season_Pass");
     WhatsNewItems.AddItem(item);
 // Featured Time Limited Item
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_PremiumTicket", "FeaturedEventItem", "https://store.steampowered.com/buyitem/232090/5803");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_SS_PremiumTicket", "FeaturedEventItem", "https://store.steampowered.com/buyitem/232090/4928");
+    WhatsNewItems.AddItem(item);
+// Featured Cosmetic Bundle
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer_Astronaut", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/8953");
+    WhatsNewItems.AddItem(item);
+// Featured Cosmetic Bundle
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer_Foundry","FeaturedItemBundle","https://store.steampowered.com/buyitem/232090/8956");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Skin Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_Neon_MKVII", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/8774");
-    WhatsNewItems.AddItem(item);
-// Featured Cosmetic Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_Paratrooper","FeaturedItemBundle","https://store.steampowered.com/buyitem/232090/8775");
-    WhatsNewItems.AddItem(item);
-// Featured Cosmetic Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_DystopianDevastation", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/8773");
-    WhatsNewItems.AddItem(item);
-// Featured Cosmetic Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_Chemical", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/8776");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer_BeyondHorizon", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/8955");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Bundle
-    item=SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_GravityImploder", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/8777");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer_FamasMasterkey", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/8957");
+    WhatsNewItems.AddItem(item);
+// Featured Weapon Bundle
+    item=SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer_ThermiteBore", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/8958");
+    WhatsNewItems.AddItem(item);
+    // Featured Weapon Bundle
+    item=SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer_Weaponsbundle", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/8959");
     WhatsNewItems.AddItem(item);
 // Misc Community Links
     item=SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_CommunityHub", "Jaegorhorn", "https://steamcommunity.com/app/232090");

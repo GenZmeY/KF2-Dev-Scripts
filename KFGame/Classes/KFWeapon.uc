@@ -367,6 +367,9 @@ var	int		InitialSpareMags[2];
 /** What percentage of a full single magazine capacity to give when resupplying this weapon from an ammo pickup */
 var(Inventory)	float   AmmoPickupScale[2];
 
+/** */
+var(Inventory) bool bUsesSecondaryAmmoAltHUD;
+
 enum EReloadStatus
 {
 	RS_None,
@@ -4396,6 +4399,11 @@ static simulated event bool UsesSecondaryAmmo()
     return default.MagazineCapacity[1] > 0;
 }
 
+static simulated event bool UsesAltSecondaryAmmo()
+{
+	return default.bUsesSecondaryAmmoAltHUD;
+}
+
  /**
  * Returns true if this weapon uses greandes as secondary ammo
  */
@@ -4752,6 +4760,12 @@ simulated function string GetSpecialAmmoForHUD();
 simulated function int GetSecondaryAmmoForHUD()
 {
     return AmmoCount[1] + SpareAmmoCount[1];
+}
+
+/** Determines the secondary spare ammo  */
+simulated function int GetSecondarySpareAmmoForHUD()
+{
+	return -1;
 }
 
 /** Determines if we have to reload the secondary ammo of the weapon (EX: m16 grenades)  */
@@ -7985,5 +7999,7 @@ defaultproperties
 	NumPellets(CUSTOM_FIREMODE)=1
 
 	bKeepIronSightsOnJump=false
+
+	bUsesSecondaryAmmoAltHUD = false
 }
 

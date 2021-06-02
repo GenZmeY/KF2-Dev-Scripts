@@ -27,6 +27,7 @@
 
 	const MATCH_EVENT_HEAL_RECEIVED 	= 5;
 
+	const MATCH_EVENT_STOMP_GIVEN = 6;
 	/** Match has ended */
 	
 	const MATCH_EVENT_MAX_EVENTID 	= 0x0000FFFF;

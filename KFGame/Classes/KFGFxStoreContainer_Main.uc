@@ -446,19 +446,21 @@ DefaultProperties
 
 	XboxFilterExceptions[0]="Wasteland Bundle" // Wasteland Outfit Bundle
 
-	FeaturedItemIDs[0]=8115
-	FeaturedItemIDs[1]=8773
-	FeaturedItemIDs[2]=8774
-	FeaturedItemIDs[3]=8775
-	FeaturedItemIDs[4]=8776
-	FeaturedItemIDs[5]=8777
+	FeaturedItemIDs[0]=8178
+	FeaturedItemIDs[1]=8953
+	FeaturedItemIDs[2]=8959
+	FeaturedItemIDs[3]=8956
+	FeaturedItemIDs[4]=8955
+	FeaturedItemIDs[5]=8957
+	FeaturedItemIDs[6]=8958
 
-	ConsoleFeaturedItemIDs[0]=8116
-	ConsoleFeaturedItemIDs[1]=8773
-	ConsoleFeaturedItemIDs[2]=8774
-	ConsoleFeaturedItemIDs[3]=8775
-	ConsoleFeaturedItemIDs[4]=8776
-	ConsoleFeaturedItemIDs[5]=8777
+	ConsoleFeaturedItemIDs[0]=8181
+	ConsoleFeaturedItemIDs[1]=8953
+	ConsoleFeaturedItemIDs[2]=8959
+	ConsoleFeaturedItemIDs[3]=8956
+	ConsoleFeaturedItemIDs[4]=8955
+	ConsoleFeaturedItemIDs[5]=8957
+	ConsoleFeaturedItemIDs[6]=8958
 
 	MaxFeaturedItems=5
 }

@@ -234,9 +234,9 @@ defaultproperties
 
 	// Ice explosion
 	Begin Object Class=KFGameExplosion Name=ExploTemplate0
-		Damage=25
-		DamageRadius=200
-		DamageFalloffExponent=1.f
+		Damage=75 //25
+		DamageRadius=250 //200
+		DamageFalloffExponent=0.5f //1.f
 		DamageDelay=0.f
 
 		bIgnoreInstigator=false

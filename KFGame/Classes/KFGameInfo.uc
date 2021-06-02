@@ -1165,24 +1165,34 @@ function ResetAllPickups()
  	 	AllPickupFactories.AddItem( AmmoPickups[i] );
  	}
 
-	if(NumWeaponPickups > 0 )
-	{
-		ResetPickups( ItemPickups, NumWeaponPickups );
-	}
-	if(NumAmmoPickups > 0)
-	{
-		ResetPickups( AmmoPickups, NumAmmoPickups );
-	}
+	ResetPickups( ItemPickups, NumWeaponPickups );
+
+	ResetPickups( AmmoPickups, NumAmmoPickups );
 }
 
+/** Pick random pickup items to enable and put all others to sleep */
 /** Pick random pickup items to enable and put all others to sleep */
 function ResetPickups( array<KFPickupFactory> PickupList, int NumPickups )
 {
  	local byte i, ChosenIndex;
  	local array<KFPickupFactory>	PossiblePickups;
+	local int NumIterations;
+	
+	if (PickupList.Length == 0)
+		return;
 
     PossiblePickups = PickupList;
- 	for ( i = 0; i < NumPickups; i++ )
+
+	if (OutbreakEvent != none && OutbreakEvent.ActiveEvent.bUnlimitedWeaponPickups && KFPickupFactory_Item(PickupList[0]) != none)
+	{
+		NumIterations = Min(NumPickups, PickupList.Length - 1);
+	}
+	else
+	{
+		NumIterations = Min(NumPickups, PickupList.Length);
+	}
+
+ 	for ( i = 0; i < NumIterations; i++ )
  	{
  		ChosenIndex = Rand( PossiblePickups.Length );
  		PossiblePickups[ChosenIndex].Reset();
@@ -3773,6 +3783,19 @@ static function bool HasCustomTraderVoiceGroup()
 {
 	return false;
 }
+
+/***********************************************
+ * @name        Initial loadout modifier
+ **********************************************/
+
+simulated function AddWeaponsFromSpawnList(KFPawn P);
+
+simulated function OverrideHumanDefaults(KFPawn_Human P);
+
+/***********************************************
+ * @name        Damage Modifier for Event
+ **********************************************/
+simulated function ModifyDamageGiven(out int InDamage, optional Actor DamageCauser, optional KFPawn_Monster MyKFPM, optional KFPlayerController DamageInstigator, optional class<KFDamageType> DamageType, optional int HitZoneIdx );
 
 defaultproperties
 {

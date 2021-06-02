@@ -192,7 +192,8 @@ protected function ProcessSpecialMoveAfflictions(KFPerk InstigatorPerk, vector H
 		return;
 	}
 
-	HitZoneIdx = HitFxInfo.HitBoneIndex;
+	// HitZoneIdx = HitFxInfo.HitBoneIndex;
+	HitZoneIdx = LastHitZoneIndex;
 
 	BodyPart = (HitZoneIdx != 255 && HitZoneIdx < HitZones.Length) ? HitZones[HitZoneIdx].Limb : BP_Torso;
 

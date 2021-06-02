@@ -36,7 +36,13 @@ simulated function PlayHeadAsplode()
 /** Set our gib flag on the server, replicate it with bTearOff */
 function bool Died(Controller Killer, class<DamageType> DamageType, vector HitLocation)
 {
-	if( !bPlayedDeath && DamageType != class'KFSM_PlayerCrawler_Suicide'.default.SuicideDamageType )
+	local KFGameInfo_WeeklySurvival KFGI_WS;
+	
+	// Not exploding if we are in arachnophobia weekly.
+	KFGI_WS = KFGameInfo_WeeklySurvival(WorldInfo.Game);
+
+	if( !bPlayedDeath && DamageType != class'KFSM_PlayerCrawler_Suicide'.default.SuicideDamageType &&
+	    (KFGI_WS == none|| !KFGI_WS.OutbreakEvent.ActiveEvent.bGoompaJumpEnabled))
 	{
 		bShouldExplode = true;
 	}

@@ -195,7 +195,7 @@ simulated function ModifyMeleeAttackSpeed( out float InDuration, KFWeapon KFW )
 {
 	local float TempDuration;
 
-	if( KFW == none || !KFW.IsMeleeWeapon() )
+	if( KFW == none || !KFW.IsMeleeWeapon() || IsBlastBrawlers(KFW) )
 	{
 		return;
 	}
@@ -265,7 +265,7 @@ simulated function ModifySpeed( out float Speed )
 	}
 
 	if (MyKFWeapon != none &&
-		(MyKFWeapon.IsMeleeWeapon() || IsWeaponOnPerk(MyKFWeapon,, self.class)))
+		((MyKFWeapon.IsMeleeWeapon() && !IsBlastBrawlers(MyKFWeapon)) || IsWeaponOnPerk(MyKFWeapon,, self.class)))
 	{
 		Speed += Speed * GetSkillValue( PerkSkills[EBerserkerNinja] );
 	}
@@ -297,7 +297,7 @@ simulated function ModifySprintSpeed( out float Speed )
 	}
 
 	if (MyKFWeapon != none &&
-		(MyKFWeapon.IsMeleeWeapon() || IsWeaponOnPerk(MyKFWeapon,, self.class)))
+		((MyKFWeapon.IsMeleeWeapon() && !IsBlastBrawlers(MyKFWeapon)) || IsWeaponOnPerk(MyKFWeapon,, self.class)))
 	{
 		Speed += Speed * static.GetNinjaSprintModifier();
 	}
@@ -973,7 +973,7 @@ static function PrepareExplosive( Pawn ProjOwner, KFProjectile Proj, optional fl
 
 DefaultProperties
 {
-	ParryDuration=10.f
+	ParryDuration=6.f //10.f
 	ParrySpeed=0.05
 	FurySpeed=0.05
 	NinjaSprintModifer=0.25
@@ -982,14 +982,14 @@ DefaultProperties
 	SpeedDamageModifier=0.2
 	SmashHeadDamageModifier=0.25
 	VampireAttackSpeedModifier=0.2f
-	ParryDamageReduction=0.4f //0.75
+	ParryDamageReduction=0.25f //0.4f //0.75
 	RageRadius=1000 //300
 	RageFleeDuration=5.f //3
 	RageFleeDistance=2500 //5000
 	RageDialogEvent=229
 
 	RegenerationInterval=1
-	RegenerationAmount=2
+	RegenerationAmount=1 //2
 
 	ZedTimeModifyingStates(0)="MeleeChainAttacking"
 	ZedTimeModifyingStates(1)="MeleeAttackBasic"
@@ -1013,14 +1013,14 @@ DefaultProperties
 	GrenadeWeaponDef=class'KFWeapDef_Grenade_Berserker'
 
 	BerserkerDamage=(Name="Berserker Damage",Increment=0.01,Rank=0,StartingValue=0.f,MaxValue=0.25)
-	DamageResistance=(Name="Damage Resistance",Increment=0.03f,Rank=0,StartingValue=0.f,MaxValue=0.15f)
+	DamageResistance=(Name="Damage Resistance",Increment=0.02f,Rank=0,StartingValue=0.f,MaxValue=0.1f) //0.03f, 0, 0.f, 0.15f
 	NightVision=(Name="Night Vision",Increment=0.f,Rank=0,StartingValue=0.f,MaxValue=0.f)
 
 	PerkSkills(EBerserkerFortitude)=(Name="Fortitude",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Fortitude",Increment=0.f,Rank=0,StartingValue=1.0,MaxValue=1.0) //0.75
 	PerkSkills(EBerserkerNinja)=(Name="Ninja",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Ninja",Increment=0.f,Rank=0,StartingValue=0.2f,MaxValue=0.2f)
-	PerkSkills(EBerserkerVampire)=(Name="Vampire",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Vampire",Increment=0.f,Rank=0,StartingValue=4.f,MaxValue=4.f)
+	PerkSkills(EBerserkerVampire)=(Name="Vampire",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Vampire",Increment=0.f,Rank=0,StartingValue=3.f,MaxValue=3.f) //4.f
 	PerkSkills(EBerserkerSpeed)=(Name="Speed",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Speed",Increment=0.f,Rank=0,StartingValue=0.2f,MaxValue=0.2f)
-	PerkSkills(EBerserkerResistance)=(Name="Resistance",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_PoisonResistance",Increment=0.f,Rank=0,StartingValue=0.25f,MaxValue=0.25f) //0.2
+	PerkSkills(EBerserkerResistance)=(Name="Resistance",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_PoisonResistance",Increment=0.f,Rank=0,StartingValue=0.15f,MaxValue=0.15f) //0.15 //0.2
 	PerkSkills(EBerserkerParry)=(Name="Parry",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Parry",Increment=0.f,Rank=0,StartingValue=0.35,MaxValue=0.35)
 	PerkSkills(EBerserkerSmash)=(Name="Smash",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Smash",Increment=0.f,Rank=0,StartingValue=0.5f,MaxValue=0.5f)
 	PerkSkills(EBerserkerFury)=(Name="Fury",IconPath="UI_PerkTalent_TEX.berserker.UI_Talents_Berserker_Intimidate",Increment=0.f,Rank=0,StartingValue=0.3f,MaxValue=0.3f)

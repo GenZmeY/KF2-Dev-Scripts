@@ -201,6 +201,8 @@ function InitializeGameOptions()
 	bIsSoloGame = GetBool("bIsSoloGame");
 	StartMenu.GetMapList(StartMenu.MapStringList, ParentMenu.Manager.GetModeIndex(false), StartMenu.GetStartMenuState() == EMatchmaking);
 
+	FilterWeeklyMaps(StartMenu.MapStringList);
+
 	InitialMapIndex = GetInitialMapIndex();
 	UpdateButtonsEnabled();
 
@@ -258,6 +260,24 @@ function InitializeGameOptions()
 	}
 
 	SetObject("localizedText", TextObject);
+}
+
+function FilterWeeklyMaps(out array<string> List)
+{
+	if (ParentMenu.Manager.GetModeIndex(false) != EGameMode_Weekly)
+	{
+		return;
+	}
+
+	// Scavenger index = 11
+	if (class'KFGameEngine'.static.GetWeeklyEventIndex() == 11)
+	{
+		List.RemoveItem("KF-Biolapse");
+		List.RemoveItem("KF-Nightmare");
+		List.RemoveItem("KF-PowerCore_Holdout");
+		List.RemoveItem("KF-TheDescent");
+		List.RemoveItem("KF-KrampusLair");
+	}
 }
 
 function GFxObject CreateList( array<string> TextArray, byte SelectedIndex, bool bAddNoPrefString, optional bool bIsMapList, optional byte MaxLength)

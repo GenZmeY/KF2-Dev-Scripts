@@ -28,6 +28,8 @@ enum ESharedContentUnlock
 	SCU_MineReconstructor,
 	SCU_FrostFang,
 	SCU_GravityImploder,
+	SCU_FAMAS,
+	SCU_Thermite
 };
 
 
@@ -330,4 +332,12 @@ defaultproperties
 		Name=KFWeap_GravityImploder,
 		IconPath="WEP_UI_Gravity_Imploder_TEX.UI_WeaponSelect_Gravity_Imploder",
 		ID=8778)}
+	SharedContentList(SCU_FAMAS)={(
+		Name=KFWeap_AssaultRifle_FAMAS,
+		IconPath="WEP_UI_Famas_TEX.UI_WeaponSelect_Famas",
+		ID=8934)}
+	SharedContentList(SCU_Thermite)={(
+		Name=KFWeap_RocketLauncher_ThermiteBore,
+		IconPath="WEP_UI_Thermite_TEX.UI_WeaponSelect_Thermite",
+		ID=8940)}
 }

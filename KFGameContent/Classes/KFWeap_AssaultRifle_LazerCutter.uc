@@ -1142,7 +1142,7 @@ defaultproperties
 	BonesToLockOnEmpty=(RW_Magazine1, RW_BatteryContactLeft, RW_BatteryContactRight)
 
 	// Weapon Upgrade stat boosts
-	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.2f), (Stat=EWUS_Damage1, Scale=1.2f), (Stat=EWUS_Weight, Add=1)))
+	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.0f), (Stat=EWUS_Damage1, Scale=1.0f), (Stat=EWUS_Weight, Add=0)))
 
 	MuzzleFlashEffectL1=ParticleSystem'WEP_Laser_Cutter_EMIT.FX_Laser_Cutter_Beam_Muzzleflash_01'
 	MuzzleFlashEffectL2=ParticleSystem'WEP_Laser_Cutter_EMIT.FX_Laser_Cutter_Beam_Muzzleflash_02'

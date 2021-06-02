@@ -20,7 +20,7 @@ struct native ItemPickup
 	var() class<Inventory> 	ItemClass;
 
     /** Chance relative to other valid attacks (Works like AnimNodeRandom) */
-	var() const float 					Priority<ClampMin=0.0>;
+	var() float 					Priority<ClampMin=0.0>;
 
 	structdefaultproperties
 	{
@@ -47,6 +47,24 @@ replication
 	// Things the server should send to the client.
 	if ( bNetDirty && (Role == ROLE_Authority) )
 		PickupIndex;
+}
+
+simulated event PreBeginPlay()
+{
+	local KFGameInfo KFGI;
+
+// For Scavenger weekly, we need to treat the factory items as non kismet items.
+	KFGI = KFGameInfo( WorldInfo.Game );
+	if (KFGI != none && KFGI.OutbreakEvent != none && KFGI.OutbreakEvent.ActiveEvent.bUnlimitedWeaponPickups)
+	{
+		if (bKismetDriven && bEnabledAtStart)
+		{
+			bKismetDriven=false;
+		}
+	}
+////////////////////////////////////////
+
+	super.PreBeginPlay();
 }
 
 simulated event ReplicatedEvent(name VarName)
@@ -98,14 +116,32 @@ function Reset()
 	SetPickupMesh();
 }
 
+simulated event OverridePickup()
+{
+	PickupIndex = ChooseWeaponPickup();
+	bNetDirty=true;
+	SetPickupMesh();
+}
+
 function SetRespawn()
 {
+	local KFGameInfo KFGI;
+
     //For ones that spawn in the world on timer, reset info here.
     if (bKismetDriven && bEnabledAtStart)
     {
         PickupIndex = ChooseWeaponPickup();
         SetPickupMesh();
     }
+	else
+	{
+		KFGI = KFGameInfo( WorldInfo.Game );
+		if (KFGI != none && KFGI.OutbreakEvent != none && KFGI.OutbreakEvent.ActiveEvent.bUnlimitedWeaponPickups)
+		{
+			StartSleeping();
+			return;
+		}
+	}
 
     super.SetRespawn();
 }
@@ -158,6 +194,11 @@ simulated native function GetPickupMesh(class<KFWeapon> ItemClass);
 /** Use the pickups static mesh for this factory */
 simulated function SetPickupMesh()
 {
+	if (PickupIndex >= ItemPickups.Length)
+	{
+		return;
+	}
+
 	if (ItemPickups[PickupIndex].ItemClass.Name == ArmorClassName)
 	{
 		FinalizePickupMesh(StaticMeshComponent(ItemPickups[PickupIndex].ItemClass.default.PickupFactoryMesh).StaticMesh);
@@ -181,6 +222,11 @@ simulated event FinalizePickupMesh(StaticMesh NewMesh)
 /** Give the pickup or its ammo to the player */
 function GiveTo( Pawn P )
 {
+	if (PickupIndex >= ItemPickups.Length)
+	{
+		return;
+	}
+
 	if ( ItemPickups[ PickupIndex ].ItemClass.Name == ArmorClassName )
 	{
     	GiveArmor( P );
@@ -276,7 +322,7 @@ function ActivateNewPickup(Pawn P)
 /** Determine what kind of pickup is visible. Used for dialog. */
 function bool CurrentPickupIsWeapon()
 {
-	if( ItemPickups.Length == 0 )
+	if( ItemPickups.Length == 0 || ItemPickups.Length <= PickupIndex)
 	{
 		return false;
 	}
@@ -286,7 +332,7 @@ function bool CurrentPickupIsWeapon()
 
 function bool CurrentPickupIsArmor()
 {
-	if( ItemPickups.Length == 0 )
+	if( ItemPickups.Length == 0 || ItemPickups.Length <= PickupIndex)
 	{
 		return false;
 	}

@@ -871,6 +871,14 @@ var bool bLogCustomAnim;
 var Texture2D DebugRadarTexture;
 
 var repnotify bool bHasStartedFire;
+var repnotify byte WeaponSpecialAction;
+
+/*********************************************************************************************
+* @name	Cached last hit index.
+*       Afflictions are failing to get the proper zone index of the hit as it is read before
+		written. This is a temp fix for it.
+********************************************************************************************* */
+var transient byte LastHitZoneIndex;
 
 replication
 {
@@ -897,7 +905,7 @@ replication
 
 	// Replicated to all but the owning client
 	if ( bNetDirty && (!bNetOwner || bDemoRecording) )
-		WeaponAmbientSound, SecondaryWeaponAmbientSound;
+		WeaponAmbientSound, SecondaryWeaponAmbientSound, WeaponSpecialAction;
 	if ( bEnableAimOffset && (!bNetOwner || bDemoRecording) )
 		ReplicatedAimOffsetPct;
     if ( bNetDirty && bCanCloak )
@@ -1155,6 +1163,8 @@ simulated event ReplicatedEvent(name VarName)
 			OnStartFire();
 		}
 		break;
+	case nameof(WeaponSpecialAction):
+		OnWeaponSpecialAction(WeaponSpecialAction);
 	}
 
 	Super.ReplicatedEvent(VarName);
@@ -1883,6 +1893,20 @@ simulated function OnStartFire()
 	if(WeaponAttachment != none)
 	{
 		WeaponAttachment.StartFire();
+	}
+}
+
+simulated function OnWeaponSpecialAction(int Arg)
+{
+	if (Role == ROLE_Authority)
+	{
+		WeaponSpecialAction = Arg;
+		bNetDirty = true;
+	}
+
+	if(WeaponAttachment != none)
+	{
+		WeaponAttachment.OnSpecialEvent(Arg);
 	}
 }
 
@@ -2673,7 +2697,7 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 	Super.TakeDamage(Damage, InstigatedBy, HitLocation, Momentum, DamageType, HitInfo, DamageCauser);
 
 	// using the passed in damage type instead of the hitfxinfo since that doesn't get updated when zero damage is done
-	HandleAfflictionsOnHit(InstigatedBy, Normal(Momentum), class<KFDamageType>(DamageType), DamageCauser);
+	// HandleAfflictionsOnHit(InstigatedBy, Normal(Momentum), class<KFDamageType>(DamageType), DamageCauser);
 
 	ActualDamage = OldHealth - Health;
 	if( ActualDamage > 0 )
@@ -2775,6 +2799,8 @@ function AdjustDamage(out int InDamage, out vector Momentum, Controller Instigat
 	{
 		InDamage = Health - 1;
 	}
+
+	LastHitZoneIndex = HitZoneIdx;
 
     `log(self @ GetFuncName() @ " After KFPawn adjustment Damage=" $ InDamage @ "Momentum=" $ Momentum @ "Zone=" $ HitInfo.BoneName @ "DamageType=" $ DamageType, bLogTakeDamage);
 }
@@ -3999,12 +4025,12 @@ simulated function KFSkinTypeEffects GetHitZoneSkinTypeEffects( int HitZoneIdx )
  */
 simulated function AdjustAffliction(out float AfflictionPower);
 
-function HandleAfflictionsOnHit(Controller DamageInstigator, vector HitDir, class<KFDamageType> DamageType, Actor DamageCauser)
+function HandleAfflictionsOnHit(Controller DamageInstigator, vector HitDir, class<DamageType> DamageType, Actor DamageCauser)
 {
 	//Handle afflictions
     if (AfflictionHandler != None)
     {
-        AfflictionHandler.NotifyTakeHit(DamageInstigator, HitDir, DamageType, DamageCauser);
+        AfflictionHandler.NotifyTakeHit(DamageInstigator, HitDir,  class<KFDamageType>(DamageType), DamageCauser);
     }
 }
 
@@ -5623,4 +5649,5 @@ defaultproperties
     bAllowDeathSM=true
 
 	bCanBePinned=false
+	LastHitZoneIndex=0
 }

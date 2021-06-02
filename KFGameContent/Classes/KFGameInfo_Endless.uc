@@ -170,7 +170,7 @@ function bool TrySetNextWaveSpecial()
 
 function WaveEnded(EWaveEndCondition WinCondition)
 {
-	if(!bWaveStarted)
+	if(!bWaveStarted && !MyKFGRI.bTraderIsOpen && WinCondition != WEC_TeamWipedOut)
 	{
 		return;
 	}

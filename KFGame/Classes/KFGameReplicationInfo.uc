@@ -344,6 +344,11 @@ var repnotify KFMusicTrackInfo  ReplicatedMusicTrackInfo;
 ************************************/
 
 /************************************
+*  Broken Trader Utils
+************************************/
+var transient bool bIsBrokenTrader;
+
+/************************************
  *  Steam heartbeat
  ************************************/
 
@@ -352,6 +357,7 @@ native function SendSteamHeartbeat();
 native function SendSteamRequestItemDrop();
 
 function native private EndOfWave();
+
 
 cpptext
 {
@@ -375,7 +381,7 @@ replication
 	if ( bNetDirty )
 		TraderVolume, TraderVolumeCheckType, bTraderIsOpen, NextTrader, WaveNum, bWaveIsEndless, AIRemaining, WaveTotalAICount, bWaveIsActive, MaxHumanCount, bGlobalDamage, 
 		CurrentObjective, PreviousObjective, PreviousObjectiveResult, PreviousObjectiveXPResult, PreviousObjectiveVoshResult, MusicIntensity, ReplicatedMusicTrackInfo, MusicTrackRepCount,
-		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective; //@HSL - JRO - 3/21/2016 - PS4 Sessions
+		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective, bIsBrokenTrader; //@HSL - JRO - 3/21/2016 - PS4 Sessions
 	if ( bNetInitial )
 		GameLength, WaveMax, bCustom, bVersusGame, TraderItems, GameAmmoCostScale, bAllowGrenadePurchase, MaxPerkLevel, bTradersEnabled;
 	if ( bNetInitial || bNetDirty )
@@ -796,7 +802,7 @@ exec reliable client function ShowPreGameServerWelcomeScreen()
 
 }
 
-simulated function GetKFPRIArray(out array<KFPlayerReplicationInfo> KFPRIArray, optional bool bGetSpectators)
+simulated function GetKFPRIArray(out array<KFPlayerReplicationInfo> KFPRIArray, optional bool bGetSpectators, optional bool bGetZedPlayers)
 {
     local int i;
     local int Num;
@@ -805,7 +811,8 @@ simulated function GetKFPRIArray(out array<KFPlayerReplicationInfo> KFPRIArray, 
     for ( i = 0; i < PRIArray.Length; i++)
     {
 		if ( PRIArray[i] != None && KFPlayerReplicationInfo(PRIArray[i]) != none &&
-			 (bGetSpectators || !PRIArray[i].bOnlySpectator))
+			 (bGetSpectators || !PRIArray[i].bOnlySpectator) && 
+			 (bGetZedPlayers || PRIArray[i].GetTeamNum() != 255))
 		{
 			KFPRIArray[num++] = KFPlayerReplicationInfo(PRIArray[i]);
 		}
@@ -2170,6 +2177,12 @@ simulated function UpdatePerksAvailable()
 	KFPlayerController(GetALocalPlayerController()).UpdatePerkOnInit();
 }
 
+simulated function NotifyBrokenTrader()
+{
+	bIsBrokenTrader = true;
+	bNetDirty = true;
+}
+
 defaultproperties
 {
 	TraderItemsPath="GP_Trader_ARCH.DefaultTraderItems"
@@ -2188,4 +2201,5 @@ defaultproperties
 	PreviousObjectiveResult=-1
 	PreviousObjectiveVoshResult=-1
 	PreviousObjectiveXPResult=-1
+	bIsBrokenTrader=false
 }

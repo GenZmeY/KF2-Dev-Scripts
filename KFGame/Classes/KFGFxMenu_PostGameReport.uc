@@ -45,20 +45,23 @@ function InitializeMenu( KFGFxMoviePlayer_Manager InManager )
 
 	KFGRI = KFGameReplicationInfo(GetPC().WorldInfo.GRI);
 
-	//@SABER_EGS IsEosBuild() case added
-	if( class'WorldInfo'.static.IsConsoleBuild() || class'WorldInfo'.static.IsEosBuild() )
+	if (class'GameEngine'.Static.IsGameFullyInstalled())
 	{
-		class'GameEngine'.static.GetPlayfabInterface().AddOnCloudScriptExecutionCompleteDelegate(OnProcessEndGameRewardsComplete);
-		KFGRI.SendPlayfabGameTimeUpdate(true);
-		class'GameEngine'.static.GetPlayfabInterface().AddInventoryReadCompleteDelegate( SearchPlayfabInventoryForNewItem );
-	}
-	else
-	{
-		if (KFGRI != none)
+		//@SABER_EGS IsEosBuild() case added
+		if( class'WorldInfo'.static.IsConsoleBuild() || class'WorldInfo'.static.IsEosBuild() )
 		{
-			KFGRI.ProcessChanceDrop();
+			class'GameEngine'.static.GetPlayfabInterface().AddOnCloudScriptExecutionCompleteDelegate(OnProcessEndGameRewardsComplete);
+			KFGRI.SendPlayfabGameTimeUpdate(true);
+			class'GameEngine'.static.GetPlayfabInterface().AddInventoryReadCompleteDelegate( SearchPlayfabInventoryForNewItem );
 		}
-		OnlineSub.AddOnInventoryReadCompleteDelegate(SearchInventoryForNewItem);
+		else
+		{
+			if (KFGRI != none)
+			{
+				KFGRI.ProcessChanceDrop();
+			}
+			OnlineSub.AddOnInventoryReadCompleteDelegate(SearchInventoryForNewItem);
+		}		
 	}
 
 	LocalizeText();

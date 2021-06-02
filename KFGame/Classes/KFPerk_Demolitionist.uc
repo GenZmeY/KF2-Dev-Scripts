@@ -1037,7 +1037,7 @@ DefaultProperties
 	PerkSkills(EDemoDamage)=(Name="Damage",IconPath="UI_PerkTalent_TEX.demolition.UI_Talents_Demolition_GrenadeSupplier",Increment=0.f,Rank=0,StartingValue=0.25f,MaxValue=0.25f)
 	PerkSkills(EDemoTacticalReload)=(Name="Speed",IconPath="UI_PerkTalent_TEX.demolition.UI_Talents_Demolition_Speed",Increment=0.f,Rank=0,StartingValue=0.10f,MaxValue=0.10f)
 	PerkSkills(EDemoDirectHit)=(Name="DirectHit",IconPath="UI_PerkTalent_TEX.demolition.UI_Talents_Demolition_ExplosiveResistance",Increment=0.f,Rank=0,StartingValue=0.25,MaxValue=0.25)
-	PerkSkills(EDemoAmmo)=(Name="Ammo",IconPath="UI_PerkTalent_TEX.demolition.UI_Talents_Demolition_Ammo",Increment=0.f,Rank=0,StartingValue=5.f,MaxValue=5.f,)
+	PerkSkills(EDemoAmmo)=(Name="Ammo",IconPath="UI_PerkTalent_TEX.demolition.UI_Talents_Demolition_Ammo",Increment=0.f,Rank=0,StartingValue=10.f,MaxValue=10.f) //5.f
 	PerkSkills(EDemoSirenResistance)=(Name="SirenResistance",IconPath="UI_PerkTalent_TEX.demolition.UI_Talents_Demolition_SirenResistance",Increment=0.f,Rank=0,StartingValue=0.5,MaxValue=0.5)
 	PerkSkills(EDemoAoE)=(Name="AreaOfEffect",IconPath="UI_PerkTalent_TEX.demolition.UI_Talents_Demolition_AoE",Increment=0.f,Rank=0,StartingValue=1.50,MaxValue=1.50)
 	PerkSkills(EDemoCriticalHit)=(Name="CriticalHit",IconPath="UI_PerkTalent_TEX.demolition.UI_Talents_Demolition_Crit",Increment=0.f,Rank=0,StartingValue=0.5f,MaxValue=0.5f)

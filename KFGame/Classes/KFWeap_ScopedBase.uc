@@ -43,6 +43,8 @@ var int CurrentScopeTextureSize;
 
 var(Scope) float ScopedSensitivityMod;
 
+/** MIC Index for the scope material */
+var byte ScopeMICIndex;
 
 simulated exec function ScopeFOV( float NewFOV )
 {
@@ -128,7 +130,7 @@ reliable client function ClientWeaponSet(bool bOptionalSet, optional bool bDoNot
     	ScopeLenseMIC.SetParent(ScopeLenseMICTemplate);
     	ScopeLenseMIC.SetTextureParameterValue('ScopeTextureTarget', SniperScopeTextureTarget);
     	ScopeLenseMIC.SetScalarParameterValue(InterpParamName, 0.0);
-    	mesh.SetMaterial(2, ScopeLenseMIC);
+    	mesh.SetMaterial(ScopeMICIndex, ScopeLenseMIC);
     }
 }
 
@@ -351,4 +353,6 @@ DefaultProperties
 
     // Aim Assist
     AimCorrectionSize=40.f
+
+    ScopeMICIndex=2
 }

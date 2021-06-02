@@ -592,6 +592,8 @@ native function SetChokePointCollision( bool bUseChokeCollision );
 /** Checks if we are our current location encroaches any world geometry */
 native function bool CheckEncroachingWorldGeometry();
 
+native function float GetGravityZ();
+
 /**
  * Check on various replicated data and act accordingly.
  */
@@ -1392,6 +1394,58 @@ function SetMovementPhysics()
 /** Implements bKnockdownWhenJumpedOn */
 function CrushedBy(Pawn OtherPawn)
 {
+	local KFGameInfo KFGI;
+	local KFPlayerController_WeeklySurvival KFPC_WS;
+	local KFPawn_Human KFPH;
+	local KFPlayerController KFPC;
+	local KFPlayerReplicationInfo KFPRI;
+
+	KFPH = KFPawn_Human(OtherPawn);
+
+	if (KFPH != none)
+	{
+		/*
+		 * For summer season event, we wanto to know if we stomp a zed.
+		 * Adding the notify here will prevent more network data.
+		 * DmgType_Crushed is enough for it, no need to add the goompa.
+		 */
+		KFPC = KFPlayerController(KFPH.Controller);
+		if (KFPC != none)
+		{
+			KFPC.NotifyHitGiven(class'DmgType_Crushed');
+		}
+		
+		///
+
+		KFGI = KFGameInfo(WorldInfo.Game);
+		if (KFGI != none) // Only for players
+		{
+			if (KFGI.OutbreakEvent.ActiveEvent.bGoompaJumpEnabled)
+			{
+				OtherPawn.Velocity = OtherPawn.Velocity * vect(1,1,0);
+				OtherPawn.AddVelocity( vect(0,0,1) * KFGI.OutbreakEvent.ActiveEvent.GoompaJumpImpulse, Instigator.Location, none);
+				TakeDamage( KFGI.OutbreakEvent.ActiveEvent.GoompaJumpDamage, OtherPawn.Controller,Location, vect(0,0,0) , class'KFDT_GoompaStomp');
+
+				KFPC_WS = KFPlayerController_WeeklySurvival(OtherPawn.Controller);
+				if(KFPC_WS != none)
+				{
+					KFPC_WS.UpdateGoompaStreak();
+				}
+
+				// Registering awards information.
+				`RecordAARIntStat(KFPC, STOMP_GIVEN, 1);
+				KFPRI = KFPlayerReplicationInfo(KFPC.PlayerReplicationInfo);
+				if (KFPRI != none)
+				{
+					KFPRI.ZedStomps++;
+				}
+
+				return;
+			}
+		}
+	}
+	
+
 	Super.CrushedBy(OtherPawn);
 
 	if ( bKnockdownWhenJumpedOn
@@ -2087,6 +2141,7 @@ function AdjustDamageForInstigator(out int InDamage, Controller InstigatedBy, cl
 	local KFPawn_Human KFPH;
 	local KFPerk InstigatorPerk;
 	local KFPowerUp InstigatorPowerUp;
+	local KFGameInfo KFGI;
 	local float TempDamage;
 
 	// Let the instigator's perk adjust the damage
@@ -2103,6 +2158,12 @@ function AdjustDamageForInstigator(out int InDamage, Controller InstigatedBy, cl
 		if(InstigatorPowerUp != none)
 		{
 			InstigatorPowerUp.ModifyDamageGiven(InDamage, DamageCauser, self, KFPC, class<KFDamageType>(DamageType), HitZoneIdx);
+		}
+
+		KFGI = KFGameInfo(WorldInfo.Game);
+		if(KFGI != none && KFGI.OutbreakEvent != none)
+		{
+			KFGI.ModifyDamageGiven(InDamage, DamageCauser, self, KFPC, class<KFDamageType>(DamageType), HitZoneIdx);
 		}
 
 		if( KFPC.Pawn != none )

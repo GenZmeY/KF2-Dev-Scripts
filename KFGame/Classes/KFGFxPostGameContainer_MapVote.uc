@@ -41,25 +41,40 @@ function SetMapOptions()
 {
 	local GFxObject MapList;
 	local GFxObject MapObject;
-	local int i;
+	local int i, Counter;
 	local array<string> ServerMapList;
 	local KFGameReplicationInfo KFGRI;
+	local bool IsBrokenTrader;
 
 	KFGRI = KFGameReplicationInfo(GetPC().WorldInfo.GRI);
 
+	Counter = 0;
 	if(KFGRI != none && KFGRI.VoteCollector != none)
 	{
 		ServerMapList = KFGRI.VoteCollector.MapList;
+		IsBrokenTrader = class'KFGameEngine'.static.GetWeeklyEventIndex() == 11;
 
 		//gfx
 		MapList = CreateArray();
 
 		for (i = 0; i < ServerMapList.length; i++)
 		{
+			if (IsBrokenTrader && ( ServerMapList[i] == "KF-Biolapse" || 
+									ServerMapList[i] == "KF-Nightmare" ||
+									ServerMapList[i] == "KF-PowerCore_Holdout" ||
+									ServerMapList[i] == "KF-TheDescent" ||
+									ServerMapList[i] == "KF-KrampusLair"))
+			{
+				continue;
+			}
+
 			MapObject = CreateObject("Object");
 			MapObject.SetString("label", class'KFCommon_LocalizedStrings'.static.GetFriendlyMapName(ServerMapList[i]) );
 			MapObject.SetString("mapSource", GetMapSource(ServerMapList[i]) );
-			MapList.SetElementObject(i, MapObject);
+			MapObject.SetInt("mapindex", i);
+			MapList.SetElementObject(Counter, MapObject);
+
+			Counter++;
 		}
 	}
 

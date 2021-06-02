@@ -62,6 +62,8 @@ var KFGFxWidget_NonCriticalGameMessage NonCriticalGameMessageWidget;
 var KFGFxWidget_NonCriticalGameMessage InviteGameMessageWidget;
 // Widget that shows headshots for gunslinger
 var KFGFxWidget_RhythmCounter RhythmCounterWidget;
+// Widget that shows goompa jumps.
+var KFGFxWidget_GoompaCounter GoompaCounterWidget;
 // Widget that displays health bar
 var KFGFxWidget_BossHealthBar bossHealthBar;
 // Widget that displays map texts
@@ -335,12 +337,18 @@ event bool WidgetInitialized(name WidgetName, name WidgetPath, GFxObject Widget)
         break;
     case 'RhythmCounter':
         if(RhythmCounterWidget == none)
-    {
+        {
             RhythmCounterWidget=KFGFxWidget_RhythmCounter(Widget);
-    }
+        }
+        break;
+    case 'GoompaCounter':
+        if (GoompaCounterWidget == none)
+        {
+            GoompaCounterWidget=KFGFxWidget_GoompaCounter(Widget);
+        }
         break;
     }
-
+   
     return true;
 }
 
@@ -1074,6 +1082,14 @@ function UpdateRhythmCounterWidget(int value, int max)
     }
 }
 
+function UpdateGoompaCounterWidget(int value, int max)
+{
+    if(GoompaCounterWidget != none)
+    {
+        GoompaCounterWidget.SetCount(value, max);
+    }
+}
+
 //==============================================================
 // Input
 //==============================================================
@@ -1393,6 +1409,7 @@ DefaultProperties
     WidgetBindings.Add((WidgetName="NonCriticalMessageWidget", WidgetClass=class'KFGFxWidget_NonCriticalGameMessage'))
     WidgetBindings.Add((WidgetName="InviteMessageWidget", WidgetClass=class'KFGFxWidget_NonCriticalGameMessage'))
     WidgetBindings.Add((WidgetName="RhythmCounter", WidgetClass=class'KFGFxWidget_RhythmCounter'))
+    WidgetBindings.ADD((WidgetName="GoompaCounter", WidgetClass=class'KFGFxWidget_GoompaCounter'));
     WidgetBindings.Add((WidgetName="bossHealthBar", WidgetClass=class'KFGFxWidget_BossHealthBar'))
     WidgetBindings.Add((WidgetName="mapTextWidget", WidgetClass=class'KFGFxWidget_MapText'))
     WidgetBindings.Add((WidgetName="counterMapTextWidget", WidgetClass=class'KFGFxWidget_MapCounterText'))

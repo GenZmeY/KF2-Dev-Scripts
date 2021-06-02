@@ -79,6 +79,8 @@ cpptext
 }
 
 native function float GetGravityZ();
+native function float GetGravityZHuman();
+native function float GetGravityZMonster();
 native function vector GetZoneVelocityForActor(Actor TheActor);
 
 simulated event PostBeginPlay()

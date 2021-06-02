@@ -727,9 +727,9 @@ defaultproperties
 
 	// Ammo
 	MagazineCapacity[0]=1
-	SpareAmmoCapacity[0]=30
-	InitialSpareMags[0]=10
-	AmmoPickupScale[0]=3.0 // 3 arrows
+	SpareAmmoCapacity[0]=35 //30
+	InitialSpareMags[0]=11 //10
+	AmmoPickupScale[0]=4.0 //3.0
 
 	// Recoil
 	maxRecoilPitch=200

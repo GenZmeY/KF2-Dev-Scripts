@@ -65,6 +65,11 @@ event PreBeginPlay()
     super.PreBeginPlay();
 
 	OutbreakEvent.UpdateGRI();
+
+    if (Role == Role_Authority && MyKFGRI != none && OutbreakEvent.ActiveEvent.bUnlimitedWeaponPickups)
+    {
+        MyKFGRI.NotifyBrokenTrader();
+    }
 }
 
 function CreateOutbreakEvent()
@@ -136,6 +141,7 @@ function SetPickupItemList()
                 ItemFactory.ItemPickups.Remove(0, ItemFactory.ItemPickups.Length);
                 continue;
             }
+
             foreach OutbreakEvent.ActiveEvent.TraderWeaponList.SaleItems(TraderItem)
             {
                 for (Idx = ItemFactory.ItemPickups.Length - 1; Idx >= 0; --Idx)
@@ -241,14 +247,18 @@ protected function ScoreMonsterKill( Controller Killer, Controller Monster, KFPa
 function HealAfterKilling(KFPawn_Monster MonsterPawn , Controller Killer)
 {
 	local int i;
+    local int j;
 	local KFPlayerController KFPC;
 	local KFPlayerReplicationInfo DamagerKFPRI;
     local array<DamageInfo> DamageHistory;
     local array<KFPlayerController> Attackers;
     local KFPawn_Human PawnHuman;
-
+    local KFGameInfo KFGI;
+    
     DamageHistory = MonsterPawn.DamageHistory;
-
+    
+    KFGI = KFGameInfo(WorldInfo.Game);
+	
 	for ( i = 0; i < DamageHistory.Length; i++ )
 	{
 		if( DamageHistory[i].DamagerController != none
@@ -266,9 +276,30 @@ function HealAfterKilling(KFPawn_Monster MonsterPawn , Controller Killer)
                     {
                     	PawnHuman = KFPawn_Human(KFPC.Pawn);
                         Attackers.AddItem(KFPC);
+
+                        /*
+                            Weekly event Aracnophobia (10):
+                            2 kind of heales: one for killing and another for killing by jumping on enemies.
+                            HealByAssistance is used for the latest, no need to add extra variables.
+                         */
+                        if( KFPC == Killer && KFGI != none && KFGI.OutbreakEvent.ActiveEvent.bGoompaJumpEnabled )
+                        {
+                            for (j = 0; j < DamageHistory[i].DamageTypes.Length; j++)
+                            {
+                                if (DamageHistory[i].DamageTypes[j] == class 'KFDT_GoompaStomp')
+                                {
+                                    PawnHuman.HealDamageForce(MonsterPawn.HealByAssistance, KFPC, class'KFDT_Healing', false, false );
+                                    return;
+                                }
+                            }
+
+                            PawnHuman.HealDamageForce(MonsterPawn.HealByKill, KFPC, class'KFDT_Healing', false, false );
+                            return;
+                        }
+                        //
+
                         if( KFPC == Killer )
                         {
-                            `Log("Heal by Kill: "$MonsterPawn.HealByKill);
             				PawnHuman.HealDamageForce(MonsterPawn.HealByKill, KFPC, class'KFDT_Healing', false, false );
                             
                             if( KFPawn_ZedFleshpound(MonsterPawn) != none || KFPawn_ZedScrake(MonsterPawn) != none )
@@ -278,7 +309,6 @@ function HealAfterKilling(KFPawn_Monster MonsterPawn , Controller Killer)
                         }
                         else
                         {
-                            `Log("Heal by Assistance: "$MonsterPawn.HealByAssistance);
             				PawnHuman.HealDamageForce(MonsterPawn.HealByAssistance, KFPC, class'KFDT_Healing', false, false );
                         }
                     }
@@ -286,7 +316,6 @@ function HealAfterKilling(KFPawn_Monster MonsterPawn , Controller Killer)
 			}
 		}
 	}
-
 }
 
 
@@ -482,6 +511,34 @@ function StartWave()
         SetTimer(OutbreakEvent.ActiveEvent.AdditionalBossWaveStartDelay, true, nameof(SpawnBossWave));
     }
 
+    if (OutbreakEvent.ActiveEvent.bUnlimitedWeaponPickups)
+    {
+        OverridePickupList();
+    }
+}
+
+function bool OverridePickupList()
+{
+    local KFPickupFactory PickupFactory;
+    local KFPickupFactory_Item ItemFactory;
+    local KFGameReplicationInfo_WeeklySurvival KFGRI_WS;
+
+    KFGRI_WS=KFGameReplicationInfo_WeeklySurvival(MyKFGRI);
+    if (KFGRI_WS == none)
+        return false;
+
+    foreach ItemPickups(PickupFactory)
+    {
+        ItemFactory = KFPickupFactory_Item(PickupFactory);
+
+        if (ItemFactory == none)
+            continue;
+        
+        KFGRI_WS.OverrideWeaponPickups(ItemFactory);
+        ItemFactory.OverridePickup();
+    }
+
+    return true;
 }
 
 function EnableGlobalDamage()
@@ -614,8 +671,6 @@ function InitAllPickups()
     {
         NumWeaponPickups = ItemPickups.Length * (OutbreakEvent.ActiveEvent.OverrideItemPickupModifier >= 0.f ? OutbreakEvent.ActiveEvent.OverrideItemPickupModifier : DifficultyInfo.GetItemPickupModifier());
 		NumAmmoPickups = AmmoPickups.Length * (OutbreakEvent.ActiveEvent.OverrideAmmoPickupModifier >= 0.f ? OutbreakEvent.ActiveEvent.OverrideAmmoPickupModifier : DifficultyInfo.GetAmmoPickupModifier());
-        `log("OutbreakEvent.ActiveEvent.OverrideItemPickupModifier"@OutbreakEvent.ActiveEvent.OverrideItemPickupModifier);
-        `log("NumWeaponPickups"@NumWeaponPickups);
 
 `if(`__TW_SDK_)
 	if( BaseMutator != none )
@@ -696,6 +751,7 @@ function class<KFPawn_Monster> GetAISpawnType(EAIType AIType)
 function bool AllowPrimaryWeapon(string ClassPath)
 {
     local STraderItem Item;
+
     if (OutbreakEvent.ActiveEvent.SpawnWeaponList != none)
     {
         foreach OutbreakEvent.ActiveEvent.SpawnWeaponList.SaleItems(Item)
@@ -704,8 +760,8 @@ function bool AllowPrimaryWeapon(string ClassPath)
             {
                 return true;
             }
-        }
-        return false;
+        }    
+        return true;
     }
     return true;
 }
@@ -788,6 +844,42 @@ function DoDeathExplosion(Pawn DeadPawn, KFGameExplosion ExplosionTemplate, clas
     }
 }
 
+simulated function AddWeaponsFromSpawnList(KFPawn P)
+{
+    local STraderItem Item;
+
+    if (OutbreakEvent.ActiveEvent.SpawnWeaponList != none || OutbreakEvent.ActiveEvent.bAddSpawnListToLoadout)
+    {
+        foreach OutbreakEvent.ActiveEvent.SpawnWeaponList.SaleItems(Item)
+        {
+            P.DefaultInventory.AddItem(class<Weapon>(DynamicLoadObject(Item.WeaponDef.default.WeaponClassPath, class'Class')));
+        }    
+    }
+}
+
+simulated function OverrideHumanDefaults(KFPawn_Human P)
+{
+    if (OutbreakEvent.ActiveEvent.JumpZ >= 0.0f)
+    {
+        P.JumpZ = OutbreakEvent.ActiveEvent.JumpZ;
+    }
+}
+
+simulated function ModifyDamageGiven(out int InDamage, optional Actor DamageCauser, optional KFPawn_Monster MyKFPM, optional KFPlayerController DamageInstigator, optional class<KFDamageType> DamageType, optional int HitZoneIdx )
+{
+    local KFPlayerController_WeeklySurvival KFPC;
+    local int Streak;
+
+    if (OutbreakEvent.ActiveEvent.bGoompaJumpEnabled)
+    {
+        KFPC = KFPlayerController_WeeklySurvival(DamageInstigator);
+        if (KFPC != none)
+        {
+            Streak = KFPC.GoompaStreakBonus < KFPC.MaxGoompaStreak ? KFPC.GoompaStreakBonus : KFPC.MaxGoompaStreak;
+            InDamage *= (1 + OutbreakEvent.ActiveEvent.GoompaStreakDamage * Streak);
+        }
+    }
+}
 
 defaultproperties
 {

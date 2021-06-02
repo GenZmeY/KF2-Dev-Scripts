@@ -246,7 +246,8 @@ simulated function ModifyMagSizeAndNumber( KFWeapon KFW, out int MagazineCapacit
 
 	TempCapacity = MagazineCapacity;
 
-	if( !bSecondary && IsWeaponOnPerk( KFW, WeaponPerkClass, self.class ) && (KFW == none || !KFW.bNoMagazine) &&
+	// FAMAS needs its secondary ammo affected
+	if( (!bSecondary || IsFAMAS(KFW)) && IsWeaponOnPerk( KFW, WeaponPerkClass, self.class ) && (KFW == none || !KFW.bNoMagazine) &&
 		HighCapMagExemptList.Find(WeaponClassName) == INDEX_NONE )
 	{
 		if( IsHighCapMagsMagActive() )
@@ -559,8 +560,9 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 	local name StateName;
 	StateName = W.GetStateName();
 
+	// Blast Brawlers use a different state for shooting (combining melee + firing). Needs a special case for this
 	if( IsWeaponOnPerk( W,, self.class ) && CouldBarrageActive() && 
-		ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE )
+		(ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE || (StateName == 'MeleeChainAttacking' && IsBlastBrawlers(W))))
 	{
 		return BarrageFiringRate;
 	}
@@ -821,7 +823,7 @@ DefaultProperties
 	ShotgunPenetration=(Name="Shotgun Penetration",Increment=0.20,Rank=0,StartingValue=0.0f,MaxValue=5.0f) //6.25
 	Strength=(Name="Strength",Increment=1.f,Rank=0,StartingValue=0.f,MaxValue=5.f)
 
-	PerkSkills(ESupportHighCapMags)=(Name="HighCapMags",IconPath="UI_PerkTalent_TEX.support.UI_Talents_Support_HighCapacityMags",Increment=0.f,Rank=0,StartingValue=0.5,MaxValue=0.5) //0.25
+	PerkSkills(ESupportHighCapMags)=(Name="HighCapMags",IconPath="UI_PerkTalent_TEX.support.UI_Talents_Support_HighCapacityMags",Increment=0.f,Rank=0,StartingValue=0.75,MaxValue=0.75) //0.5
 	PerkSkills(ESupportTacticalReload)=(Name="TacticalReload",IconPath="UI_PerkTalent_TEX.Support.UI_Talents_Support_TacticalReload",Increment=0.f,Rank=0,StartingValue=0.8f,MaxValue=0.f)
 	PerkSkills(ESupportFortitude)=(Name="Fortitude",IconPath="UI_PerkTalent_TEX.Support.UI_Talents_Support_Fortitude",Increment=0.f,Rank=0,StartingValue=0.5f,MaxValue=0.5f)
 	PerkSkills(ESupportSalvo)=(Name="Salvo",IconPath="UI_PerkTalent_TEX.Support.UI_Talents_Support_Salvo",Increment=0.f,Rank=0,StartingValue=0.3f,MaxValue=0.3f)

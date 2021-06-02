@@ -209,7 +209,7 @@ function Callback_ReadyClicked( bool bReady )
 			//player has spawned, skip trader time
 			if (KFGRI.bTraderIsOpen && KFPRI.bHasSpawnedIn)
 			{
-				if (KFPC.MyGFxManager.bMenusOpen && KFPC.MyGFxManager.CurrentMenu != KFPC.MyGFxManager.TraderMenu && !KFGRI.bVersusGame)
+				if (KFPC.MyGFxManager.bMenusOpen && KFPC.MyGFxManager.CurrentMenu != KFPC.MyGFxManager.TraderMenu)
 				{
 					//skip trader request
 					KFPRI.RequestSkiptTrader(KFPRI);

@@ -26,8 +26,8 @@ enum EMeleeAttackType
 };
 
 /** Attack settings that should be initialized before calling BeginMeleeAttack */
-var private EPawnOctant			NextAttackDir;
-var private EMeleeAttackType	NextAttackType;
+var protected EPawnOctant		NextAttackDir;
+var protected EMeleeAttackType	NextAttackType;
 
 /** Direction of the last played attack */
 var EPawnOctant			CurrentAttackDir;

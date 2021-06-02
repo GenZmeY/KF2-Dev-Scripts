@@ -11,12 +11,9 @@ class KFProj_Grenade_GravityImploder extends KFProj_BallisticExplosive
 /* Ensure it detonates */
 var float DetonationTime;
 var float VortexDuration;
-
 var float VortexRadius;
 var float VortexImpulseStrength;
 var protected transient bool bVortexActive;
-
-var protected RB_RadialImpulseComponent	RadialImpulseComponent;
 
 simulated state GrenadeState
 {
@@ -49,18 +46,25 @@ simulated state VortexState
 
 	simulated event Tick(float DeltaTime)
 	{
-		local float ImpulseModifier;
+		local Actor          Victim;
+		local TraceHitInfo   HitInfo;
+		local FracturedStaticMeshActor FracActor;
 
 		if(bVortexActive && (WorldInfo.NetMode == NM_Client || WorldInfo.NetMode == NM_Standalone))
 		{
-			// ImpulseModifier = (bReduceGibImpulseOnTick) ? (1.0f - AccumulatedTime / Lifetime) : 1.0f;
-			ImpulseModifier = 1.0f;
-
-			RadialImpulseComponent.ImpulseRadius   = VortexRadius;
-			RadialImpulseComponent.ImpulseStrength = VortexImpulseStrength * ImpulseModifier;
-			RadialImpulseComponent.bVelChange      = true;
-			RadialImpulseComponent.ImpulseFalloff  = RIF_Constant;
-			RadialImpulseComponent.FireImpulse(Location);
+			foreach CollidingActors(class'Actor', Victim, VortexRadius, Location, true,, HitInfo)
+			{
+				if (KFPawn_Human(Victim) == none && Victim.CollisionComponent != none && !Victim.bWorldGeometry)
+				{
+					Victim.CollisionComponent.AddRadialImpulse(Location, VortexRadius, VortexImpulseStrength, RIF_Constant, true);
+				}
+				
+				FracActor = FracturedStaticMeshActor(Victim);
+				if (FracActor != none)
+				{
+					FracActor.BreakOffPartsInRadius(Location, VortexRadius, VortexImpulseStrength, true);
+				}
+			}
 		}
 	}
 }
@@ -123,9 +127,9 @@ defaultproperties
 	ProjFlightTemplate=ParticleSystem'WEP_Gravity_Imploder_EMIT.FX_Yellow_Projectile'
 	ProjFlightTemplateZedTime=ParticleSystem'WEP_Gravity_Imploder_EMIT.FX_Yellow_Projectile_ZEDTIME'
 
-	GrenadeBounceEffectInfo=KFImpactEffectInfo'FX_Impacts_ARCH.DefaultGrenadeImpacts'
+	//GrenadeBounceEffectInfo=KFImpactEffectInfo'FX_Impacts_ARCH.DefaultGrenadeImpacts'
     ProjDisintegrateTemplate=ParticleSystem'ZED_Siren_EMIT.FX_Siren_grenade_disable_01'
-	AltExploEffects=KFImpactEffectInfo'WEP_Gravity_Imploder_ARCH.Yellow_Explosion_Concussive_Force'
+	//AltExploEffects=KFImpactEffectInfo'WEP_Gravity_Imploder_ARCH.Yellow_Explosion_Concussive_Force'
 
 	// Grenade explosion light
 	Begin Object Class=PointLightComponent Name=ExplosionPointLight
@@ -179,10 +183,4 @@ defaultproperties
 	VortexImpulseStrength=-100
 	VortexDuration=0.5f
 	bVortexActive=false
-
-	Begin Object Class=RB_RadialImpulseComponent Name=ImpulseComponent0
-	End Object
-	RadialImpulseComponent=ImpulseComponent0
-	Components.Add(ImpulseComponent0)
 }
-

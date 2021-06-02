@@ -472,6 +472,28 @@ static function bool IsDual9mm( KFWeapon KFW )
 	return KFW != none && KFW.Class.Name == 'KFWeap_Pistol_Dual9mm';
 }
 
+/**
+ * @brief Return if a weapon is FAMAS (special case for high capacity perk)
+ *
+ * @param KFW Weapon to check
+ * @return true if backup weapon
+ */
+static function bool IsFAMAS( KFWeapon KFW )
+{
+	return KFW != none && KFW.Class.Name == 'KFWeap_AssaultRifle_FAMAS';
+}
+
+/**
+ * @brief Return if a weapon is the Blast Brawlers (special case needed for ZedTime perks)
+ *
+ * @param KFW Weapon to check
+ * @return true if backup weapon
+ */
+static function bool IsBlastBrawlers( KFWeapon KFW )
+{
+	return KFW != none && KFW.Class.Name == 'KFWeap_HRG_BlastBrawlers';
+}
+
 /*********************************************************************************************
 * @name	 Build / Level Management - Apply and save the updated build and level
 ********************************************************************************************* */
@@ -941,15 +963,17 @@ function AddDefaultInventory( KFPawn P )
 
         if (KFGameInfo(WorldInfo.Game) != none)
         {
-            if (KFGameInfo(WorldInfo.Game).AllowPrimaryWeapon(GetPrimaryWeaponClassPath()))
-            {
-                P.DefaultInventory.AddItem(class<Weapon>(DynamicLoadObject(GetPrimaryWeaponClassPath(), class'Class')));
-            }
+			if (KFGameInfo(WorldInfo.Game).AllowPrimaryWeapon(GetPrimaryWeaponClassPath()))
+			{
+				P.DefaultInventory.AddItem(class<Weapon>(DynamicLoadObject(GetPrimaryWeaponClassPath(), class'Class')));
+			}
 
 			if(KFGameInfo(WorldInfo.Game).AllowSecondaryWeapon(GetSecondaryWeaponClassPath()))
 			{
 				P.DefaultInventory.AddItem(class<Weapon>(DynamicLoadObject(GetSecondaryWeaponClassPath(), class'Class')));
 			}
+
+			KFGameInfo(WorldInfo.Game).AddWeaponsFromSpawnList(P);
         }
         else
         {

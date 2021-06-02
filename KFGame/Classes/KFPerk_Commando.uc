@@ -250,7 +250,8 @@ simulated function ModifyMagSizeAndNumber( KFWeapon KFW, out int MagazineCapacit
 
 	TempCapacity = MagazineCapacity;
 	
-	if( !bSecondary && IsWeaponOnPerk( KFW, WeaponPerkClass, self.class ) && (KFW == none || !KFW.bNoMagazine) )
+	// FAMAS needs its secondary ammo affected
+	if( (!bSecondary || IsFAMAS(KFW)) && IsWeaponOnPerk( KFW, WeaponPerkClass, self.class ) && (KFW == none || !KFW.bNoMagazine) )
 	{
 		if( IsLargeMagActive() )
 		{

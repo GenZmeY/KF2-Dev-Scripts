@@ -407,6 +407,115 @@ defaultproperties
 
     )}
 
+    // Aracnophobia
+    SetEvents[10]={(
+                    EventDifficulty=2, //1,
+                    GameLength=GL_Normal,
+                    SpawnRateMultiplier=0.75, //5.0,
+                    bHealAfterKill = true,
+                    bGoompaJumpEnabled = true,
+                    GoompaJumpDamage = 550, //300,
+                    GoompaStreakDamage = 0.1, //0.2,
+                    GoompaJumpImpulse = 600, //1000,
+                    GoompaStreakMax = 5,
+                    GoompaBonusDuration=8.0f, //10.0f,
+                    DoshOnKillGlobalModifier=1.0,
+                    SpawnWeaponList=KFGFxObject_TraderItems'GP_Trader_ARCH.AracnophobiaWeeklySpawnList',
+                    bAddSpawnListToLoadout=true,
+                    WaveAICountScale=(0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
+                    JumpZ=700.f, // 650.0 by default; -1 used for not overriding.
+                    /** HealByKill = Normal kill. HealByAssistance = Goomba stomping  */
+                    ZedsToAdjust={(
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedCrawler',HealthScale=10.0, HeadHealthScale=20.0, DamageDealtScale=0.7, InitialGroundSpeedModifierScale=0.7, HealByAssistance=10),
+                                    (ClassToAdjust=class'KFGameContent.KFPawn_ZedCrawlerKing',HealthScale=10.0,HeadHealthScale=20.0, DamageDealtScale=0.7, InitialGroundSpeedModifierScale=0.7, HealByAssistance=20)
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Cyst',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Alpha',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_AlphaKing',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Slasher',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedSiren',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedStalker',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedGorefast',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedGorefastDualBlade',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedBloat',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedHusk',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedDAR_EMP',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedDAR_Laser',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedDAR_Rocket',HealByAssistance=5),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedScrake',HealByAssistance=15),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpound',HealByAssistance=15),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpoundMini',HealByAssistance=15),
+                                    //(ClassToAdjust=class'KFGameContent.KFPawn_ZedBloatKingSubspawn',HealByAssistance=5)
+                    )},
+                    SpawnReplacementList={(
+                                            (SpawnEntry=AT_Clot,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_AlphaClot,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_SlasherClot,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_Stalker,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_Bloat,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_Siren,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_Husk,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_GoreFast,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            //(SpawnEntry=AT_Scrake,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.7),
+                                            //(SpawnEntry=AT_FleshPound,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.7),
+                                            //(SpawnEntry=AT_FleshpoundMini,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.7),
+                                            (SpawnEntry=AT_EliteClot,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_EliteGoreFast,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_EDAR_EMP,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_EDAR_Laser,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_EDAR_Rocket,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.6),
+                                            (SpawnEntry=AT_Crawler,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=1.0)
+                    )}
+    )}
+
+    // Broken Trader
+    SetEvents[11]={(
+                    EventDifficulty=1,
+                    GameLength=GL_Normal,
+                    bSpawnWeaponListAffectsSecondaryWeapons=true,
+                    TraderWeaponList=KFGFxObject_TraderItems'GP_Trader_ARCH.BrokenTraderWeeklyTraderList',
+                    PickupResetTime=PRS_Wave,
+                    bDisableTraders=false,
+                    DroppedItemLifespan=10.0f, // 300 default
+                    DoshOnKillGlobalModifier=0.2,
+                        //Pickup Notes for when you're modifying:
+                    //      NumPickups = Actors * OverridePickupModifer * WavePickupModifier
+                    //      Ex: 16 item pickups in the world
+                    //          * 0.9 Pickup Modifier = 14
+                    //          * 0.5 Current wave modifier = 7 expected to spawn
+                    //
+                    //      Ex: 16 ammo pickups in the world
+                    //          * 0.1 pickup modifier = 2
+                    //          * 0.5 current wave modifier = 1 expected to spawn
+                    bUnlimitedWeaponPickups=true,
+                    OverrideItemPickupModifier=2.0,
+                    OverrideAmmoPickupModifier=0.8, //0.5,
+                    WaveItemPickupModifiers={(
+                                1.0, 1.0, 1.0, 1.0, 1.0
+                    )},
+                    WaveAmmoPickupModifiers={(
+                                0.5, 0.6, 0.7, 0.8, 0.9
+                    )},
+                    bUseOverrideAmmoRespawnTime=true,
+                    OverrideAmmoRespawnTime={(
+                                PlayersMod[0]=20.000000,
+                                PlayersMod[1]=20.000000,
+                                PlayersMod[2]=10.000000,
+                                PlayersMod[3]=10.000000,
+                                PlayersMod[4]=5.000000,
+                                PlayersMod[5]=5.000000,
+                                ModCap=1.000000
+                    )},
+                    bUseOverrideItemRespawnTime=true,
+                    OverrideItemRespawnTime={(
+                                PlayersMod[0]=10.000000,
+                                PlayersMod[1]=10.000000,
+                                PlayersMod[2]=5.000000,
+                                PlayersMod[3]=5.000000,
+                                PlayersMod[4]=2.000000,
+                                PlayersMod[5]=2.000000,
+                                ModCap=1.000000
+                    )}
+    )}
 
 
     //Test events from here down.  These don't end up in the regular rotation.

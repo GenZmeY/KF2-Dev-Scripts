@@ -462,11 +462,13 @@ simulated function float GetAoERadiusModifier()
 simulated function float GetZedTimeModifier( KFWeapon W )
 {
 	local name StateName;
-	if( GetMadManActive() && (!W.IsMeleeWeapon() || KFWeap_MeleeBase(W).default.bHasToBeConsideredAsRangedWeaponForPerks ))
+	if( GetMadManActive() && (!W.IsMeleeWeapon() || KFWeap_MeleeBase(W).default.bHasToBeConsideredAsRangedWeaponForPerks || IsBlastBrawlers(W) ))
 	{
 		StateName = W.GetStateName();
 		`Warn(StateName);
-		if( ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE )
+		
+		// Blast Brawlers use a different state for shooting (combining melee + firing). Needs a special case for this
+		if( ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE || (StateName == 'MeleeChainAttacking' && IsBlastBrawlers(W)) )
 		{
 			return GetSkillValue( PerkSkills[ESurvivalist_MadMan] );
 		}

@@ -429,6 +429,10 @@ const KFACHID_Dystopia2029Hard                  =   280;
 const KFACHID_Dystopia2029HellOnEarth  			=   281;
 const KFACHID_Dystopia2029Collectibles 			=   282;
 
+const KFACHID_MoonbaseHard                      =   283;
+const KFACHID_MoonbaseHellOnEarth  		    	=   284;
+const KFACHID_MoonbaseCollectibles 			    =   285;
+
 /* __TW_ANALYTICS_ */
 var int PerRoundWeldXP;
 var int PerRoundHealXP;
@@ -1081,6 +1085,11 @@ function SavePersonalBest( EPersonalBests PersonalBestID, int Value )
 private event AddToHitsTaken()
 {
 	SeasonalEventStats_OnHitTaken();
+}
+
+private event AddToHitsGiven(class<DamageType> DT)
+{
+	SeasonalEventStats_OnHitGiven(DT);
 }
 
 /**
@@ -1810,6 +1819,14 @@ final simulated function SeasonalEventStats_OnHitTaken()
 	}
 }
 
+final simulated function SeasonalEventStats_OnHitGiven(class<DamageType> DT)
+{
+	if (SeasonalEventIsValid())
+	{
+		SeasonalEvent.OnHitGiven(DT);
+	}
+}
+
 final simulated function SeasonalEventStats_OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT)
 {
 	if (SeasonalEventIsValid())
@@ -2003,6 +2020,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_SMG_P90, KFDT_Ballistic_P90,KFDT_Bludgeon_P90),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_SMG_Kriss, KFDT_Ballistic_Kriss,KFDT_Bludgeon_Kriss),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_SMG_HK_UMP, KFDT_Ballistic_HK_UMP,KFDT_Bludgeon_HK_UMP),CompletionAmount=10000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_BarrierRifle, KFDT_Ballistic_HRG_BarrierRifle,KFDT_Bludgeon_HRG_BarrierRifle),CompletionAmount=10000))
 
     //Commando Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_AR15, KFDT_Ballistic_AR15,KFDT_Bludgeon_AR15),CompletionAmount=5000)) //3000
@@ -2020,6 +2038,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_M4, KFDT_Ballistic_M4Shotgun,KFDT_Bludgeon_M4Shotgun),CompletionAmount=10000)) //7000
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_AA12, KFDT_Ballistic_AA12Shotgun,KFDT_Bludgeon_AA12Shotgun),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_ElephantGun, KFDT_Ballistic_ElephantGun,KFDT_Bludgeon_ElephantGun),CompletionAmount=10000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_BlastBrawlers, KFDT_Ballistic_BlastBrawlersShotgun,KFDT_Bludgeon_BlastBrawlers,KFDT_Bludgeon_BlastBrawlersHeavy,KFDT_Bludgeon_BlastBrawlersBash),CompletionAmount=10000))
 
     //Medic Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Pistol_Medic, KFDT_Ballistic_Pistol_Medic,KFDT_Bludgeon_Pistol_Medic),CompletionAmount=5000)) //3000
@@ -2225,7 +2244,10 @@ defaultproperties
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-DYSTOPIA2029),CompletionAmount=1))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-DYSTOPIA2029),CompletionAmount=2))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-DYSTOPIA2029),CompletionAmount=3))
-
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-MOONBASE),CompletionAmount=1))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-MOONBASE),CompletionAmount=2))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-MOONBASE),CompletionAmount=3))
+	
     //Versus Damage
     //    Per design doc that I have right now, these are x class damage y players, not damage y amount
     /*DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_VersusDamage,ObjectiveClasses=(KFPawn_ZedClot_Alpha, KFPawn_ZedClot_Alpha_Versus),CompletionAmount=1))
