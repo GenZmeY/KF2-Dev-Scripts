@@ -475,7 +475,7 @@ defaultproperties
                     TraderWeaponList=KFGFxObject_TraderItems'GP_Trader_ARCH.BrokenTraderWeeklyTraderList',
                     PickupResetTime=PRS_Wave,
                     bDisableTraders=false,
-                    DroppedItemLifespan=10.0f, // 300 default
+                    DroppedItemLifespan=20.0f, //10.0f, // 300 default
                     DoshOnKillGlobalModifier=0.2,
                         //Pickup Notes for when you're modifying:
                     //      NumPickups = Actors * OverridePickupModifer * WavePickupModifier

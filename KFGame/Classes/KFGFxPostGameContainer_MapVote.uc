@@ -52,7 +52,7 @@ function SetMapOptions()
 	if(KFGRI != none && KFGRI.VoteCollector != none)
 	{
 		ServerMapList = KFGRI.VoteCollector.MapList;
-		IsBrokenTrader = class'KFGameEngine'.static.GetWeeklyEventIndex() == 11;
+		IsBrokenTrader = KFGRI.IsA('KFGameReplicationInfo_WeeklySurvival') && class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 11;
 
 		//gfx
 		MapList = CreateArray();

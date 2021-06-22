@@ -973,7 +973,7 @@ static function PrepareExplosive( Pawn ProjOwner, KFProjectile Proj, optional fl
 
 DefaultProperties
 {
-	ParryDuration=6.f //10.f
+	ParryDuration=8.f //6.f //10.f
 	ParrySpeed=0.05
 	FurySpeed=0.05
 	NinjaSprintModifer=0.25
@@ -982,7 +982,7 @@ DefaultProperties
 	SpeedDamageModifier=0.2
 	SmashHeadDamageModifier=0.25
 	VampireAttackSpeedModifier=0.2f
-	ParryDamageReduction=0.25f //0.4f //0.75
+	ParryDamageReduction=0.3f //0.25f //0.4f //0.75
 	RageRadius=1000 //300
 	RageFleeDuration=5.f //3
 	RageFleeDistance=2500 //5000

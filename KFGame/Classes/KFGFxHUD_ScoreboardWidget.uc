@@ -177,17 +177,18 @@ function UpdatePlayerData()
 	local GFxObject DataProvider,TempData, PerkIconObject;
 	local int i;
     local KFPlayerReplicationinfo KFPRI;
+    local KFGameReplicationInfo KFGRI;
     local KFPlayerController KFPC;
     local int PlayerIndex;
 
     KFPC = KFPlayerController(GetPC());
-
+    KFGRI = KFGameReplicationInfo(GetPC().Worldinfo.GRI);
     PlayerIndex=0;
     DataProvider = CreateArray();
 	for(i = 0 ; i < CurrentPlayerList.length; i ++)
     {
         KFPRI = CurrentPlayerList[i];
-        if(KFPRI.GetTeamNum() != 255 && KFPRI.bHasSpawnedIn)
+        if(KFPRI.GetTeamNum() != 255 && (KFPRI.bHasSpawnedIn || (KFGRI != none && KFGRI.bVersusGame)))
         {
             TempData  = CreateObject("Object");
 

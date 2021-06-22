@@ -419,7 +419,7 @@ simulated state AltReloading extends Reloading
 	/** Make sure we can inturrupt secondary reload with anything. */
 	simulated function bool CanOverrideMagReload(byte FireModeNum)
 	{
-		return false;
+		return true;
 	}
 
 	/** Returns animation to play based on reload type and status */
@@ -553,6 +553,23 @@ simulated function ModifyRecoil( out float CurrentRecoilModifier )
 	super.ModifyRecoil( CurrentRecoilModifier );
 }
 
+/** Spawn projectile is called once for each shot pellet fired */
+simulated function KFProjectile SpawnAllProjectiles(class<KFProjectile> KFProjClass, vector RealStartLoc, vector AimDir)
+{
+	local KFPerk InstigatorPerk;
+
+	if (CurrentFireMode == ALTFIRE_FIREMODE)
+	{
+		InstigatorPerk = GetPerk();
+		if (InstigatorPerk != none)
+		{
+			Spread[CurrentFireMode] = default.Spread[CurrentFireMode] * InstigatorPerk.GetTightChokeModifier();
+		}
+	}
+
+	return super.SpawnAllProjectiles(KFProjClass, RealStartLoc, AimDir);
+}
+
 defaultproperties
 {
 	bCanRefillSecondaryAmmo = true;
@@ -592,7 +609,7 @@ defaultproperties
 	IronSightPosition=(X=0,Y=0,Z=0)
 
 	// Ammo
-	MagazineCapacity[0]=24
+	MagazineCapacity[0]=30 //24
 	SpareAmmoCapacity[0]=240
 	InitialSpareMags[0]=3
 	bCanBeReloaded=true
@@ -632,6 +649,7 @@ defaultproperties
 	WeaponFireTypes(DEFAULT_FIREMODE)=EWFT_InstantHit
 	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Bullet_AssaultRifle'
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_FAMAS_Rifle'
+	PenetrationPower(DEFAULT_FIREMODE)=1.0
 	FireInterval(DEFAULT_FIREMODE)=+0.0667 // 900 RPM
 	InstantHitDamage(DEFAULT_FIREMODE)=35.0
 	Spread(DEFAULT_FIREMODE)=0.005 //0.0085
@@ -649,11 +667,11 @@ defaultproperties
 	WeaponFireTypes(ALTFIRE_FIREMODE)=EWFT_Projectile
 	WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_Bullet_Pellet'
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Ballistic_FAMAS_Shotgun'
-	InstantHitDamage(ALTFIRE_FIREMODE)=25.0
-	PenetrationPower(DEFAULT_FIREMODE)=2.0
-   	FireInterval(ALTFIRE_FIREMODE)=+1.2 //0.5 //0.7 //85 RPM
-	NumPellets(ALTFIRE_FIREMODE)=6
-	Spread(ALTFIRE_FIREMODE)=0.12 //0.07
+	InstantHitDamage(ALTFIRE_FIREMODE)=30.0 //25.0
+	PenetrationPower(ALTFIRE_FIREMODE)=2.0
+   	FireInterval(ALTFIRE_FIREMODE)=+1.2 //50 RPM
+	NumPellets(ALTFIRE_FIREMODE)=7 //6
+	Spread(ALTFIRE_FIREMODE)=0.10 //0.12
     SecondaryAmmoTexture=Texture2D'ui_firemodes_tex.UI_FireModeSelect_ShotgunSingle'
 
 	// BASH_FIREMODE

@@ -470,6 +470,7 @@ function ClearOnlineDelegates()
 /** Static because these are both called on default object */
 native static function int GetSeasonalEventID();
 native static function int GetWeeklyEventIndex();
+native static function int GetWeeklyEventIndexMod();
 native static function bool IsSalesEventActive();
 native static function bool IsSalesEventChecked();
 /***********************************************************************************

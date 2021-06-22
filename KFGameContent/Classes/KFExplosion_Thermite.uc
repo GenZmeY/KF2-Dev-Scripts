@@ -16,7 +16,7 @@ var() ParticleSystem LoopingParticleEffectWall;
 DefaultProperties
 {
 	Interval=0.5
-	MaxTime=10
+	MaxTime=7 //10
 
 	bDoFullDamage=true
 

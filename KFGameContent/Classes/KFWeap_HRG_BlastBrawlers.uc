@@ -416,7 +416,7 @@ defaultproperties
 
     // Shotgun Ammo
 	MagazineCapacity[0]=4 //3
-	SpareAmmoCapacity[0]=36 //28
+	SpareAmmoCapacity[0]=40 //36 //28
 	InitialSpareMags[0]=2
 	AmmoPickupScale[0]=1.5 //2.0
 
@@ -438,12 +438,13 @@ defaultproperties
 	WeaponProjectiles(CUSTOM_FIREMODE)=class'KFProj_Bullet_BlastBrawlers'
     FireInterval(CUSTOM_FIREMODE)=0.1f
 	InstantHitDamageTypes(CUSTOM_FIREMODE)=class'KFDT_Ballistic_BlastBrawlersShotgun'
-    InstantHitDamage(CUSTOM_FIREMODE)=36.0 //30.0
+    InstantHitDamage(CUSTOM_FIREMODE)=39.0 //36.0 //30.0
 	AmmoCost(CUSTOM_FIREMODE)=0
 	NumPellets(CUSTOM_FIREMODE)=5
-	Spread(CUSTOM_FIREMODE)=0.1 //0.15
+	Spread(CUSTOM_FIREMODE)=0.12 //0.1 //0.15
 	WeaponFireSnd(CUSTOM_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_HRG_BlastBrawlers.Play_WEP_HRG_BlastBrawlers_Shoot_3P', FirstPersonCue=AkEvent'WW_WEP_HRG_BlastBrawlers.Play_WEP_HRG_BlastBrawlers_Shoot_1P')
 	InstantHitMomentum(CUSTOM_FIREMODE)=1.0
+	PenetrationPower(CUSTOM_FIREMODE)=2.0
 	PenetrationDamageReductionCurve(CUSTOM_FIREMODE)=(Points=((InVal=0.f,OutVal=0.f),(InVal=1.f, OutVal=1.f)))
 
 	FireModeIconPaths(DEFAULT_FIREMODE)=Texture2D'ui_firemodes_tex.UI_FireModeSelect_ShotgunSingle'
@@ -467,7 +468,7 @@ defaultproperties
 
 	ParryStrength=5
 	ParryDamageMitigationPercent=0.40
-	BlockDamageMitigation=0.40
+	BlockDamageMitigation=0.50 //0.40
 
 	bWaitingForSecondShot = false
 	NumAttacks = 0

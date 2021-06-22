@@ -65,8 +65,6 @@ simulated event PostBeginPlay()
 	{
 	   SetTimer(FuseTime, false, 'Timer_Detonate');
 	}
-
-	AdjustCanDisintigrate();
 }
 
 /**
@@ -179,14 +177,6 @@ simulated function Disintegrate( rotator InDisintegrateEffectRotation )
     }
 
     super.Disintegrate(InDisintegrateEffectRotation);
-}
-
-// for nukes && concussive force
-simulated protected function PrepareExplosionTemplate()
-{
-	class'KFPerk_Demolitionist'.static.PrepareExplosive(Instigator, self);
-
-	super.PrepareExplosionTemplate();
 }
 
 simulated function SyncOriginalLocation()

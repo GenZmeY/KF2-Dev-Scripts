@@ -24,9 +24,12 @@ var localized array<string> DescriptionStrings;
 //List of any modifer information we need specific to the mode
 var localized array<string> ModifierDescriptions;
 
-
-
+cpptext
+{
+	/** Num of Weekly events available */
+    static const int NumWeeklyEvents = 12; 
+}
 DefaultProperties
 {
-	
+
 }

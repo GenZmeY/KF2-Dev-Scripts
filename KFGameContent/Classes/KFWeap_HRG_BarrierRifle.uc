@@ -80,7 +80,7 @@ var protected transient float OverlayDelta;
 
 var	WeaponFireSndInfo ShieldActivateSound;
 var	WeaponFireSndInfo ShieldDeactivateSound;
-var (Shield) AkBaseSoundObject ShieldEndSound;
+var WeaponFireSndInfo ShieldEndSound;
 
 var repnotify byte ShieldAmmo;
 
@@ -170,7 +170,7 @@ simulated function CustomFire()
 
 simulated function ActivateShield()
 {
-	PlaySoundBase(ShieldActivateSound.FirstPersonCue);
+	WeaponPlayFireSound(ShieldActivateSound.DefaultCue, ShieldActivateSound.FirstPersonCue);
 	bActivatingShield = true;
 	bDeactivatingShield = false;
 	bNetDirty = true;
@@ -180,7 +180,7 @@ simulated function ActivateShield()
 
 simulated function DeactivateShield()
 {
-	PlaySoundBase(ShieldDeactivateSound.FirstPersonCue);
+	WeaponPlayFireSound(ShieldDeactivateSound.DefaultCue, ShieldDeactivateSound.FirstPersonCue);
 	bDeactivatingShield = true;
 	bActivatingShield = false;
 	bCanRechargeShield = false;
@@ -304,7 +304,7 @@ simulated function OnShieldDepleted()
 	ShieldAmmo 			= 0;
 	bNetDirty			= true;
 	NotifyShieldActive(false);
-	PlaySoundBase(ShieldEndSound);
+	WeaponPlayFireSound(ShieldEndSound.DefaultCue, ShieldEndSound.FirstPersonCue);
 	SetTimer(CooldownAfterShieldDepleted, false, nameof(ShieldRepletedTimerCompleted));
 }
 
@@ -325,7 +325,7 @@ simulated function OnShieldDestroyed()
 	ShieldAmmo 			= 0;
 	bNetDirty			= true;
 	NotifyShieldActive(false);
-	PlaySoundBase(ShieldEndSound);
+	WeaponPlayFireSound(ShieldEndSound.DefaultCue, ShieldEndSound.FirstPersonCue);
 	SetTimer(CooldownAfterShieldDestroyed, false, nameof(ShieldDestroyedTimerCompleted));
 }
 
@@ -519,6 +519,8 @@ simulated state WeaponEquipping
 {
 	simulated function BeginState(Name PreviousStateName)
 	{
+		UpdateShieldFXValue(0.0f);
+		FXDelta = 0.0f;
 		bShieldActionAvailable = true;
 		super.BeginState(PreviousStateName);
 	}
@@ -689,9 +691,9 @@ defaultproperties
 	CooldownAfterShieldDepleted=3.0f //3.0f
 	CooldownAfterShieldDestroyed=3.0f //5.0f
 
-	ShieldActivateSound=(DefaultCue=AkEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_1P_Shield_On', FirstPersonCue=AkEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_1P_Shield_On')
-	ShieldDeactivateSound=(DefaultCue=AkEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_1P_Shield_Off', FirstPersonCue=AkEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_1P_Shield_Off')
-	ShieldEndSound=AKEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_1P_Shield_End';
+	ShieldActivateSound=(DefaultCue=AkEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_3P_Shield_On', FirstPersonCue=AkEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_1P_Shield_On')
+	ShieldDeactivateSound=(DefaultCue=AkEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_3P_Shield_Off', FirstPersonCue=AkEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_1P_Shield_Off')
+	ShieldEndSound=(DefaultCue=AkEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_3P_Shield_End', FirstPersonCue=AkEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_1P_Shield_End')
 
 	BlockSound=AkEvent'WW_WEP_HRG_BarrierRifle.Play_WEP_HRG_BarrierRifle_1P_Shield_Impact'
 	BlockParticleSystem=ParticleSystem'FX_Impacts_EMIT.FX_Block_melee_01'

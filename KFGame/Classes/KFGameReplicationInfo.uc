@@ -802,7 +802,7 @@ exec reliable client function ShowPreGameServerWelcomeScreen()
 
 }
 
-simulated function GetKFPRIArray(out array<KFPlayerReplicationInfo> KFPRIArray, optional bool bGetSpectators, optional bool bGetZedPlayers)
+simulated function GetKFPRIArray(out array<KFPlayerReplicationInfo> KFPRIArray, optional bool bGetSpectators, optional bool bGetZedPlayers = true)
 {
     local int i;
     local int Num;

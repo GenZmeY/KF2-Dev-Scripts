@@ -465,7 +465,7 @@ function ServerStartVoteSkipTrader(PlayerReplicationInfo PRI)
 
 		CurrentVoteTime = min(VoteTime, TraderTimeRemaining - SkipTraderVoteLimit);
 
-		GetKFPRIArray(PRIs);
+		GetKFPRIArray(PRIs, , false);
 		for (i = 0; i < PRIs.Length; i++)
 		{
 			PRIs[i].ShowSkipTraderVote(PRI, CurrentVoteTime, !(PRIs[i] == PRI) && PRI.GetTeamNum() != 255);
@@ -491,7 +491,7 @@ reliable server function UpdateTimer()
 	local int i;
 	
 	CurrentVoteTime -= 1;
-	GetKFPRIArray(PRIs);
+	GetKFPRIArray(PRIs, , false);
 	for (i = 0; i < PRIs.Length; i++)
 	{
 		PRIs[i].UpdateSkipTraderTime(CurrentVoteTime);
@@ -586,7 +586,7 @@ function bool ShouldConcludeSkipTraderVote()
 	local array<KFPlayerReplicationInfo> PRIs;
 	local int NumPRIs;
 
-	GetKFPRIArray(PRIs);
+	GetKFPRIArray(PRIs, , false);
 	NumPRIs = PRIs.Length;
 
 	if( YesVotes + NoVotes >= NumPRIs || NoVotes > 0 )
@@ -607,7 +607,7 @@ reliable server function ConcludeVoteSkipTrader()
 
 	if(bIsSkipTraderVoteInProgress)
 	{
-		GetKFPRIArray(PRIs);
+		GetKFPRIArray(PRIs, , false);
 
 		for (i = 0; i < PRIs.Length; i++)
 		{
@@ -680,7 +680,7 @@ function ResetSkipTraderBeforeWaveStarts()
 	local array<KFPlayerReplicationInfo> PRIs;
 	local int i;
 
-	GetKFPRIArray(PRIs);
+	GetKFPRIArray(PRIs, , false);
 	for (i = 0; i < PRIs.Length; i++)
 	{
 		PRIs[i].bAlreadyStartedASkipTraderVote = false;
