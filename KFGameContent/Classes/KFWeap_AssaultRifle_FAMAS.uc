@@ -387,7 +387,14 @@ simulated state AltReloading extends Reloading
 		Perk = GetPerk();
 		bTacticalReload = (Perk != None && Perk.GetUsingTactialReload(self));
 
-		return (bTacticalReload ? WEP_ReloadSecondary_Elite : WEP_ReloadSecondary);
+		if (AmmoCount[ALTFIRE_FIREMODE] == 0)
+		{
+			return (bTacticalReload ? WEP_ReloadSecondaryEmpty_Elite : WEP_ReloadSecondaryEmpty);
+		}
+		else
+		{
+			return (bTacticalReload ? WEP_ReloadSecondary_Elite : WEP_ReloadSecondary);
+		}
 	}
 
 	simulated event BeginState(Name PreviousStateName)

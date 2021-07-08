@@ -159,7 +159,7 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 		}
 
 		`QALog( GetFuncName() @ "Base damage:" @ InDamage , bLogPerk);
-		if( (MyKFWeapon != none && IsWeaponOnPerk( MyKFWeapon,, self.class )) || IsDamageTypeOnPerk( DamageType ) )
+		if( ((MyKFWeapon != none && IsWeaponOnPerk( MyKFWeapon,, self.class )) || IsDamageTypeOnPerk( DamageType )) && !IsBlastBrawlers(MyKFWeapon) )
 		{
 			TempDamage += InDamage * GetPassiveValue( BerserkerDamage,  CurrentLevel );
 			if( IsSpeedActive() )

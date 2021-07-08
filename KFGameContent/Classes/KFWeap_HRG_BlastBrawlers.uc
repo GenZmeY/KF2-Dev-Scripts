@@ -373,7 +373,21 @@ simulated function float GetReloadRateScale()
 
 simulated function bool HasAnyAmmo()
 {
-	return AmmoCount[0] != 0 && SpareAmmoCount[0] != 0;
+	return AmmoCount[0] > 0 || SpareAmmoCount[0] > 0;
+}
+
+simulated function int GetMeleeDamage(byte FireModeNum, optional vector RayDir)
+{
+	local int Damage;
+
+	Damage = GetModifiedDamage(FireModeNum, RayDir);
+	// decode damage scale (see GetDamageScaleByAngle) from the RayDir
+	if ( !IsZero(RayDir) )
+	{
+		Damage = Round(float(Damage) * FMin(VSize(RayDir), 1.f));
+	}
+
+	return Damage;
 }
 
 defaultproperties
