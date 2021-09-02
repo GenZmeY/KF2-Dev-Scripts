@@ -561,8 +561,11 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 	StateName = W.GetStateName();
 
 	// Blast Brawlers use a different state for shooting (combining melee + firing). Needs a special case for this
+	// FAMAS uses alt fire as common firing. Another special case added 
 	if( IsWeaponOnPerk( W,, self.class ) && CouldBarrageActive() && 
-		(ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE || (StateName == 'MeleeChainAttacking' && IsBlastBrawlers(W))))
+		(ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE ||
+			(StateName == 'MeleeChainAttacking' && IsBlastBrawlers(W)) ||
+			(IsFAMAS(W) && StateName == 'FiringSecondaryState')))
 	{
 		return BarrageFiringRate;
 	}

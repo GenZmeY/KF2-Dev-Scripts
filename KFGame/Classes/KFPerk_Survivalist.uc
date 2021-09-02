@@ -468,7 +468,10 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 		`Warn(StateName);
 		
 		// Blast Brawlers use a different state for shooting (combining melee + firing). Needs a special case for this
-		if( ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE || (StateName == 'MeleeChainAttacking' && IsBlastBrawlers(W)) )
+		// FAMAS uses alt fire as common firing. Another special case added 
+		if( ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE ||
+			 (StateName == 'MeleeChainAttacking' && IsBlastBrawlers(W)) ||
+			 (StateName == 'FiringSecondaryState' && IsFAMAS(W)))
 		{
 			return GetSkillValue( PerkSkills[ESurvivalist_MadMan] );
 		}

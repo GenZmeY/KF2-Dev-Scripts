@@ -63,6 +63,11 @@ var string ClearImagePath;
 
 var array<Emote> EmoteList;
 
+cpptext
+{
+	static INT GetCowboyHatIndex(const UKFCharacterInfo_Human* CharInfo);
+}
+
 function InitializeMenu( KFGFxMoviePlayer_Manager InManager )
 {
 	super.InitializeMenu(InManager);
@@ -78,6 +83,8 @@ function InitializeMenu( KFGFxMoviePlayer_Manager InManager )
 	UpdateCharacterList();	
 	UpdateGear();
 	TraderItems = KFGameReplicationInfo( KFPlayerController(GetPC()).WorldInfo.GRI ).TraderItems;
+
+	ForceWeeklyCowboyHat();
 }
 
 function OnOpen()
@@ -236,6 +243,8 @@ function UpdateGear()
 		UpdateEmoteList();
 
 		SetCurrentCharacterButtons();
+
+		ForceWeeklyCowboyHat();
 	}
 	else
 	{
@@ -295,6 +304,10 @@ function UpdateAttachmentsList(array<AttachmentVariants> Attachments)
 	local Pawn MyPawn;
 	local SkinVariant FirstSkin;
 	local string AttachmentName;
+	local PlayerController PC;
+	local bool bIsWildWest;
+
+	bIsWildWest = false;
 	ItemIndex = 0;
 	DataProvider = CreateArray();
 	MyPawn = GetPC().Pawn;
@@ -308,11 +321,19 @@ function UpdateAttachmentsList(array<AttachmentVariants> Attachments)
 	DataProvider.SetElementObject(ItemIndex, SlotObject);
 	ItemIndex++;
 
+	PC = GetPC();
+	bIsWildWest = (PC != none && Pc.WorldInfo.GRI.IsA('KFGameReplicationInfo_WeeklySurvival') && (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12));
+
 	for (i = 0; i < Attachments.length; i++)
 	{
 		Variant = Attachments[i];
-		if ( CurrentCharInfo.IsAttachmentAvailable(Variant, MyPawn) )
+		if (  CurrentCharInfo.IsAttachmentAvailable(Variant, MyPawn) )
 		{
+			if (bIsWildWest && Variant.SocketName == 'HAT_Attach')
+			{
+				continue;
+			}
+
 			SlotObject = CreateObject( "Object" );
 			SlotObject.SetInt("ItemIndex", i);
 			FirstSkin = UpdateCosmeticVariants( AttachmentKey, AttachmentSkinKey, Variant.AttachmentItem, i, SlotObject );
@@ -698,6 +719,7 @@ private function Callback_AttachmentNumbered(int MeshIndex, int SkinIndex, int S
 	local Pawn P;
 	local KFPawn KFP;
 	local array<int> RemovedAttachments;
+
 	P = GetPC().Pawn;
 	if( P != none )
 	{
@@ -747,9 +769,29 @@ function RelayFromCheatManager(Pawn P, ECustomizationOption CustomizationOption,
 	Manager.CachedProfile.SetCharacterGear(MyKFPRI.RepCustomizationInfo);
 }
 
+function ForceWeeklyCowboyHat()
+{
+	local PlayerController PC;
+	local int CowboyHatIndex;
+	PC = GetPC();
+
+	if (PC != none && Pc.WorldInfo.GRI.IsA('KFGameReplicationInfo_WeeklySurvival') && (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12))
+	{
+		CowboyHatIndex = FindCowboyHatAttachmentIndex(CurrentCharInfo);
+		if (CowboyHatIndex >= 0)
+		{
+			Callback_AttachmentNumbered(CowboyHatIndex,0,2);
+		}
+		
+		SetBool("ThirdAttachmentBlocked", true);
+	}
+}
+
 /** Update our character parts when the UI is being used */
 native private function SelectCharacter(Pawn P, byte CharacterIndex);
 native private function SelectCustomizationOption(Pawn P, ECustomizationOption CustomizationOption, int MeshIndex, int SkinIndex, optional int AttachmentIndex);
+// native static function INT GetCowboyHatIndex(KFCharacterInfo_Human CharInfo);
+native static function int FindCowboyHatAttachmentIndex(KFCharacterInfo_Human CharInfo);
 
 defaultproperties
 {

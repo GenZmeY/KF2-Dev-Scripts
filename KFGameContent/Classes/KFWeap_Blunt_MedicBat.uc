@@ -661,8 +661,8 @@ defaultproperties
 	HealFullRechargeSeconds=12
 
 	// Heavy Attack Explosion Ammo
-	MagazineCapacity[0]=3
-	SpareAmmoCapacity[0]=12
+	MagazineCapacity[0]=2 //3
+	SpareAmmoCapacity[0]=10 //12
 	InitialSpareMags[0]=1
 	bCanBeReloaded=true
 	bReloadFromMagazine=true
@@ -687,7 +687,7 @@ defaultproperties
 
 	// Heavy Attack
 	FireModeIconPaths(HEAVY_ATK_FIREMODE)=Texture2D'ui_firemodes_tex.UI_FireModeSelect_BluntMelee'
-	InstantHitDamage(HEAVY_ATK_FIREMODE)=130
+	InstantHitDamage(HEAVY_ATK_FIREMODE)=140 //130
 	InstantHitDamageTypes(HEAVY_ATK_FIREMODE) = class'KFDT_Bludgeon_MedicBatHeavy'
 
 	// Heavy Attack Explosion
@@ -729,12 +729,12 @@ defaultproperties
 	// Explosion
 	ExplosionActorClass = class'KFExplosionActorReplicated'
 	Begin Object Class=KFGameExplosion Name=HeavyAttackHealingExplosion
-		Damage=200
+		Damage=225 //200
 		DamageRadius=500
 		DamageFalloffExponent=0.f
 		DamageDelay=0.f
 		MyDamageType=class'KFDT_Toxic_MedicBatGas'
-		HealingAmount=30
+		HealingAmount=20 //30
 
 		// Damage Effects
 		KnockDownStrength=0

@@ -287,6 +287,8 @@ var name EffectPainParamName;
 var name EffectLowHealthParamName;
 /** Name of the MIC parameter used to display zed time */
 var name EffectZedTimeParamName;
+/** Name of the MIC parameter used to display zed time sepia*/
+var name EffectZedTimeSepiaParamName;
 /** Name of the MIC parameter used to display night vision time */
 var name EffectNightVisionParamName;
 /** Name of the MIC parameter used to display Siren's scream attack effect */
@@ -1546,7 +1548,6 @@ function OnReadProfileSettingsComplete(byte LocalUserNum,bool bWasSuccessful)
 	local KFProfileSettings Profile;
 	local KFPlayerInput KFInput;
 	local KFGameInfo KFGI;
-	local KFGameReplicationInfo KFGRI;
 	local KFGameEngine KFEngine;
 	local KFPlayerReplicationInfo KFPRI;
 	local string MatchmakingRegion;
@@ -1590,7 +1591,7 @@ function OnReadProfileSettingsComplete(byte LocalUserNum,bool bWasSuccessful)
 			KFInput.GamepadAccelerationJumpScale = Profile.GetProfileFloat(KFID_GamepadAccelerationJumpScale);
 			KFInput.SetGamepadLayout(Profile.GetProfileInt(KFID_CurrentLayoutIndex));
 			KFInput.bToggleToRun = Profile.GetProfileBool(KFID_ToggleToRun);
-
+			KFInput.bAllowSwapTo9mm = Profile.GetProfileBool(KFID_AllowSwapTo9mm);
 			KFInput.ReInitializeControlsUI();
 		}
 
@@ -1686,37 +1687,21 @@ function OnReadProfileSettingsComplete(byte LocalUserNum,bool bWasSuccessful)
 		OnlineSub.GetLobbyInterface().LobbyInvite(LobbyId, Zero, true);
 	}
 	
-	// If the perk is not allowed for this game mode, search for one that is available starting from the index 0
-	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
-
-	if( KFGRI != none && !KFGRI.IsPerkAllowed(PerkList[SavedPerkIndex].PerkClass) )
-	{
-		SavedPerkIndex = 0;
-		for(SavedPerkIndex=0 ; SavedPerkIndex<PerkList.length ; SavedPerkIndex++)
-		{
-			if( KFGRI.IsPerkAllowed(PerkList[SavedPerkIndex].PerkClass) )
-			{
-				continue;
-			}
-		}
-		
-		// Save the new perk selected in the the profile settings
-		Profile.SetProfileSettingValueInt( KFID_SavedPerkIndex, SavedPerkIndex );
-	}
+	SavedPerkIndex = CheckCurrentPerkAllowed();
+	// Save the new perk selected in the the profile settings
+	Profile.SetProfileSettingValueInt( KFID_SavedPerkIndex, SavedPerkIndex );
 
 	// Update our cached Emote Id
 	class'KFEmoteList'.static.RefreshCachedEmoteId();
 	class'KFHeadShotEffectList'.static.RefreshCachedHeadShotEffectId();
 }
 
-function UpdatePerkOnInit()
+simulated function byte CheckCurrentPerkAllowed()
 {
 	local KFGameReplicationInfo KFGRI;
-	local KFProfileSettings Profile;
 
-	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
-	
 	// If the perk is not allowed for this game mode, search for one that is available starting from the index 0
+	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
 	if( KFGRI != none && !KFGRI.IsPerkAllowed(PerkList[SavedPerkIndex].PerkClass) )
 	{
 		SavedPerkIndex = 0;
@@ -1724,16 +1709,25 @@ function UpdatePerkOnInit()
 		{
 			if( KFGRI.IsPerkAllowed(PerkList[SavedPerkIndex].PerkClass) )
 			{
-				continue;
+				break;
 			}
 		}
-		
-		// Save the new perk selected in the the profile settings
-		Profile = KFProfileSettings(OnlineSub.PlayerInterface.GetProfileSettings(StoredLocalUserNum));
-		if( Profile != None )
-		{
-			Profile.SetProfileSettingValueInt( KFID_SavedPerkIndex, SavedPerkIndex );
-		}
+	}
+
+	return SavedPerkIndex;
+}
+
+function UpdatePerkOnInit()
+{
+	local KFProfileSettings Profile;
+
+	SavedPerkIndex = CheckCurrentPerkAllowed();
+	
+	// Save the new perk selected in the the profile settings
+	Profile = KFProfileSettings(OnlineSub.PlayerInterface.GetProfileSettings(StoredLocalUserNum));
+	if( Profile != None )
+	{
+		Profile.SetProfileSettingValueInt( KFID_SavedPerkIndex, SavedPerkIndex );
 	}
 }
 
@@ -5236,6 +5230,7 @@ function ResetGameplayPostProcessFX()
 		GameplayPostProcessEffectMIC.SetScalarParameterValue(EffectPainParamName, 0.f);
 		GameplayPostProcessEffectMIC.SetScalarParameterValue(EffectLowHealthParamName, 0.f);
 		GameplayPostProcessEffectMIC.SetScalarParameterValue(EffectZedTimeParamName, 0.f);
+		GameplayPostProcessEffectMIC.SetScalarParameterValue(EffectZedTimeSepiaParamName, 0.f);
 		GameplayPostProcessEffectMIC.SetScalarParameterValue(EffectNightVisionParamName, 0.f);
 		GameplayPostProcessEffectMIC.SetScalarParameterValue(EffectSirenScreamParamName, 0.f);
 		GameplayPostProcessEffectMIC.SetScalarParameterValue(EffectBloatsPukeParamName, 0.f);
@@ -5267,6 +5262,8 @@ function bool ShouldDisplayGameplayPostProcessFX()
 			HealEffectTimeRemaining > 0.f ||
 			/* ZED time effect is active */
 			CurrentZEDTimeEffectIntensity > 0.f ||
+			/* sepia effect */
+			(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12) ||
 			/* Night vision active */
 			bNightVisionActive ||
 			SirenScreamEffectTimeRemaining > 0.f ||
@@ -11726,6 +11723,7 @@ defaultproperties
 	PainEffectDuration=0.5f
 	EffectLowHealthParamName=Effect_LowHealth
 	EffectZedTimeParamName=Effect_ZEDTIME
+	EffectZedTimeSepiaParamName=Effect_ZEDSEPIA
 	EffectNightVisionParamName=Effect_NightVision
 	EffectSirenScreamParamName=Effect_Siren
 	SonicScreamEffectDuration=6.f

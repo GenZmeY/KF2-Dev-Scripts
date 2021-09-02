@@ -391,4 +391,6 @@ defaultproperties
     MinSpawnSquadSizeType=EST_Large
 
     OnDeathAchievementID=KFACHID_HackAndSlash
+
+	ZEDCowboyHatAttachName=Hat_Attach
 }

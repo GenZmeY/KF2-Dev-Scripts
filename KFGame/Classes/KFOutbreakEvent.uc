@@ -165,6 +165,10 @@ struct WeeklyOverrides
 	*	1) Disables Berserker lvl25 skills  2) Enables lvl25 battery ram skill of the swat 	
 	*/
 	var() bool bColliseumSkillConditionsActive;
+	/** Activates the special conditions for the Wild West Weekly Mode
+	*	1) Disables Berserker lvl25 skills  2) Enables lvl25 battery ram skill of the swat 	
+	*/
+	var () bool bWildWestSkillConditionsActive;
 
 	/** If this array is not empty, replaces AIClassList entries with a new spawn class */
 	var() array<SpawnReplacement> SpawnReplacementList;
@@ -323,6 +327,9 @@ struct WeeklyOverrides
 	/** Heal after kill */
 	var() bool bHealAfterKill;
 
+	/** Only heal with headshots */
+	var() bool bHealWithHeadshot;
+
 	/** Cannot be Healed*/
 	var() bool bCannotBeHealed;
 
@@ -371,6 +378,9 @@ struct WeeklyOverrides
 	/** If another outbreak mode shares the same events, this will link the two to quicker UI lookup */
 	var() int WeeklyOutbreakId;
 
+	/** If WWL music should be forced */
+	var() bool bForceWWLMusic;
+
 	structdefaultproperties
 	{
 		GameLength = GL_Short
@@ -403,6 +413,7 @@ struct WeeklyOverrides
 		MaxPerkLevel = 4
 		bAllowSpawnReplacementDuringBossWave = true
 		bHealAfterKill = false
+		bHealWithHeadshot = false
 		bCannotBeHealed = false
 		bGlobalDamageAffectsShield = true
 		bApplyGlobalDamageBossWave = true
@@ -419,11 +430,13 @@ struct WeeklyOverrides
 		bAddSpawnListToLoadout = false
 		bSpawnWeaponListAffectsSecondaryWeapons = false
 		bColliseumSkillConditionsActive = false
+		bWildWestSkillConditionsActive = false
 		bModifyZedTimeOnANearZedKill = false
 		ZedTimeOnANearZedKill = 0.05
 		DoshOnKillGlobalModifier = 1.0f
 		JumpZ = -1.f
 		DroppedItemLifespan=-1.0f
+		bForceWWLMusic = false;
 	}
 };
 

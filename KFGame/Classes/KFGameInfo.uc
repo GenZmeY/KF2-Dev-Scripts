@@ -319,7 +319,8 @@ enum EForcedMusicType
 	EFM_Boss2,
 	EFM_Boss3,
 	EFM_Boss4,
-	EFM_Boss5
+	EFM_Boss5,
+	EFM_WWL
 };
 
 /** Tracks that are not selected randomly but rather "forced" by the server (or standalone client) at specific times */
@@ -435,11 +436,6 @@ enum EMonsterProperties
 };
 
 var int SpawnedMonsterProperties[EMonsterProperties];
-
-/************************************************************************************
-* @name		Force to sort maps by name
-***********************************************************************************/
-var bool bForceMapSorting;
 
 /************************************************************************************
  * @name		Native
@@ -950,6 +946,10 @@ event PostLogin( PlayerController NewPlayer )
  	KFPC = KFPlayerController(NewPlayer);
 	if( KFPC != None )
 	{
+		KFPC.UpdatePerkOnInit();
+
+		KFPC.InitGameplayPostProcessFX();
+
 		if( KFPC.PlayerReplicationInfo.bOnlySpectator )
 		{
 			// if we're initially spectating, initialize front-end but skip lobby menu
@@ -2867,6 +2867,11 @@ simulated function ForceAbominationMusicTrack()
     MyKFGRI.ForceNewMusicTrack( default.ForcedMusicTracks[EFM_Boss5] );
 }
 
+simulated function ForceWWLMusicTrack()
+{
+	MyKFGRI.ForceNewMusicTrack( default.ForcedMusicTracks[EFM_WWL] );
+}
+
 /*********************************************************************************************
  * @name		Map rotation
  *********************************************************************************************/
@@ -2896,10 +2901,10 @@ function string GetNextMap()
 			{
 				MapCycleIndex = MapCycleIndex + 1 < GameMapCycles[ActiveMapCycle].Maps.length ? (MapCycleIndex + 1) : 0;
 
-				if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 11)
+				if ((class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 11 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[11])
+				      && MyKFGRI.IsA('KFGameReplicationInfo_WeeklySurvival'))
 				{
-					if (MyKFGRI.IsA('KFGameReplicationInfo_WeeklySurvival') && 
-						GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex] == "KF-Biolapse"          || 
+					if (GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex] == "KF-Biolapse"          || 
 						GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex] == "KF-Nightmare"         ||
 						GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex] == "KF-PowerCore_Holdout" ||
 						GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex] == "KF-TheDescent"        ||
@@ -3871,6 +3876,7 @@ defaultproperties
     ForcedMusicTracks(4)=KFMusicTrackInfo'WW_MACT_Default.TI_Boss_Matriarch' // matriarch
     ForcedMusicTracks(5)=KFMusicTrackInfo'WW_MACT_Default.TI_RG_KingFP' // king fp
     ForcedMusicTracks(6)=KFMusicTrackInfo'WW_MACT_Default.TI_RG_Abomination' // abomination
+    ForcedMusicTracks(7)=KFMusicTrackInfo'WW_MACT_Default.TI_WWL' // WWL Weekly
 
 	ReservationTimeout=32
 	bLogReservations=true
@@ -3895,6 +3901,4 @@ defaultproperties
 
 	DebugForcedOutbreakIdx=INDEX_NONE
 	DebugForceSpecialWaveZedType=INDEX_NONE
-
-	bForceMapSorting=True
 }

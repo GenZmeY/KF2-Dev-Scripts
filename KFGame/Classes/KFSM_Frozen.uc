@@ -181,7 +181,7 @@ function SetFrozenParameter(float FreezeAmount)
 {
 	local MaterialInstanceConstant MIC;
     local int i;
-
+	local bool bIsWWLMode;
     if ( PawnOwner.WorldInfo.NetMode != NM_DedicatedServer )
     {
     	FreezeMatParamValue = FreezeAmount;
@@ -201,9 +201,11 @@ function SetFrozenParameter(float FreezeAmount)
 
 		if (KFPawn_Monster(KFPOwner) != none)
 		{
+			bIsWWLMode = class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12 && KFGameReplicationInfo(PawnOwner.WorldInfo.GRI) != none && KFGameReplicationInfo(PawnOwner.WorldInfo.GRI).bIsWeeklyMode; 
+
 			for (i = 0; i < KFPawn_Monster(KFPOwner).StaticAttachList.length; i++)
 			{
-				if (KFPawn_Monster(KFPOwner).StaticAttachList[i] != none)
+				if (KFPawn_Monster(KFPOwner).StaticAttachList[i] != none && (!bIsWWLMode || KFPawn_Monster(KFPOwner).StaticAttachList[i].StaticMesh.Name != 'CHR_CowboyHat_Alberts_Cosmetic' ))
 				{
 					ApplyFreeze(KFPawn_Monster(KFPOwner).StaticAttachList[i]);
 				}

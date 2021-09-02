@@ -132,6 +132,14 @@ var(Gore) float ExplosionGibScale<DisplayName=Num Gibs Scale|UIMin=0|ClampMin=0|
 var(Gore) float ExplosionImpulseScale<DisplayName=Gib Impulse Scale|UIMin=0|ClampMin=0|UIMax=20.0|ClampMax=20.0> ;
 
 /************************************************************************/
+/*  Wild West London Weekly											    */
+/************************************************************************/
+var string ZEDCowboyHatMeshPath;
+
+var transient LinearColor WWLHatMonoChromeValue;
+var transient LinearColor WWLHatColorValue;
+
+/************************************************************************/
 /*  Script Functions												    */
 /************************************************************************/
 
@@ -145,6 +153,9 @@ simulated function SetCharacterMeshFromArch( KFPawn KFP, optional KFPlayerReplic
     local LinearColor AppliedColor;
 	local array<MaterialInstanceConstant> ExtraMICs;
 	local MaterialInstanceConstant ExtraMIC;
+	local StaticAttachments NewAttachment;
+	local KFGameReplicationInfo KFGRI;
+	local MaterialInstanceConstant NewMIC;
 
 	super.SetCharacterMeshFromArch( KFP, KFPRI );
 
@@ -244,6 +255,29 @@ simulated function SetCharacterMeshFromArch( KFPawn KFP, optional KFPlayerReplic
 				}
             }
         }
+
+		KFGRI = KFGameReplicationInfo(KFP.WorldInfo.GRI);
+		if (KFP != none && KFGRI.bIsWeeklyMode && (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12))
+		{
+			NewAttachment.StaticAttachment =  StaticMesh(DynamicLoadObject(ZEDCowboyHatMeshPath, class'StaticMesh'));
+			NewAttachment.AttachSocketName = KFPawn_Monster(KFP).ZEDCowboyHatAttachName;
+
+			StaticAttachment = new (KFP) class'StaticMeshComponent';
+            if (StaticAttachment != none)
+            {
+                KFPawn_Monster(KFP).StaticAttachList.AddItem(StaticAttachment);
+                StaticAttachment.SetActorCollision(false, false);
+                StaticAttachment.SetStaticMesh(NewAttachment.StaticAttachment);
+                StaticAttachment.SetShadowParent(KFP.Mesh);
+                StaticAttachment.SetLightingChannels(KFP.PawnLightingChannel);
+				NewMIC = StaticAttachment.CreateAndSetMaterialInstanceConstant(0);
+				NewMIC.SetVectorParameterValue('color_monochrome', WWLHatMonoChromeValue);
+				NewMIC.SetVectorParameterValue('Black_White_switcher', WWLHatColorValue);
+				ExtraMICs.AddItem(NewMIC);
+                KFP.AttachComponent(StaticAttachment);
+				KFP.Mesh.AttachComponentToSocket(StaticAttachment, NewAttachment.AttachSocketName);
+            }
+		}
 	}
 
 	// Initialize MICs
@@ -286,4 +320,9 @@ defaultproperties
 	//GoreMeshLOD=-1
 	ExplosionGibScale=1.f
 	ExplosionImpulseScale=1.f
+
+	WWLHatMonoChromeValue=(R=1.0f,G=0.0f,B=0.0f)
+	WWLHatColorValue=(R=1.0f,G=0.0f,B=0.0f)
+
+	ZEDCowboyHatMeshPath = "CHR_CosmeticSet01_MESH.cowboyhat.CHR_CowboyHat_Alberts_Cosmetic"
 }

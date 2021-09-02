@@ -702,6 +702,15 @@ function Callback_FillGrenades()
 	}
 }
 
+function Callback_BuyArmor()
+{
+	if (PlayerInventoryContainer != none)
+    {
+		MyKFPC.GetPurchaseHelper().BuyArmorMag();
+		RefreshItemComponents();
+	}
+}
+
 function Callback_FillArmor()
 {
 	if (PlayerInventoryContainer != none)

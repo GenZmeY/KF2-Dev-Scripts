@@ -303,6 +303,8 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 	local name StateName;
 	StateName = W.GetStateName();
 
+	`Log("STATE NAME: " $StateName);
+
 	if( IsProfessionalActive() && (IsWeaponOnPerk( W,, self.class ) || IsBackupWeapon( W ) || IsDual9mm( W )) )
 	{
 		if( StateName == 'Reloading' ||
@@ -315,8 +317,9 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 			return 0.3f;
 		}
 	}
-
-	if( CouldRapidFireActive() && (Is9mm(W) || IsDual9mm( W ) || IsWeaponOnPerk( W,, self.class )) && ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE )
+	// FAMAS uses alt fire as common firing. Needs a special case 
+	if( CouldRapidFireActive() && (Is9mm(W) || IsDual9mm( W ) || IsWeaponOnPerk( W,, self.class )) && 
+		(ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE || (IsFAMAS(W) && StateName == 'FiringSecondaryState')) )
 	{
 		return RapidFireFiringRate;
 	}

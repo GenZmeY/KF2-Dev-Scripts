@@ -195,6 +195,17 @@ reliable client function GoompaStompMessage( byte StompNum)
     }
 }
 
+/** Resets all gameplay FX to initial state.
+	Append to this list if additional effects are added. */
+function ResetGameplayPostProcessFX()
+{
+    super.ResetGameplayPostProcessFX();
+
+	if( GameplayPostProcessEffectMIC != none && (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12))
+	{
+		GameplayPostProcessEffectMIC.SetScalarParameterValue(EffectZedTimeSepiaParamName, 1.f);
+	}
+}
 
 //
 defaultProperties

@@ -9,18 +9,21 @@
 
 class KFWeapAttach_FAMAS extends KFWeaponAttachment;
 
-const SecondaryFireAnim             = 'Shoot_Secondary';
-const SecondaryFireIronAnim         = 'Shoot_Secondary_Iron';
-const SecondaryFireAnimLast         = 'Shoot_Secondary_Last';
-const SecondaryFireIronAnimLast     = 'Shoot_Secondary_Iron_Last';
-const SecondaryFireBodyAnim         = 'ADD_Shoot_Secondary';
-const SecondaryFireBodyAnimCH       = 'ADD_Shoot_Secondary_CH';
-const SecondaryFireBodyAnimIron     = 'ADD_Shoot_Secondary_Iron';
-const SecondaryReloadAnimEmpty      = 'Reload_Secondary_Empty';
-const SecondaryReloadAnimHalf       = 'Reload_Secondary_Half';
-const SecondaryReloadAnimEliteEmpty = 'Reload_Secondary_Elite_Empty';
-const SecondaryReloadAnimEliteHalf  = 'Reload_Secondary_Elite_Half';
-const ShotgunMuzzleSocket           = 'ShotgunMuzzleFlash';
+const SecondaryFireAnim                   = 'Shoot_Secondary';
+const SecondaryFireAnimCrouch             = 'Shoot_Secondary_CH';
+const SecondaryFireIronAnim               = 'Shoot_Secondary_Iron';
+const SecondaryFireBodyAnim               = 'ADD_Shoot_Secondary';
+const SecondaryFireBodyAnimCH             = 'ADD_Shoot_Secondary_CH';
+const SecondaryFireBodyAnimIron           = 'ADD_Shoot_Secondary_Iron';
+const SecondaryReloadAnimEmpty            = 'Reload_Secondary_Empty';
+const SecondaryReloadAnimEmptyCrouch      = 'Reload_Secondary_Empty_CH';
+const SecondaryReloadAnimHalf             = 'Reload_Secondary_Half';
+const SecondaryReloadAnimHalfCrouch       = 'Reload_Secondary_Half_CH';
+const SecondaryReloadAnimEliteEmpty       = 'Reload_Secondary_Elite_Empty';
+const SecondaryReloadAnimEliteEmptyCrouch = 'Reload_Secondary_Elite_Empty_CH';
+const SecondaryReloadAnimEliteHalf        = 'Reload_Secondary_Elite_Half';
+const SecondaryReloadAnimEliteHalfCrouch  = 'Reload_Secondary_Elite_Half_CH';
+const ShotgunMuzzleSocket                 = 'ShotgunMuzzleFlash';
 
 var protected transient KFMuzzleFlash ShotgunMuzzleFlash;
 
@@ -30,18 +33,25 @@ simulated function PlayReloadMagazineAnim(EWeaponState NewWeaponState, KFPawn P)
 {
 	local name AnimName;
 
-	if(NewWeaponState == WEP_ReloadSecondary || NewWeaponState == WEP_ReloadSecondary_Elite)
+	switch (NewWeaponState)
 	{
-		switch (NewWeaponState)
-		{
-		case WEP_ReloadSecondary:
-			AnimName = (P.MyKFWeapon.AmmoCount[1] == 0) ? SecondaryReloadAnimEmpty : SecondaryReloadAnimHalf;
-			break;
-		case WEP_ReloadSecondary_Elite:
-			AnimName = (P.MyKFWeapon.AmmoCount[1] == 0) ? SecondaryReloadAnimEliteEmpty : SecondaryReloadAnimEliteHalf;
-			break;
-		}
 
+	case WEP_ReloadSecondary:
+		AnimName = (P.bIsCrouched) ? SecondaryReloadAnimHalfCrouch : SecondaryReloadAnimHalf;
+		break;
+	case WEP_ReloadSecondaryEmpty:
+		AnimName = (P.bIsCrouched) ? SecondaryReloadAnimEmptyCrouch : SecondaryReloadAnimEmpty;
+		break;
+	case WEP_ReloadSecondary_Elite:
+		AnimName = (P.bIsCrouched) ? SecondaryReloadAnimEliteHalfCrouch : SecondaryReloadAnimEliteHalf;		
+		break;
+	case WEP_ReloadSecondaryEmpty_Elite:
+		AnimName = (P.bIsCrouched) ? SecondaryReloadAnimEliteEmptyCrouch : SecondaryReloadAnimEliteEmpty;
+		break;
+	}
+
+	if (AnimName != '')
+	{
 		PlayCharacterMeshAnim(P, AnimName, true);
 	}
 	else
@@ -103,21 +113,19 @@ simulated function PlayFireAnim(KFPawn P)
 		}
 		else if (OwnerPawn.FiringMode == 1) // ALT FIRE MODE (Shotgun)
 		{
-			// Anim = (P.MyKFWeapon.AmmoCount[1] == 0) ? SecondaryFireIronAnimLast : SecondaryFireIronAnim;
 			Anim = SecondaryFireIronAnim;
 
 		}
 	}
 	else // Normal anims
 	{
-		if (Pawn(Owner).FiringMode == 0) // DEFAULT FIRE MODE (Rifle)
+		if (OwnerPawn.FiringMode == 0) // DEFAULT FIRE MODE (Rifle)
 		{
 			Anim = WeaponFireAnim;
 		}
-		else if (Pawn(Owner).FiringMode == 1) // ALT FIRE MODE (Shotgun)
+		else if (OwnerPawn.FiringMode == 1) // ALT FIRE MODE (Shotgun)
 		{
-			// Anim = (P.MyKFWeapon.AmmoCount[1] == 0) ? SecondaryFireAnimLast : SecondaryFireAnim;
-			Anim = SecondaryFireAnim;
+			Anim = OwnerPawn.bIsCrouched ? SecondaryFireAnimCrouch : SecondaryFireAnim;
 		}
 	}
 

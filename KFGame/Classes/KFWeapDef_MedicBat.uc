@@ -15,7 +15,7 @@ DefaultProperties
 	WeaponClassPath="KFGameContent.KFWeap_Blunt_MedicBat"
 
 	BuyPrice=1200
-	AmmoPricePerMag=85
+	AmmoPricePerMag=75 //85
 	ImagePath="WEP_UI_Medic_Bat_TEX.UI_WeaponSelect_MedicBat"
 
 	EffectiveRange=3

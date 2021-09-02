@@ -42,6 +42,8 @@ var localized string HideRemodeHeadshotEffectsString;
 var localized string ToggleToRunString;
 var localized string ClassicPlayerInfoString;
 
+var localized string AllowSwap9mmString;
+
 var float FOVMinValue, FOVMaxValue, FOVCurrentValue;
 var float FriendlyHudScaleMinValue, FriendlyHudScaleMaxValue;
 
@@ -99,6 +101,8 @@ function LocalizeText()
 	//LocalizedObject.SetString("reduceHighPitchNoise", 	ReduceHighPitchNoiseString);
 	//LocalizedObject.SetString("antiMotionSickness", 	AntiMotionSicknessString);
 
+	LocalizedObject.SetString("allowSwap9mmLabel", AllowSwap9mmString);
+
     SetObject("localizedText", LocalizedObject);
 }
 
@@ -142,6 +146,8 @@ function  InitValues()
 	DataObject.SetBool("autoTurnOff", 			Manager.CachedProfile.GetProfileBool(KFID_AutoTurnOff));
 	DataObject.SetBool("enableToggleToRun",		Manager.CachedProfile.GetProfileBool(KFID_ToggletoRun));
 	DataObject.SetBool("enableClassicPlayerInfo", Manager.CachedProfile.GetProfileBool(KFID_ClassicPlayerInfo));
+
+	DataObject.SetBool("allowSwapTo9mm", Manager.CachedProfile.GetProfileBool(KFID_AllowSwapTo9mm));
 
 	if(class'WorldInfo'.static.IsConsoleBuild(CONSOLE_Durango))
 	{
@@ -542,6 +548,25 @@ function Callback_ClassicPlayerInfoChanged(bool bActive)
 	}
 }
 
+function Callback_AllowSwapTo9mm(bool bActive)
+{
+	local OnlineProfileSettings Settings;
+	local KFPlayerInput KFPI;
+	
+	Settings = class'GameEngine'.static.GetOnlineSubsystem().PlayerInterface.GetProfileSettings(GetLP().ControllerId);
+	KFPI = KFPlayerInput(GetPC().PlayerInput);
+
+	if (Settings != none)
+	{
+		Settings.SetProfileSettingValueInt(KFID_AllowSwapTo9mm, bActive ? 1 : 0);
+	}	
+
+	if (KFPI != none)
+	{
+		KFPI.bAllowSwapTo9mm = bActive;
+	}
+}
+
 function ResetGameOptions()
 {
 	//local KFPlayerController KFPC;
@@ -598,6 +623,8 @@ function ResetGameOptions()
 	Callback_FOVChanged(Manager.CachedProfile.GetDefaultFloat(KFID_FOVOptionsPercentageValue));
 
 	Callback_ClassicPlayerInfoChanged(Manager.CachedProfile.GetDefaultInt(KFID_ClassicPlayerInfo) != 0);
+
+	Callback_AllowSwapTo9mm(Manager.CachedProfile.GetDefaultInt(KFID_AllowSwapTo9mm) != 0);
 
 	InitValues();
 }

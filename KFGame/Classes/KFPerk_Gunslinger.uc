@@ -348,7 +348,7 @@ simulated function float GetZedTimeModifier( KFWeapon W )
  */
 simulated function bool GetIsUberAmmoActive( KFWeapon KFW )
 {
-	return IsWeaponOnPerk( KFW,, self.class ) && IsUberAmmoActive() && WorldInfo.TimeDilation < 1.f;
+	return IsWeaponOnPerk( KFW,, self.class ) && IsUberAmmoActive() && WorldInfo.TimeDilation < 1.f && !ShouldDisableZedTimeSkillsForWildWest();
 }
 
 /**
@@ -664,7 +664,7 @@ simulated function bool IsFanfareActive()
  */
 simulated function bool GetFanfareActive()
 {
-	return IsFanfareActive();
+	return IsFanfareActive() || IsFanfareActiveForWildWest();
 }
 
 /**
@@ -796,6 +796,28 @@ simulated function LogPerkSkills()
 	    `log( "-Fanfare:" @ PerkSkills[EGunslingerFanfare].bActive );
 	    `log( "-UberAmmo:" @ PerkSkills[EGunslingerUberAmmo].bActive );
 	}
+}
+
+/*********************************************************************************************
+* @name	 Special Weekly Modes
+********************************************************************************************* */
+
+simulated function bool ShouldDisableZedTimeSkillsForWildWest()
+{
+	if (WorldInfo.NetMode == NM_Client)
+	{
+		return MyKFGRI.bIsWeeklyMode && class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12;
+	}
+	else
+	{
+		return MyKFGI != none && MyKFGI.OutbreakEvent != none && MyKFGI.OutbreakEvent.ActiveEvent.bWildWestSkillConditionsActive;
+	}
+
+}
+
+function bool IsFanfareActiveForWildWest()
+{
+	return MyKFGI != none && MyKFGI.OutbreakEvent != none && MyKFGI.OutbreakEvent.ActiveEvent.bWildWestSkillConditionsActive;
 }
 
 DefaultProperties

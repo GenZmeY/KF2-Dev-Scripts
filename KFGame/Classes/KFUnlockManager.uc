@@ -246,6 +246,11 @@ static private event bool CheckCustomizationOwnership(KFPlayerReplicationInfo PR
  		// accessory
 		for( i=0; i < `MAX_COSMETIC_ATTACHMENTS; i++ )
 		{
+			if (i == 2 && PRI.WorldInfo.GRI.IsA('KFGameReplicationInfo_WeeklySurvival') && (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12))
+			{
+				continue;
+			}
+
 			if (PRI.RepCustomizationInfo.AttachmentSkinIndices[i] == INDEX_NONE)
 			{
 				continue;

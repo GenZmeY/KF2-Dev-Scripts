@@ -235,16 +235,26 @@ protected function ScoreMonsterKill( Controller Killer, Controller Monster, KFPa
 
 	if(OutbreakEvent.ActiveEvent.bHealAfterKill)
     {
-    	if( MonsterPawn != none && MonsterPawn.DamageHistory.Length > 0 )
-		{
-			HealAfterKilling( MonsterPawn, Killer );
+        if( MonsterPawn != none && MonsterPawn.DamageHistory.Length > 0 )
+        {
+            if(OutbreakEvent.ActiveEvent.bHealWithHeadshot)
+            {
+                if (MonsterPawn.LastHitZoneIndex == HZI_HEAD)
+                {
+                    HealAfterKilling( MonsterPawn, Killer, false );
+                }
+            }
+            else
+            {
+                HealAfterKilling( MonsterPawn, Killer );
+            }
         }
 	}
 }
 
 
 /** Heal players after a Zed was killed, based in more heal to the player that was the killer and less heal to the players that damaged the Zed */
-function HealAfterKilling(KFPawn_Monster MonsterPawn , Controller Killer)
+function HealAfterKilling(KFPawn_Monster MonsterPawn , Controller Killer, optional bool bGivePowerUp = true)
 {
 	local int i;
     local int j;
@@ -302,7 +312,7 @@ function HealAfterKilling(KFPawn_Monster MonsterPawn , Controller Killer)
                         {
             				PawnHuman.HealDamageForce(MonsterPawn.HealByKill, KFPC, class'KFDT_Healing', false, false );
                             
-                            if( KFPawn_ZedFleshpound(MonsterPawn) != none || KFPawn_ZedScrake(MonsterPawn) != none )
+                            if( bGivePowerUp && ( KFPawn_ZedFleshpound(MonsterPawn) != none || KFPawn_ZedScrake(MonsterPawn) != none ))
                             {
                                 KFPC.ReceivePowerUp(class'KFPowerUp_HellishRage_NoCostHeal');
                             }
@@ -322,6 +332,11 @@ function HealAfterKilling(KFPawn_Monster MonsterPawn , Controller Killer)
 function StartMatch()
 {
     super.StartMatch();
+
+    if (OutbreakEvent.ActiveEvent.bForceWWLMusic)
+    {
+        ForceWWLMusicTrack();
+    }
 }
 
 function CreateDifficultyInfo(string Options)

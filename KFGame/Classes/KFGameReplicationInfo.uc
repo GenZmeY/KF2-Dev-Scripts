@@ -106,7 +106,7 @@ var					int							AIRemaining;
 var					int							WaveTotalAICount;
 var					bool						bEndlessMode;
 var					bool						bObjectiveMode;
-
+var 				bool 						bIsWeeklyMode;
 //@HSL_BEGIN - JRO - 3/21/2016 - PS4 Sessions
 /************************************
 * Console Sessions
@@ -381,7 +381,7 @@ replication
 	if ( bNetDirty )
 		TraderVolume, TraderVolumeCheckType, bTraderIsOpen, NextTrader, WaveNum, bWaveIsEndless, AIRemaining, WaveTotalAICount, bWaveIsActive, MaxHumanCount, bGlobalDamage, 
 		CurrentObjective, PreviousObjective, PreviousObjectiveResult, PreviousObjectiveXPResult, PreviousObjectiveVoshResult, MusicIntensity, ReplicatedMusicTrackInfo, MusicTrackRepCount,
-		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective, bIsBrokenTrader; //@HSL - JRO - 3/21/2016 - PS4 Sessions
+		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective, bIsBrokenTrader, bIsWeeklyMode; //@HSL - JRO - 3/21/2016 - PS4 Sessions
 	if ( bNetInitial )
 		GameLength, WaveMax, bCustom, bVersusGame, TraderItems, GameAmmoCostScale, bAllowGrenadePurchase, MaxPerkLevel, bTradersEnabled;
 	if ( bNetInitial || bNetDirty )
@@ -1091,6 +1091,7 @@ simulated function int GetNextMapTimeRemaining()
 /** Called from the GameInfo when the trader pod should be activated */
 function SetWaveActive(bool bWaveActive, optional byte NewMusicIntensity)
 {
+
     // set up music intensity for this wave
     MusicIntensity = NewMusicIntensity;
 	bTraderIsOpen = !bWaveActive && bMatchHasBegun && bTradersEnabled;
@@ -1104,6 +1105,21 @@ function SetWaveActive(bool bWaveActive, optional byte NewMusicIntensity)
     {
         PlayNewMusicTrack( true );
     }
+}
+
+simulated function bool CanOverrideWeeklyMusic()
+{
+	local KFGameInfo KFGI;
+
+	if (WorldInfo.NetMode == NM_Client)
+	{
+		return !bIsWeeklyMode || class'KFGameEngine'.static.GetWeeklyEventIndexMod() != 12;
+	}
+	else
+	{
+		KFGI = KFGameInfo(WorldInfo.Game);
+		return (KFGI == none || KFGI.OutbreakEvent == none || !KFGI.OutbreakEvent.ActiveEvent.bForceWWLMusic);
+	}
 }
 
 simulated function bool IsFinalWave()
@@ -1717,6 +1733,9 @@ simulated function PlayNewMusicTrack( optional bool bGameStateChanged, optional 
 		return;
 	}
 
+	if ( !CanOverrideWeeklyMusic() )
+		return;
+
 	// @todo: consider using music intensity (255?) for ambient music to simplify this logic
 	bPlayActionTrack = (!bForceAmbient && KFGameClass.static.ShouldPlayActionMusicTrack(self));
 
@@ -2202,4 +2221,5 @@ defaultproperties
 	PreviousObjectiveVoshResult=-1
 	PreviousObjectiveXPResult=-1
 	bIsBrokenTrader=false
+	bIsWeeklyMode=false
 }

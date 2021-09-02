@@ -605,4 +605,6 @@ End Object
     MinSpawnSquadSizeType=EST_Large
 
     OnDeathAchievementID=KFACHID_ItsOnlyAFleshWound
+
+	ZEDCowboyHatAttachName=Hat_Attach
 }

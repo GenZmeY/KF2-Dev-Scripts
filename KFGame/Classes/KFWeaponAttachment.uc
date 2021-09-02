@@ -105,6 +105,8 @@ enum EWeaponState
 	WEP_ReloadSingleEmpty_Elite,
 	WEP_ReloadSecondary,
 	WEP_ReloadSecondary_Elite,
+	WEP_ReloadSecondaryEmpty,
+	WEP_ReloadSecondaryEmpty_Elite,
 	WEP_ReloadDualsOneEmpty,
 	WEP_ReloadDualsOneEmpty_Elite,
 	WEP_MeleeBasic,
@@ -799,6 +801,8 @@ simulated function UpdateThirdPersonWeaponAction(EWeaponState NewWeaponState, KF
 	case WEP_ReloadSecondary_Elite:
 	case WEP_ReloadDualsOneEmpty:
 	case WEP_ReloadDualsOneEmpty_Elite:
+	case WEP_ReloadSecondaryEmpty:
+	case WEP_ReloadSecondaryEmpty_Elite:
 		bIsReloading = true;
 		PlayReloadMagazineAnim(NewWeaponState, P);
 		break;

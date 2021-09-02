@@ -2012,4 +2012,6 @@ defaultproperties
 	// Gun tracking
 	bUseServerSideGunTracking=true
 	GunTargetBoneName=Spine2
+
+	ZEDCowboyHatAttachName=Hat_Attach
 }
