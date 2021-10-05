@@ -13,7 +13,7 @@ DefaultProperties
 	WeaponClassPath="KFGameContent.KFWeap_Pistol_Bladed"
 
 	BuyPrice=600
-	AmmoPricePerMag=32
+	AmmoPricePerMag=38 //32
 	ImagePath="WEP_UI_BladedPistol_TEX.UI_WeaponSelect_BladedPistol"
 
 	EffectiveRange=25
@@ -22,4 +22,6 @@ DefaultProperties
 	UpgradePrice[1]=1500
     UpgradeSellPrice[0]=550
 	UpgradeSellPrice[1]=1650
+
+	SharedUnlockId=SCU_BladedPistol
 }

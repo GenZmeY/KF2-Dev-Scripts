@@ -543,6 +543,17 @@ simulated function ANIMNOTIFY_UnLockBolt()
 	BuildEmptyMagNodeWeightList( EmptyMagBlendNode, BonesToLockOnEmpty);
 }
 
+/**
+	This weapon only supports akimbo anims. 
+	Overriding bUseAltFireMode that comes from gameplay options by the user
+ */
+simulated event PostInitAnimTree(SkeletalMeshComponent SkelComp)
+{
+	super.PostInitAnimTree(SkelComp);
+
+	bUseAltFireMode = false;
+}
+
 defaultproperties
 {
 	// Content
@@ -579,7 +590,7 @@ defaultproperties
 
 	// Ammo
 	MagazineCapacity[0]=12
-	SpareAmmoCapacity[0]=72 //96
+	SpareAmmoCapacity[0]=66 //72 //96
 	InitialSpareMags[0]=1
 	AmmoPickupScale[0]=0.5 //1.0
 	bCanBeReloaded=true

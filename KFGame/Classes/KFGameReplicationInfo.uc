@@ -1113,12 +1113,12 @@ simulated function bool CanOverrideWeeklyMusic()
 
 	if (WorldInfo.NetMode == NM_Client)
 	{
-		return !bIsWeeklyMode || class'KFGameEngine'.static.GetWeeklyEventIndexMod() != 12;
+		return (!bIsWeeklyMode || class'KFGameEngine'.static.GetWeeklyEventIndexMod() != 12 || GetNumPlayersAlive() == 0);
 	}
 	else
 	{
 		KFGI = KFGameInfo(WorldInfo.Game);
-		return (KFGI == none || KFGI.OutbreakEvent == none || !KFGI.OutbreakEvent.ActiveEvent.bForceWWLMusic);
+		return (KFGI == none || KFGI.OutbreakEvent == none || !KFGI.OutbreakEvent.ActiveEvent.bForceWWLMusic || GetNumPlayersAlive() == 0);
 	}
 }
 
@@ -1129,7 +1129,7 @@ simulated function bool IsFinalWave()
 
 simulated function bool IsBossWave()
 {
-	return WaveNum == WaveMax;
+	return WaveNum == WaveMax || (bIsWeeklyMode && class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14);
 }
 
 simulated function bool IsInfiniteWave()

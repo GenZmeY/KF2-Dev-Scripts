@@ -188,16 +188,19 @@ function FillWhatsNew()
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_Armory_Season_Pass", "ArmorySeasonPass", "https://store.steampowered.com/app/1524820/Killing_Floor_2__Armory_Season_Pass");
     WhatsNewItems.AddItem(item);
 // Featured Time Limited Item
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_PremiumTicket", "FeaturedEventItem", "https://store.steampowered.com/buyitem/232090/9119");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_PremiumTicket", "FeaturedEventItem", "https://store.steampowered.com/buyitem/232090/4928");
+    WhatsNewItems.AddItem(item);
+// Featured Full Gear
+    item=SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_FullGearBundle_DoZ", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9119");
     WhatsNewItems.AddItem(item);
 // Featured Cosmetic Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_DoZ", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9120");
-    WhatsNewItems.AddItem(item);
-// Featured Cosmetic Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_Vietnam","FeaturedItemBundle","https://store.steampowered.com/buyitem/232090/9122");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_DoZ_Cosmetics", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9120");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Skin Bundle
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_Hellmark", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9121");
+    WhatsNewItems.AddItem(item);
+// Featured Cosmetic Bundle
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_Vietnam","FeaturedItemBundle","https://store.steampowered.com/buyitem/232090/9122");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Bundle
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_PiranhaPistol", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9123");
@@ -205,7 +208,7 @@ function FillWhatsNew()
 // Featured Weapon Bundle
     item=SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_CorrupterCarbine", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9124");
     WhatsNewItems.AddItem(item);
-    // Featured Weapon Bundle
+// Featured Weapon Bundle
     item=SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_halloween_Weaponsbundle", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9125");
     WhatsNewItems.AddItem(item);
 // Misc Community Links

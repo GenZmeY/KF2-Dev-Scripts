@@ -734,7 +734,7 @@ defaultproperties
 		DamageFalloffExponent=0.f
 		DamageDelay=0.f
 		MyDamageType=class'KFDT_Toxic_MedicBatGas'
-		HealingAmount=20 //30
+		HealingAmount=15 //20 //30
 
 		// Damage Effects
 		KnockDownStrength=0

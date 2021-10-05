@@ -29,7 +29,9 @@ enum ESharedContentUnlock
 	SCU_FrostFang,
 	SCU_GravityImploder,
 	SCU_FAMAS,
-	SCU_Thermite
+	SCU_Thermite,
+	SCU_BladedPistol,
+	SCU_ParasiteImplanter
 };
 
 
@@ -345,4 +347,12 @@ defaultproperties
 		Name=KFWeap_RocketLauncher_ThermiteBore,
 		IconPath="WEP_UI_Thermite_TEX.UI_WeaponSelect_Thermite",
 		ID=8940)}
+	SharedContentList(SCU_BladedPistol)={(
+		Name=KFWeap_Pistol_Bladed,
+		IconPath="WEP_UI_BladedPistol_TEX.UI_WeaponSelect_BladedPistol",
+		ID=9126)}
+	SharedContentList(SCU_ParasiteImplanter)={(
+		Name=KFWeap_Rifle_ParasiteImplanter,
+		IconPath="WEP_UI_ParasiteImplanter_TEX.UI_WeaponSelect_ParasiteImplanter",
+		ID=9132)}
 }

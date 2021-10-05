@@ -13,7 +13,7 @@ DefaultProperties
 	WeaponClassPath="KFGameContent.KFWeap_Pistol_DualBladed"
 
 	BuyPrice=1200
-	AmmoPricePerMag=64
+	AmmoPricePerMag=76 //64
 	ImagePath="WEP_UI_Dual_BladedPistol_TEX.UI_WeaponSelect_Dual_BladedPistol"
 
 	EffectiveRange=50
@@ -23,4 +23,6 @@ DefaultProperties
 
 	UpgradeSellPrice[0]=525
 	UpgradeSellPrice[1]=1650
+
+	SharedUnlockId=SCU_BladedPistol
 }

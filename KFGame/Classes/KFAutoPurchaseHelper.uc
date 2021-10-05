@@ -539,7 +539,7 @@ function bool AttemptBuyArmorChunk( out int InAutoFillDosh )
 		InAutoFillDosh -= ChunkCost;
 
         PercentArmorBought = (PercentArmorBought > 0.f && PercentArmorBought < 1.f) ? 1.f : PercentArmorBought;
-	    ArmorItem.SpareAmmoCount = FMin(ArmorItem.SpareAmmoCount + (PercentArmorBought / 100.f * ArmorItem.MaxSpareAmmo), ArmorItem.MaxSpareAmmo);
+	    ArmorItem.SpareAmmoCount = FMin(ArmorItem.SpareAmmoCount + PercentArmorBought, ArmorItem.MaxSpareAmmo);
 		BoughtAmmo(PercentArmorBought, ChunkCost, EIT_Armor);
 	}
 	

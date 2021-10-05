@@ -259,8 +259,8 @@ DefaultProperties
 	HealingDamageType=class'KFDT_Healing'
 	HealingAmount=0;
 
-	fMinAmmoutHealing=4;
-	fMaxAmmoutHealing=40 //24;
+	fMinAmmoutHealing=5; //4;
+	fMaxAmmoutHealing=50; //40
 	
 	Interval=0
 	MaxTime=0.0

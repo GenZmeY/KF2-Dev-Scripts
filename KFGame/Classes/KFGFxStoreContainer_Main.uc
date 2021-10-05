@@ -454,6 +454,7 @@ DefaultProperties
 	FeaturedItemIDs[4]=9122
 	FeaturedItemIDs[5]=9123
 	FeaturedItemIDs[6]=9124
+	FeaturedItemIDs[7]=9125
 
 	ConsoleFeaturedItemIDs[0]=7783	//Whatsnew Gold Ticket PSN
 	ConsoleFeaturedItemIDs[1]=9119
@@ -462,6 +463,7 @@ DefaultProperties
 	ConsoleFeaturedItemIDs[4]=9122
 	ConsoleFeaturedItemIDs[5]=9123
 	ConsoleFeaturedItemIDs[6]=9124
+	ConsoleFeaturedItemIDs[7]=9125
 
 	MaxFeaturedItems=5
 }
