@@ -271,6 +271,17 @@ function GFxObject CreateStoreItem(ItemProperties DesiredStoreItem)
 	DataObject.SetString("imageURLLarge", "img://"$DesiredStoreItem.IconURLLarge);
 	DataObject.SetInt("SKU", DesiredStoreItem.Definition);
 
+	if( DesiredStoreItem.ItemOnSale && DesiredStoreItem.BasePrice != DesiredStoreItem.Price)
+	{
+		DataObject.SetString("itemOnSale", DesiredStoreItem.ItemOnSale ? "1" : "0");
+		DataObject.SetString("itemPriceBase", DesiredStoreItem.BasePrice);
+		
+		if(DesiredStoreItem.DiscountRate != "" && DesiredStoreItem.DiscountRate != "0")
+		{
+			DataObject.SetString("discountRate", DesiredStoreItem.DiscountRate);
+		}
+	}
+
 	return DataObject;
 }
 

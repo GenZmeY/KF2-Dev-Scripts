@@ -30,6 +30,8 @@ var int PrevArmor;
 var int CostPerAutofillCycle;
 var int DoshBuffer;
 
+var int ArmorMagSize; // Percentage of armor bought individually
+
 function Initialize(optional bool bInitOwnedItems = true)
 {
 	if( Pawn != none && PlayerReplicationInfo != none )
@@ -431,13 +433,18 @@ function bool UpgradeWeapon(int OwnedItemIndex)
 *******************/
 function int GetFillArmorCost()
 {
-	local float ArmorPercentage, FillCost, ArmorPricePerPercent;
+	// local float ArmorPercentage, FillCost, ArmorPricePerPercent;
 
-	ArmorPercentage = (float(ArmorItem.MaxSpareAmmo - ArmorItem.SpareAmmoCount) / float(ArmorItem.MaxSpareAmmo)) * 100.f;
-	ArmorPricePerPercent = ArmorItem.AmmoPricePerMagazine;
-	FillCost = FCeil( ArmorPercentage * ArmorPricePerPercent );
+	// ArmorPercentage = (float() / float(ArmorItem.MaxSpareAmmo)) * 100.f;
+	// ArmorPricePerPercent = ArmorItem.AmmoPricePerMagazine;
+	// FillCost = FCeil( (ArmorItem.SpareAmmoCount - ArmorItem.MaxSpareAmmo) * ArmorItem.AmmoPricePerMagazine );
 
-	return FillCost;
+	return FCeil( (ArmorItem.MaxSpareAmmo - ArmorItem.SpareAmmoCount) * ArmorItem.AmmoPricePerMagazine );
+}
+
+function int GetChunkArmorCost()
+{
+	return FCeil ( FMin(ArmorItem.MaxSpareAmmo - ArmorItem.SpareAmmoCount, ArmorMagSize) * ArmorItem.AmmoPricePerMagazine );
 }
 
 function int FillArmor( )
@@ -470,29 +477,72 @@ function int FillArmor( )
 	return FillCost;
 }
 
+function int BuyArmorMag( )
+{
+	local float ArmorPricePerPercent;
+	local float ChunkCost;
+	local float ArmorAvailable;
+	local float PercentArmorBought;
+	local float ArmorAmmountBought;
+
+	ArmorAvailable     = (1 - float(ArmorItem.SpareAmmoCount) / ArmorItem.MaxSpareAmmo) * 100;
+	ArmorAmmountBought = ArmorMagSize;
+    PercentArmorBought = ArmorMagSize * 100.0f / ArmorItem.MaxSpareAmmo;
+
+	if (ArmorAvailable < PercentArmorBought)
+		return FillArmor();
+
+	ChunkCost = ArmorAmmountBought * ArmorItem.AmmoPricePerMagazine;
+	// Buy as much armor as we possibly can
+    if (ChunkCost > TotalDosh)
+    {
+   		ArmorPricePerPercent = ArmorItem.AmmoPricePerMagazine;
+
+        // Because we are using ints this will round down and we can get how much we actually spent
+    	PercentArmorBought = TotalDosh / ArmorPricePerPercent;
+		ChunkCost = ArmorPricePerPercent * PercentArmorBought;
+		ArmorAmmountBought = ArmorItem.MaxSpareAmmo * PercentArmorBought / 100;
+    }
+
+    PercentArmorBought = (PercentArmorBought > 0.f && PercentArmorBought < 1.f) ? 1.f : PercentArmorBought;
+	ArmorItem.SpareAmmoCount = FMin(ArmorItem.SpareAmmoCount + ArmorAmmountBought, ArmorItem.MaxSpareAmmo);
+
+	BoughtAmmo(PercentArmorBought, ChunkCost, EIT_Armor);
+	return ChunkCost;
+}
+
+
 function bool AttemptBuyArmorChunk( out int InAutoFillDosh )
 {
-	local float ArmorPricePerPercent, ChunkCost;
-	local int PercentArmorBought;
+	local float PercentArmorBought;
+	local int ArmorPricePerPercent;
+	local int ChunkCost;
+	local int ActualArmorPointsAvailable;
+
+	ActualArmorPointsAvailable = ArmorItem.MaxSpareAmmo - ArmorItem.SpareAmmoCount;
 
 	ArmorPricePerPercent = ArmorItem.AmmoPricePerMagazine;
-	PercentArmorBought = 0;
+	PercentArmorBought   = 0;
+
 	if( ArmorItem.SpareAmmoCount < ArmorItem.MaxSpareAmmo )
 	{
 	    // Because we are using int's this will round down and we can get how much we actually spent
-		PercentArmorBought = CostPerAutofillCycle / ArmorPricePerPercent;
-		ChunkCost = ArmorPricePerPercent * PercentArmorBought;
+		PercentArmorBought = FMin(CostPerAutofillCycle / ArmorPricePerPercent, float(ActualArmorPointsAvailable));
+		ChunkCost          = ArmorPricePerPercent * PercentArmorBought;
+
 		if( InAutoFillDosh < ChunkCost )
 		{
-			PercentArmorBought = InAutoFillDosh / ArmorPricePerPercent;
-			ChunkCost = ArmorPricePerPercent * PercentArmorBought;
+			PercentArmorBought = FMin(InAutoFillDosh / ArmorPricePerPercent, float(ActualArmorPointsAvailable));
+			ChunkCost          = ArmorPricePerPercent * PercentArmorBought;
 		}
 
 		InAutoFillDosh -= ChunkCost;
 
-	    ArmorItem.SpareAmmoCount = FMin(ArmorItem.SpareAmmoCount + PercentArmorBought, ArmorItem.MaxSpareAmmo);
+        PercentArmorBought = (PercentArmorBought > 0.f && PercentArmorBought < 1.f) ? 1.f : PercentArmorBought;
+	    ArmorItem.SpareAmmoCount = FMin(ArmorItem.SpareAmmoCount + (PercentArmorBought / 100.f * ArmorItem.MaxSpareAmmo), ArmorItem.MaxSpareAmmo);
 		BoughtAmmo(PercentArmorBought, ChunkCost, EIT_Armor);
 	}
+	
 	return (PercentArmorBought > 0);
 }
 
@@ -1429,4 +1479,5 @@ DefaultProperties
 	//defaults
 	CostPerAutofillCycle=10
 	DoshBuffer=150
+	ArmorMagSize=25.0f;
 }

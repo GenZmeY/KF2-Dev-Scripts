@@ -72,4 +72,6 @@ defaultproperties
     IncapSettings(AF_Freeze)=   (Vulnerability=(0.95),                        Cooldown=10.5,  Duration=1.0)
     IncapSettings(AF_Snare)=    (Vulnerability=(1.0, 2.0, 1.0, 1.0, 2.0),     Cooldown=8.5,  Duration=5.0)
     IncapSettings(AF_Bleed)=    (Vulnerability=(0.75))
+
+	ZEDCowboyHatAttachName=HEAD_Attach
 }

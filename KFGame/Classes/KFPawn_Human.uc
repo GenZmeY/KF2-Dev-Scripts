@@ -313,7 +313,7 @@ function PossessedBy(Controller C, bool bVehicleTransition)
 	}
 
 	KFGameInfo(WorldInfo.Game).OverrideHumanDefaults( self );
-
+	SetTimer(0.5f, false, nameof(ClientOverrideHumanDefaults), self);
 }
 
 simulated function NotifyTeamChanged()
@@ -2112,6 +2112,36 @@ event Landed(vector HitNormal, actor FloorActor)
 			KFPC.ResetGoompaStreak();
 		}
 	}
+}
+
+// Used for override aesthetics
+client reliable function ClientOverrideHumanDefaults()
+{
+	local KFPlayerController_WeeklySurvival KFPC_WS;
+    local KFPlayerReplicationInfo KFPRI;
+	local KFCharacterInfo_Human KFCIH;
+    local int CowboyHatIndex;
+
+	KFPC_WS = KFPlayerController_WeeklySurvival(Controller);
+	if (KFPC_WS == none)
+	{
+		return;
+	}
+		
+    if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12)
+    {
+		KFPRI = KFPlayerReplicationInfo(KFPC_WS.PlayerReplicationInfo);
+		if (KFPRI != none)
+		{
+			KFCIH = KFPRI.CharacterArchetypes[KFPRI.RepCustomizationInfo.CharacterIndex];
+			CowboyHatIndex = class'KFGFxMenu_Gear'.static.FindCowboyHatAttachmentIndex(KFCIH);
+			if (CowboyHatIndex >= 0)
+			{
+				KFCIH.DetachConflictingAttachments(CowboyHatIndex, self, KFPRI);
+				KFPRI.SetWeeklyCharacterAttachment(CowboyHatIndex, 0);
+			}
+		}
+    }
 }
 
 defaultproperties

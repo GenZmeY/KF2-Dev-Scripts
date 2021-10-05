@@ -905,8 +905,8 @@ defaultproperties
 	MaxDamageRadiusPerPercentage=340
 	MinDamageRadiusPerPercentage=160
 
-	MaxDamagePerPercentage=300 //270//180
-	MinDamagePerPercentage=30//90
+	MaxDamagePerPercentage=350 //300
+	MinDamagePerPercentage=35 //30
 
 	MaxCollisionRadius=20
 	MinCollisionRadius=10

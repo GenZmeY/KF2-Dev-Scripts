@@ -803,8 +803,25 @@ simulated function InternalNextWeapon(bool bGamepad)
 simulated function bool ShouldSkipCycleWeapon(Weapon CandidateWeapon, bool bGamepad)
 {
 	local KFWeapon KFW;
+	local PlayerController PC;
+	local KFPlayerInput KFPI;
+	local bool bCanSwapTo9mm;
 
+	// Default behaviour is you can't swap to 9mm
+	bCanSwapTo9mm = false;
+
+	PC = PlayerController(Instigator.Controller);
+	if ( PC != None )
+	{
+		KFPI = KFPlayerInput(PC.PlayerInput);
+		if (KFPI != None)
+		{
+			bCanSwapTo9mm = KFPI.bAllowSwapTo9mm;
+		}
+	}
+	
 	KFW = KFWeapon(CandidateWeapon);
+
 	if(KFW != none)
 	{
 		if(KFW.InventoryGroup == IG_None)
@@ -819,7 +836,7 @@ simulated function bool ShouldSkipCycleWeapon(Weapon CandidateWeapon, bool bGame
 				return true;
 			}
 
-			if (KFW.bIsBackupWeapon)
+			if (KFW.bIsBackupWeapon && (!bCanSwapTo9mm || KFW.IsMeleeWeapon()))
 			{
 				return true;
 			}

@@ -341,11 +341,12 @@ function GFxObject CreateStoreItem(ItemProperties StoreItem)
 	DataObject.SetString("description", StoreItem.Description);
 	//`log("Price"@StoreItem.Price@"- BasePrice"@StoreItem.BasePrice@"- DiscountRate"@StoreItem.DiscountRate@"- ItemOnSale"@StoreItem.ItemOnSale);
 
-	if( StoreItem.ItemOnSale )
+	if( StoreItem.ItemOnSale && StoreItem.BasePrice != StoreItem.Price)
 	{
 		DataObject.SetString("itemOnSale", StoreItem.ItemOnSale ? "1" : "0");
 		DataObject.SetString("itemPriceBase", StoreItem.BasePrice);
-		if(StoreItem.DiscountRate != "")
+		
+		if(StoreItem.DiscountRate != "" && StoreItem.DiscountRate != "0")
 		{
 			DataObject.SetString("discountRate", StoreItem.DiscountRate);
 		}
@@ -446,21 +447,21 @@ DefaultProperties
 
 	XboxFilterExceptions[0]="Wasteland Bundle" // Wasteland Outfit Bundle
 
-	FeaturedItemIDs[0]=8178
-	FeaturedItemIDs[1]=8953
-	FeaturedItemIDs[2]=8959
-	FeaturedItemIDs[3]=8956
-	FeaturedItemIDs[4]=8955
-	FeaturedItemIDs[5]=8957
-	FeaturedItemIDs[6]=8958
+	FeaturedItemIDs[0]=7619			//Whatsnew Gold Ticket
+	FeaturedItemIDs[1]=9119
+	FeaturedItemIDs[2]=9120
+	FeaturedItemIDs[3]=9121
+	FeaturedItemIDs[4]=9122
+	FeaturedItemIDs[5]=9123
+	FeaturedItemIDs[6]=9124
 
-	ConsoleFeaturedItemIDs[0]=8181
-	ConsoleFeaturedItemIDs[1]=8953
-	ConsoleFeaturedItemIDs[2]=8959
-	ConsoleFeaturedItemIDs[3]=8956
-	ConsoleFeaturedItemIDs[4]=8955
-	ConsoleFeaturedItemIDs[5]=8957
-	ConsoleFeaturedItemIDs[6]=8958
+	ConsoleFeaturedItemIDs[0]=7783	//Whatsnew Gold Ticket PSN
+	ConsoleFeaturedItemIDs[1]=9119
+	ConsoleFeaturedItemIDs[2]=9120
+	ConsoleFeaturedItemIDs[3]=9121
+	ConsoleFeaturedItemIDs[4]=9122
+	ConsoleFeaturedItemIDs[5]=9123
+	ConsoleFeaturedItemIDs[6]=9124
 
 	MaxFeaturedItems=5
 }

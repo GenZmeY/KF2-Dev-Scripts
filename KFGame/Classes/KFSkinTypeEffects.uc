@@ -38,9 +38,11 @@ enum EEffectDamageGroup
 	FXG_Bludgeon_Chains,
 	FXG_MicrowaveProj,
 	FXG_Electricity,
-	FXG_Slashing_Ion
+	FXG_Slashing_Ion,
+	FXG_Energy_Yellow,
+	FXG_Energy_Magenta
 };
-const FXG_MAX = 20; //!! Update me when the enum gets modified !!
+const FXG_MAX = 22; //!! Update me when the enum gets modified !!
 
 struct native SkinEffectInfo
 {

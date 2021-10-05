@@ -52,6 +52,8 @@ var float SkillZedTimeChance;
 
 var private transient bool bWasHeadshot;
 
+var private float  FanFareModifier;
+
 /*********************************************************************************************
 * @name	 Stats/XP
 ********************************************************************************************* */
@@ -446,7 +448,7 @@ simulated function bool IsAmmoPouchActive()
  */
 simulated function bool IsZTKnockdownActive()
 {
-	return PerkSkills[ESharpshooterZTKnockdown].bActive && IsPerkLevelAllowed(ESharpshooterZTKnockdown);
+	return PerkSkills[ESharpshooterZTKnockdown].bActive && IsPerkLevelAllowed(ESharpshooterZTKnockdown) && !ShouldDisableZedTimeSkillsForWildWest();
 }
 
 /**
@@ -466,7 +468,7 @@ simulated function bool GetZTKnockdownActive()
  */
 simulated function bool IsZTStunActive()
 {
-	return PerkSkills[ESharpshooterZTStun].bActive && IsPerkLevelAllowed(ESharpshooterZTStun);
+	return PerkSkills[ESharpshooterZTStun].bActive && IsPerkLevelAllowed(ESharpshooterZTStun) && !ShouldDisableZedTimeSkillsForWildWest();
 }
 
 /**
@@ -658,6 +660,62 @@ static simulated function bool IsWeaponOnPerk( KFWeapon W, optional array < clas
 	return super.IsWeaponOnPerk( W, WeaponPerkClass, InstigatorPerkClass, WeaponClassName );
 }
 
+/*********************************************************************************************
+* @name	 Special Weekly Modes
+********************************************************************************************* */
+
+/**
+ * @brief Skills can modify the zed time time delation (Forced during wild west weekly)
+ *
+ * @param W used weapon
+ * @return time dilation modifier
+ */
+simulated function float GetZedTimeModifier( KFWeapon W )
+{
+	local name StateName;
+
+	if( IsFanfareActiveForWildWest() && IsWeaponOnPerk( W,, self.class ) )
+	{
+		StateName = W.GetStateName();
+		if( ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE )
+		{
+			return FanFareModifier;
+		}
+
+		if( StateName == 'Reloading' )
+		{
+			return 1.f;
+		}
+	}
+
+	return 0.f;
+}
+
+
+function bool ShouldDisableZedTimeSkillsForWildWest()
+{
+	if (WorldInfo.NetMode == NM_Client)
+	{
+		return MyKFGRI.bIsWeeklyMode && class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12;
+	}
+	else
+	{
+		return MyKFGI != none && MyKFGI.OutbreakEvent != none && MyKFGI.OutbreakEvent.ActiveEvent.bWildWestSkillConditionsActive;
+	}
+}
+
+simulated function bool IsFanfareActiveForWildWest()
+{
+	if (WorldInfo.NetMode == NM_Client)
+	{
+		return MyKFGRI.bIsWeeklyMode && class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12;
+	}
+	else
+	{
+		return MyKFGI != none && MyKFGI.OutbreakEvent != none && MyKFGI.OutbreakEvent.ActiveEvent.bWildWestSkillConditionsActive;
+	}
+}
+
 DefaultProperties
 {
 	PerkIcon=Texture2D'UI_PerkIcons_TEX.UI_PerkIcon_Sharpshooter'
@@ -732,4 +790,5 @@ DefaultProperties
    	AssistDoshModifier=1.1f
 
 	bWasHeadshot = false;
+	FanFareModifier = 1.0f;
 }

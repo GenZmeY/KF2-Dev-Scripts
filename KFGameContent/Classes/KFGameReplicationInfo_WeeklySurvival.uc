@@ -64,6 +64,7 @@ simulated function NotifyWaveStart()
 
 DefaultProperties
 {
+	bIsWeeklyMode=True
 	BrokenTraderItemPickups={(
 							(WeaponClasses={(
 								class'KFGame.KFWeapDef_9mmDual',

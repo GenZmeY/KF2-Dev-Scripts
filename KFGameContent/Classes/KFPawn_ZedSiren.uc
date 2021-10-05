@@ -250,4 +250,6 @@ defaultproperties
 `endif
 	
 	OnDeathAchievementID=KFACHID_DeadSilence
+
+	ZEDCowboyHatAttachName=Hat_Attach
 }

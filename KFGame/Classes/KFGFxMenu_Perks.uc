@@ -112,6 +112,8 @@ event bool WidgetInitialized(name WidgetName, name WidgetPath, GFxObject Widget)
 
 function OnOpen()
 {
+	local KFGameReplicationInfo KFGRI;
+
 	LastPerkIndex = KFPC.SavedPerkIndex;
 
 	MyKFPRI = KFPlayerReplicationInfo( GetPC().PlayerReplicationInfo );
@@ -120,6 +122,25 @@ function OnOpen()
 		`log("NO KFPC!!");
 		KFPC = KFPlayerController(GetPC());
 	}
+
+		// Current Perk not allowed, search for the first one
+	KFGRI = KFGameReplicationInfo( KFPC.WorldInfo.GRI );
+	if( KFGRI != none && !KFGRI.IsPerkAllowed(KFPC.PerkList[LastPerkIndex].PerkClass) )
+	{
+		if (KFGRI.PerksAvailableData.bBerserkerAvailable)          LastPerkIndex=0;
+		else if (KFGRI.PerksAvailableData.bCommandoAvailable)      LastPerkIndex=1;
+		else if (KFGRI.PerksAvailableData.bSupportAvailable)       LastPerkIndex=2;
+		else if (KFGRI.PerksAvailableData.bFieldMedicAvailable)    LastPerkIndex=3;
+		else if (KFGRI.PerksAvailableData.bDemolitionistAvailable) LastPerkIndex=4;
+		else if (KFGRI.PerksAvailableData.bFirebugAvailable)       LastPerkIndex=5;
+		else if (KFGRI.PerksAvailableData.bGunslingerAvailable)    LastPerkIndex=6;
+		else if (KFGRI.PerksAvailableData.bSharpshooterAvailable)  LastPerkIndex=7;
+		else if (KFGRI.PerksAvailableData.bSwatAvailable)          LastPerkIndex=8;
+		else if (KFGRI.PerksAvailableData.bSurvivalistAvailable)   LastPerkIndex=9;
+		else 													   LastPerkIndex=0;
+		KFPC.SavedPerkIndex = LastPerkIndex;
+	}
+	
 	UpdateSkillsHolder(KFPC.PerkList[KFPC.SavedPerkIndex].PerkClass);
     UpdateContainers(KFPC.PerkList[KFPC.SavedPerkIndex].PerkClass); 
 

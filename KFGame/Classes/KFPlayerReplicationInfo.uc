@@ -198,6 +198,7 @@ cpptext
 
 native function bool StartLoadCosmeticContent(KFCharacterInfo_Human CharArch, INT CosmeticType, INT CosmeticIdx);
 native function StartLoadHeadshotFxContent();
+native function SetWeeklyCharacterAttachment(INT AttachmentIndex, int AttachmentSkin);
 
 replication
 {

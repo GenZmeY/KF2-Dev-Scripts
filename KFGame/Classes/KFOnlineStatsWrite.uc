@@ -433,6 +433,10 @@ const KFACHID_MoonbaseHard                      =   283;
 const KFACHID_MoonbaseHellOnEarth  		    	=   284;
 const KFACHID_MoonbaseCollectibles 			    =   285;
 
+const KFACHID_NetherholdHard 				    =   286;
+const KFACHID_NetherholdHellOnEarth 	    	=   287;
+const KFACHID_NetherholdCollectibles		    =   288;
+
 /* __TW_ANALYTICS_ */
 var int PerRoundWeldXP;
 var int PerRoundHealXP;
@@ -2055,6 +2059,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_GrenadeLauncher_HX25, KFDT_ExplosiveSubmunition_HX25,KFDT_Ballistic_HX25Impact,KFDT_Ballistic_HX25SubmunitionImpact,KFDT_Bludgeon_HX25),CompletionAmount=5000)) //3000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Thrown_C4, KFDT_Explosive_C4,KFDT_Bludgeon_C4),CompletionAmount=2500))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_GrenadeLauncher_M79, KFDT_Ballistic_M79Impact,KFDT_Explosive_M79,KFDT_Bludgeon_M79),CompletionAmount=7000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Boomy, KFDT_Ballistic_HRG_Boomy,KFDT_Explosive_HRG_Boomy,KFDT_Bludgeon_HRG_Boomy),CompletionAmount=7000))
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_HRG_Kaboomstick, KFDT_Ballistic_HRG_Kaboomstick,KFDT_Explosive_HRG_Kaboomstick,KFDT_Bludgeon_HRG_Kaboomstick),CompletionAmount=9000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_RocketLauncher_RPG7, KFDT_Ballistic_RPG7Impact,KFDT_Explosive_RPG7,KFDT_Explosive_RPG7BackBlast,KFDT_Bludgeon_RPG7),CompletionAmount=7500))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_M16M203, KFDT_Ballistic_M16M203,KFDT_Bludgeon_M16M203,KFDT_Ballistic_M203Impact,KFDT_Explosive_M16M203),CompletionAmount=9000)) //7000
@@ -2094,6 +2099,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Pistol_Deagle, KFDT_Bludgeon_Deagle,KFDT_Ballistic_Deagle),CompletionAmount=10000)) // 7000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Revolver_SW500, KFDT_Bludgeon_SW500,KFDT_Ballistic_SW500,KFDT_Ballistic_SW500_Dual),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Pistol_AF2011, KFDT_Bludgeon_AF2011,KFDT_Ballistic_AF2011),CompletionAmount=10000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Energy, KFDT_Ballistic_HRG_Energy_Primary,KFDT_Ballistic_HRG_Energy_Secondary, KFDT_Bludgeon_HRG_Energy),CompletionAmount=10000))
 
     //Sharpshooter Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_Winchester1894, KFDT_Bludgeon_Winchester,KFDT_Ballistic_Winchester),CompletionAmount=5000)) //2000
@@ -2247,6 +2253,9 @@ defaultproperties
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-MOONBASE),CompletionAmount=1))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-MOONBASE),CompletionAmount=2))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-MOONBASE),CompletionAmount=3))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-NETHERHOLD),CompletionAmount=1))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-NETHERHOLD),CompletionAmount=2))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-NETHERHOLD),CompletionAmount=3))
 	
     //Versus Damage
     //    Per design doc that I have right now, these are x class damage y players, not damage y amount

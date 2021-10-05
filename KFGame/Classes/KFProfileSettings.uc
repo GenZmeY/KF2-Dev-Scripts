@@ -254,7 +254,6 @@ defaultproperties
 	ProfileMappings.Add((Id=KFID_GamepadDeadzoneScale, Name="Gamepad Deadzone", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_GamepadAccelerationJumpScale, Name="Gamepad Acceleration Jump", MappingType=PVMT_RawValue))
 
-
 	//Added 7/11/2016
 	ProfileMappings.Add((Id=KFID_UseAltAimOnDuals, Name="Use alt Dual Aim", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_HideBossHealthBar, Name="Hide Boss Health Bar", MappingType=PVMT_RawValue))
@@ -377,4 +376,8 @@ defaultproperties
 	//Saber Added 10/15/2020 - Has Enter to Store Tab during sales
 	ProfileMappings.Add((Id = KFID_HasTabbedToStore, Name = "Has Tabbed To Store", MappingType = PVMT_RawValue))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_HasTabbedToStore,Data=(Type=SDT_Int32,Value1=0))))
+
+	// Added 16/07/2021 - QoL: Quick Swap button allowing 9mm as an option.
+	ProfileMappings.Add((Id=KFID_AllowSwapTo9mm, Name="AllowSwitchTo9mm", MappingType=PVMT_RawValue))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_AllowSwapTo9mm,Data=(Type=SDT_Int32,Value1=0))))
 }

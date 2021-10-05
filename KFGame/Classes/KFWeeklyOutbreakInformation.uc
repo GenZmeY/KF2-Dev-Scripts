@@ -27,7 +27,7 @@ var localized array<string> ModifierDescriptions;
 cpptext
 {
 	/** Num of Weekly events available */
-    static const int NumWeeklyEvents = 12; 
+    static const int NumWeeklyEvents = 14; 
 }
 DefaultProperties
 {

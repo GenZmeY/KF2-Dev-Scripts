@@ -98,4 +98,6 @@ DefaultProperties
 `if(`notdefined(ShippingPC))
 	DebugRadarTexture=Texture2D'UI_ZEDRadar_TEX.MapIcon_Clot';
 `endif
+
+	ZEDCowboyHatAttachName=Hat_Attach
 }

@@ -657,4 +657,6 @@ DefaultProperties
     // ---------------------------------------------
 	// Spawning
     MinSpawnSquadSizeType=EST_Medium
+
+	ZEDCowboyHatAttachName=Hat_Attach
  }

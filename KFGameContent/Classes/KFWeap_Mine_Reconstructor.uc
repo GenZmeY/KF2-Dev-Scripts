@@ -842,8 +842,8 @@ defaultproperties
 	ValueIncreaseTime=0.2
 
 	//FOR LERPING DAMANGE
-	MaxDamageByCharge=250 //200 //120
-	MinDamageByCharge=25 //30
+	MaxDamageByCharge=300 //250 //200 //120
+	MinDamageByCharge=30 //25 //30
     // FOV
     Meshfov=80
 	MeshIronSightFOV=65 //52
@@ -870,8 +870,8 @@ defaultproperties
 
 	// Ammo
 	MagazineCapacity[0]=12 //24
-	SpareAmmoCapacity[0]=108 //96 //120
-	InitialSpareMags[0]=2 //1
+	SpareAmmoCapacity[0]=132 //108
+	InitialSpareMags[0]=3 //2
 	AmmoPickupScale[0]=1.5 //1 //0.75
 	bCanBeReloaded=true
 	bReloadFromMagazine=true
@@ -905,7 +905,7 @@ defaultproperties
 	FiringStatesArray(DEFAULT_FIREMODE)=MineReconstructorCharge
 	WeaponFireTypes(DEFAULT_FIREMODE)=EWFT_Projectile
     WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Mine_Reconstructor'
-	FireInterval(DEFAULT_FIREMODE)=+0.33 //180 RPMs
+	FireInterval(DEFAULT_FIREMODE)=+0.223 //+0.33 
 	InstantHitDamage(DEFAULT_FIREMODE)=120
 	PenetrationPower(DEFAULT_FIREMODE)=0.0;
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Toxic_MineReconstructorImpact'
@@ -914,7 +914,7 @@ defaultproperties
 	// ALT_FIREMODE
 	FiringStatesArray(ALTFIRE_FIREMODE)=WeaponSingleFiring
 	WeaponFireTypes(ALTFIRE_FIREMODE)=EWFT_Custom
-	FireInterval(ALTFIRE_FIREMODE)=+0.25
+	FireInterval(ALTFIRE_FIREMODE)=+0.15 //+0.25
 	AmmoCost(ALTFIRE_FIREMODE)=0
 
 	// BASH_FIREMODE

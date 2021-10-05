@@ -464,4 +464,6 @@ defaultproperties
 	// ---------------------------------------------
 	// Spawning
     MinSpawnSquadSizeType=EST_Crawler
+
+	ZEDCowboyHatAttachName=Hat_Attach
 }

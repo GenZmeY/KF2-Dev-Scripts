@@ -65,6 +65,7 @@ simulated function PlayImpactEffects(const vector HitLocation, const Pawn Effect
     local KFImpactEffectInfo ImpactEffectInfo;
 	local KFFracturedMeshActor FracturedMeshActor;
 	local int i;
+	local bool bIsWeaponHandlingEffects;
 
 	// allow optional parameter to override impact effects
 	ImpactEffectInfo = (CustomImpactEffects != None) ? CustomImpactEffects : DefaultImpactEffects;	
@@ -91,9 +92,11 @@ simulated function PlayImpactEffects(const vector HitLocation, const Pawn Effect
 			}
 		}
 
+		bIsWeaponHandlingEffects = KFPawn(EffectInstigator).MyKFWeapon.bForceHandleImpacts;
+
 		// Trace using the Instigator as the TraceOwner so that melee weapons don't collide with Instigator
 		HitActor = EffectInstigator.Trace(NewHitLoc, HitNormal, (HitLocation - (HitNormal * 32)), HitLocation + (HitNormal * 32), !bWorldImpactsOnly,, HitInfo, TRACEFLAG_Bullet);
-		if( HitActor != none && HitActor.bCanBeDamaged && HitActor.IsA('Pawn') )
+		if( HitActor != none && HitActor.bCanBeDamaged && HitActor.IsA('Pawn') && !bIsWeaponHandlingEffects )
 		{
 			return; // pawns impacts are handled by the pawn (see PlayTakeHitEffects)
 		}
@@ -130,7 +133,7 @@ simulated function PlayImpactEffects(const vector HitLocation, const Pawn Effect
 
 		// Pawns handle their own hit effects
 		if ( HitActor != None &&
-			 (Pawn(HitActor) == None || Vehicle(HitActor) != None) &&
+			 ((Pawn(HitActor) == None || bIsWeaponHandlingEffects ) || Vehicle(HitActor) != None) &&
 			 AllowImpactEffects(HitActor, HitLocation, HitNormal) )
 		{
 			if (ImpactEffect.ParticleTemplate != None)

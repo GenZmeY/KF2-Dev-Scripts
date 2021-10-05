@@ -23,6 +23,7 @@ var private const float						RapidAssaultFiringRate;    			// Faster firing rate
 var private const float 					SnarePower;
 var private const float 					TacticalMovementBobDamp;
 var private const class<KFWeaponDefinition>	BackupSecondaryWeaponDef;
+var private const float 				    TacticalMovementModifier;           // QoL: Tactical movement - Added modifier to move and sprint speed.  
 
 /** Percentage of how much armor should be damaged when the heavy armor skill is active */
 var private const float 					HeavyArmorAbsorptionPct;
@@ -277,7 +278,7 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 
 	if( KFW != none )
 	{
-		if( IsBackupActive() && (IsBackupWeapon( KFW ) || IsDual9mm( KFW )) ) 
+		if( IsBackupActive() && (IsBackupWeapon( KFW ) || IsDual9mm( KFW ) || ClassIsChildOf(DamageType, class'KFDT_Bludgeon')) ) 
 		{
 			`QALog( "Backup Damage" @ KFW @ GetPercentage( InDamage, InDamage * GetSkillValue(PerkSkills[ESWAT_Backup])), bLogPerk );
 			TempDamage += InDamage * GetSkillValue( PerkSkills[ESWAT_Backup] );
@@ -467,6 +468,68 @@ simulated function int GetArmorDamageAmount( int AbsorbedAmt )
 	return AbsorbedAmt;
 }
 
+/**
+ * @brief Weapons and perk skills can affect the jog/sprint speed
+ *
+ * @param Speed jog speed
+ */
+simulated function ModifySpeed( out float Speed )
+{
+	local KFWeapon MyKFWeapon;
+	local KFInventoryManager KFIM;
+
+	if( !IsTacticalMovementActive() )
+	{
+		return;
+	}
+
+	MyKFWeapon = GetOwnerWeapon();
+	if( MyKFWeapon == none && CheckOwnerPawn() )
+	{
+		KFIM = KFInventoryManager(OwnerPawn.InvManager);
+		if( KFIM != none && KFIM.PendingWeapon != none )
+		{
+			MyKFWeapon = KFWeapon(KFIM.PendingWeapon);
+		}
+	}
+
+	if (MyKFWeapon != none && (Is9mm(MyKFWeapon) || IsDual9mm( MyKFWeapon ) || IsWeaponOnPerk(MyKFWeapon,, self.class)))
+	{
+		Speed += Speed * TacticalMovementModifier;
+	}
+}
+
+/**
+ * @brief Weapons and perk skills can affect the jog/sprint speed
+ *
+ * @param Speed sprint speed
+ */
+simulated function ModifySprintSpeed( out float Speed )
+{
+	local KFWeapon MyKFWeapon;
+	local KFInventoryManager KFIM;
+
+	if( !IsTacticalMovementActive() )
+	{
+		return;
+	}
+
+	MyKFWeapon = GetOwnerWeapon();
+	if( MyKFWeapon == none && CheckOwnerPawn() )
+	{
+		KFIM = KFInventoryManager(OwnerPawn.InvManager);
+		if( KFIM != none && KFIM.PendingWeapon != none )
+		{
+			MyKFWeapon = KFWeapon(KFIM.PendingWeapon);
+		}
+	}
+
+	if (MyKFWeapon != none && (Is9mm(MyKFWeapon) || IsDual9mm( MyKFWeapon ) || IsWeaponOnPerk(MyKFWeapon,, self.class)))
+	{
+		Speed += Speed * TacticalMovementModifier;
+	}
+}
+
 /*********************************************************************************************
 * @name	 Getters etc
 ********************************************************************************************* */
@@ -649,7 +712,7 @@ DefaultProperties
 
  	PerkSkills(ESWAT_HeavyArmor)=(Name="HeavyArmor",IconPath="UI_PerkTalent_TEX.SWAT.UI_Talents_SWAT_HeavyArmor", Increment=0.f,Rank=0,StartingValue=0.5f,MaxValue=0.5f)    //0.1
 	PerkSkills(ESWAT_TacticalMovement)=(Name="TacticalMovement",IconPath="UI_PerkTalent_TEX.SWAT.UI_Talents_SWAT_TacticalMovement", Increment=0.f,Rank=0,StartingValue=2.5f,MaxValue=2.5f)
-	PerkSkills(ESWAT_Backup)=(Name="Backup",IconPath="UI_PerkTalent_TEX.SWAT.UI_Talents_SWAT_Backup", Increment=0.f,Rank=0,StartingValue=0.85f,MaxValue=0.85f) //1.1
+	PerkSkills(ESWAT_Backup)=(Name="Backup",IconPath="UI_PerkTalent_TEX.SWAT.UI_Talents_SWAT_Backup", Increment=0.f,Rank=0,StartingValue=1.0f,MaxValue=1.0f) //0.85f
 	PerkSkills(ESWAT_TacticalReload)=(Name="TacticalReload",IconPath="UI_PerkTalent_TEX.SWAT.UI_Talents_SWAT_TacticalReload", Increment=0.f,Rank=0,StartingValue=2.0,MaxValue=2.0)
 	PerkSkills(ESWAT_SpecialAmmunition)=(Name="SpecialAmmunition",IconPath="UI_PerkTalent_TEX.SWAT.UI_Talents_SWAT_SpecialAmmunition", Increment=0.f,Rank=0,StartingValue=2.0f,MaxValue=2.0f)
 	PerkSkills(ESWAT_AmmoVest)=(Name="AmmoVest",IconPath="UI_PerkTalent_TEX.SWAT.UI_Talents_SWAT_AmmoVest", Increment=0.f,Rank=0,StartingValue=0.3f,MaxValue=0.3f)
@@ -675,4 +738,6 @@ DefaultProperties
 	SWATEnforcerZedTimeSpeedScale=1.25f
 
 	BumpCooldown = 0.1f
+
+	TacticalMovementModifier = 0.2;
 }

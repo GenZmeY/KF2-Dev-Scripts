@@ -54,6 +54,8 @@ function LocalizeContainer()
  	LocalizedObject.SetString("changePerk", ChangePerkString);
  	LocalizedObject.SetString("grenadeLabel", BuyGrenadeString);
 
+	LocalizedObject.SetString("armorBuyLabel",  class'KFAutoPurchaseHelper'.default.ArmorMagSize$"X");
+
 	//Prompt strings
 	LocalizedObject.SetString("sellPrompt", Localize("KFGFxTraderContainer_ItemDetails", "SellString", "KFGame"));
 	LocalizedObject.SetString("perkPrompt", Localize("KFGFxTraderContainer_PlayerInventory", "PerkPrompt", "KFGameConsole"));
@@ -155,18 +157,25 @@ function RefreshPlayerInventory()
 function SetArmorInfo(out SItemInformation ArmorInfo, out int AutoFillCost)
 {
 	local GFxObject SlotObject;
-	local int FillCost;
+	local int FillCost, ChunkCost;
+	local int ButtonState;
 
 	FillCost = KFPC.GetPurchaseHelper().GetFillArmorCost();
+	ChunkCost = KFPC.GetPurchaseHelper().GetChunkArmorCost();
 
 	SlotObject = CreateObject( "Object" );
+
+	SlotObject.SetInt("magCost", ChunkCost);
 	SlotObject.SetInt("cost", FillCost);
 
 	SlotObject.SetString("itemName", ArmorString);
 	SlotObject.SetString("itemSource", "img://"$ArmorInfo.DefaultItem.WeaponDef.static.GetImagePath());
 	SlotObject.SetString("itemAmmo",  ArmorInfo.SpareAmmoCount$"/"$ArmorInfo.MaxSpareAmmo);
-	SlotObject.Setint("buttonState", GetButtonState( ArmorInfo.AmmoPricePerMagazine, ArmorInfo.SpareAmmoCount, ArmorInfo.MaxSpareAmmo ));
 	SlotObject.SetBool("lowAmmo", (ArmorInfo.MaxSpareAmmo > 0) ? (float(ArmorInfo.SpareAmmoCount) / float(ArmorInfo.MaxSpareAmmo)) <= LowAmmoPercentThreshold : false);
+
+	ButtonState = GetButtonState( ArmorInfo.AmmoPricePerMagazine, ArmorInfo.SpareAmmoCount, ArmorInfo.MaxSpareAmmo );
+	SlotObject.Setint("buttonState", ButtonState );
+	SlotObject.Setint("magButtonState", ButtonState );
 
 	SetObject("armorInfo", SlotObject);
 	AutoFillCost += FillCost;
