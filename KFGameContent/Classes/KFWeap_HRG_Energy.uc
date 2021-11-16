@@ -435,7 +435,7 @@ defaultproperties
 
 	// Ammo
 	MagazineCapacity[0]=15
-	SpareAmmoCapacity[0]=135
+	SpareAmmoCapacity[0]=120 //135
 	InitialSpareMags[0]=2
 	bCanBeReloaded=true
 	bReloadFromMagazine=true
@@ -466,7 +466,7 @@ defaultproperties
 	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Bullet_HRG_Energy'
 	FireInterval(DEFAULT_FIREMODE)=+0.175 //342 RPM
 	PenetrationPower(DEFAULT_FIREMODE)=1.0
-	InstantHitDamage(DEFAULT_FIREMODE)=90.0 //125.0
+	InstantHitDamage(DEFAULT_FIREMODE)=80 //90.0 //125.0
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_HRG_Energy_Primary'
 	Spread(DEFAULT_FIREMODE)=0.015
 	FireOffset=(X=20,Y=4.0,Z=-3)
@@ -480,7 +480,7 @@ defaultproperties
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Ballistic_HRG_Energy_Secondary'
 	InstantHitMomentum(ALTFIRE_FIREMODE)=1.0
 	PenetrationPower(ALTFIRE_FIREMODE)=3.0
-	InstantHitDamage(ALTFIRE_FIREMODE)=300.0 //475.0
+	InstantHitDamage(ALTFIRE_FIREMODE)=120.0 // 300.0 //475.0
 	PenetrationDamageReductionCurve(ALTFIRE_FIREMODE)=(Points=((InVal=0.f,OutVal=0.f),(InVal=1.f, OutVal=1.f)))
 	AmmoCost(ALTFIRE_FIREMODE)=3
 

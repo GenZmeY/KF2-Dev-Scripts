@@ -437,6 +437,10 @@ const KFACHID_NetherholdHard 				    =   286;
 const KFACHID_NetherholdHellOnEarth 	    	=   287;
 const KFACHID_NetherholdCollectibles		    =   288;
 
+const KFACHID_CarillonHamletHard 			    =   289;
+const KFACHID_CarillonHamletHellOnEarth        	=   290;
+const KFACHID_CarillonHamletCollectibles		=   291;
+
 /* __TW_ANALYTICS_ */
 var int PerRoundWeldXP;
 var int PerRoundHealXP;
@@ -1165,6 +1169,11 @@ private event AddNonZedKill(class<Pawn> KilledClass, byte Difficulty)
     }
 }
 
+private event AddToWeaponPurchased( class<KFWeaponDefinition> WeaponDef, int Price )
+{
+	SeasonalEventStats_OnWeaponPurchased(WeaponDef, Price);
+}
+
 private native function AddToKillObjectives(class<KFPawn_Monster> ZedClass);
 private native function AddToVersusKillObjectives(class<Pawn> KillerClass);
 
@@ -1871,6 +1880,14 @@ final simulated function SeasonalEventStats_OnTryCompleteObjective(int Objective
 	}
 }
 
+final simulated function SeasonalEventStats_OnWeaponPurchased(class<KFWeaponDefinition> WeaponDef, int Price)
+{
+	if (SeasonalEventIsValid())
+	{
+		SeasonalEvent.OnWeaponPurchased(WeaponDef, Price);
+	}
+}
+
 /*********************************************************************************************
 * @name Dailies and daily-specific tracking
 ********************************************************************************************* */
@@ -2022,7 +2039,8 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_Thompson, KFDT_Ballistic_Thompson,KFDT_Bludgeon_Thompson),CompletionAmount=7000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Nailgun, KFDT_Ballistic_HRGNailgun, KFDT_Bludgeon_HRGNailgun),CompletionAmount=10000)) //7000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_SMG_P90, KFDT_Ballistic_P90,KFDT_Bludgeon_P90),CompletionAmount=10000))
-    DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_SMG_Kriss, KFDT_Ballistic_Kriss,KFDT_Bludgeon_Kriss),CompletionAmount=10000))
+    DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Stunner, KFDT_Ballistic_HRG_Stunner,KFDT_Ballistic_HRG_Stunner_Alt,KFDT_Explosive_HRG_Stunner,KFDT_Bludgeon_HRG_Stunner),CompletionAmount=10000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_SMG_Kriss, KFDT_Ballistic_Kriss,KFDT_Bludgeon_Kriss),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_SMG_HK_UMP, KFDT_Ballistic_HK_UMP,KFDT_Bludgeon_HK_UMP),CompletionAmount=10000))
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_BarrierRifle, KFDT_Ballistic_HRG_BarrierRifle,KFDT_Bludgeon_HRG_BarrierRifle),CompletionAmount=10000))
 
@@ -2256,6 +2274,9 @@ defaultproperties
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-NETHERHOLD),CompletionAmount=1))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-NETHERHOLD),CompletionAmount=2))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-NETHERHOLD),CompletionAmount=3))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CARILLONHAMLET),CompletionAmount=1))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CARILLONHAMLET),CompletionAmount=2))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CARILLONHAMLET),CompletionAmount=3))
 	
     //Versus Damage
     //    Per design doc that I have right now, these are x class damage y players, not damage y amount

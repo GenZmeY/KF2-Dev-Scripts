@@ -227,6 +227,11 @@ function SetupNextWave(byte NextWaveIndex, int TimeToNextWaveBuffer = 0)
 {
 	local KFGameReplicationInfo KFGRI;
 
+	if (OutbreakEvent.ActiveEvent.bBossRushMode)
+	{
+		NextWaveIndex = MyKFGRI.WaveMax - 1;
+	}
+
 	if( NextWaveIndex < WaveSettings.Waves.Length )
 	{
         // Recycle special squads on higher difficulties
@@ -250,7 +255,7 @@ function SetupNextWave(byte NextWaveIndex, int TimeToNextWaveBuffer = 0)
         // Initialize our recycle number
         NumSpecialSquadRecycles = 0;
 
-		if (MyKFGRI.IsBossWave())
+		if (MyKFGRI.IsBossWave() || OutbreakEvent.ActiveEvent.bBossRushMode)
 		{
 			WaveTotalAI = 1;
 		}
@@ -383,7 +388,8 @@ function GetSpawnListFromSquad(byte SquadIdx, out array< KFAISpawnSquad > Squads
 	local ESquadType LargestMonsterSquadType;
     local array<class<KFPawn_Monster> > TempSpawnList;
 	local class<KFPawn_Monster> ForcedPawnClass;
-
+	local int RandBossIndex;
+	
 	Squad = SquadsList[SquadIdx];
 
 	// Start with the smallest size, and the crank it up if the squad is larger
@@ -421,7 +427,17 @@ function GetSpawnListFromSquad(byte SquadIdx, out array< KFAISpawnSquad > Squads
                     else
 `endif
                     //Always have the squad type be a boss if we're spawning one in case of override
-					TempSpawnList.AddItem(GetBossAISpawnType());
+					if (OutbreakEvent.ActiveEvent.bBossRushMode)
+					{
+						RandBossIndex = Rand(BossRushEnemies.length);
+						TempSpawnList.AddItem( default.AIBossClassList[BossRushEnemies[RandBossIndex]]);
+						BossRushEnemies.Remove(RandBossIndex, 1);
+					}
+					else
+					{
+						TempSpawnList.AddItem(GetBossAISpawnType());
+					}
+
                     LargestMonsterSquadType = EST_Boss;
 				}
 				else

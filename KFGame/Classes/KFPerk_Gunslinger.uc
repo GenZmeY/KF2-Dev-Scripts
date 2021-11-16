@@ -234,7 +234,7 @@ simulated private static function float GetQuickSwitchRecoilModifier()
  */
 simulated function float GetReloadRateScale( KFWeapon KFW )
 {
-	if( IsWeaponOnPerk( KFW,, self.class ) && WorldInfo.TimeDilation < 1.f && !IsFanFareActive() && IsZedTimeReloadAllowed() )
+	if( ( IsWeaponOnPerk( KFW,, self.class )) && WorldInfo.TimeDilation < 1.f && !IsFanFareActive() && IsZedTimeReloadAllowed() )
 	{
 		return 1.f -  GetPassiveValue( ZedTimeReload, GetLevel() );
 	}
@@ -261,7 +261,7 @@ simulated function bool IsZedTimeReloadAllowed()
  */
 simulated function bool GetUsingTactialReload( KFWeapon KFW )
 {
-	return IsSpeedReloadActive() && IsWeaponOnPerk( KFW,, self.class );
+	return IsSpeedReloadActive() && IsWeaponOnPerk( KFW,, self.class ) ;
 }
 
 /**
@@ -322,7 +322,7 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 {
 	local name StateName;
 
-	if( GetFanfareActive() && IsWeaponOnPerk( W,, self.class ) )
+	if( GetFanfareActive() && ( IsWeaponOnPerk( W,, self.class ) || IsDoshinegun(W) ) )
 	{
 		StateName = W.GetStateName();
 		if( ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE )

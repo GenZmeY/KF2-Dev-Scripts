@@ -577,6 +577,32 @@ reliable server function ServerSendToReload(byte ClientReloadAmount)
 	bZoomActive = false;
 }
 
+/**
+ * Detach weapon from skeletal mesh
+ * Reseting speeds
+ * @param	SkeletalMeshComponent weapon is attached to.
+ */
+simulated function DetachWeapon()
+{
+	local KFPawn_Human KFPH;
+	local KFPlayerController KFPC;
+
+	super.DetachWeapon();
+
+	KFPH = KFPawn_Human(Instigator);
+	if ( KFPH != None )
+	{
+		MovementSpeedMod = 1;
+		KFPH.UpdateGroundSpeed();
+	}
+
+	KFPC = KFPlayerController(Instigator.Controller);
+	if (KFPC != none)
+	{
+		KFPC.RotationSpeedLimit = class'KFPlayerController'.default.RotationSpeedLimit;
+	}
+}
+
 defaultproperties
 {
 	// Wind Up variables

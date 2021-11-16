@@ -595,25 +595,25 @@ defaultproperties
 
     //Fart is base timer +/- some random amount of the variance, giving you a range of say 25-35 seconds with a base of 30 and variance of 5
 	//		These values are X = 0 health, Y = 100% health
-	DifficultyFartAttackTimers(0)=(X=5.0,Y=9.0) // Normal
-	DifficultyFartAttackTimers(1)=(X=4.5,Y=8.5) // Hard
-	DifficultyFartAttackTimers(2)=(X=4.0,Y=8.0) // Suicidal
-	DifficultyFartAttackTimers(3)=(X=4.0,Y=7.0) // Hell On Earth
+	DifficultyFartAttackTimers(0)=(X=4.0,Y=7.0) // Normal				//(X=5.0,Y=9.0)
+	DifficultyFartAttackTimers(1)=(X=3.5,Y=6.0) // Hard					//(X=4.5,Y=8.5)
+	DifficultyFartAttackTimers(2)=(X=3.0,Y=5.5) // Suicidal				//(X=4.0,Y=8.0)
+	DifficultyFartAttackTimers(3)=(X=3.0,Y=5.0) // Hell On Earth		//(X=4.0,Y=7.0)
 
-	DifficultyVarianceFartTimers(0)=(X=3.0,Y=4.0) // Normal
-	DifficultyVarianceFartTimers(1)=(X=2.5,Y=3.5) // Hard
-	DifficultyVarianceFartTimers(2)=(X=2.0,Y=3.0) // Suicidal
-	DifficultyVarianceFartTimers(3)=(X=2.0,Y=3.0) // Hell On Earth
+	DifficultyVarianceFartTimers(0)=(X=2.5,Y=3.5) // Normal				//(X=3.0,Y=4.0) 
+	DifficultyVarianceFartTimers(1)=(X=2.0,Y=3.0) // Hard				//(X=2.5,Y=3.5)
+	DifficultyVarianceFartTimers(2)=(X=1.5,Y=2.5) // Suicidal			//(X=2.0,Y=3.0)
+	DifficultyVarianceFartTimers(3)=(X=1.5,Y=2.5) // Hell On Earth		//(X=2.0,Y=3.0)
 
-	DifficultyRageFartTimers(0)=(X=1.75,Y=2.5) // Normal
-	DifficultyRageFartTimers(1)=(X=1.25,Y=2.0) // Hard
-	DifficultyRageFartTimers(2)=(X=0.75,Y=1.5) // Suicidal
-	DifficultyRageFartTimers(3)=(X=0.75,Y=1.5) // Hell On Earth
+	DifficultyRageFartTimers(0)=(X=1.5,Y=2.25) // Normal 				//(X=1.75,Y=2.5) 
+	DifficultyRageFartTimers(1)=(X=1.0,Y=1.75) // Hard					//(X=1.25,Y=2.0)
+	DifficultyRageFartTimers(2)=(X=0.5,Y=1.25) // Suicidal				//(X=0.75,Y=1.5)
+	DifficultyRageFartTimers(3)=(X=0.5,Y=1.25) // Hell On Earth			//(X=0.75,Y=1.5)
 
-	DifficultyVarianceRageFartTimers(0)=(X=1.65,Y=2.1) // Normal
-	DifficultyVarianceRageFartTimers(1)=(X=1.15,Y=1.6) // Hard
-	DifficultyVarianceRageFartTimers(2)=(X=0.65,Y=1.1) // Suicidal
-	DifficultyVarianceRageFartTimers(3)=(X=0.65,Y=1.1) // Hell On Earth
+	DifficultyVarianceRageFartTimers(0)=(X=1.65,Y=2.1) // Normal		//(X=1.65,Y=2.1) 
+	DifficultyVarianceRageFartTimers(1)=(X=1.15,Y=1.6) // Hard			//(X=1.15,Y=1.6)
+	DifficultyVarianceRageFartTimers(2)=(X=0.65,Y=1.1) // Suicidal		//(X=0.65,Y=1.1)
+	DifficultyVarianceRageFartTimers(3)=(X=0.65,Y=1.1) // Hell On Earth	//(X=0.65,Y=1.1) 
 
 	//Offset from center of the BK to spawn the poop monster
 	PoopMonsterOffset=-100
@@ -622,7 +622,7 @@ defaultproperties
 	PoopMonsterFXSocket=Poop_Attach
 
 	//Amount of time between spawns
-	PoopMonsterSpawnDelay=2.f
+	PoopMonsterSpawnDelay=1.5 //2.f
 
     // Used for special crawler gas AOE attack "explosion" template  FART ATTACK
     Begin Object Class=KFGameExplosion Name=ExploTemplate0
@@ -708,9 +708,9 @@ defaultproperties
     RotationRate=(Pitch=50000,Yaw=20000,Roll=50000)
     GroundSpeed=450.0f  //160 //210 //231 //255
     SprintSpeed=450.0f   //260 //210  410 //315 //330 //345 //380
-	RageSprintSpeedMultiplier=1.3f //1.25 1.45 //1.55
+	RageSprintSpeedMultiplier=1.5f //1.3f //1.25 1.45 //1.55
 
-	VomitRange=400.f
+	VomitRange=440.f //400.f
 	VomitDamage=20
 
 	ArmorInfoClass=class'KFZedArmorInfo_BloatKing'

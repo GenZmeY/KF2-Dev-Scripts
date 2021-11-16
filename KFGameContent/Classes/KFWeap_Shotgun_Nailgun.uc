@@ -136,7 +136,7 @@ defaultproperties
 	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Nail_Nailgun'
 	InstantHitDamage(DEFAULT_FIREMODE)=35
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_NailShotgun'
-	Spread(DEFAULT_FIREMODE)=0.16
+	Spread(DEFAULT_FIREMODE)=0.13 //0.16
 	PenetrationPower(DEFAULT_FIREMODE)=3.0
 	FireInterval(DEFAULT_FIREMODE)=0.3 // 200 RPM
 	FireOffset=(X=30,Y=5,Z=-4)
@@ -150,7 +150,7 @@ defaultproperties
 	WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_Nail_Nailgun'
 	InstantHitDamage(ALTFIRE_FIREMODE)=35
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Ballistic_NailShotgun'
-	Spread(ALTFIRE_FIREMODE)=0.02
+	Spread(ALTFIRE_FIREMODE)=0.01 //0.02
 	PenetrationPower(ALTFIRE_FIREMODE)=3.0
 	FireInterval(ALTFIRE_FIREMODE)=0.2 // 300 RPM
 	AltFireRecoilModifier=0.5
@@ -174,7 +174,7 @@ defaultproperties
 
 	// Ammo
 	MagazineCapacity[0]=42
-	SpareAmmoCapacity[0]=336
+	SpareAmmoCapacity[0]=378 //336
 	InitialSpareMags[0]=3
 	bCanBeReloaded=true
 	bReloadFromMagazine=true

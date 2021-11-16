@@ -280,9 +280,9 @@ DefaultProperties
     MaxChestBeamHeightOffset=64.f
 
     PhaseThresholds[0]=1
-    PhaseThresholds[1]=0.65 //0.75
-    PhaseThresholds[2]=0.5
-    PhaseThresholds[3]=0.2 //0.25 //0.1
+    PhaseThresholds[1]=0.75 //0.65 //0.75
+    PhaseThresholds[2]=0.6 //0.5
+    PhaseThresholds[3]=0.3 //0.2 //0.25 //0.1
 
     ChestBeamMinPhase=2
 

@@ -211,6 +211,9 @@ var PlayerReplicationInfo KickVotePRI;
 //The target PRI for current skip trader vote
 var PlayerReplicationInfo SkipTraderVotePRI;
 
+// The target PRI for current pause vote
+var PlayerReplicationInfo PauseGameVotePRI;
+
 /** Cached version of the TWOnlineLobby */
 var TWOnlineLobby OnlineLobby;
 var UniqueNetId CurrentInviteLobbyId;
@@ -239,6 +242,9 @@ var const int MouseInputChangedThreshold;
 var bool bKickVotePopupActive;
 /** TRUE if the skip trader vote popup is open */
 var bool bSkipTraderVotePopupActive;
+/** TRUE if the pause game vote popup is open */
+var bool bPauseGameVotePopupActive;
+
 var bool bUsingGamepad; // True if we are using a gamepad, otherwise we are using mouse and keyboard
 var bool bAfterLobby;	// Set to true once we have readied up
 var bool bMenusOpen;	// true if we're using menus, otherwise we're using the HUD
@@ -1142,6 +1148,11 @@ function OpenMenu( byte NewMenuIndex, optional bool bShowWidgets = true )
 	if(SkipTraderVotePRI != none && NewMenuIndex != UI_Trader)
 	{
 		ShowSkipTraderVote(SkipTraderVotePRI);
+	}
+
+	if(PauseGameVotePRI != none && NewMenuIndex != UI_Trader)
+	{
+		ShowPauseGameVote(PauseGameVotePRI);
 	}
 
 	// Close our last menu if we are already in a menu
@@ -2072,6 +2083,70 @@ function CastNoVoteSkipTrader()
 		if(KFPRI != none)
 		{
 			KFPRI.CastSkipTraderVote(KFPRI, false);
+		}
+	}
+}
+
+/*********************************************************************************************
+* @name Pause Game
+********************************************************************************************* */
+
+function ShowPauseGameVote(PlayerReplicationInfo PRI)
+{
+	local KFGameReplicationInfo KFGRI;
+	KFGRI = KFGameReplicationInfo(GetPC().WorldInfo.GRI);
+
+	PauseGameVotePRI = PRI;
+	if(bMenusOpen && CurrentMenu != TraderMenu)
+	{
+		bPauseGameVotePopupActive = true;
+		DelayedOpenPopup(EConfirmation, EDPPID_Misc, (KFGRI != none && KFGRI.bIsEndlessPaused) ? Class'KFGFxWidget_KickVote'.default.VoteResumeGameString : Class'KFGFxWidget_KickVote'.default.VotePauseGameString, 
+		PauseGameVotePRI.PlayerName@Class'KFGFxWidget_KickVote'.default.VotePauseGameDetailString,
+		Class'KFCommon_LocalizedStrings'.default.YesString, Class'KFCommon_LocalizedStrings'.default.NoString, CastYesVotePauseGame, CastNoVotePauseGame);
+	}
+}
+
+simulated function HidePauseGameVote()
+{
+	if( bSkipTraderVotePopupActive )
+	{
+		bSkipTraderVotePopupActive = false;
+		UnloadCurrentPopup();
+	}
+
+	SkipTraderVotePRI = none;
+}
+
+function CastYesVotePauseGame()
+{
+	local KFplayerReplicationInfo KFPRI;
+	local KFPlayerController KFPC;
+
+	KFPC = KFPlayerController(GetPC());
+	if(KFPC != none)
+	{
+		KFPRI = KFplayerReplicationInfo(KFPC.PlayerReplicationInfo);
+
+		if(KFPRI != none)
+		{
+			KFPRI.CastPauseGameVote(KFPRI, true);
+		}
+	}
+}
+
+function CastNoVotePauseGame()
+{
+	local KFplayerReplicationInfo KFPRI;
+	local KFPlayerController KFPC;
+
+	KFPC = KFPlayerController(GetPC());
+	if(KFPC != none)
+	{
+		KFPRI = KFplayerReplicationInfo(KFPC.PlayerReplicationInfo);
+
+		if(KFPRI != none)
+		{
+			KFPRI.CastPauseGameVote(KFPRI, false);
 		}
 	}
 }

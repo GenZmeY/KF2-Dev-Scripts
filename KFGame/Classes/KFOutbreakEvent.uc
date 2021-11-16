@@ -93,6 +93,12 @@ struct StatAdjustments
 	/** Speed modifier */
 	var() float InitialGroundSpeedModifierScale;
 
+	/** Override HitZones Information */
+	var() array<HitZoneInfo> HitZonesOverride;
+
+	/** WeakPoints to show special VFX*/
+	var() array<WeakPoint> WeakPoints;
+
 	structdefaultproperties
 	{
 		HealthScale = 1.f;
@@ -113,6 +119,25 @@ struct StatAdjustments
 
 		InitialGroundSpeedModifierScale = 1.0
 	}
+};
+
+struct BossRushOverridesPerWave
+{
+	var() array <StatAdjustments> ZedsToAdjust;
+	var() array <SpawnReplacement> SpawnReplacementList;
+	var() float DoshOnKillGlobalModifier;
+	var() int   ExtraDoshGrantedonWaveWon;
+
+	structdefaultproperties
+	{
+		DoshOnKillGlobalModifier=1.0f
+		ExtraDoshGrantedonWaveWon=0.0f
+	}
+};
+
+struct BossRushOverrides
+{
+	var() array <BossRushOverridesPerWave> PerWaves;
 };
 
 /** Individual property overrides that drive other behavior to allow for
@@ -381,6 +406,14 @@ struct WeeklyOverrides
 	/** If WWL music should be forced */
 	var() bool bForceWWLMusic;
 
+	/** Boss classes availabled for boss rush mode */
+	var() bool bBossRushMode;
+
+	var() BossRushOverrides BossRushOverrideParams;
+
+	/** Ignores damage caused by headshots. */
+	var() bool bInvulnerableHeads;
+
 	structdefaultproperties
 	{
 		GameLength = GL_Short
@@ -437,6 +470,8 @@ struct WeeklyOverrides
 		JumpZ = -1.f
 		DroppedItemLifespan=-1.0f
 		bForceWWLMusic = false;
+		bBossRushMode = false;
+		bInvulnerableHeads = false;
 	}
 };
 
@@ -636,9 +671,8 @@ function ModifyGroundSpeed(KFPawn PlayerPawn, out float GroundSpeed)
 //In our case, this should be better explained as a GameInfo-facing AdjustDamage.  Things are being done here that would be incredibly invasive in other classes given the size of our code base.
 function ReduceDamage(out int Damage, Pawn Injured, Controller InstigatedBy, class<DamageType> DamageType, TraceHitInfo HitInfo)
 {
-	local int HitZoneIdx;
+	local int HitZoneIdx, WaveNum;
 	local KFPawn InstigatorPawn;
-	local StatAdjustments ToAdjust;
 
 	//Some events can be headshot only.  Do this only if the incoming damage is against a monster-derived class
 	//      and it's one of our custom damage types.  Keeps things like crush damage from being scaled to 0.
@@ -646,6 +680,15 @@ function ReduceDamage(out int Damage, Pawn Injured, Controller InstigatedBy, cla
 	{
 		HitZoneIdx = KFPawn_Monster(Injured).HitZones.Find('ZoneName', HitInfo.BoneName);
 		if (HitZoneIdx != HZI_Head)
+		{
+			Damage = 0;
+		}
+	} 
+	else if (ActiveEvent.bInvulnerableHeads && KFPawn_Monster(Injured) != none && ClassIsChildOf(DamageType, class'KFDamageType') )
+	{
+		HitZoneIdx = KFPawn_Monster(Injured).HitZones.Find('ZoneName', HitInfo.BoneName);
+		// Apply damage to head armor but not head.
+		if (HitZoneIdx == HZI_Head && !bool(KFPawn_Monster(Injured).ArmorZoneStatus & 1))
 		{
 			Damage = 0;
 		}
@@ -665,7 +708,25 @@ function ReduceDamage(out int Damage, Pawn Injured, Controller InstigatedBy, cla
 		}
 	}
 
-	foreach ActiveEvent.ZedsToAdjust(ToAdjust)
+    if (!ActiveEvent.bBossRushMode)
+    {
+       AdjustDamageReduction(Damage, Injured, InstigatedBy, InstigatorPawn, ActiveEvent.ZedsToAdjust);
+    }
+    else
+    {
+        WaveNum = Outer.MyKFGRI.WaveNum - 1;
+        if ( WaveNum < ActiveEvent.BossRushOverrideParams.PerWaves.length )
+        {
+			AdjustDamageReduction(Damage, Injured, InstigatedBy, InstigatorPawn, ActiveEvent.BossRushOverrideParams.PerWaves[WaveNum].ZedsToAdjust);
+        }
+    }
+}
+
+function AdjustDamageReduction(out int Damage, Pawn Injured, Controller InstigatedBy, KFPawn InstigatorPawn, array <StatAdjustments> Adjustments)
+{
+	local StatAdjustments ToAdjust;
+
+	foreach Adjustments(ToAdjust)
 	{
 		//Injured zed reduction
 		if (Injured.class == ToAdjust.ClassToAdjust)
@@ -772,7 +833,7 @@ function AdjustPawnScale(Pawn Pawn)
 
 function AdjustMonsterDefaults(out KFPawn_Monster P)
 {
-	local StatAdjustments ToAdjust;
+	local int WaveNum;
 
 	if (P == none)
 	{
@@ -796,7 +857,29 @@ function AdjustMonsterDefaults(out KFPawn_Monster P)
 	}
 
 	//Per class overrides
-	foreach ActiveEvent.ZedsToAdjust(ToAdjust)
+	if (!ActiveEvent.bBossRushMode)
+    {
+       AdjustDefaults(P, ActiveEvent.ZedsToAdjust);
+    }
+    else
+    {
+        WaveNum = Outer.MyKFGRI.WaveNum - 1;
+        if ( WaveNum < ActiveEvent.BossRushOverrideParams.PerWaves.length )
+        {
+            AdjustDefaults(P, ActiveEvent.BossRushOverrideParams.PerWaves[WaveNum].ZedsToAdjust);
+        }
+    }
+}
+
+function AdjustDefaults(out KFPawn_Monster P, array <StatAdjustments> Adjustments)
+{
+	local StatAdjustments ToAdjust;
+	local HitZoneInfo OverrideHitZone;
+	local array<WeakPoint> OverridenBones;
+	local WeakPoint WeakPoint;
+	local int i;
+
+	foreach Adjustments(ToAdjust)
 	{
 		if (P.class == ToAdjust.ClassToAdjust)
 		{
@@ -832,6 +915,38 @@ function AdjustMonsterDefaults(out KFPawn_Monster P)
 			if (ToAdjust.AdditionalSubSpawns != none)
 			{
 				SpawnManager.SummonBossMinions(ToAdjust.AdditionalSubSpawns.Squads, Lerp(ToAdjust.AdditionalSubSpawnCount.X, ToAdjust.AdditionalSubSpawnCount.Y, FMax(NumPlayers, 1) / float(MaxPlayers)));
+			}
+
+			if (ToAdjust.HitZonesOverride.Length > 0)
+			{
+				foreach ToAdjust.HitZonesOverride(OverrideHitZone)
+				{
+					for (i = 0; i < P.Hitzones.Length; ++i)
+					{
+						if (OverrideHitZone.ZoneName == P.Hitzones[i].ZoneName)
+						{
+							P.Hitzones[i].DmgScale      = OverrideHitZone.DmgScale;
+							P.Hitzones[i].GoreHealth    = OverrideHitZone.GoreHealth;
+							P.Hitzones[i].MaxGoreHealth = OverrideHitZone.MaxGoreHealth;
+							break;
+						}
+					}				
+				}
+			}
+
+			if (ToAdjust.WeakPoints.Length > 0)
+			{
+				OverridenBones.Length = 0;
+
+				foreach ToAdjust.WeakPoints(WeakPoint)
+				{
+					OverridenBones.AddItem(WeakPoint);
+				}
+
+				if (OverridenBones.Length > 0)
+				{
+					P.ServerSpawnWeakPointVFX(OverridenBones);
+				}
 			}
 		}
 	}
@@ -897,11 +1012,31 @@ function SetWorldInfoOverrides()
 
 function class<KFPawn_Monster> GetAISpawnOverrirde(EAIType AIType)
 {
+	local int WaveNum;
+
+	if (!ActiveEvent.bBossRushMode)
+    {
+       return GetAISpawnOverrideInner(ActiveEvent.SpawnReplacementList, AIType);
+    }
+    else
+    {
+        WaveNum = MyKFGRI.WaveNum - 1;
+        if ( WaveNum < ActiveEvent.BossRushOverrideParams.PerWaves.length )
+        {
+            return GetAISpawnOverrideInner(ActiveEvent.BossRushOverrideParams.PerWaves[WaveNum].SpawnReplacementList, AIType);
+        }
+    }
+
+	return AIClassList[AIType];
+}
+
+function class<KFPawn_Monster> GetAISpawnOverrideInner(array <SpawnReplacement> SpawnReplacementList, EAIType AIType)
+{
 	local SpawnReplacement Replacement;
 	local float RandF;
 
 	//Check if our current weekly event has any overrides available
-	foreach ActiveEvent.SpawnReplacementList(Replacement)
+	foreach SpawnReplacementList(Replacement)
 	{
 		if (Replacement.SpawnEntry == AIType)
 		{
@@ -924,6 +1059,7 @@ function class<KFPawn_Monster> GetAISpawnOverrirde(EAIType AIType)
 
 	return AIClassList[AIType];
 }
+
 
 // This will convert the provided Outbreak Index into an Id that corresponds to the Weekly Event.
 static function int GetOutbreakId(int SetEventsIndex);

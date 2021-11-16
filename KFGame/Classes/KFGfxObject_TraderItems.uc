@@ -97,7 +97,9 @@ struct native STraderItem
 	var byte InventoryGroup;
 
 	var int ItemID; //used since the list will be sorted.
-
+	
+	var bool bCanBuyAmmo;
+	
 	StructDefaultProperties
 	{
 		AltTraderFilter=FT_None

@@ -44,29 +44,39 @@ function SetMapOptions()
 	local int i, Counter;
 	local array<string> ServerMapList;
 	local KFGameReplicationInfo KFGRI;
+	local bool IsWeeklyMode;
 	local bool IsBrokenTrader;
+	local bool IsBossRush;
 
 	KFGRI = KFGameReplicationInfo(GetPC().WorldInfo.GRI);
 
 	Counter = 0;
 	if(KFGRI != none && KFGRI.VoteCollector != none)
 	{
-		ServerMapList = KFGRI.VoteCollector.MapList;
-		IsBrokenTrader = KFGRI.IsA('KFGameReplicationInfo_WeeklySurvival') && class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 11;
-
+		ServerMapList  = KFGRI.VoteCollector.MapList;
+		IsWeeklyMode   = KFGRI.bIsWeeklyMode;
+		IsBrokenTrader = KFGRI.CurrentWeeklyIndex == 11;
+		IsBossRush     = KFGRI.CurrentWeeklyIndex == 14;
 		//gfx
 		MapList = CreateArray();
 
 		for (i = 0; i < ServerMapList.length; i++)
 		{
-			if (IsBrokenTrader && ( ServerMapList[i] == "KF-Biolapse" || 
-									ServerMapList[i] == "KF-Nightmare" ||
-									ServerMapList[i] == "KF-PowerCore_Holdout" ||
-									ServerMapList[i] == "KF-TheDescent" ||
-									ServerMapList[i] == "KF-KrampusLair"))
+			if ( IsWeeklyMode && (IsBrokenTrader || IsBossRush) && ( ServerMapList[i] == "KF-Biolapse" || 
+																	ServerMapList[i] == "KF-Nightmare" ||
+																	ServerMapList[i] == "KF-PowerCore_Holdout" ||
+																	ServerMapList[i] == "KF-TheDescent" ||
+																	ServerMapList[i] == "KF-KrampusLair"))
 			{
 				continue;
 			}
+
+			/* Temporary removal of SteamFrotress for BossRush */
+			if (IsWeeklyMode && IsBossRush && ServerMapList[i] == "KF-SteamFortress")
+			{
+				continue;
+			}
+			/**/
 
 			MapObject = CreateObject("Object");
 			MapObject.SetString("label", class'KFCommon_LocalizedStrings'.static.GetFriendlyMapName(ServerMapList[i]) );

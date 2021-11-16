@@ -107,6 +107,9 @@ function StartMatch()
 
 function PlayWaveStartDialog()
 {
+	if (OutbreakEvent != none && OutbreakEvent.ActiveEvent.bBossRushMode)
+		return;
+	
 	`DialogManager.PlayWaveStartDialog(MyKFGRI.IsBossWave());
 	if (WaveNum == 1)
 	{
@@ -432,7 +435,7 @@ function UpdateGameSettings()
 					{
 						for( i = 0; i < GameReplicationInfo.PRIArray.Length; i++ )
 						{
-							if( !GameReplicationInfo.PRIArray[i].bBot )
+							if (!GameReplicationInfo.PRIArray[i].bBot && !GameReplicationInfo.PRIArray[i].bOnlySpectator && PlayerController(GameReplicationInfo.PRIArray[i].Owner) != none)
 							{
 								NumHumanPlayers++;
 							}

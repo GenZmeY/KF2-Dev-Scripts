@@ -546,6 +546,8 @@ DefaultProperties
     CloakedAkComponent=CloakedAkComponent0
     Components.Add( CloakedAkComponent0 )
 
+	ZEDCowboyHatAttachName=Hat_Attach
+
 `if(`notdefined(ShippingPC))
 	DebugRadarTexture=Texture2D'UI_ZEDRadar_TEX.MapIcon_Stalker';
 `endif

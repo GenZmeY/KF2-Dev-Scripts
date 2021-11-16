@@ -21,5 +21,5 @@ defaultproperties
 	UpgradePrice[0]=1500
 	UpgradeSellPrice[0]=1125
 
-	// SharedUnlockId=SCU_ParasiteImplanter
+	SharedUnlockId=SCU_ParasiteImplanter
 }

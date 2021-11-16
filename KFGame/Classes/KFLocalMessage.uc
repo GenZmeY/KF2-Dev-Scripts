@@ -52,6 +52,29 @@ var localized string SkipTraderThisUserAlreadyStartedAVoteString;
 var localized string SkipTraderVoteYesReceivedString;
 var localized string SkipTraderVoteNoReceivedString;
 
+var localized string PauseVoteStartedString;
+var localized string PauseVoteInProgressString;
+var localized string PauseVoteYesReceivedString;
+var localized string PauseVoteNoReceivedString;
+var localized string PauseVoteNoEnoughTimeString;
+var localized string PauseVoteNoSpectatorsString;
+var localized string PauseVoteTimeString;
+var localized string PauseVoteSuccessString;
+var localized string PauseVoteFailedString;
+var localized string PauseVoteWaveActiveString;
+var localized string PauseVoteWrongModeString;
+
+var localized string ResumeVoteStartedString;
+var localized string ResumeVoteInProgressString;
+var localized string ResumeVoteYesReceivedString;
+var localized string ResumeVoteNoReceivedString;
+var localized string ResumeVoteNoEnoughTimeString;
+var localized string ResumeVoteNoSpectatorsString;
+var localized string ResumeVoteTimeString;
+var localized string ResumeVoteSuccessString;
+var localized string ResumeVoteFailedString;
+var localized string ResumeVoteWaveActiveString;
+
 enum ELocalMessageType
 {
     LMT_AdminLogin,
@@ -84,7 +107,28 @@ enum ELocalMessageType
     LMT_SkipTraderVoteYesReceived,
     LMT_SkipTraderVoteNoReceived,
 	LMT_SkipTraderNoEnoughTime,
-	LMT_SkipTraderThisUserAlreadyStartedAVote
+	LMT_SkipTraderThisUserAlreadyStartedAVote,
+    LMT_PauseVoteStarted,
+    LMT_PauseVoteInProgress,
+    LMT_PauseVoteYesReceived,
+    LMT_PauseVoteNoReceived,
+    LMT_PauseVoteNoEnoughTime,
+    LMT_PauseVoteNoSpectators,
+    LMT_PauseVoteTime,
+    LMT_PauseVoteSuccess,
+    LMT_PauseVoteFailed,
+    LMT_PauseVoteWaveActive,
+    LMT_PauseVoteWrongMode,
+    LMT_ResumeVoteStarted,
+    LMT_ResumeVoteInProgress,
+    LMT_ResumeVoteYesReceived,
+    LMT_ResumeVoteNoReceived,
+    LMT_ResumeVoteNoEnoughTime,
+    LMT_ResumeVoteNoSpectators,
+    LMT_ResumeVoteTime,
+    LMT_ResumeVoteSuccess,
+    LMT_ResumeVoteFailed,
+    LMT_ResumeVoteWaveActive,
 };
 
 /** Message area on HUD (index into UTHUD.MessageOffset[]) */
@@ -164,6 +208,69 @@ static function string GetString(
 
     switch (Switch)
     {
+        case LMT_ResumeVoteStarted: 
+            return RelatedPRI_1.PlayerName@Default.ResumeVoteStartedString; 
+
+        case LMT_ResumeVoteInProgress:
+            return default.ResumeVoteInProgressString;
+        
+        case LMT_ResumeVoteYesReceived:
+            return default.ResumeVoteYesReceivedString;
+        
+        case LMT_ResumeVoteNoReceived:
+            return default.ResumeVoteNoReceivedString;
+        
+        case LMT_ResumeVoteNoEnoughTime:
+            return default.ResumeVoteNoEnoughTimeString; 
+
+        case LMT_ResumeVoteNoSpectators:
+            return default.ResumeVoteNoSpectatorsString;
+        
+        case LMT_ResumeVoteTime:
+            return default.ResumeVoteTimeString;
+
+        case LMT_ResumeVoteSuccess:
+            return default.ResumeVoteSuccessString;
+        
+        case LMT_ResumeVoteFailed:
+            return default.ResumeVoteFailedString;
+
+        case LMT_ResumeVoteWaveActive:
+            return default.ResumeVoteWaveActiveString;
+
+        case LMT_PauseVoteStarted: 
+            return RelatedPRI_1.PlayerName@Default.PauseVoteStartedString; 
+
+        case LMT_PauseVoteInProgress:
+            return default.PauseVoteInProgressString;
+        
+        case LMT_PauseVoteYesReceived:
+            return default.PauseVoteYesReceivedString;
+        
+        case LMT_PauseVoteNoReceived:
+            return default.PauseVoteNoReceivedString;
+        
+        case LMT_PauseVoteNoEnoughTime:
+            return default.PauseVoteNoEnoughTimeString; 
+
+        case LMT_PauseVoteNoSpectators:
+            return default.PauseVoteNoSpectatorsString;
+        
+        case LMT_PauseVoteTime:
+            return default.PauseVoteTimeString;
+
+        case LMT_PauseVoteSuccess:
+            return default.PauseVoteSuccessString;
+        
+        case LMT_PauseVoteFailed:
+            return default.PauseVoteFailedString;
+
+        case LMT_PauseVoteWaveActive:
+            return default.PauseVoteWaveActiveString;
+
+        case LMT_PauseVoteWrongMode:
+            return default.PauseVoteWrongModeString;
+
 		case LMT_OtherVoteInProgress:
 			return default.OtherVoteInProgressString;
 

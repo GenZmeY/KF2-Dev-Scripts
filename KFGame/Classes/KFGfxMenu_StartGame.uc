@@ -208,7 +208,7 @@ static function class<KFGFxSpecialeventObjectivesContainer> GetSpecialEventClass
 		case SEI_Fall:
 			return class'KFGFxSpecialEventObjectivesContainer_Fall2021';
 		case SEI_Winter:
-			return class'KFGFXSpecialEventObjectivesContainer_Xmas2020';
+			return class'KFGFXSpecialEventObjectivesContainer_Xmas2021';
 	}
 
 	return class'KFGFxSpecialEventObjectivesContainer';
@@ -1566,6 +1566,8 @@ function bool ShouldUseDifficultyFilter(int GameModeIndex)
     {
     //Weekly
     case 1:
+	//VSSurvival
+	case 2:
         return false;
     }
 
@@ -1578,6 +1580,8 @@ function bool ShouldUseLengthFilter(int GameModeIndex)
     {
     //Weekly
     case 1:
+	//VSSurvival
+	case 2:
 	//Endless
 	case 3:
 	// Objective Mode

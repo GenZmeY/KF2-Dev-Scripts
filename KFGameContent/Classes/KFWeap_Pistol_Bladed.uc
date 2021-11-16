@@ -71,7 +71,7 @@ simulated function StartFire(byte FireModeNum)
 		}
 	}
 
-	super.StartFire(FireModeNum);
+	super(KFWeapon).StartFire(FireModeNum);
 }
 
 /*********************************************************************************************
@@ -94,6 +94,13 @@ simulated function ProcessInstantHitEx(byte FiringMode, ImpactInfo Impact, optio
 	super.ProcessInstantHitEx( FiringMode, Impact, NumHits, out_PenetrationVal, ImpactNum );
 }
 
+/** process local player impact for clientside hit detection */
+event RecieveClientImpact(byte FiringMode, const out ImpactInfo Impact, optional out float PenetrationValue, optional int ImpactNum)
+{
+	// skip KFWeap_MeleeBase because it does melee stuff
+	super(KFWeapon).RecieveClientImpact(FiringMode, Impact, PenetrationValue, ImpactNum);
+}
+
 defaultproperties
 {
 	// MeleeBase
@@ -109,7 +116,7 @@ defaultproperties
 
 	// Zooming/Position
 	PlayerViewOffset=(X=-15,Y=12,Z=-6)
-	IronSightPosition=(X=0,Y=0,Z=1.0) //(X=-3,Y=-0.38,Z=-0.2)
+	IronSightPosition=(X=0,Y=0.05,Z=-1.2) //(X=0,Y=0,Z=1.0)
 
 	// Content
 	PackageKey="BladedPistol"
@@ -121,7 +128,7 @@ defaultproperties
 
 	// Ammo
 	MagazineCapacity[0]=6
-	SpareAmmoCapacity[0]=72 //96
+	SpareAmmoCapacity[0]=66 //72
 	InitialSpareMags[0]=2
 	AmmoPickupScale[0]=1.0 //2.0
 	bCanBeReloaded=true
@@ -206,9 +213,9 @@ defaultproperties
 	// default MIC param names
 	BlockEffectsSocketName=BlockEffect
 	// Defensive
-	BlockDamageMitigation=0.60f
-	ParryDamageMitigationPercent=0.5
-	ParryStrength=4
+	BlockDamageMitigation=0.70f //0.60f
+	ParryDamageMitigationPercent=0.6 //0.5
+	ParryStrength=3 //4
 	BlockHitAnimCooldownTime=0.5f
 	BlockTypes.Add((DmgType=class'KFDT_Bludgeon'))
 	BlockTypes.Add((DmgType=class'KFDT_Slashing'))

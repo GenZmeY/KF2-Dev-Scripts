@@ -20,7 +20,8 @@ function InitializeWidget()
 	super.InitializeWidget();
 	SetReadyButtonVisibility(true);
 
-	ReadyButton = GetObject("readyButton");
+	ReadyButton        = GetObject("readyButton");
+	EndlessPauseButton = GetObject("endlessPauseButton");
 
 	MyKFPRI = KFPlayerReplicationInfo(GetPC().PlayerReplicationInfo);
 	
@@ -31,6 +32,7 @@ function InitializeWidget()
 	}	
 	RefreshParty();
 	UpdateReadyButtonVisibility();
+	UpdateEndlessPauseButtonVisibility();
 }
 
 function UpdateReadyButtonText()
@@ -48,6 +50,25 @@ function UpdateReadyButtonText()
 		else
 		{
 			ReadyButton.SetString("label", bShowingSkipTrader ? default.SkipTraderString : default.ReadyString);
+		}
+	}
+}
+
+
+function UpdateEndlessPauseButtonText()
+{
+	local bool bIsConsole;
+	
+	if (EndlessPauseButton != none)
+	{
+		bIsConsole = GetPC().WorldInfo.IsConsoleBuild();
+		if(bIsConsole)
+		{
+			EndlessPauseButton.SetString("label", KFGRI.bIsEndlessPaused ? ("  "@default.ResumeGameString) : ("  "@default.PauseGameString));
+		}
+		else
+		{
+			EndlessPauseButton.SetString("label", KFGRI.bIsEndlessPaused ? default.ResumeGameString : default.PauseGameString);
 		}
 	}
 }
@@ -107,6 +128,39 @@ function UpdateReadyButtonVisibility()
 	}
 }
 
+function UpdateEndlessPauseButtonVisibility()
+{
+	if(KFGRI == none)
+	{
+		return;
+	}
+
+	if (MyKFPRI == none)
+	{
+		//sanity check because this is happening
+		MyKFPRI = KFPlayerReplicationInfo(GetPC().PlayerReplicationInfo);
+	}
+
+	if (GetPC().WorldInfo.NetMode != NM_Standalone && KFGRI.bMatchHasBegun && (MyKFPRI != none && MyKFPRI.bHasSpawnedIn && !KFGRI.bWaveIsActive) && !KFGRI.bMatchIsOver && KFGRI.bEndlessMode)
+	{
+		UpdateEndlessPauseButtonText();
+
+		if (!MyKFPRI.bVotedToPauseGame)
+		{
+			SetBool("endlessPauseButtonVisible", true);
+		}
+	}
+	else
+	{
+		SetBool("endlessPauseButtonVisible", false);
+	}
+	
+	if (EndlessPauseButton != none)
+	{
+		EndlessPauseButton.SetBool("selected", false);
+	}
+}
+
 /****************************************************************************
 *	Slot Component Updates
 ****************************************************************************/
@@ -118,6 +172,7 @@ function OneSecondLoop()
 	}
 	RefreshParty();
 	UpdateReadyButtonVisibility();
+	UpdateEndlessPauseButtonVisibility();
 }
 
 //==============================================================

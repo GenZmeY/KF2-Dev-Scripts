@@ -210,6 +210,8 @@ var(AutoTarget) float ForceLookAtPawnMinAngle;
 var(AutoTarget) float ForceLookAtPawnRotationRate;
 /** How fast to rotate towards ForceLookAtPawn location dampened for closer rotation**/
 var(AutoTarget) float ForceLookAtPawnDampenedRotationRate;
+/** Aim distance of autoaim to set head as target. */
+var(AutoTarget) float WeakBoneDistance;
 
 /*********************************************************************************************
 * @name	Force Feedback
@@ -2070,8 +2072,10 @@ function vector GetBestAutoTargetLocation(Pawn CheckTarget, out name outBoneName
     	for(i = 0; i < WeakBones.Length; ++i)
     	{
     		TestLoc = KFP.Mesh.GetBoneLocation(WeakBones[i]);
-        	if ( !IsAutoTargetWithinCone(TestLoc, CamLoc, CamDir, AutoTargetWeakspotCurve) )
+        	if ( !IsAutoTargetWithinCone(TestLoc, CamLoc, CamDir, AutoTargetWeakspotCurve, WeakBoneDistance) )
+			{
         		continue; // test each weakspot bone
+			}
 
     		HitActor = Pawn.Trace(HitLoc, HitNorm, TestLoc, CamLoc, TRUE, vect(0,0,0), HitInfo, TRACEFLAG_Bullet);
 			if( HitActor == none || HitActor == CheckTarget )
@@ -2106,7 +2110,7 @@ function vector GetBestAutoTargetLocation(Pawn CheckTarget, out name outBoneName
 /**
  * Returns true if TargetLoc falls within a given view cone
  */
-function bool IsAutoTargetWithinCone(vector TargetLoc, vector CamLoc, vector CamDir, const out InterpCurveFloat Curve)
+function bool IsAutoTargetWithinCone(vector TargetLoc, vector CamLoc, vector CamDir, const out InterpCurveFloat Curve, optional float Margin)
 {
 	local float		DistToTarget, TargetRadius, TargetHeight;
 	local float     DotDiffToTarget;
@@ -2138,7 +2142,7 @@ function bool IsAutoTargetWithinCone(vector TargetLoc, vector CamLoc, vector Cam
 	}
 
 	// Make sure the target is in front of us and close enough
-	if( UsedTargetAngle > DotDiffToTarget )
+	if( UsedTargetAngle > (DotDiffToTarget + Margin))
 	{
 		`log("Auto-target Cone Angle Exceeded by "$UsedTargetAngle - DotDiffToTarget, bDebugAutoTarget);
 		return false;
@@ -2982,4 +2986,6 @@ defaultproperties
 	ForceLookAtPawnMinAngle=0.9f
 	ForceLookAtPawnRotationRate=22
 	ForceLookAtPawnDampenedRotationRate=8
+
+	WeakBoneDistance = 0.02; //0.01;
 }

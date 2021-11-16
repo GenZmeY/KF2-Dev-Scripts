@@ -115,7 +115,7 @@ defaultproperties
 	// Ammo
 	MagazineCapacity[0]=24
 	SpareAmmoCapacity[0]=192
-	InitialSpareMags[0]=1
+	InitialSpareMags[0]=2 //1
 	bCanBeReloaded=true
 	bReloadFromMagazine=true
 
@@ -152,7 +152,7 @@ defaultproperties
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_HRG_Boomy'
 	FireInterval(DEFAULT_FIREMODE)=+0.1667 // 360 RPM
 	Spread(DEFAULT_FIREMODE)=0.01 //0.025
-	InstantHitDamage(DEFAULT_FIREMODE)=25.0
+	InstantHitDamage(DEFAULT_FIREMODE)=30.0 //25.0
 	FireOffset=(X=30,Y=4.5,Z=-5)
 
 	// ALT_FIREMODE
@@ -162,7 +162,7 @@ defaultproperties
 	WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_Bullet_HRG_Boomy'
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Ballistic_HRG_Boomy'
 	FireInterval(ALTFIRE_FIREMODE)=+0.1667 // 360 RPM
-	InstantHitDamage(ALTFIRE_FIREMODE)=25.0
+	InstantHitDamage(ALTFIRE_FIREMODE)=30.0 //25.0
 	Spread(ALTFIRE_FIREMODE)=0.01 //0.025
 
 	// BASH_FIREMODE
@@ -186,7 +186,7 @@ defaultproperties
 	bHasIronSights=true
 	bHasFlashlight=false
 
-	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.15f), (Stat=EWUS_Damage1, Scale=1.15f), (Stat=EWUS_Weight, Add=1)))
-	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.3f), (Stat=EWUS_Damage1, Scale=1.3f), (Stat=EWUS_Weight, Add=2)))
-	WeaponUpgrades[3]=(Stats=((Stat=EWUS_Damage0, Scale=1.45f), (Stat=EWUS_Damage1, Scale=1.45f), (Stat=EWUS_Weight, Add=3)))
+	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.2f), (Stat=EWUS_Damage1, Scale=1.15f), (Stat=EWUS_Weight, Add=1)))
+	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.4f), (Stat=EWUS_Damage1, Scale=1.3f), (Stat=EWUS_Weight, Add=2)))
+	WeaponUpgrades[3]=(Stats=((Stat=EWUS_Damage0, Scale=1.6f), (Stat=EWUS_Damage1, Scale=1.45f), (Stat=EWUS_Weight, Add=3)))
 }

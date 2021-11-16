@@ -85,7 +85,7 @@ DefaultProperties
 	HealingDamageType=class'KFDT_Healing_ParasiteSeed'
 	HealingAmount=5 //10
 	Interval=0.5 //1
-	MaxTime=5.5 //6.5 //8
+	MaxTime=5.0 //5.5
 
 	bExplodeMoreThanOnce=false
 	bDoFullDamage=false //true

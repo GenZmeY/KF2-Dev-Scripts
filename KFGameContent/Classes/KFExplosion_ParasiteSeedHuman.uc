@@ -12,7 +12,7 @@ class KFExplosion_ParasiteSeedHuman extends KFExplosion_MedicGrenade;
 DefaultProperties
 {
 	HealingDamageType=class'KFDT_Healing_ParasiteSeed'
-	HealingAmount=30 //10
+	HealingAmount=25 //30 //10
 	Interval=1.0 //1
 	MaxTime=0.5 //6.5 //8
 

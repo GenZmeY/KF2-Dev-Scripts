@@ -138,6 +138,9 @@ var 			bool 			bPerkSecondarySupplyUsed;
 var bool bVotedToSkipTraderTime;
 var	bool bAlreadyStartedASkipTraderVote;
 
+var bool bVotedToPauseGame;
+var bool bAlreadyStartedAPauseGameVote;
+
 /************************************
  *  Not replicated Voice Comms Request
  *  local client only -ZG
@@ -849,6 +852,113 @@ reliable client function RecieveTopMaps(TopVotes VoteObject)
 	{
 		KFPC.MyGFxManager.PostGameMenu.RecieveTopMaps( VoteObject );
 	}
+}
+
+/*********************************************************************************************
+`* Pause Game
+********************************************************************************************* */
+
+reliable client function ShowPauseGameVote(PlayerReplicationInfo PRI, byte VoteDuration, bool bShowChoices)
+{
+	local KFPlayerController KFPC;
+
+	KFPC = KFPlayerController(Owner);
+
+	if(KFPC != none && KFPC.MyGFxHUD != none)
+	{
+		KFPC.MyGFxHUD.ShowPauseGameVote(PRI, VoteDuration, bShowChoices);
+	}
+
+	if(KFPC != none && KFPC.MyGFxManager != none && bShowChoices)
+	{
+		KFPC.MyGFxManager.ShowPauseGameVote(PRI);
+	}
+}
+
+reliable client function UpdatePauseGameTime(byte CurrentVoteTime)
+{
+	local KFPlayerController KFPC;
+
+	KFPC = KFPlayerController(Owner);
+
+	if(KFPC != none && KFPC.MyGFxHUD != none)
+	{
+		KFPC.MyGFxHUD.UpdatePauseGameTime(CurrentVoteTime);
+	}
+}
+
+reliable client function HidePauseGameVote()
+{
+	local KFPlayerController KFPC;
+
+	KFPC = KFPlayerController(Owner);
+
+	if(KFPC != none && KFPC.MyGFxHUD != none)
+	{
+		KFPC.MyGFxHUD.HidePauseGameVote();
+	}
+
+	if(KFPC != none && KFPC.MyGFxManager != none)
+	{
+		KFPC.MyGFxManager.HidePauseGameVote();
+	}
+}
+
+simulated function RequestPauseGame(PlayerReplicationInfo PRI)
+{
+	bVotedToPauseGame = true;
+	ServerRequestPauseGameVote(self);
+}
+
+reliable server function ServerRequestPauseGameVote(PlayerReplicationInfo PRI)
+{
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	if (KFGRI != none)
+	{
+		KFGRI.ServerStartVotePauseGame(PRI);
+	}
+}
+
+simulated function CastPauseGameVote(PlayerReplicationInfo PRI, bool bSkipTrader)
+{
+	local KFPlayerController KFPC;
+
+	ServerCastPauseGameVote(self, bSkipTrader);
+
+	KFPC = KFPlayerController(Owner);
+
+	if(KFPC != none && KFPC.MyGFxManager != none)
+	{
+		KFPC.MyGFxManager.HidePauseGameVote();
+	}
+}
+
+reliable server function ServerCastPauseGameVote(PlayerReplicationInfo PRI, bool bSkipTrader)
+{
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	if(KFGRI != none)
+	{
+		KFGRI.ReceiveVotePauseGame(PRI, bSkipTrader);
+	}
+}
+
+reliable server function ResetPauseGame()
+{
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	if(KFGRI != none && KFGRI.VoteCollector != none)
+	{
+		KFGRI.VoteCollector.ConcludeVotePauseGame();
+	}
+	bVotedToPauseGame = false;
 }
 
 /*********************************************************************************************
