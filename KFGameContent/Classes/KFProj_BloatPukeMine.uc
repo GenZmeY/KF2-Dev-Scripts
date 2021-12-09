@@ -532,8 +532,8 @@ defaultproperties
 	LifeSpan=0
 	FuseDuration=300
 	PostExplosionLifetime=1
-	Speed=1000 //500
-	MaxSpeed=1000 //500
+	Speed=1500 //1000 //500
+	MaxSpeed=1500 //1000 //500
 	Physics=PHYS_Falling
 	bBounce=true
 	bNetTemporary=false

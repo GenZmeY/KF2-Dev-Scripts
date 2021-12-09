@@ -125,6 +125,10 @@ function PlayAnimation()
     switch (CurrentTheatricType)
     {
     case THEATRIC_Entrance:
+		/** Not initialized when playing intro */
+		KFPOwner.SpecialMoveFlags = PackSMFlags(KFPOwner, THEATRIC_Entrance);
+		Variant = KFPOwner.SpecialMoveFlags >> 4;
+
         AnimName = KFPOwner.PawnAnimInfo.TheatricBossEntranceAnimInfos[Variant].AnimationName;
         CameraAnim = KFPOwner.PawnAnimInfo.TheatricBossEntranceAnimInfos[Variant].CameraAnimation;
         CameraAnimOffset = KFPOwner.PawnAnimInfo.TheatricBossEntranceAnimInfos[Variant].CameraAnimOffset;

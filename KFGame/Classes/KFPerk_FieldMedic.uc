@@ -550,7 +550,8 @@ function GameExplosion GetExplosionTemplate()
  */
 function bool CouldBeZedToxicCloud( class<KFDamageType> KFDT )
 { 
-	return IsZedativeActive() && IsDamageTypeOnPerk( KFDT );
+	// Special case for doshinegun. Only this perk should apply.
+	return IsZedativeActive() && (IsDamageTypeOnPerk( KFDT ) || KFDT.Name == 'KFDT_Bludgeon_Doshinegun_Shot');
 }
 
 static function float GetZedativeExplosionDelay()

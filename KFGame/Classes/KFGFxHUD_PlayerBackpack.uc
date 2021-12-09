@@ -182,6 +182,15 @@ function UpdateWeapon()
                     SetInt("backpackStoredAmmo" , CurrentSpareAmmo);
                     LastSpareAmmo  = CurrentSpareAmmo;
             	}
+
+                /**
+                    Reusing this variable for showing the dosh icon for doshinegun.
+                    Only FAMAS uses bUsesSecondaryAmmoAltHUD and for it bUsesSecondaryAmmo is true
+                 */
+                if (!bUsesSecondaryAmmo && CurrentWeapon.bUsesSecondaryAmmoAltHUD)
+                {
+                    SetBool("doshAmmoIcon", true);
+                }
             }
 			else
 			{

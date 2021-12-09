@@ -82,7 +82,7 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 		KFW = GetWeaponFromDamageCauser( DamageCauser );
 	}
 
-	if( (KFW != none && (IsWeaponOnPerk( KFW,, self.class ) || IsDual9mm(KFW) || Is9mm(KFW))) || (DamageType != none && IsDamageTypeOnPerk( DamageType )) )
+	if( (KFW != none && (IsWeaponOnPerk( KFW,, self.class ) || IsDual9mm(KFW) || Is9mm(KFW))) || IsDoshinegun(KFW) || (DamageType != none && IsDamageTypeOnPerk( DamageType )) )
 	{
 		TempDamage += InDamage * GetPassiveValue( WeaponDamage, CurrentLevel );
 		if( IsRapidFireActive() )
@@ -303,8 +303,6 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 	local name StateName;
 	StateName = W.GetStateName();
 
-	`Log("STATE NAME: " $StateName);
-
 	if( IsProfessionalActive() && (IsWeaponOnPerk( W,, self.class ) || IsBackupWeapon( W ) || IsDual9mm( W )) )
 	{
 		if( StateName == 'Reloading' ||
@@ -318,7 +316,7 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 		}
 	}
 	// FAMAS uses alt fire as common firing. Needs a special case 
-	if( CouldRapidFireActive() && (Is9mm(W) || IsDual9mm( W ) || IsWeaponOnPerk( W,, self.class )) && 
+	if( CouldRapidFireActive() && (Is9mm(W) || IsDual9mm( W ) || IsDoshinegun(W) || IsWeaponOnPerk( W,, self.class )) && 
 		(ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE || (IsFAMAS(W) && StateName == 'FiringSecondaryState')) )
 	{
 		return RapidFireFiringRate;

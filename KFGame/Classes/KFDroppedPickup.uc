@@ -385,6 +385,13 @@ function GiveTo(Pawn P)
     local class<KFWeapon> KFWInvClass;
     local Inventory NewInventory;
     local KFInventoryManager KFIM;
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+	if (KFGRI != none && KFGRI.bIsEndlessPaused)
+	{
+		return;
+	}
 
     KFIM = KFInventoryManager(P.InvManager);
     if (KFIM != None)

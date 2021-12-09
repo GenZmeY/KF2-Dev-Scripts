@@ -1025,6 +1025,8 @@ replication
 
 /** Util that makes sure the overlay component is last in the AllComponents/Components array. */
 native function EnsureWeaponOverlayComponentLast();
+/** Wether the player can purchase ammo for the weapon. Will be true for most of the weapons */
+native function bool CanBuyAmmo();
 
 /**
  * Handles view rotation and weapon rotation changes for the weapon. Called in script by
@@ -1762,7 +1764,14 @@ function bool DenyPickupQuery(class<Inventory> ItemClass, Actor Pickup)
 			}
 			else
 			{
-				bDenyPickUp = ((SpareAmmoCount[0] + AmmoCount[0]) >= GetMaxAmmoAmount(0));
+				if (KFProj_RicochetStickBullet(Pickup) == none || KFProj_RicochetStickBullet(Pickup).bPickupCanBeDenied)
+				{
+					bDenyPickUp = ((SpareAmmoCount[0] + AmmoCount[0]) >= GetMaxAmmoAmount(0));
+				}
+				else
+				{
+					bDenyPickUp = false;
+				}
 			}
 		}
 

@@ -16,6 +16,8 @@ var localized string PartyLeaderSearchingForMatchString, PartyLeaderIsUpdatingMa
 var localized string PartHostLeftString, PartyLeaderChangedString;
 var localized string DownLoadingString, RemainingString;
 var localized string MatchOverString;//text used to tell the player the match is over
+var localized string PauseGameString;
+var localized string ResumeGameString;
 
 var OnlineSubsystem OnlineSub;
 var TWOnlineLobby OnlineLobby;
@@ -35,6 +37,7 @@ var GFxObject CreatePartyButton;
 var GFxObject SquadHeader;
 var GFxObject Notification;
 var GFxObject MatchStartContainer;
+var GFxObject EndlessPauseButton;
 
 var int PlayerSlots;
 
@@ -80,6 +83,8 @@ function InitializeWidget()
 	ReadyButton = GetObject("readyButton");
 	SquadHeader = GetObject("squadHeader");
 	MatchStartContainer = GetObject("matchStartContainer");
+	EndlessPauseButton = GetObject("endlessPauseButton");
+
 	InitNotificationUI();
 
 	LocalizeText();
@@ -87,11 +92,15 @@ function InitializeWidget()
 	UpdateInLobby(Manager.IsInLobby());
 	RefreshParty();
 	SetBool("matchOver", false);
+
+	SetBool("endlessPauseButtonVisible", false);
 }
 
 function  LocalizeText()
 {
 	local GFxObject TextObject;
+	local KFGameReplicationInfo KFGRI;
+	local WorldInfo TempWorldInfo;
 
 	TextObject = CreateObject("Object");
 
@@ -103,6 +112,16 @@ function  LocalizeText()
 	TextObject.SetString("selectPromptString", Localize("KFGFxWidget_ButtonPrompt", "ConfirmString", "KFGame"));
 	TextObject.SetString("backPromptString", Localize("KFGFxWidget_ButtonPrompt", "CancelString", "KFGame"));
 	TextObject.SetString("matchOver", MatchOverString);
+	
+	TempWorldInfo = class'WorldInfo'.static.GetWorldInfo();
+	if ( TempWorldInfo != none && TempWorldInfo.GRI != none )
+	{
+		KFGRI = KFGameReplicationInfo(TempWorldInfo.GRI);
+		if ( KFGRI != none )
+		{
+			SetString("endlessPauseString", KFGRI.bIsEndlessPaused ? ResumeGameString : PauseGameString);
+		}
+	}
 
 	SetObject("localizedText", TextObject);
 }
@@ -170,7 +189,6 @@ function CreatePlayerOptions(UniqueNetId PlayerID, int SlotIndex)
 			KFGRI.GetKFPRIArray(PRIs);
 		}
 	}
-    
 
 	DataProvider = CreateArray();
 	OptionIndex=0;

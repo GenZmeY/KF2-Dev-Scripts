@@ -156,6 +156,13 @@ var(Combat) float HumanBaseMeleeDamage;
 /** Contains balance settings per game difficulty */
 var class<KFMonsterDifficultyInfo> DifficultySettings;
 
+struct native WeakPoint
+{
+	var name BoneName;
+	var vector Offset;
+};
+
+
 /*********************************************************************************************
  * @name	Player-controlled
 ********************************************************************************************* */
@@ -553,6 +560,15 @@ var array<KFProjectile> ParasiteSeeds;
 var byte MaxNumSeeds;
 
 /*********************************************************************************************
+ * @name	Tiny skull Weakly vfx
+********************************************************************************************* */
+
+`define TINY_SKULL_MAX_WEAKPOINTS 10
+var transient array<ParticleSystemComponent> WeakPointVFXComponents;
+var repnotify WeakPoint WeakPoints_TS[`TINY_SKULL_MAX_WEAKPOINTS];
+var ParticleSystem WeakPointParticleTemplate;
+
+/*********************************************************************************************
  * @name	Delegates
 ********************************************************************************************* */
 
@@ -566,7 +582,7 @@ replication
 	if (bNetDirty)
 		bIsHeadless, bIsPoisoned, bPlayPanicked, bPlayShambling, MaxHeadChunkGoreWhileAlive,
 		RepInflateMatParams, RepInflateMatParam, RepDamageInflateParam, RepBleedInflateMatParam, bDisableGoreMeshWhileAlive,
-        bDisableHeadless, InflateDeathGravity, InflationExplosionTimer, bUseDamageInflation, bUseExplosiveDeath;
+        bDisableHeadless, InflateDeathGravity, InflationExplosionTimer, bUseDamageInflation, bUseExplosiveDeath, WeakPoints_TS;
 	if ( bNetDirty && bCanCloak )
 		bIsCloakingSpottedByTeam;
 	if ( bNetDirty && bCanRage )
@@ -667,6 +683,10 @@ simulated event ReplicatedEvent(name VarName)
 
 	case nameof(bIsEnraged):
 		SetEnraged(bIsEnraged);
+		break;
+	
+	case nameof(WeakPoints_TS):
+		SpawnWeakpointVFX();
 		break;
 	}
 
@@ -1845,6 +1865,7 @@ simulated function PlayDying(class<DamageType> DamageType, vector HitLoc)
 {
     local KFPlayerController KFPC;
     local string ClassName;
+	local ParticleSystemComponent WeakPointPSC;
 
 	Timer_EndRallyBoost();
 
@@ -1879,6 +1900,16 @@ simulated function PlayDying(class<DamageType> DamageType, vector HitLoc)
 	UpdateBleedIncapFX();
 
 	StopExtraVFX(`NAME_NONE);
+
+	if (WeakPointVFXComponents.Length > 0)
+	{
+		foreach WeakPointVFXComponents(WeakPointPSC)
+		{
+			WeakPointPSC.DeactivateSystem();
+		}
+
+		WeakPointVFXComponents.Length = 0;
+	}
 }
 
 simulated function PlayInflationDeath()
@@ -4778,6 +4809,48 @@ server reliable function AddParasiteSeed(KFProjectile Proj)
 	ParasiteSeeds.AddItem(Proj);
 }
 
+simulated function SpawnWeakPointVFX()
+{
+	local int i;
+	local ParticleSystemComponent VFXComponent;
+
+	if (WeakPointParticleTemplate != none && WeakPointVFXComponents.Length == 0)
+	{
+		for (i = 0; i < `TINY_SKULL_MAX_WEAKPOINTS; ++i)
+		{
+			if (WeakPoints_TS[i].BoneName == '')
+				return;
+			
+			VFXComponent = new(self) class'ParticleSystemComponent';
+			VFXComponent.SetTemplate( WeakPointParticleTemplate );
+			Mesh.AttachComponent( VFXComponent, WeakPoints_TS[i].BoneName, WeakPoints_TS[i].Offset );
+			VFXComponent.ActivateSystem();
+			WeakPointVFXComponents.AddItem(VFXComponent);
+		}
+	}
+}
+
+simulated function ServerSpawnWeakPointVFX(array<WeakPoint> WeakPoints)
+{
+	local int i;
+
+	if (WeakPoints.Length == 0)
+		return;
+
+	for (i = 0; i < WeakPoints.Length; ++i)
+	{
+		WeakPoints_TS[i] = WeakPoints[i];
+	}
+
+	if (WorldInfo.NetMode == NM_Standalone)
+	{
+		SpawnWeakPointVFX();
+	}
+	else
+	{
+		bNetDirty = true;
+	}
+}
 
 /*********************************************************************************************
  * @name   Achievements
@@ -4977,4 +5050,6 @@ DefaultProperties
 	MaxNumSeeds=1
 
 	ZEDCowboyHatAttachName=HEAD_Attach
+
+	WeakPointParticleTemplate=ParticleSystem'FX_Gameplay_EMIT.FX_Weak_Indicator'
 }

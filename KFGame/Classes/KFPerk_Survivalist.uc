@@ -799,7 +799,7 @@ DefaultProperties
 	PerkSkills(ESurvivalist_AmmoVest)=(Name="AmmoVest",IconPath="UI_PerkTalent_TEX.Survivalist.UI_Talents_Survivalist_AmmoVest", Increment=0.f,Rank=0,StartingValue=0.15f,MaxValue=0.15f)
 	PerkSkills(ESurvivalist_BigPockets)=(Name="BigPockets",IconPath="UI_PerkTalent_TEX.Survivalist.UI_Talents_Survivalist_BigPockets", Increment=0.f,Rank=0,StartingValue=5.f,MaxValue=5.f)
 	PerkSkills(ESurvivalist_Shrapnel)=(Name="ZedShrapnel",IconPath="UI_PerkTalent_TEX.Survivalist.UI_Talents_Survivalist_Shrapnel", Increment=0.f,Rank=0,StartingValue=2.f,MaxValue=2.f)
-	PerkSkills(ESurvivalist_MakeThingsGoBoom)=(Name="MakeThingsGoBoom",IconPath="UI_PerkTalent_TEX.Survivalist.UI_Talents_Survivalist_Boom", Increment=0.f,Rank=0,StartingValue=1.4f,MaxValue=1.4f)
+	PerkSkills(ESurvivalist_MakeThingsGoBoom)=(Name="MakeThingsGoBoom",IconPath="UI_PerkTalent_TEX.Survivalist.UI_Talents_Survivalist_Boom", Increment=0.f,Rank=0,StartingValue=1.5f,MaxValue=1.5f) //1.4f
 	PerkSkills(ESurvivalist_MadMan)=(Name="MadMan",IconPath="UI_PerkTalent_TEX.Survivalist.UI_Talents_Survivalist_Madman", Increment=0.f,Rank=0,StartingValue=0.5f,MaxValue=0.5f)
 	PerkSkills(ESurvivalist_IncapMaster)=(Name="IncapMaster",IconPath="UI_PerkTalent_TEX.Survivalist.UI_Talents_Survivalist_IncapMaster", Increment=0.f,Rank=0,StartingValue=5000.0f,MaxValue=5000.0f)
 	
@@ -876,5 +876,5 @@ DefaultProperties
 
 	TacticalReloadAsReloadRateClassNames(0)="KFWeap_GrenadeLauncher_M32"
 
-	MakeThingsGoBoomExplosiveResistance=0.4f
+	MakeThingsGoBoomExplosiveResistance=0.5f //0.4f
 }

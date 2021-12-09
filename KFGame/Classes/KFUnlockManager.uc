@@ -31,7 +31,8 @@ enum ESharedContentUnlock
 	SCU_FAMAS,
 	SCU_Thermite,
 	SCU_BladedPistol,
-	SCU_ParasiteImplanter
+	SCU_ParasiteImplanter,
+	SCU_Doshinegun
 };
 
 
@@ -355,4 +356,8 @@ defaultproperties
 		Name=KFWeap_Rifle_ParasiteImplanter,
 		IconPath="WEP_UI_ParasiteImplanter_TEX.UI_WeaponSelect_ParasiteImplanter",
 		ID=9132)}
+	SharedContentList(SCU_Doshinegun)={(
+		Name=KFWeap_AssaultRifle_Doshinegun,
+		IconPath="WEP_UI_Doshinegun_TEX.UI_Weapon_Select_Doshinegun",
+		ID=9275)}
 }

@@ -10,7 +10,7 @@ class KFDT_Bludgeon_HRG_SonicGun extends KFDT_Bludgeon_RifleButt
 
 DefaultProperties
 {
-	ModifierPerkList(0)=class'KFPerk_Survivalist'
+	ModifierPerkList(1)=class'KFPerk_Survivalist'
 	//defaults
 	WeaponDef=class'KFWeapDef_HRG_SonicGun'
 }

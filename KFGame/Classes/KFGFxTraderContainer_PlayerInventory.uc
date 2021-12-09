@@ -117,9 +117,9 @@ function RefreshPlayerInventory()
 			PricePerRound = ( MagSize > 0 ) ? float(PricePerMag) / float(MagSize) : 0.f;
 			BlocksRequired = -1; // This will hide the weight and
 
-			SetItemInfo( InfoSlot, ItemInfo.DefaultItem.WeaponDef, "SecondaryAmmo", TextureLocation, AmmoCount, MaxAmmoCount, BlocksRequired, true );
-			SetMagInfo( MagSlot, AmmoCount, MaxAmmoCount, MagSize, PricePerMag, PricePerRound, FillAmmoCost );
-			SetFillInfo( FillSlot, AmmoCount, MaxAmmoCount, PricePerRound, FillAmmoCost, AutoFillCost );
+			SetItemInfo( InfoSlot, ItemInfo.DefaultItem.WeaponDef, "SecondaryAmmo", TextureLocation, AmmoCount, MaxAmmoCount, BlocksRequired, true, 0, ItemInfo.DefaultItem.bCanBuyAmmo);
+			SetMagInfo( MagSlot, AmmoCount, MaxAmmoCount, MagSize, PricePerMag, PricePerRound, FillAmmoCost, ItemInfo.DefaultItem.bCanBuyAmmo);
+			SetFillInfo( FillSlot, AmmoCount, MaxAmmoCount, PricePerRound, FillAmmoCost, AutoFillCost, ItemInfo.DefaultItem.bCanBuyAmmo );
 		}
 		else
 		{
@@ -132,9 +132,9 @@ function RefreshPlayerInventory()
 			PricePerRound = ( MagSize > 0 ) ? float(PricePerMag) / float(MagSize) : 0.f;
 			BlocksRequired = MyTraderMenu.GetDisplayedBlocksRequiredFor(ItemInfo.DefaultItem, ItemInfo.ItemUpgradeLevel);
 
-			SetItemInfo( InfoSlot, ItemInfo.DefaultItem.WeaponDef, "ItemName", TextureLocation, AmmoCount, MaxAmmoCount, BlocksRequired, false, KFPC.GetPurchaseHelper().GetItemUpgradeLevelByClassName(ItemInfo.DefaultItem.ClassName) );
-			SetMagInfo( MagSlot, AmmoCount, MaxAmmoCount, MagSize, PricePerMag, PricePerRound, FillAmmoCost );
-			SetFillInfo( FillSlot, AmmoCount, MaxAmmoCount, PricePerRound, FillAmmoCost, AutoFillCost );
+			SetItemInfo( InfoSlot, ItemInfo.DefaultItem.WeaponDef, "ItemName", TextureLocation, AmmoCount, MaxAmmoCount, BlocksRequired, false, KFPC.GetPurchaseHelper().GetItemUpgradeLevelByClassName(ItemInfo.DefaultItem.ClassName), ItemInfo.DefaultItem.bCanBuyAmmo );
+			SetMagInfo( MagSlot, AmmoCount, MaxAmmoCount, MagSize, PricePerMag, PricePerRound, FillAmmoCost, ItemInfo.DefaultItem.bCanBuyAmmo );
+			SetFillInfo( FillSlot, AmmoCount, MaxAmmoCount, PricePerRound, FillAmmoCost, AutoFillCost, ItemInfo.DefaultItem.bCanBuyAmmo );
 		}
 
 		SetSellInfo(SellSlot, ItemInfo.SellPrice, ItemInfo.SellPrice > 0);
@@ -173,7 +173,7 @@ function SetArmorInfo(out SItemInformation ArmorInfo, out int AutoFillCost)
 	SlotObject.SetString("itemAmmo",  ArmorInfo.SpareAmmoCount$"/"$ArmorInfo.MaxSpareAmmo);
 	SlotObject.SetBool("lowAmmo", (ArmorInfo.MaxSpareAmmo > 0) ? (float(ArmorInfo.SpareAmmoCount) / float(ArmorInfo.MaxSpareAmmo)) <= LowAmmoPercentThreshold : false);
 
-	ButtonState = GetButtonState( ArmorInfo.AmmoPricePerMagazine, ArmorInfo.SpareAmmoCount, ArmorInfo.MaxSpareAmmo );
+	ButtonState = GetButtonState( ArmorInfo.AmmoPricePerMagazine, ArmorInfo.SpareAmmoCount, ArmorInfo.MaxSpareAmmo, true );
 	SlotObject.Setint("buttonState", ButtonState );
 	SlotObject.Setint("magButtonState", ButtonState );
 
@@ -201,7 +201,7 @@ function SetGrenadeInfo(out SItemInformation GrenadeInfo, out int AutoFillCost)
 	SlotObject.SetInt("fillCost", FillCost);
 	SlotObject.SetBool("lowAmmo", (GrenadeInfo.MaxSpareAmmo > 0) ? (float(GrenadeInfo.SpareAmmoCount) / float(GrenadeInfo.MaxSpareAmmo)) <= LowAmmoPercentThreshold : false);
 	SlotObject.SetString("itemAmmo", GrenadeInfo.SpareAmmoCount $"/"$GrenadeInfo.MaxSpareAmmo);
-	ButtonState = GetButtonState(AmmoPricePerMagazine, GrenadeInfo.SpareAmmoCount, GrenadeInfo.MaxSpareAmmo);
+	ButtonState = GetButtonState(AmmoPricePerMagazine, GrenadeInfo.SpareAmmoCount, GrenadeInfo.MaxSpareAmmo, true);
 
 	SlotObject.Setint("magButtonState", ButtonState);
 	SlotObject.Setint("fillButtonState", ButtonState);
@@ -210,12 +210,12 @@ function SetGrenadeInfo(out SItemInformation GrenadeInfo, out int AutoFillCost)
 	AutoFillCost += FillCost;
 }
 
-function SetItemInfo(out GFxObject InfoSlot, class<KFWeaponDefinition> WeaponDef, string ItemKeyString, string TextureLocation, int AmmoCount, int MaxAmmoCount, int BlocksRequired, optional bool bSecondaryAmmo, optional int UpgradeLevel )
+function SetItemInfo(out GFxObject InfoSlot, class<KFWeaponDefinition> WeaponDef, string ItemKeyString, string TextureLocation, int AmmoCount, int MaxAmmoCount, int BlocksRequired, optional bool bSecondaryAmmo, optional int UpgradeLevel, optional bool bCanBuyAmmo = true )
 {
 	local string ItemTexPath;
 
     InfoSlot.SetString( "itemName", WeaponDef.static.GetItemLocalization(ItemKeyString) );
-    InfoSlot.SetString( "itemAmmo", AmmoCount $"/" $MaxAmmoCount);
+    InfoSlot.SetString( "itemAmmo", AmmoCount $"/" $(bCanBuyAmmo ? MaxAmmoCount : 0 ));
     InfoSlot.Setint( "itemWeight", BlocksRequired );
 	InfoSlot.Setint("weaponTier", UpgradeLevel);
 
@@ -226,7 +226,7 @@ function SetItemInfo(out GFxObject InfoSlot, class<KFWeaponDefinition> WeaponDef
     InfoSlot.SetString( "itemSource", ItemTexPath );
 }
 
-function SetMagInfo(out GFxObject MagSlot, int AmmoCount, int MaxAmmoCount, byte AmmoMagSize, int PricePerMag, float PricePerRound, int FillAmmoCost)
+function SetMagInfo(out GFxObject MagSlot, int AmmoCount, int MaxAmmoCount, byte AmmoMagSize, int PricePerMag, float PricePerRound, int FillAmmoCost, bool bCanBuyAmmo)
 {
 	local int MagCost;
 	local bool bBuyPartialMag;
@@ -236,14 +236,14 @@ function SetMagInfo(out GFxObject MagSlot, int AmmoCount, int MaxAmmoCount, byte
 
    	MagSlot.SetString("label", MagString);
 	MagSlot.SetInt("buttonValue", MagCost);
-    MagSlot.SetInt("buttonState", GetButtonState( PricePerRound, AmmoCount, MaxAmmoCount));
+    MagSlot.SetInt("buttonState", GetButtonState( PricePerRound, AmmoCount, MaxAmmoCount, bCanBuyAmmo));
 }
 
-function SetFillInfo(out GFxObject FillSlot, int AmmoCount, int MaxAmmoCount, float PricePerRound, int FillAmmoCost, out int AutoFillCost)
+function SetFillInfo(out GFxObject FillSlot, int AmmoCount, int MaxAmmoCount, float PricePerRound, int FillAmmoCost, out int AutoFillCost, bool bCanBuyAmmo)
 {
     FillSlot.SetString("label", FillString);
 	FillSlot.SetInt("buttonValue", FillAmmoCost);
-	FillSlot.SetInt("buttonState", GetButtonState( PricePerRound, AmmoCount, MaxAmmoCount ));
+	FillSlot.SetInt("buttonState", GetButtonState( PricePerRound, AmmoCount, MaxAmmoCount, bCanBuyAmmo ));
 
     AutoFillCost += FillAmmoCost;
 }
@@ -265,15 +265,15 @@ function SetAutoFill(int AutoFillCost)
 
 	AutoFillObject.SetInt("buttonValue", AutoFillCost);
 	// Only disable this button if we have all the ammo
-	AutoFillObject.SetInt("buttonState", GetButtonState(0, 0, AutoFillCost));
+	AutoFillObject.SetInt("buttonState", GetButtonState(0, 0, AutoFillCost, true));
 
 	SetObject("autoFillCost", AutoFillObject);
 }
 
 // Change the look of the button dependant on if we can afford it, or are at max capacity
-function int GetButtonState( float Price, int SpareAmmoCount, int MaxSpareAmmoCount )
+function int GetButtonState( float Price, int SpareAmmoCount, int MaxSpareAmmoCount, bool bCanBuyAmmo )
 {
-	if ( SpareAmmoCount >= MaxSpareAmmoCount )
+	if ( SpareAmmoCount >= MaxSpareAmmoCount || !bCanBuyAmmo)
 	{
 	 	return BS_MaxCapacity;
 	}

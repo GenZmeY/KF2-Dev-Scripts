@@ -71,4 +71,5 @@ defaultproperties
 	Properties.Add((PropertyId = STATID_ACHIEVE_Dystopia2029Collectibles, Data = (Type = SDT_Int32,Value1 = 0)))
 	Properties.Add((PropertyId = STATID_ACHIEVE_MoonbaseCollectibles, Data = (Type = SDT_Int32, Value1 = 0)))
 	Properties.Add((PropertyId = STATID_ACHIEVE_NetherholdCollectibles, Data = (Type = SDT_Int32, Value1 = 0)))
+	Properties.Add((PropertyId = STATID_ACHIEVE_CarillonHamletCollectibles, Data = (Type = SDT_Int32, Value1 = 0)))
 }

@@ -107,6 +107,9 @@ function StartMatch()
 
 function PlayWaveStartDialog()
 {
+	if (OutbreakEvent != none && OutbreakEvent.ActiveEvent.bBossRushMode)
+		return;
+	
 	`DialogManager.PlayWaveStartDialog(MyKFGRI.IsBossWave());
 	if (WaveNum == 1)
 	{

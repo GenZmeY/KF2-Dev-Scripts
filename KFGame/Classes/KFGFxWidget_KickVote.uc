@@ -13,8 +13,11 @@ class KFGFxWidget_KickVote extends GFxObject;
 var localized string VoteKickString;
 var localized string VoteSkipTraderString;
 var localized string VoteSkipTraderDetailString;
+var localized string VotePauseGameString;
+var localized string VotePauseGameDetailString;
+var localized string VoteResumeGameString;
+var localized string VoteResumeGameDetailString;
 var bool bIsVoteActive;
-var bool bIsSkipTraderVoteActive;
 var bool bShowChoicesOnTimerUpdate;
 
 var const string GBA_VoteYes;
@@ -22,12 +25,23 @@ var const string GBA_VoteNo;
 
 var GFxObject KickVoteData;
 
+enum EVoteType
+{
+	VT_NONE,
+    VT_KICK,
+    VT_SKIP_TRADER,
+    VT_PAUSE_GAME,
+	VT_RESUME_GAME
+};
+
+var EVoteType CurrentActiveVote;
+
 function InitializeHUD()
 {
     //LocalizeText();
 }
 
-function LocalizeText(bool bIsSkipTraderVote)
+function LocalizeText(EVoteType Type)
 {
 	local GFxObject TempObject;
 	local KFPlayerInput KFInput;
@@ -46,14 +60,7 @@ function LocalizeText(bool bIsSkipTraderVote)
     TempObject.SetString("yes", Class'KFCommon_LocalizedStrings'.default.YesString);
     TempObject.SetString("no", Class'KFCommon_LocalizedStrings'.default.NoString);
 
-	if(bIsSkipTraderVote)
-	{
-		TempObject.SetString("voteKick", VoteSkipTraderString);
-	}
-	else
-	{
-		TempObject.SetString("voteKick", VoteKickString);
-	}
+	TempObject.SetString("voteKick", GetVoteString(Type));
 
     SetObject("localizedText", TempObject);
 }
@@ -65,19 +72,20 @@ function ResetVote()
 	ActionScriptVoid("onNoReleased");
 }
 
-function ShowVote(PlayerReplicationInfo PRI, byte VoteDuration, bool bShowChoices, bool bIsSkipTraderVote)
+function ShowVote(PlayerReplicationInfo PRI, byte VoteDuration, bool bShowChoices, EVoteType Type)
 {
 	if(PRI != none)
 	{
-		LocalizeText(bIsSkipTraderVote); //Added this here if the user changes their keybind, it will update
+		LocalizeText(Type); //Added this here if the user changes their keybind, it will update
 		bIsVoteActive = true;
-		bIsSkipTraderVoteActive = bIsSkipTraderVote;
+
+		CurrentActiveVote = Type;
 		SendVoteToAS3(PRI.PlayerName, VoteDuration, bShowChoices);
 	}
 	else
 	{
 		bIsVoteActive = false;
-		bIsSkipTraderVoteActive = false;
+		CurrentActiveVote = VT_NONE;
 	}
 }
 
@@ -88,14 +96,7 @@ function SendVoteToAS3(string PlayerName, byte VoteDuration, bool bShowChoices)
 		KickVoteData = CreateObject("Object");
 	}
 
-	if(bIsSkipTraderVoteActive)
-	{
-		KickVoteData.SetString("playerName", PlayerName@VoteSkipTraderDetailString);
-	}
-	else
-	{
-		KickVoteData.SetString("playerName", PlayerName);
-	}
+	KickVoteData.SetString("playerName", GetVotePlayerDataString(PlayerName, CurrentActiveVote));
 	KickVoteData.SetInt("voteDuration", VoteDuration);
 	KickVoteData.SetBool("bShowChoices", bShowChoices);
 	bShowChoicesOnTimerUpdate = bShowChoices;
@@ -121,7 +122,7 @@ function UpdateUsingGamepad(bool bIsUsingGamepad)
     if(!bIsUsingGamepad)
 	{
 		//the gamepad text will show on the input so we need to change it back to keyboard, it is simpler to just relocalize 
-		LocalizeText(bIsSkipTraderVoteActive);
+		LocalizeText(CurrentActiveVote);
 	}
 }
 
@@ -168,9 +169,36 @@ function OnNoReleased()
 	}
 }
 
+function string GetVoteString(EVoteType Type)
+{
+	switch(Type)
+	{
+		case VT_KICK:                           return VoteKickString;
+		case VT_SKIP_TRADER:                    return VoteSkipTraderString;
+		case VT_PAUSE_GAME:                     return VotePauseGameString;
+		case VT_RESUME_GAME:				    return VoteResumeGameString;
+		case VT_NONE: `Log("None vote type");   return VoteKickString;
+		default:      `Log("Unkown vote type"); return VoteKickString;
+	}
+}
+
+function string GetVotePlayerDataString(string PlayerName, EVoteType Type)
+{
+	switch(Type)
+	{
+		case VT_SKIP_TRADER:                    return PlayerName@VoteSkipTraderDetailString;
+		case VT_PAUSE_GAME:                     return PlayerName@VotePauseGameDetailString;
+		case VT_RESUME_GAME:				    return PlayerName@VoteResumeGameDetailString;
+		case VT_KICK:                           return PlayerName;
+		case VT_NONE: `Log("None vote type");   return PlayerName;
+		default:      `Log("Unkown vote type"); return PlayerName;
+	}
+}
+
 DefaultProperties
 {
 	//defaults
 	GBA_VoteYes="GBA_VoteYes"
 	GBA_VoteNo="GBA_VoteNo"
+	CurrentActiveVote=VT_NONE
 }

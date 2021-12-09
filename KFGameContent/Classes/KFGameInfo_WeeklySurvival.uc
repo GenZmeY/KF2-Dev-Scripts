@@ -66,9 +66,13 @@ event PreBeginPlay()
 
 	OutbreakEvent.UpdateGRI();
 
-    if (Role == Role_Authority && MyKFGRI != none && OutbreakEvent.ActiveEvent.bUnlimitedWeaponPickups)
+    if (Role == Role_Authority && MyKFGRI != none)
     {
-        MyKFGRI.NotifyBrokenTrader();
+        MyKFGRI.NotifyWeeklyEventIndex(ActiveEventIdx);
+        if ( OutbreakEvent.ActiveEvent.bUnlimitedWeaponPickups)
+        {
+            MyKFGRI.NotifyBrokenTrader();
+        }
     }
 }
 
@@ -226,7 +230,19 @@ function ResetPermanentZed()
 
 function float GetAdjustedAIDoshValue( class<KFPawn_Monster> MonsterClass )
 {
-	return super.GetAdjustedAIDoshValue(MonsterClass) * OutbreakEvent.ActiveEvent.DoshOnKillGlobalModifier;
+    if (!OutbreakEvent.ActiveEvent.bBossRushMode)
+    {
+	    return super.GetAdjustedAIDoshValue(MonsterClass) * OutbreakEvent.ActiveEvent.DoshOnKillGlobalModifier;
+    }
+    else
+    {
+        if ((WaveNum-1) < OutbreakEvent.ActiveEvent.BossRushOverrideParams.PerWaves.length)
+        {
+            return super.GetAdjustedAIDoshValue(MonsterClass) * OutbreakEvent.ActiveEvent.BossRushOverrideParams.PerWaves[WaveNum-1].DoshOnKillGlobalModifier;
+        }
+    }
+
+    return super.GetAdjustedAIDoshValue(MonsterClass);
 }
 
 protected function ScoreMonsterKill( Controller Killer, Controller Monster, KFPawn_Monster MonsterPawn )
@@ -385,24 +401,37 @@ function SetBossIndex()
 {
 	local BossSpawnReplacement Replacement;
 	local int ReplaceIdx;
+    local int i;
 
-	BossIndex = Rand(default.AIBossClassList.Length);
+    // Ignore normal events.
+    if (OutbreakEvent.ActiveEvent.bBossRushMode)
+    {
+        if (BossRushEnemies.length == 0)
+        {
+            for(i=0; i < default.AIBossClassList.length; ++i)
+            {
+                BossRushEnemies.AddItem(i);
+            }
+        }
+    }
 
-	//Search in the replacement list for the one that the game type wanted to use
-	//		If we find it, grab the appropriate index into the original AI class list
-	//		so we can properly cache it.
-	foreach OutbreakEvent.ActiveEvent.BossSpawnReplacementList(Replacement)
-	{
-		if (Replacement.SpawnEntry == BossIndex)
-		{
-			ReplaceIdx = AIBossClassList.Find(Replacement.NewClass);
-			if (ReplaceIdx != INDEX_NONE)
-			{
-				BossIndex = ReplaceIdx;
-				break;
-			}
-		}
-	}
+    BossIndex = Rand(default.AIBossClassList.Length);
+
+    //Search in the replacement list for the one that the game type wanted to use
+    //		If we find it, grab the appropriate index into the original AI class list
+    //		so we can properly cache it.
+    foreach OutbreakEvent.ActiveEvent.BossSpawnReplacementList(Replacement)
+    {
+        if (Replacement.SpawnEntry == BossIndex)
+        {
+            ReplaceIdx = AIBossClassList.Find(Replacement.NewClass);
+            if (ReplaceIdx != INDEX_NONE)
+            {
+                BossIndex = ReplaceIdx;
+                break;
+            }
+        }
+    }
 
 	MyKFGRI.CacheSelectedBoss(BossIndex);
 }
@@ -439,6 +468,10 @@ function TickZedTime( float DeltaTime )
 function WaveEnded(EWaveEndCondition WinCondition)
 {
     local KFPawn_Human Pawn;
+    local bool bWasFirstTime;
+    
+    // This function is called multiple times in a row. Only apply it once.
+    bWasFirstTime = bWaveStarted;
 
     super.WaveEnded(WinCondition);
 
@@ -456,7 +489,28 @@ function WaveEnded(EWaveEndCondition WinCondition)
 	    }
     }
 
+    if (WinCondition == WEC_WaveWon && bWasFirstTime)
+    {
+        GrantExtraDoshOnWaveWon();
+    }
+
     DisableGlobalDamage();
+}
+
+/** Grant dosh to every player even no matter it's state when a wave is won. */
+function GrantExtraDoshOnWaveWon()
+{
+    local KFPlayerController KFPC;
+    local int ExtraDosh;
+    //
+    if (OutbreakEvent.ActiveEvent.bBossRushMode && (WaveNum-1) < OutbreakEvent.ActiveEvent.BossRushOverrideParams.PerWaves.length)
+    {
+        ExtraDosh = OutbreakEvent.ActiveEvent.BossRushOverrideParams.PerWaves[WaveNum-1].ExtraDoshGrantedonWaveWon;
+        foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+	    {
+            KFPlayerReplicationInfo(KFPC.PlayerReplicationInfo).AddDosh(ExtraDosh, true);
+        }
+    }
 }
 
 function ClearZedTimePCTimers()

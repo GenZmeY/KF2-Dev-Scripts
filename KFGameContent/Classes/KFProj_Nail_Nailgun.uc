@@ -122,8 +122,8 @@ simulated function Landed( Vector HitNormal, actor FloorActor )
 
 defaultproperties
 {
-	MaxSpeed=14000.0
-	Speed=14000.0
+	MaxSpeed=17500.0 //14000.0
+	Speed=17500.0 //14000.0
 
     bWarnAIWhenFired=true
 

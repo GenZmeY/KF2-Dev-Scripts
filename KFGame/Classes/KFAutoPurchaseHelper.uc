@@ -375,17 +375,26 @@ function bool CanUpgrade(STraderItem SelectedItem, out int CanCarryIndex, out in
 function PurchaseWeapon(STraderItem ShopItem)
 {
 	local int ItemUpgradeLevel;
+	local KFPlayerController KFPC;
+	local int Price;
 
 	if(!bCanPurchase(ShopItem, true))
 	{
 		return;
 	}
 
+	Price = GetAdjustedBuyPriceFor(ShopItem);
+	// XMAS 2021 Seasonal Objective
+	KFPC = Outer;
+	`Log("ADDING WEAPON PURCHASED");
+	KFPC.AddWeaponPurchased(ShopItem.WeaponDef, Price);
+	//
+
 	ItemUpgradeLevel = ShopItem.SingleClassName != '' ?
 		GetItemUpgradeLevelByClassName(ShopItem.SingleClassName) :
 		INDEX_None;
 
-	AddDosh(-GetAdjustedBuyPriceFor(ShopItem));
+	AddDosh(-Price);
 	AddBlocks(MyKFIM.GetWeaponBlocks(ShopItem, ItemUpgradeLevel));
 	AddWeaponToOwnedItemList(ShopItem);
 }
@@ -1181,7 +1190,7 @@ function SetWeaponInfo(const KFWeapon KFW, STraderItem DefaultItem)
 
 	WeaponInfo.AmmoPricePerMagazine = AmmoCostScale * DefaultItem.WeaponDef.default.AmmoPricePerMag;
 	WeaponInfo.SellPrice = GetAdjustedSellPriceFor(DefaultItem);
-
+	WeaponInfo.DefaultItem.bCanBuyAmmo = KFW.CanBuyAmmo();
     AddItemByPriority( WeaponInfo );
 
    	// if adding a dual, remove the related single

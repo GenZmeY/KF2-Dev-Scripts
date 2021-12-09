@@ -69,6 +69,7 @@ defaultproperties
 	ColumnIds.Add(STATID_ACHIEVE_Dystopia2029Collectibles)
 	ColumnIds.Add(STATID_ACHIEVE_MoonbaseCollectibles)
 	ColumnIds.Add(STATID_ACHIEVE_NetherholdCollectibles)
+	ColumnIds.Add(STATID_ACHIEVE_CarillonHamletCollectibles)
 
 	ColumnMappings.Add((Id=STATID_ACHIEVE_MrPerky5, Name="AchievementMrPerky5"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_MrPerky10, Name = "AchievementMrPerky10"))
@@ -126,4 +127,5 @@ defaultproperties
 	ColumnMappings.Add((Id=STATID_ACHIEVE_Dystopia2029Collectibles,NAme="AchievementCollectDystopia2029"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_MoonbaseCollectibles,NAme="AchievementCollectMoonbase"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_NetherholdCollectibles,NAme="AchievementCollectNetherhold"))
+	ColumnMappings.Add((Id=STATID_ACHIEVE_CarillonHamletCollectibles,NAme="AchievementCollectCarillonHamlet"))
 }

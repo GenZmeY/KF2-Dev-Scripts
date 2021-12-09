@@ -59,6 +59,8 @@ var class<KFTraderVoiceGroupBase>		TraderVoiceGroupClass;
 var repnotify bool bTraderIsOpen;
 var repnotify bool bWaveIsActive;
 var repnotify bool bWaveStarted;
+var bool bIsEndlessPaused;
+
 /** Replicates at beginning and end of waves to change track / track type */
 var repnotify byte MusicTrackRepCount;
 
@@ -67,6 +69,9 @@ var repnotify byte RepKickNoVotes;
 
 var repnotify byte RepSkipTraderYesVotes;
 var repnotify byte RepSkipTraderNoVotes;
+
+var repnotify byte RepPauseGameYesVotes;
+var repnotify byte RepPauseGameNoVotes;
 
 /** whether the current game can use stats */
 var private const bool bIsUnrankedGame;
@@ -349,6 +354,11 @@ var repnotify KFMusicTrackInfo  ReplicatedMusicTrackInfo;
 var transient bool bIsBrokenTrader;
 
 /************************************
+ *  Weekly Events
+ ************************************/
+var int CurrentWeeklyIndex;
+
+/************************************
  *  Steam heartbeat
  ************************************/
 
@@ -381,7 +391,7 @@ replication
 	if ( bNetDirty )
 		TraderVolume, TraderVolumeCheckType, bTraderIsOpen, NextTrader, WaveNum, bWaveIsEndless, AIRemaining, WaveTotalAICount, bWaveIsActive, MaxHumanCount, bGlobalDamage, 
 		CurrentObjective, PreviousObjective, PreviousObjectiveResult, PreviousObjectiveXPResult, PreviousObjectiveVoshResult, MusicIntensity, ReplicatedMusicTrackInfo, MusicTrackRepCount,
-		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective, bIsBrokenTrader, bIsWeeklyMode; //@HSL - JRO - 3/21/2016 - PS4 Sessions
+		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective, bIsBrokenTrader, bIsWeeklyMode, CurrentWeeklyIndex, bIsEndlessPaused; //@HSL - JRO - 3/21/2016 - PS4 Sessions
 	if ( bNetInitial )
 		GameLength, WaveMax, bCustom, bVersusGame, TraderItems, GameAmmoCostScale, bAllowGrenadePurchase, MaxPerkLevel, bTradersEnabled;
 	if ( bNetInitial || bNetDirty )
@@ -393,6 +403,8 @@ replication
 		RepKickNoVotes, RepKickYesVotes;
 	if( bNetDirty && VoteCollector != none && VoteCollector.bIsSkipTraderVoteInProgress)
 		RepSkipTraderNoVotes, RepSkipTraderYesVotes;
+	if( bNetDirty && VoteCollector != none && VoteCollector.bIsPauseGameVoteInProgress)
+		RepPauseGameNoVotes, RepPauseGameYesVotes;
 
 // !SHIPPING_PC_GAME && !FINAL_RELEASE in C++
 	if ( bDebugSpawnManager && bNetDirty )
@@ -475,6 +487,10 @@ simulated event ReplicatedEvent(name VarName)
     {
     	VoteCollector.UnPackSkipTraderVotes();
     }
+	else if ( VarName == nameof(RepPauseGameYesVotes) || VarName == nameof(RepPauseGameNoVotes) )
+	{
+		VoteCollector.UnPackPauseGameVotes();
+	}
     else if( VarName == 'ServerAdInfo')
 	{
 		ShowPreGameServerWelcomeScreen();
@@ -1129,7 +1145,12 @@ simulated function bool IsFinalWave()
 
 simulated function bool IsBossWave()
 {
-	return WaveNum == WaveMax || (bIsWeeklyMode && class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14);
+	if (bIsWeeklyMode && CurrentWeeklyIndex == 14)
+	{
+		return true;
+	}
+
+	return WaveNum == WaveMax;
 }
 
 simulated function bool IsInfiniteWave()
@@ -1825,6 +1846,22 @@ reliable server function RecieveVoteSkipTrader(PlayerReplicationInfo PRI, bool b
 	}
 }
 
+function ServerStartVotePauseGame(PlayerReplicationInfo PRI)
+{
+	if(VoteCollector != none)
+	{
+		VoteCollector.ServerStartVotePauseGame(PRI);
+	}
+}
+
+reliable server function ReceiveVotePauseGame(PlayerReplicationInfo PRI, bool bPauseGame)
+{
+	if(VoteCollector != none)
+	{
+		VoteCollector.ReceiveVotePauseGame(PRI, bPauseGame);
+	}
+}
+
 reliable server function ReceiveVoteMap(PlayerReplicationInfo PRI, int MapIndex)
 {
 	if(VoteCollector != none)
@@ -1877,6 +1914,9 @@ function ChooseNextObjective(int NextWaveNum)
 	// reset/default to no objective chosen
 	NextObjective = none;
 	NextObjectiveIsEndless = false;
+
+	if (bIsWeeklyMode && KFGameInfo(WorldInfo.Game).OutbreakEvent.ActiveEvent.bBossRushMode)
+		return;
 
     KFMI = KFMapInfo(WorldInfo.GetMapInfo());
 	if (KFMI != none && NextWaveNum != WaveMax)
@@ -2199,6 +2239,12 @@ simulated function UpdatePerksAvailable()
 simulated function NotifyBrokenTrader()
 {
 	bIsBrokenTrader = true;
+	bNetDirty = true;
+}
+
+simulated function NotifyWeeklyEventIndex(int EventIndex)
+{
+	CurrentWeeklyIndex = EventIndex;
 	bNetDirty = true;
 }
 

@@ -494,6 +494,17 @@ static function bool IsBlastBrawlers( KFWeapon KFW )
 	return KFW != none && KFW.Class.Name == 'KFWeap_HRG_BlastBrawlers';
 }
 
+/**
+ * @brief Return if a weapon is Doshinegun
+ *
+ * @param KFW Weapon to check
+ * @return true if backup weapon
+ */
+static function bool IsDoshinegun( KFWeapon KFW )
+{
+	return KFW != none && KFW.Class.Name == 'KFWeap_AssaultRifle_Doshinegun';
+}
+
 /*********************************************************************************************
 * @name	 Build / Level Management - Apply and save the updated build and level
 ********************************************************************************************* */

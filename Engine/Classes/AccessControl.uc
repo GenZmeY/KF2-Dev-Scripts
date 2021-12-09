@@ -857,6 +857,7 @@ function PendingAuthTimer()
 				if (ClientsPendingAuth[i].AuthRetryCount < MaxAuthRetryCount)
 				{
 					// End the auth session first before retrying
+					`Log("RETRYING CONNECTION - AuthRetryCount: " $ClientsPendingAuth[i].AuthRetryCount $" WHEN MAX CONNECTIONS ARE " $MaxAuthRetryCount);
 					CachedAuthInt.EndRemoteClientAuthSession(CurClientSession.EndPointUID, CurClientSession.EndPointIP);
 
 					// Get the client to end it on his end too (this should execute on client before the new auth request below)
@@ -865,11 +866,13 @@ function PendingAuthTimer()
 					// Start the new auth session
 					if (CachedAuthInt.SendClientAuthRequest(ClientsPendingAuth[i].ClientConnection, CurClientSession.EndPointUID))
 					{
+						`Log("NEW CLIENT AUTH REQUEST SENT - SUCCESS");
 						ClientsPendingAuth[i].AuthTimestamp = WorldInfo.RealTimeSeconds;
 						ClientsPendingAuth[i].AuthRetryCount++;
 					}
 					else
 					{
+						`Log("NEW CLIENT AUTH REQUEST SENT - FAIL");
 						bFailed = True;
 					}
 				}
@@ -1111,6 +1114,7 @@ function OnClientAuthComplete(bool bSuccess, UniqueNetId ClientUID, Player Clien
 			{
 				`log("Client failed authentication (unauthenticated UID:"@
 					Class'OnlineSubsystem'.static.UniqueNetIdToString(ClientUID)$"), kicking");
+				`Log("Client Auth failure info: " $ExtraInfo);
 
 				// Kick the client
 				WorldInfo.Game.RejectLogin(ClientConnection, "Authentication failed");
@@ -1200,6 +1204,8 @@ function ProcessServerAuthRetryRequest(Player ClientConnection)
 	local UniqueNetId ClientUID;
 	local AuthSession CurClientSession;
 	local LocalAuthSession CurServerSession;
+
+	`Log("PROCESS SERVER AUTH RETRY REQUEST - " $bAuthenticateServer $" - " $ ClientConnection != none);
 
 	if (bAuthenticateServer && ClientConnection != none)
 	{
@@ -1386,6 +1392,8 @@ function EndListenHostAuth()
 	local IpAddr ServerIP;
 	local int ServerPort;
 //@HSL_END_XBOX
+	
+	`Log("EndListenHostAuth");
 
 	if (OnlineSub.PlayerInterface != none)
 	{
@@ -1489,6 +1497,7 @@ static final function StaticOnClientConnectionClose(Player ClientConnection)
 
 	if (CurAuthInt != none && ClientConnection != none)
 	{
+		`Log("StaticOnClientConnectionClose");
 		// If the client is authenticated, end the client auth session
 		if (CurAuthInt.FindClientAuthSession(ClientConnection, CurClientSession) && CurClientSession.AuthStatus == AUS_Authenticated)
 		{
@@ -1548,6 +1557,7 @@ function OnDestroyOnlineGameComplete(name SessionName, bool bWasSuccessful)
 	{
 		if (CurClientSession.AuthStatus == AUS_Authenticated)
 		{
+			`Log("OnDestroyOnlineGameComplete");
 			// End the client auth session
 			CachedAuthInt.EndRemoteClientAuthSession(CurClientSession.EndPointUID, CurClientSession.EndPointIP);
 
@@ -1638,6 +1648,7 @@ function Cleanup(optional bool bExit)
 		// If the game is exiting, end all auth sessions
 		if (bExit)
 		{
+			`Log("AccessControl CLEAN UP");
 			// End all remote client auth sessions
 			CachedAuthInt.EndAllRemoteClientAuthSessions();
 

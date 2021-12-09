@@ -645,7 +645,7 @@ DefaultProperties
     ShieldHealthMaxDefaults[1]=2700 //3000
     ShieldHealthMaxDefaults[2]=4000//2000 //3000
     ShieldHealthMaxDefaults[3]=5000
-	ShieldHealthScale=1.f
+	ShieldHealthScale=1.1f //1.f
 
 	// Penetration
     PenetrationResistance=5.0
@@ -686,7 +686,7 @@ DefaultProperties
 	DamageTypeModifiers.Add((DamageType=class'KFDT_Bleeding_HRG_Vampire_BloodSuck',				DamageScale=(0.7)))
 
 	Begin Object Class=KFGameExplosion Name=ExploTemplate0
-		Damage=40 //20
+		Damage=44 //40 //20
 		DamageRadius=900 //600 //700
 		DamageFalloffExponent=2.f
 		DamageDelay=0.f
@@ -714,7 +714,7 @@ DefaultProperties
 	RagePoundExplosionTemplate=ExploTemplate0
 
 	Begin Object Class=KFGameExplosion Name=ExploTemplate1
-		Damage=50 //30
+		Damage=55 //50 //30
 		DamageRadius=900 //600 //700
 		DamageFalloffExponent=2.f
 		DamageDelay=0.f
@@ -760,8 +760,8 @@ DefaultProperties
 		CollisionRadius=+0055.000000
 	End Object
 
-	GroundSpeed=300.f //260
-	SprintSpeed=700.f     //600
+	GroundSpeed=345.f //300.f //260
+	SprintSpeed=805.f //700.f     //600
 	ReachedEnemyThresholdScale=1.f
 	PhysRagdollImpulseScale=1.5f
 	KnockdownImpulseScale=2.0f

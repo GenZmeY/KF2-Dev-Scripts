@@ -349,9 +349,9 @@ DefaultProperties
 	// KFSM_FleshpoundKing_ChestBeam
 	BeamDamageType=class'KFDT_FleshpoundKing_ChestBeam'
 	BeamExtent=(X=15.0f, Y=15.0f, Z=15.0f)
-	MaxBeamLength=2500.0f //1300
+	MaxBeamLength=3000.0f //2500.0f //1300
 	DamageInterval=0.1f
-	DamagePerTick=10 //15 //7
+	DamagePerTick=12 //10 //15 //7
 	DamageMomentumImpulse=100.0f
 	TimeUntilTargetChange=0.75f
 

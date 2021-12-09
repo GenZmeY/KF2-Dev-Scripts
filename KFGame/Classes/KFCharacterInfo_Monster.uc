@@ -140,6 +140,12 @@ var transient LinearColor WWLHatMonoChromeValue;
 var transient LinearColor WWLHatColorValue;
 
 /************************************************************************/
+/*  Tiny Skulls Weekly											        */
+/************************************************************************/
+
+var float TinySkullPitchAudio;
+
+/************************************************************************/
 /*  Script Functions												    */
 /************************************************************************/
 
@@ -167,6 +173,8 @@ simulated function SetCharacterMeshFromArch( KFPawn KFP, optional KFPlayerReplic
 
 	if( CharacterMesh != none )
 	{
+		KFGRI = KFGameReplicationInfo(KFP.WorldInfo.GRI);
+
 		// Clear character customization settings
 		KFP.DetachComponent(KFP.ThirdPersonHeadMeshComponent);
 		for( i=0; i < `MAX_COSMETIC_ATTACHMENTS; i++ )
@@ -188,7 +196,16 @@ simulated function SetCharacterMeshFromArch( KFPawn KFP, optional KFPlayerReplic
 			KFP.Mesh.SetSkeletalMesh(CharacterMesh);
 		}
 		KFP.Mesh.SetScale(DefaultMeshScale);
-        KFP.PitchAudio(DefaultMeshScale);
+
+		if (KFP != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 15)
+		{
+        	KFP.PitchAudio(TinySkullPitchAudio);
+		}
+		else
+		{
+			KFP.PitchAudio(DefaultMeshScale);
+		}
+
 
 		// Use material specified in the mesh asset
 		// @note: need to add this if we allow character swap post-spawn (e.g. customization)
@@ -256,7 +273,6 @@ simulated function SetCharacterMeshFromArch( KFPawn KFP, optional KFPlayerReplic
             }
         }
 
-		KFGRI = KFGameReplicationInfo(KFP.WorldInfo.GRI);
 		if (KFP != none && KFGRI.bIsWeeklyMode && (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12))
 		{
 			NewAttachment.StaticAttachment =  StaticMesh(DynamicLoadObject(ZEDCowboyHatMeshPath, class'StaticMesh'));
@@ -325,4 +341,5 @@ defaultproperties
 	WWLHatColorValue=(R=1.0f,G=0.0f,B=0.0f)
 
 	ZEDCowboyHatMeshPath = "CHR_CosmeticSet01_MESH.cowboyhat.CHR_CowboyHat_Alberts_Cosmetic"
+	TinySkullPitchAudio = 0.5f;
 }

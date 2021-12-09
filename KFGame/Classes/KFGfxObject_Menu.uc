@@ -39,11 +39,23 @@ function InitOnlineLobby()
 function OnR3Pressed()
 {
 	local KFPlayerController KFPC;
+	local KFPlayerReplicationInfo KFPRI;
+	local KFGameReplicationInfo KFGRI;
 
 	KFPC = KFPlayerController(GetPC());
-
 	if(KFPC != none)
 	{
+		KFPRI = KFPlayerReplicationInfo( GetPC().PlayerReplicationInfo );
+		if (KFPRI != none)
+		{
+			KFGRI = KFGameReplicationInfo(KFPRI.WorldInfo.GRI);
+			if(KFGRI != none || KFGRI.bEndlessMode)
+			{
+				KFPC.RequestPauseGame();
+				return;
+			}
+		}
+
 		KFPC.RequestSwitchTeam();
 	}
 }
@@ -188,6 +200,21 @@ function Callback_RequestTeamSwitch()
 	if ( KFPC != none )
 	{
 		KFPC.RequestSwitchTeam();
+	}
+}
+
+function Callback_RequestEndlessPause()
+{
+	local KFPlayerController KFPC;
+	local KFPlayerReplicationInfo KFPRI;
+	
+	KFPC = KFPlayerController(GetPC());
+	KFPRI = KFPlayerReplicationInfo( KFPC.PlayerReplicationInfo );
+
+	if (KFPC != none && KFPRI != none)
+	{
+		KFPRI.RequestPauseGame(KFPRI);
+		KFPC.MyGFxManager.CloseMenus();
 	}
 }
 

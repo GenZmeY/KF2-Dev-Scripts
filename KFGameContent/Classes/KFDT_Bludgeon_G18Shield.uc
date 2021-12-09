@@ -21,5 +21,5 @@ defaultproperties
 	MeleeHitPower=100
 
 	WeaponDef=class'KFWeapDef_G18'
-	ModifierPerkList(0)=class'KFPerk_Swat'
+	ModifierPerkList(1)=class'KFPerk_Swat'
 }

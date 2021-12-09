@@ -59,6 +59,7 @@ var bool bAutoswitchWeapon;
 
 var const float StartedWithWeaponPriceModifier;	// The selling price reduction for a weapon that we were given at the start of the game
 var const float SellPriceModifier;	// Multiplied by the original price to get the sell cost
+var const float DoshinegunSellModifier;
 
 /** Cost scale for weapons not on the active perk */
 var float OffPerkCostScale;
@@ -2446,11 +2447,14 @@ simulated function int GetAdjustedSellPriceFor(
 	local KFWeapon OwnedWeapon;
 	local TransactionItem TransactionWeapon;
 	local int OwnedItemIdx, ItemUpgradeLevel;
+	local float OverridenSellPriceModifier;
 
 	if (OwnedItem.WeaponDef == class'KFWeapDef_9mm')
 	{
 		return 0;
 	}
+
+	OverridenSellPriceModifier = OwnedItem.WeaponDef == class'KFWeapDef_Doshinegun' ? DoshinegunSellModifier : SellPriceModifier;
 
 	GetWeaponFromClass(OwnedWeapon, OwnedItem.ClassName);
 	if( OwnedWeapon != none && OwnedWeapon.bGivenAtStart )
@@ -2459,7 +2463,7 @@ simulated function int GetAdjustedSellPriceFor(
 	}
 	else
 	{
-		AdjustedSellPrice = OwnedItem.WeaponDef.default.BuyPrice * SellPriceModifier;
+		AdjustedSellPrice = OwnedItem.WeaponDef.default.BuyPrice * OverridenSellPriceModifier;
 	}
 
 	OwnedItemIdx = TraderOwnedItems.Find('DefaultItem', OwnedItem);
@@ -2632,4 +2636,5 @@ defaultproperties
 	SwitchFireModeEvent=AkEvent'WW_UI_PlayerCharacter.Play_WEP_ModeSwitch'
 
 	bLogInventory=false
+	DoshinegunSellModifier=0.167f
 }

@@ -71,7 +71,7 @@ simulated function StartFire(byte FireModeNum)
 		}
 	}
 
-	super.StartFire(FireModeNum);
+	super(KFWeapon).StartFire(FireModeNum);
 }
 
 /*********************************************************************************************
@@ -92,6 +92,13 @@ simulated function ProcessInstantHitEx(byte FiringMode, ImpactInfo Impact, optio
 	}
 
 	super.ProcessInstantHitEx( FiringMode, Impact, NumHits, out_PenetrationVal, ImpactNum );
+}
+
+/** process local player impact for clientside hit detection */
+event RecieveClientImpact(byte FiringMode, const out ImpactInfo Impact, optional out float PenetrationValue, optional int ImpactNum)
+{
+	// skip KFWeap_MeleeBase because it does melee stuff
+	super(KFWeapon).RecieveClientImpact(FiringMode, Impact, PenetrationValue, ImpactNum);
 }
 
 defaultproperties

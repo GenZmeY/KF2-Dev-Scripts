@@ -137,7 +137,7 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 		KFW = GetWeaponFromDamageCauser( DamageCauser );
 	}
 
-	if( (KFW != none && IsWeaponOnPerk( KFW,, self.class )) || (DamageType != none && IsDamageTypeOnPerk(DamageType)) )
+	if( (KFW != none && (IsWeaponOnPerk( KFW,, self.class ) || IsDoshinegun(KFW))) || (DamageType != none && IsDamageTypeOnPerk(DamageType)) )
 	{
 		if( MyKFPM != none && HitZoneIdx == HZI_HEAD )
 		{
