@@ -921,7 +921,7 @@ function UpdateListDataProvider()
 	
 	local GFxObject TempObj;
 	local KFOnlineGameSearch LatestGameSearch;
-	local int Ping;
+	local int Ping, PlayerCount;
 	local KFOnlineGameSettings TempOnlineGamesSettings;
 
 	LatestGameSearch = KFOnlineGameSearch(SearchDataStore.GetActiveGameSearch());
@@ -954,8 +954,16 @@ function UpdateListDataProvider()
 
 				TempObj = CreateObject("Object");
 
-				TempObj.SetString("serverName",    		TempOnlineGamesSettings.OwningPlayerName);        
-				TempObj.SetFloat("playerCount",        	(TempOnlineGamesSettings.NumPublicConnections-TempOnlineGamesSettings.NumOpenPublicConnections-TempOnlineGamesSettings.NumSpectators));
+				TempObj.SetString("serverName",    		TempOnlineGamesSettings.OwningPlayerName);
+
+				PlayerCount = TempOnlineGamesSettings.NumPublicConnections-TempOnlineGamesSettings.NumOpenPublicConnections;
+
+				if (PlayerCount < 0)
+				{
+					PlayerCount = 0;
+				}
+
+				TempObj.SetFloat("playerCount",        	PlayerCount);
 				TempObj.SetFloat("maxPlayerCount",     	TempOnlineGamesSettings.NumPublicConnections);
 				TempObj.SetFloat("waveCount",     		TempOnlineGamesSettings.CurrentWave);
 				TempObj.SetFloat("maxWaveCount",		IsEndlessModeIndex(TempOnlineGamesSettings.Mode) ? INDEX_NONE : TempOnlineGamesSettings.NumWaves);

@@ -22,6 +22,7 @@ var() float DampenFactorParallel;
 
 var transient Vector PreviousLocations [`KFPROJ_DOSH_CACHED_LOCATION];
 var transient rotator PreviousRotations [`KFPROJ_DOSH_CACHED_LOCATION];
+var transient Vector Ceiling;
 
 // Make sure that last location always exists.
 simulated event PostBeginPlay()
@@ -91,23 +92,41 @@ function SpawnDosh(Actor BouncedOff)
 {
 	local KFDroppedPickup_Cash P;
 	local int i;
+	local Vector Pos;
+	local rotator Rot;
 
 	if ( WorldInfo.NetMode == NM_Client )
 		return;
 
 	if (Pawn(BouncedOff) == none)
 	{
-		P = Spawn(class'KFDroppedPickup_Cash',,, Location, Rotation,, false);
+		Pos = Location;
+		Rot = Rotation;
+		P = Spawn(class'KFDroppedPickup_Cash',,, Pos, Rot,, false);
 
 		if (P == none)
 		{
 			for (i = 0; i < `KFPROJ_DOSH_CACHED_LOCATION; ++i)
 			{
-				P = Spawn(class'KFDroppedPickup_Cash',,, PreviousLocations[i], PreviousRotations[i],, false);
+				Pos = PreviousLocations[i];
+				Rot = PreviousRotations[i];
+				P = Spawn(class'KFDroppedPickup_Cash',,, Pos, Rot,, false);
 				if (P != none)
 				{
 					break;
 				}
+			}
+		}
+
+		// DrawDebugSphere( Pos, 20, 8, 0, 255, 255, true );
+		if (P != none && RelocateFromCeiling(Pos))
+		{
+			P.Destroy();
+			if(Ceiling.Z > -10000)
+			{
+				// DrawDebugSphere( Ceiling, 22, 8, 255, 255, 0, true );
+				P = Spawn(class'KFDroppedPickup_Cash',,, Ceiling, Rot,, false);
+				Velocity = vect(0,0,0);
 			}
 		}
 	}
@@ -198,6 +217,36 @@ simulated function SyncOriginalLocation()
     Super.SyncOriginalLocation();
 }
 
+simulated function bool RelocateFromCeiling(Vector Pos)
+{
+	local Actor HitActorVolume, HitActorWorld, HitActorVolumeBack;
+	local Vector HitLocationVolume, HitLocationWorld;
+	local Vector HitNormalUnused;
+	
+	HitActorWorld  = Owner.Trace(HitLocationWorld, HitNormalUnused, Pos - vect(0,0,10000), Pos, false,,,TRACEFLAG_Bullet);
+	if(HitActorWorld != none)
+	{
+		HitActorVolume = KFWeapon(Owner).DoTraceNative(HitLocationVolume, Pos, Pos - vect(0,0,10000));
+		if (HitActorVolume == none  || (HitLocationWorld.Z + 80) > HitLocationVolume.Z || IsZero(HitLocationVolume-Pos))
+		{
+			return false;
+		}
+
+		// DrawDebugSphere( HitLocationWorld , 32, 8, 0, 255, 0, true );
+		// DrawDebugSphere( HitLocationVolume, 30, 8, 255, 0, 0, true );
+
+		HitLocationWorld += vect(0,0,1);
+		HitActorVolumeBack = KFWeapon(Owner).DoTraceNative(HitLocationVolume, HitLocationWorld, HitLocationWorld + vect(0,0,10000));
+		if (HitActorVolumeBack != none && !IsZero(HitLocationVolume-HitLocationWorld))
+		{
+			// DrawDebugSphere( HitLocationVolume, 28, 8, 255, 255, 0, true );
+			Ceiling = HitLocationVolume - vect(0,0,10);
+			return true;
+		}
+	}
+	Ceiling = Vect(0,0,-10000);
+	return true;
+}
 
 
 defaultproperties

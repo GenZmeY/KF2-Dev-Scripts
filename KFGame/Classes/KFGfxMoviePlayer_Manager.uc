@@ -2114,7 +2114,7 @@ simulated function HidePauseGameVote()
 		UnloadCurrentPopup();
 	}
 
-	SkipTraderVotePRI = none;
+	PauseGameVotePRI = none;
 }
 
 function CastYesVotePauseGame()

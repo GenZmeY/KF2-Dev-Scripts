@@ -438,7 +438,14 @@ function ActivateShield()
         KFGI.DifficultyInfo.GetAIHealthModifier(self, KFGI.GetModifiedGameDifficulty(), KFGI.GetLivingPlayerCount(), HealthMod, HeadHealthMod);
 
         ShieldHealth = ShieldHealthMaxDefaults[KFGI.GetModifiedGameDifficulty()] * HealthMod * ShieldHealthScale;
-        ShieldHealthMax = ShieldHealth;
+        
+		if (KFGI.OutbreakEvent != none && KFGi.OutbreakEvent.ActiveEvent.bBossRushMode)
+		{
+			ShieldHealth = ShieldHealth * ArmorInfo.ArmorScale;
+		}
+
+		
+		ShieldHealthMax = ShieldHealth;
         ShieldHealthPctByte = FloatToByte( fClamp(ShieldHealth / ShieldHealthMax, 0.f, 1.f) );
 
 		UpdateShield();

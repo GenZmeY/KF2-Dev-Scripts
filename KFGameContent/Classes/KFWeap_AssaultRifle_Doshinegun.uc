@@ -235,9 +235,9 @@ defaultproperties
 	//WeaponUpgrades[2]=(IncrementDamage=1.65f,IncrementWeight=2)
 	//WeaponUpgrades[3]=(IncrementDamage=1.85f,IncrementWeight=3)
 
-	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.23f), (Stat=EWUS_Damage1, Scale=1.2f), (Stat=EWUS_Weight, Add=1)))
-	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.47f), (Stat=EWUS_Damage1, Scale=1.4f), (Stat=EWUS_Weight, Add=2)))
-	WeaponUpgrades[3]=(Stats=((Stat=EWUS_Damage0, Scale=1.70f), (Stat=EWUS_Damage1, Scale=1.6f), (Stat=EWUS_Weight, Add=3)))
+	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.23f), (Stat=EWUS_Damage1, Scale=1.23f), (Stat=EWUS_Weight, Add=1)))
+	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.47f), (Stat=EWUS_Damage1, Scale=1.47f), (Stat=EWUS_Weight, Add=2)))
+	WeaponUpgrades[3]=(Stats=((Stat=EWUS_Damage0, Scale=1.70f), (Stat=EWUS_Damage1, Scale=1.70f), (Stat=EWUS_Weight, Add=3)))
 
     DoshCost = 20; //25;
 	bUsesSecondaryAmmoAltHUD=true
