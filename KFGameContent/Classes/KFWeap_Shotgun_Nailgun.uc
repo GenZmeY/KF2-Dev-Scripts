@@ -136,7 +136,7 @@ defaultproperties
 	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Nail_Nailgun'
 	InstantHitDamage(DEFAULT_FIREMODE)=35
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_NailShotgun'
-	Spread(DEFAULT_FIREMODE)=0.13 //0.16
+	Spread(DEFAULT_FIREMODE)=0.16
 	PenetrationPower(DEFAULT_FIREMODE)=3.0
 	FireInterval(DEFAULT_FIREMODE)=0.3 // 200 RPM
 	FireOffset=(X=30,Y=5,Z=-4)

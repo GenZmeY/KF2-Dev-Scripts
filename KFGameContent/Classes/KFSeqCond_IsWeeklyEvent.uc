@@ -12,19 +12,16 @@ var() int WeeklyIndex;
 
 function Activated()
 {
-   local KFGameInfo KFGI;
-   KFGI = KFGameInfo(GetWorldInfo().Game);
+   local KFGameReplicationInfo KFGRI;
+   KFGRI = KFGameReplicationInfo(GetWorldInfo().GRI);
 
-   if (KFGI != none)
+   if (KFGRI != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == WeeklyIndex)
    {
-      if (KFGI.MyKFGRI != none && KFGI.MyKFGRI.bIsWeeklyMode && class'KFGameEngine'.static.GetWeeklyEventIndexMod() == WeeklyIndex)
-      {
-         OutputLinks[0].bHasImpulse = true;
-      }
-      else
-      {
-         OutputLinks[1].bHasImpulse = true;
-      }
+      OutputLinks[0].bHasImpulse = true;
+   }
+   else
+   {
+      OutputLinks[1].bHasImpulse = true;
    }
 }
  

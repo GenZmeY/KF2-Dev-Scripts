@@ -666,6 +666,17 @@ function SetMonsterDefaults(KFPawn_Monster P)
 	super.SetMonsterDefaults(P);
 }
 
+// Save player's stats on leave
+function UnregisterPlayer(PlayerController PC)
+{
+	super.UnregisterPlayer(PC);
+
+	if (GetNumPlayers() == 0 && MyKFGRI.bIsEndlessPaused)
+	{
+		ResumeEndlessGame();
+	}
+}
+
 defaultproperties
 {
 	bIsEndlessGame = true

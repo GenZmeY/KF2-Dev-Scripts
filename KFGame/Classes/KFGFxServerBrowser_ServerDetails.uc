@@ -59,7 +59,7 @@ function SetFavoriteButtonActive(bool bActive)
 function SetDetails(KFOnlineGameSettings ServerResult)
 {	
 	local GFxObject TempObj;
-	local int Ping;
+	local int Ping, PlayerCount;
 	local KFOnlineGameSettings TempOnlingGamesSettings;
 
 	if(ServerResult != none)
@@ -68,7 +68,15 @@ function SetDetails(KFOnlineGameSettings ServerResult)
 
 		TempObj = CreateObject("Object");
 		TempObj.SetString("serverName",    		TempOnlingGamesSettings.OwningPlayerName);        
-		TempObj.SetFloat("playerCount",        	(TempOnlingGamesSettings.NumPublicConnections-TempOnlingGamesSettings.NumOpenPublicConnections-TempOnlingGamesSettings.NumSpectators));
+
+		PlayerCount = TempOnlingGamesSettings.NumPublicConnections-TempOnlingGamesSettings.NumOpenPublicConnections;
+
+		if (PlayerCount < 0)
+		{
+			PlayerCount = 0;
+		}
+
+		TempObj.SetFloat("playerCount",        	PlayerCount);
 		TempObj.SetFloat("maxPlayerCount",     	TempOnlingGamesSettings.NumPublicConnections);
 
 		TempObj.SetFloat("waveCount",     		TempOnlingGamesSettings.CurrentWave);

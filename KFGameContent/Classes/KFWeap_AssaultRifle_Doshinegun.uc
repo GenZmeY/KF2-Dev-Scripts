@@ -11,6 +11,7 @@ class KFWeap_AssaultRifle_Doshinegun extends KFWeap_RifleBase;
 
 var int DoshCost;
 var transient KFPlayerReplicationInfo KFPRI;
+var transient bool bIsBeingDropped;
 
 simulated function Activate()
 {
@@ -18,16 +19,19 @@ simulated function Activate()
 
 	super.Activate();
 
-	KFP = KFPawn(Instigator);
-	if (KFP != none)
+	if (KFPRI == none)
 	{
-		KFPRI = KFPlayerReplicationInfo(KFP.PlayerReplicationInfo);
+		KFP = KFPawn(Instigator);
+		if (KFP != none)
+		{
+			KFPRI = KFPlayerReplicationInfo(KFP.PlayerReplicationInfo);
+		}
 	}
 }
 
 simulated function bool HasAnyAmmo()
 {
-    return AmmoCount[0] > 0 || KFPRI.Score >= DoshCost;
+    return bIsBeingDropped ? AmmoCount[0] > 0 : (AmmoCount[0] > 0 || KFPRI.Score >= DoshCost);
 }
 
 /** Returns true if weapon can potentially be reloaded */
@@ -105,6 +109,29 @@ simulated state Reloading
 	}
 }
 
+/**
+ * Drop this item out in to the world
+ */
+function DropFrom(vector StartLocation, vector StartVelocity)
+{
+	bIsBeingDropped=true;
+	super.DropFrom(StartLocation, StartVelocity);
+}
+
+function SetOriginalValuesFromPickup( KFWeapon PickedUpWeapon )
+{
+	local KFPawn KFP;
+
+	bIsBeingDropped=false;
+	// Reset the replication info
+	KFP = KFPawn(Instigator);
+	if (KFP != none)
+	{
+		KFPRI = KFPlayerReplicationInfo(KFP.PlayerReplicationInfo);
+	}
+	super.SetOriginalValuesFromPickup(PickedUpWeapon);
+}
+
 defaultproperties
 {
 	// FOV
@@ -126,7 +153,7 @@ defaultproperties
 
    	// Zooming/Position
 	PlayerViewOffset=(X=1.0,Y=8.5,Z=-3)
-	IronSightPosition=(X=5.0,Y=-0.1,Z=-1.5)
+	IronSightPosition=(X=5.0,Y=0.05,Z=-1.2)
 
 	// Ammo
 	MagazineCapacity[0]=20
@@ -169,7 +196,7 @@ defaultproperties
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Bludgeon_Doshinegun_Shot' 
 	FireInterval(DEFAULT_FIREMODE)=+0.2
 	Spread(DEFAULT_FIREMODE)=0.015
-	InstantHitDamage(DEFAULT_FIREMODE)=55.0 //60.0
+	InstantHitDamage(DEFAULT_FIREMODE)=60.0 //55.0 //60.0
 	FireOffset=(X=30,Y=4.5,Z=-5)
 
 	// ALT_FIREMODE
@@ -179,7 +206,7 @@ defaultproperties
 	WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_Dosh'
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Bludgeon_Doshinegun_Shot'
 	FireInterval(ALTFIRE_FIREMODE)=+0.2
-	InstantHitDamage(ALTFIRE_FIREMODE)=55.0 //60.0
+	InstantHitDamage(ALTFIRE_FIREMODE)=60.0 //55.0 //60.0
 	Spread(ALTFIRE_FIREMODE)=0.015
 
 	// BASH_FIREMODE
@@ -208,13 +235,14 @@ defaultproperties
 	//WeaponUpgrades[2]=(IncrementDamage=1.65f,IncrementWeight=2)
 	//WeaponUpgrades[3]=(IncrementDamage=1.85f,IncrementWeight=3)
 
-	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.2f), (Stat=EWUS_Damage1, Scale=1.15f), (Stat=EWUS_Weight, Add=1)))
-	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.4f), (Stat=EWUS_Damage1, Scale=1.3f), (Stat=EWUS_Weight, Add=2)))
-	WeaponUpgrades[3]=(Stats=((Stat=EWUS_Damage0, Scale=1.6f), (Stat=EWUS_Damage1, Scale=1.45f), (Stat=EWUS_Weight, Add=3)))
+	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.23f), (Stat=EWUS_Damage1, Scale=1.23f), (Stat=EWUS_Weight, Add=1)))
+	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.47f), (Stat=EWUS_Damage1, Scale=1.47f), (Stat=EWUS_Weight, Add=2)))
+	WeaponUpgrades[3]=(Stats=((Stat=EWUS_Damage0, Scale=1.70f), (Stat=EWUS_Damage1, Scale=1.70f), (Stat=EWUS_Weight, Add=3)))
 
-    DoshCost = 25;
+    DoshCost = 20; //25;
 	bUsesSecondaryAmmoAltHUD=true
 	bAllowClientAmmoTracking=false
+	bIsBeingDropped=false
 }
 
 

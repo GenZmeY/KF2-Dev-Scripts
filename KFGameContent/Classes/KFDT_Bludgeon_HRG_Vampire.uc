@@ -14,6 +14,6 @@ DefaultProperties
 	StumblePower=200
 	MeleeHitPower=100
 
-	ModifierPerkList(0)=class'KFPerk_FieldMedic'
+	ModifierPerkList(1)=class'KFPerk_FieldMedic'
 	WeaponDef=class'KFWeapDef_HRG_Vampire'
 }

@@ -191,10 +191,10 @@ function FillWhatsNew()
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Christmas_PremiumTicket", "FeaturedEventItem", "https://store.steampowered.com/buyitem/232090/5588");
     WhatsNewItems.AddItem(item);
 // Featured Full Gear
-    item=SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_FullGearBundle_DoZ", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9119");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas_Holiday_Shopper", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9262");
     WhatsNewItems.AddItem(item);
 // Featured Outfit Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas_Holiday_Shopper", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9263");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Christmas_Shopping_Uniforms", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9263");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Skin Bundle
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas_Christmas", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9264");

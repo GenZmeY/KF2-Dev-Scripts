@@ -2461,6 +2461,8 @@ function PostTeleport( Teleporter OutTeleporter )
 /** sets whether or not the owner of this pawn can see it */
 simulated function SetMeshVisibility(bool bVisible)
 {
+	local bool bIsPlayingEmote;
+
 	// Handle the main player mesh
 	if (Mesh != None)
 	{
@@ -2472,7 +2474,10 @@ simulated function SetMeshVisibility(bool bVisible)
 	HideHead( !bVisible );
 
 	// Handle weapon attachment
-	SetWeaponAttachmentVisibility(bVisible);
+
+	bIsPlayingEmote = KFPlayerController(Controller) != none && KFPlayerController(Controller).PlayerCamera.CameraStyle == 'Emote';
+
+	SetWeaponAttachmentVisibility(bVisible && !bIsPlayingEmote);
 
 	// Handle any weapons they might have
 	SetFirstPersonVisibility(!bVisible);

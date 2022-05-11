@@ -656,7 +656,7 @@ defaultproperties
                 bBossRushMode=true,
                 OverrideAmmoPickupModifier=1,
                     WaveAmmoPickupModifiers={(
-                       0.99, 0.99, 0.99, 0.99, 0.99
+                       0.99, 0.99, 0.99, 0.99, 0.99, 0.99
                     )},
                 BossRushOverrideParams={(PerWaves={(
                     // WAVE 1

@@ -441,7 +441,7 @@ function ServerStartVoteSkipTrader(PlayerReplicationInfo PRI)
 	}
 	
 	// A skip trader vote is not allowed while another vote is active
-	if(bIsKickVoteInProgress)
+	if(bIsKickVoteInProgress || bIsPauseGameVoteInProgress)
 	{
 		KFPC.ReceiveLocalizedMessage(class'KFLocalMessage', LMT_OtherVoteInProgress);
 		return;

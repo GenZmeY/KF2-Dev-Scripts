@@ -195,7 +195,7 @@ simulated function bool HasHeavyArmor()
 	return IsHeavyArmorActive();
 }
 
-static simulated private function bool Is9mm( KFWeapon KFW )
+static simulated public function bool Is9mm( KFWeapon KFW )
 {
 	return KFW != none && KFW.default.bIsBackupWeapon && !KFW.IsMeleeWeapon();
 }
@@ -278,7 +278,9 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 
 	if( KFW != none )
 	{
-		if( IsBackupActive() && (IsBackupWeapon( KFW ) || IsDual9mm( KFW ) || ClassIsChildOf(DamageType, class'KFDT_Bludgeon')) ) 
+		// KFDT_Bludgeon_Doshinegun_Shot is a special case of Bludgeon damage that doesn't apply this mod.
+		if( IsBackupActive() && (IsBackupWeapon( KFW ) || IsDual9mm( KFW ) ||
+			((!IsDoshinegun(KFW) && ClassIsChildOf(DamageType, class'KFDT_Bludgeon') ) || (IsDoshinegun(KFW) && DamageType.Name != 'KFDT_Bludgeon_Doshinegun_Shot' ))))
 		{
 			`QALog( "Backup Damage" @ KFW @ GetPercentage( InDamage, InDamage * GetSkillValue(PerkSkills[ESWAT_Backup])), bLogPerk );
 			TempDamage += InDamage * GetSkillValue( PerkSkills[ESWAT_Backup] );

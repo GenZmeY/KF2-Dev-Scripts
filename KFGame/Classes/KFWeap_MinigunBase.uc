@@ -57,6 +57,9 @@ var float FiringViewRotationSpeed;
 /* Pawn movement speed used when the weapon is firing */
 var float FiringPawnMovementSpeed;
 
+/** Rotation Speed limit when the weapon is equipped */
+var const float EquippedRotationSpeedLimit;
+
 simulated event ReplicatedEvent(name VarName)
 {
 	switch (VarName)
@@ -375,9 +378,13 @@ simulated event Tick( float DeltaTime )
 			{
 				NewRotationSpeedLimit = WindUpViewRotationSpeed;
 			}
-			else
+			else if (!IsInState('Inactive')) // Weapon hold
 			{
-				NewRotationSpeedLimit = 2000.0f;
+				NewRotationSpeedLimit = EquippedRotationSpeedLimit;
+			}
+			else // Weapon holstered
+			{
+				NewRotationSpeedLimit = OwnerController.default.RotationSpeedLimit;
 			}
 			
 			if( NewRotationSpeedLimit != OwnerController.RotationSpeedLimit )
@@ -623,6 +630,8 @@ defaultproperties
 	
 	bAlwaysRelevant=True
 	bOnlyRelevantToOwner=False
+
+	EquippedRotationSpeedLimit=2000;
 
 	WindUpViewRotationSpeed=2000 // base rotation
 	WindUpPawnMovementSpeed=1 // base speed

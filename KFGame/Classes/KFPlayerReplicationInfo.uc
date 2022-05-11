@@ -1568,4 +1568,5 @@ defaultproperties
 	CurrentHeadShotEffectID=-1;
 
 	bCarryingCollectible=false;
+	bVotedToPauseGame=false;
 }

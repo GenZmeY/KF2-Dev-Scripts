@@ -69,7 +69,7 @@ simulated function name GetWeaponFireAnim(byte FireModeNum)
 defaultproperties
 {
 	// Inventory
-	InventorySize=6
+	InventorySize=7 //6
 	GroupPriority=100
 	WeaponSelectTexture=Texture2D'wep_ui_hrg_stunner_tex.UI_Weapon_Select_HRG_Stunner'
 
@@ -103,7 +103,7 @@ defaultproperties
 	FireModeIconPaths(DEFAULT_FIREMODE)=Texture2D'ui_firemodes_tex.UI_FireModeSelect_ShotgunAuto'
 	FiringStatesArray(DEFAULT_FIREMODE)=WeaponFiring
 	WeaponFireTypes(DEFAULT_FIREMODE)=EWFT_Projectile
-	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Bullet_Pellet'
+	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Bullet_HRG_Stunner'
 	InstantHitDamage(DEFAULT_FIREMODE)=60.0 //65.0
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_HRG_Stunner'
 	PenetrationPower(DEFAULT_FIREMODE)=2.0
