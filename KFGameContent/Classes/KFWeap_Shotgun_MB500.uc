@@ -25,7 +25,7 @@ defaultproperties
 
 	// Zooming/Position
 	PlayerViewOffset=(X=8.0,Y=8.0,Z=-3.5)
-	IronSightPosition=(X=9.5,Y=0,Z=0)
+	IronSightPosition=(X=9.5,Y=-0.29,Z=0)
 
 	// Content
 	PackageKey="MB500"

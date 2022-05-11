@@ -1385,11 +1385,13 @@ simulated final native function ShowMaterialSection(int MaterialID, bool bShow, 
  * @param StartTime (optional) What time to start the animation at
  * @param bPlayBackwards (optional) Play this animation backwards
  */
-function PlayAnim(name AnimName, optional float Duration, optional bool bLoop, optional bool bRestartIfAlreadyPlaying = true, optional float StartTime=0.0f, optional bool bPlayBackwards=false)
+function bool PlayAnim(name AnimName, optional float Duration, optional bool bLoop, optional bool bRestartIfAlreadyPlaying = true, optional float StartTime=0.0f, optional bool bPlayBackwards=false)
 {
 	local AnimNodeSequence AnimNode;
 	local float DesiredRate;
+	local bool bIsAnimPlayed;
 
+	bIsAnimPlayed = false;
 	AnimNode = AnimNodeSequence(Animations);
 	if (AnimNode == None && Animations.IsA('AnimTree'))
 	{
@@ -1408,6 +1410,8 @@ function PlayAnim(name AnimName, optional float Duration, optional bool bLoop, o
 			if (bRestartIfAlreadyPlaying || !AnimNode.bPlaying)
 			{
 				AnimNode.PlayAnim(bLoop, DesiredRate, StartTime);
+				
+				bIsAnimPlayed = true;
 			}
 			else
 			{
@@ -1423,9 +1427,13 @@ function PlayAnim(name AnimName, optional float Duration, optional bool bLoop, o
 				DesiredRate = (Duration > 0.0) ? (AnimNode.AnimSeq.SequenceLength / (Duration * AnimNode.AnimSeq.RateScale)) : 1.0;
 				DesiredRate = (bPlayBackwards) ? -DesiredRate : DesiredRate;
 				AnimNode.PlayAnim(bLoop, DesiredRate, StartTime);
+
+				bIsAnimPlayed = true;
 			}
 		}
 	}
+
+	return bIsAnimPlayed;
 }
 
 /** simple generic case animation stopper

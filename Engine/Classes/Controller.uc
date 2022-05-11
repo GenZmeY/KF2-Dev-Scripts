@@ -1052,12 +1052,12 @@ function ReceiveProjectileWarning(Projectile Proj);
 * =====================================================
 */
 
-exec function SwitchToBestWeapon(optional bool bForceNewWeapon)
+exec function SwitchToBestWeapon(optional bool bForceNewWeapon, optional bool check_9mm_logic = false)
 {
 	if ( Pawn == None || Pawn.InvManager == None )
 		return;
 
-	Pawn.InvManager.SwitchToBestWeapon(bForceNewWeapon);
+	Pawn.InvManager.SwitchToBestWeapon(bForceNewWeapon, check_9mm_logic);
 }
 
 /* epic ===============================================
@@ -1070,7 +1070,11 @@ exec function SwitchToBestWeapon(optional bool bForceNewWeapon)
 */
 reliable client function ClientSwitchToBestWeapon(optional bool bForceNewWeapon)
 {
-    SwitchToBestWeapon(bForceNewWeapon);
+	local bool check_9mm_logic;
+
+	check_9mm_logic = true;
+
+    SwitchToBestWeapon(bForceNewWeapon, check_9mm_logic);
 }
 
 /* epic ===============================================

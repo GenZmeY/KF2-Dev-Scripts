@@ -271,11 +271,16 @@ function FilterWeeklyMaps(out array<string> List)
 		return;
 	}
 
+	`Log("OPTIONS: Skipping Maps");
+
 	// Scavenger index = 11
-	// BossRush index = 14
+	// BossRush  index = 14
+	// GunGame   index = 16
 	WeeklyIndex = class'KFGameEngine'.static.GetWeeklyEventIndexMod();
-	if (WeeklyIndex == 11 ||  WeeklyIndex == 14)
+	if (WeeklyIndex == 11 ||  WeeklyIndex == 14 || WeeklyIndex == 16)
 	{
+		`Log("OPTIONS: Inside, removing maps");
+
 		List.RemoveItem("KF-Biolapse");
 		List.RemoveItem("KF-Nightmare");
 		List.RemoveItem("KF-PowerCore_Holdout");

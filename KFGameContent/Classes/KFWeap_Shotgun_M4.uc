@@ -28,7 +28,7 @@ defaultproperties
 
 	// Zooming/Position
 	PlayerViewOffset=(X=15.0,Y=8.5,Z=-3.5)
-	IronSightPosition=(X=5,Y=0,Z=0)
+	IronSightPosition=(X=5,Y=-0.025,Z=-0.03)
 
 	// Content
 	PackageKey="M4Shotgun"

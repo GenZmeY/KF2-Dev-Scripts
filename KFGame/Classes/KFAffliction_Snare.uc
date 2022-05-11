@@ -24,7 +24,7 @@ function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
 }
 
 /** */
-function Activate()
+function Activate(optional class<KFDamageType> DamageType = none)
 {
 	if( !bIsActive )
 	{

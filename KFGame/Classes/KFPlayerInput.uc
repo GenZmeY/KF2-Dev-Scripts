@@ -2062,8 +2062,10 @@ function vector GetBestAutoTargetLocation(Pawn CheckTarget, out name outBoneName
     if( KFP != none )
     {
     	// Get the location from the pawn we're targeting if we can
-        KFP.GetAutoTargetBones(WeakBones, NormalBones);
-
+        if (!KFP.GetAutoTargetBones(WeakBones, NormalBones))
+		{
+			return vect(0,0,0);
+		}
         // cone setup
     	GetPlayerViewPoint( CamLoc, CamRot );
 		CamRot += WeaponBufferRotation;

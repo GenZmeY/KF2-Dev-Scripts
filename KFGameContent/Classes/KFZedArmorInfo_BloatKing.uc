@@ -88,4 +88,5 @@ defaultproperties
     //Special cases
     ArmorDamageTypeModifiers.Add((DamageType=class'KFDT_Toxic_HRGHealthrower',				DamageScale=(1.2)))
 	ArmorDamageTypeModifiers.Add((DamageType=class'KFDT_Bleeding_Hemogoblin', 	            DamageScale=(1.0)))
+    ArmorDamageTypeModifiers.Add((DamageType=class'KFDT_Shrink_ShrinkRayGun',				DamageScale=(5.0)))
 }

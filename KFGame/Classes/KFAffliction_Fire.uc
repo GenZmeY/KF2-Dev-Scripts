@@ -28,6 +28,8 @@ var protected AkEvent OnFireSound;
 /** Sound to play when this pawn stops being on fire */
 var protected AkEvent OnFireEndSound;
 
+var transient KFPlayerController Instigator;
+
 function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
 {
     Super.Init(P, Type, InstigatorPerk);
@@ -35,9 +37,14 @@ function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
     // copy over some settings from the affliction handler that we'll need
     FireFullyCharredDuration = P.AfflictionHandler.FireFullyCharredDuration;
     FireCharPercentThreshhold = P.AfflictionHandler.FireCharPercentThreshhold;
+
+    if (InstigatorPerk != none)
+    {
+        Instigator = InstigatorPerk.OwnerPC;
+    }
 }
 
-function Activate()
+function Activate(optional class<KFDamageType> DamageType = none)
 {
     // fire can accrue after death, but cannot trigger panic
     if ( !PawnOwner.bPlayedDeath )

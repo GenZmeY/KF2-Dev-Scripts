@@ -423,7 +423,7 @@ simulated function Interact( KFPawn_Human KFPH )
 	{
 		foreach KFPH.InvManager.InventoryActors( class'KFWeapon', KFW )
 		{
-			if( KFW.static.DenyPerkResupply() )
+			if( KFW.DenyPerkResupply() )
 			{
 				continue;
 			}

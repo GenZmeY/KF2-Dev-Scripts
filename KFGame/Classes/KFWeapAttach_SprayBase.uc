@@ -31,6 +31,8 @@ var AkEvent                         PilotLightPlayEvent;
 /** Pilot light sound stop event */
 var AkEvent	                        PilotLightStopEvent;
 
+var protected bool 					bInvertPilot;
+
 /** Effect for the pilot light. */
 var protected KFParticleSystemComponent	PSC_PilotLight;
 /** Socket to attach the pilot light to. */
@@ -263,9 +265,17 @@ simulated function StopPilotSound()
 simulated function SetPilotDynamicLightEnabled( bool bLightEnabled )
 {
     local int Idx;
+	local bool doEnable;
+
+	doEnable = bLightEnabled;
+
+	if (bInvertPilot)
+	{		
+		doEnable = bLightEnabled == false;
+	}
 
     // Don't turn these on if we're not in third person
-    if( bLightEnabled && (Instigator != none && Instigator.IsFirstPerson()) )
+    if (doEnable && (Instigator != none && Instigator.IsFirstPerson()))
     {
         return;
     }
@@ -273,7 +283,7 @@ simulated function SetPilotDynamicLightEnabled( bool bLightEnabled )
 	// turn off lights
 	for (Idx=0; Idx<PilotLights.length; ++Idx)
 	{
-		PilotLights[Idx].Light.SetEnabled(bLightEnabled);
+		PilotLights[Idx].Light.SetEnabled(doEnable);
 	}
 }
 
@@ -507,6 +517,8 @@ defaultproperties
 		TickGroup=TG_PostUpdateWork
 	End Object
 	PSC_PilotLight=PilotLight0
+
+	bInvertPilot=false
 }
 
 

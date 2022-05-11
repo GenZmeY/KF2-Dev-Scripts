@@ -91,7 +91,8 @@ var float MicrowavePower;
 var float FreezePower;
 var float SnarePower;
 var float BleedPower;
-
+var float BigHeadPower;
+var float ShrinkPower;
 /*********************************************************************************************
 Impact Effects
  ********************************************************************************************* */

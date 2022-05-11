@@ -49,11 +49,42 @@ replication
 		PickupIndex;
 }
 
+function bool CanUsePickup()
+{
+	local KFGameInfo KFGI;
+	local int i;
+	local bool has_armour;
+
+	KFGI = KFGameInfo( WorldInfo.Game );
+
+	if (KFGI != none && KFGI.OutbreakEvent != none)
+	{
+		if (KFGI.OutbreakEvent.ActiveEvent.bOnlyArmorItemPickup)
+		{
+			for (i = 0 ; i < ItemPickups.Length ; i++)
+			{
+				if (ItemPickups[i].ItemClass.Name == ArmorClassName)
+				{
+					has_armour = true;
+					break;
+				}
+			}
+		}
+
+		if (has_armour == false)
+		{
+			return false;
+		}
+	}
+
+	return super.CanUsePickup();
+}
+
 simulated event PreBeginPlay()
 {
 	local KFGameInfo KFGI;
 
-// For Scavenger weekly, we need to treat the factory items as non kismet items.
+	// For Scavenger weekly, we need to treat the factory items as non kismet items.
 	KFGI = KFGameInfo( WorldInfo.Game );
 	if (KFGI != none && KFGI.OutbreakEvent != none && KFGI.OutbreakEvent.ActiveEvent.bUnlimitedWeaponPickups)
 	{
@@ -62,7 +93,6 @@ simulated event PreBeginPlay()
 			bKismetDriven=false;
 		}
 	}
-////////////////////////////////////////
 
 	super.PreBeginPlay();
 }
@@ -152,10 +182,26 @@ function int ChooseWeaponPickup()
 	local int i, DesiredItemIdx;
 	local float Weight, TotalWeight, RandomWeight;
 	local array<int> IndexList;
+	local KFGameInfo KFGI;
+
+	KFGI = KFGameInfo(WorldInfo.Game);
+
+	DesiredItemIdx = 255;
 
 	// Add up the total weight for all valid attacks
 	for(i = 0; i < ItemPickups.Length; i++)
 	{
+		if (KFGI != none && KFGI.OutbreakEvent != none)
+		{
+			if (KFGI.OutbreakEvent.ActiveEvent.bOnlyArmorItemPickup)
+			{
+                if (ItemPickups[i].ItemClass.Name != 'KFInventory_Armor')
+                {
+					continue;
+				}
+			}
+		}
+
 		if ( ItemPickups[i].Priority > 0.f )
 		{
 			TotalWeight += ItemPickups[i].Priority;
@@ -194,9 +240,24 @@ simulated native function GetPickupMesh(class<KFWeapon> ItemClass);
 /** Use the pickups static mesh for this factory */
 simulated function SetPickupMesh()
 {
+	local KFGameInfo KFGI;
+
 	if (PickupIndex >= ItemPickups.Length)
 	{
 		return;
+	}
+
+	KFGI = KFGameInfo(WorldInfo.Game);
+
+	if (KFGI != none && KFGI.OutbreakEvent != none)
+	{
+		if (KFGI.OutbreakEvent.ActiveEvent.bOnlyArmorItemPickup)
+		{
+			if (ItemPickups[PickupIndex].ItemClass.Name != ArmorClassName)
+			{
+				return;
+			}
+		}
 	}
 
 	if (ItemPickups[PickupIndex].ItemClass.Name == ArmorClassName)
@@ -307,12 +368,24 @@ function ActivateNewPickup(Pawn P)
 {
 	local KFGameInfo KFGI;
 
+	KFGI = KFGameInfo( WorldInfo.Game );
+
+	if (KFGI != none && KFGI.OutbreakEvent != none)
+	{
+		if (KFGI.OutbreakEvent.ActiveEvent.bOnlyArmorItemPickup)
+		{
+			if (ItemPickups[PickupIndex].ItemClass.Name != ArmorClassName)
+			{
+				return;
+			}
+		}
+	}
+
 	if( bKismetDriven )
 	{
 		return;
 	}
 
-	KFGI = KFGameInfo( WorldInfo.Game );
 	if ( KFGI != none )
 	{
 		KFGI.EnableNewPickup( KFGI.ItemPickups, KFGI.DifficultyInfo.GetWeaponPickupInterval(KFGI.GetLivingPlayerCount()), self );

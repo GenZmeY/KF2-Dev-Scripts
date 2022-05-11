@@ -537,6 +537,9 @@ End Object
 	IncapSettings(AF_Freeze)=	(Vulnerability=(0.95),                        Cooldown=10.5,  Duration=1.0)
 	IncapSettings(AF_Snare)=	(Vulnerability=(1.0, 2.0, 1.0, 1.0, 2.0),     Cooldown=8.5,  Duration=5.0)
     IncapSettings(AF_Bleed)=    (Vulnerability=(0.75)) //0.25
+    IncapSettings(AF_Shrink)=   (Vulnerability=(1.0))
+	
+	ShrinkEffectModifier = 0.2f
 
 	Begin Object Name=Afflictions_0
 		FireFullyCharredDuration=5

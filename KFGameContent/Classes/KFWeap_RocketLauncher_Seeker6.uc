@@ -567,7 +567,7 @@ defaultproperties
 	LockLostSoundFirstPerson=AkEvent'WW_WEP_SA_Railgun.Play_Railgun_Scope_Lost'
 
    	// Zooming/Position
-	IronSightPosition=(X=0,Y=0,Z=0)
+	IronSightPosition=(X=0,Y=-0.065,Z=-0.31)
 
 	// Ammo
 	MagazineCapacity[0]=6

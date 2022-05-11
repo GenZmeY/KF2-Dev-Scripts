@@ -442,6 +442,14 @@ var int SpawnedMonsterProperties[EMonsterProperties];
  */
 var transient array< byte > BossRushEnemies; 
 
+// Maps to skip
+const MapBiolapse = 'KF-Biolapse';
+const MapNightmare = 'KF-Nightmare';
+const MapPowerCore = 'KF-PowerCore_Holdout';
+const MapDescent = 'KF-TheDescent';
+const MapKrampus = 'KF-KrampusLair';
+const MapSteam = 'KF-SteamFortress';
+
 /************************************************************************************
  * @name		Native
  ***********************************************************************************/
@@ -1193,14 +1201,7 @@ function ResetPickups( array<KFPickupFactory> PickupList, int NumPickups )
 
     PossiblePickups = PickupList;
 
-	if (OutbreakEvent != none && OutbreakEvent.ActiveEvent.bUnlimitedWeaponPickups && KFPickupFactory_Item(PickupList[0]) != none)
-	{
-		NumIterations = Min(NumPickups, PickupList.Length - 1);
-	}
-	else
-	{
-		NumIterations = Min(NumPickups, PickupList.Length);
-	}
+	NumIterations = Min(NumPickups, PickupList.Length - 1);
 
  	for ( i = 0; i < NumIterations; i++ )
  	{
@@ -1267,8 +1268,15 @@ function ActivateNextPickup( KFPickupFactory NextFactory, int RespawnDelay )
 {
 	if( NextFactory != none )
 	{
-		NextFactory.bToBeActivated = true;
-		NextFactory.SetTimer( RespawnDelay, , nameof(NextFactory.Reset) );
+		if (NextFactory.CanUsePickup())
+		{
+			NextFactory.bToBeActivated = true;
+			NextFactory.SetTimer( RespawnDelay, , nameof(NextFactory.Reset) );
+		}
+		else
+		{
+			NextFactory.SetPickupHidden();
+		}
 	}
 }
 
@@ -1419,6 +1427,14 @@ function RestartPlayer(Controller NewPlayer)
 	        KFPC.ClientSetCameraFade( true, MakeColor(255,255,255,255), vect2d(1.f, 0.f), 0.6f, true );
 		}
 	}
+}
+
+function ResetGunGame(KFPlayerController_WeeklySurvival KFPC_WS)
+{
+}
+
+function RestartGunGamePlayerWeapon(KFPlayerController_WeeklySurvival KFPC_WS, byte WaveToUse)
+{	
 }
 
 /** Returns a low rating if other players are nearby (spawn will fail) */
@@ -2895,61 +2911,68 @@ function string GetNextMap()
 {
 	local array<string> MapList;
 	local int i;
+	local name MapName;
 
-		if ( bUseMapList && GameMapCycles.Length > 0 )
+	if ( bUseMapList && GameMapCycles.Length > 0 )
+	{
+		if ( MapCycleIndex == INDEX_NONE )
 		{
+			MapList = GameMapCycles[ActiveMapCycle].Maps;
+			MapCycleIndex = GetCurrentMapCycleIndex(MapList);
 			if ( MapCycleIndex == INDEX_NONE )
 			{
-				MapList = GameMapCycles[ActiveMapCycle].Maps;
-				MapCycleIndex = GetCurrentMapCycleIndex(MapList);
-				if ( MapCycleIndex == INDEX_NONE )
-				{
-					// Assume current map is actually zero
-					MapCycleIndex = 0;
-				}
+				// Assume current map is actually zero
+				MapCycleIndex = 0;
 			}
+		}
 
-			for (i = 0; i < GameMapCycles[ActiveMapCycle].Maps.length; ++i)
+		for (i = 0; i < GameMapCycles[ActiveMapCycle].Maps.length; ++i)
+		{
+			MapCycleIndex = MapCycleIndex + 1 < GameMapCycles[ActiveMapCycle].Maps.length ? (MapCycleIndex + 1) : 0;
+
+			/**
+				This could be changed to read replicated values instead of engine ones.
+			 */
+			if (MyKFGRI.IsA('KFGameReplicationInfo_WeeklySurvival'))
 			{
-				MapCycleIndex = MapCycleIndex + 1 < GameMapCycles[ActiveMapCycle].Maps.length ? (MapCycleIndex + 1) : 0;
-
-				if (MyKFGRI.IsA('KFGameReplicationInfo_WeeklySurvival'))
+				if ((class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 11 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[11]) || // Scavenger
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[14]) || // Boss Rush
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 16 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[16])) // Gun Game
 				{
-					if ((class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 11 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[11]) || // Scavenger
-					    (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[14]))   // Boss Rush
-					{
-						if (GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex] == "KF-Biolapse"          || 
-							GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex] == "KF-Nightmare"         ||
-							GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex] == "KF-PowerCore_Holdout" ||
-							GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex] == "KF-TheDescent"        ||
-							GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex] == "KF-KrampusLair")
-						{
-							continue;
-						}
-					}
+					MapName = name(GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex]);
 
-					/* Temporary removal of SteamFrotress for BossRush */
-					if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[14] &&
-						GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex] == "KF-SteamFortress")
+					if (MapName == MapBiolapse  || 
+						MapName == MapNightmare ||
+						MapName == MapPowerCore ||
+						MapName == MapDescent   ||
+						MapName == MapKrampus)
 					{
 						continue;
 					}
-					/**/
 				}
 
-				if ( IsMapAllowedInCycle(GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex]) )
+				/* Temporary removal of SteamFrotress for BossRush */
+				if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[14] &&
+					MapName == MapSteam)
 				{
-					SaveConfig();
-					return GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex];
+					continue;
 				}
+				/* */
 			}
 
-			return string(WorldInfo.GetPackageName());
+			if ( IsMapAllowedInCycle(GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex]) )
+			{
+				SaveConfig();
+				return GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex];
+			}
 		}
-		else
-		{
-			return string(WorldInfo.GetPackageName());
-		}
+
+		return string(WorldInfo.GetPackageName());
+	}
+	else
+	{
+		return string(WorldInfo.GetPackageName());
+	}
 
 	return "";
 }
@@ -3781,14 +3804,22 @@ function UpdateCurrentMapVoteTime(byte NewTime, optional bool bStartTime);
 function float GetTraderTime()
 {
 	local float MapOverride;
+	local float TraderTimeModifier;
+
+	TraderTimeModifier = 1.f;
+
+	if (OutbreakEvent != none && OutbreakEvent.ActiveEvent.TraderTimeModifier != 1.f)
+	{
+		TraderTimeModifier = OutbreakEvent.ActiveEvent.TraderTimeModifier;
+	}
 
 	MapOverride = DifficultyInfo.GetTraderTimeByMap(WorldInfo.GetMapName(true));
 	if (MapOverride > 0.f)
 	{
-		return MapOverride;
+		return MapOverride * TraderTimeModifier;
 	}
 
-	return DifficultyInfo.GetTraderTimeByDifficulty();
+	return DifficultyInfo.GetTraderTimeByDifficulty() * TraderTimeModifier;
 }
 
 

@@ -251,7 +251,8 @@ simulated function ModifyMagSizeAndNumber( KFWeapon KFW, out int MagazineCapacit
 	TempCapacity = MagazineCapacity;
 	
 	// FAMAS needs its secondary ammo affected
-	if( (!bSecondary || IsFAMAS(KFW)) && IsWeaponOnPerk( KFW, WeaponPerkClass, self.class ) && (KFW == none || !KFW.bNoMagazine) )
+	// Autoturret cannot modify its magazine capacity
+	if( (!bSecondary || IsFAMAS(KFW)) && !IsAutoTurret(KFW) && IsWeaponOnPerk( KFW, WeaponPerkClass, self.class ) && (KFW == none || !KFW.bNoMagazine) )
 	{
 		if( IsLargeMagActive() )
 		{
@@ -260,9 +261,10 @@ simulated function ModifyMagSizeAndNumber( KFWeapon KFW, out int MagazineCapacit
 
 		if( IsEatLeadActive() )
 		{
-       		TempCapacity += MagazineCapacity * GetSkillValue( PerkSkills[ECommandoEatLead] );
+			TempCapacity += MagazineCapacity * GetSkillValue( PerkSkills[ECommandoEatLead] );
 		}
 	}
+
 	
 	MagazineCapacity = Round(TempCapacity);
 }

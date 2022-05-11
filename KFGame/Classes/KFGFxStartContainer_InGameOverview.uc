@@ -348,11 +348,9 @@ function UpdateOverviewInGame()
 	bCustomLength = false; //not using these now
 	bCustomDifficulty = false;
 
-
 	KFGRI = KFGameReplicationInfo(GetPC().WorldInfo.GRI);
     if(KFGRI != none)
     {
-
 		if (KFGRI != none && KFGRI.GameClass != none && !KFGRI.GameClass.Static.GetShouldShowLength())
 		{
 			HideLengthInfo();
@@ -372,19 +370,30 @@ function UpdateOverviewInGame()
     	}
 
         CurrentLengthIndex = KFGRI.GameLength;
-        if(LastLengthIndex != CurrentLengthIndex)
-        {
-			// don't show the length category in objective mode
-			if (KFGRI.GameClass.Name == ObjectiveClassName)
-			{
-				UpdateLength("");
-			}
-			else
-			{
-				UpdateLength(bCustomLength ? Class'KFCommon_LocalizedStrings'.default.CustomString : class'KFCommon_LocalizedStrings'.static.GetLengthString(CurrentLengthIndex));
-			}
+
+		if (KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 16)
+		{
+			UpdateLength(Class'KFCommon_LocalizedStrings'.default.SpecialLengthString);
+
 			LastLengthIndex = CurrentLengthIndex;
-        }
+		}
+		else
+		{
+			if (LastLengthIndex != CurrentLengthIndex)
+			{
+				// don't show the length category in objective mode
+				if (KFGRI.GameClass.Name == ObjectiveClassName)
+				{
+					UpdateLength("");
+				}
+				else
+				{
+					UpdateLength(bCustomLength ? Class'KFCommon_LocalizedStrings'.default.CustomString : class'KFCommon_LocalizedStrings'.static.GetLengthString(CurrentLengthIndex));
+				}
+
+				LastLengthIndex = CurrentLengthIndex;
+			}
+		}
 
 		UpdateServerType( class'KFCommon_LocalizedStrings'.static.GetServerTypeString(int(KFGRI.bCustom)) );
 

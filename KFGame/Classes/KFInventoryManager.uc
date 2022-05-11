@@ -496,6 +496,130 @@ function bool ClassNameIsInInventory(name ItemClassName, out Inventory out_Inven
 }
 
 /**
+ * returns the best weapon for this Pawn in loadout
+ */
+simulated function Weapon GetBestWeapon( optional bool bForceADifferentWeapon, optional bool allow9mm )
+{
+	local KFWeapon	W, BestWeapon;
+	local float		Rating, BestRating;
+
+	ForEach InventoryActors( class'KFWeapon', W )
+	{
+		if( w.HasAnyAmmo() )
+		{
+			if( bForceADifferentWeapon &&
+				W == Instigator.Weapon )
+			{
+				continue;
+			}
+
+			Rating = W.GetWeaponRating();
+			if( BestWeapon == None ||
+				Rating > BestRating )
+			{
+				if (allow9mm == false)
+				{
+					if (W.bIsBackupWeapon && !W.IsMeleeWeapon())
+					{
+						continue;
+					}
+				}
+
+				BestWeapon = W;
+				BestRating = Rating;
+			}
+		}
+	}
+
+	if (BestWeapon == none && allow9mm == false)
+	{
+		ForEach InventoryActors( class'KFWeapon', W )
+		{
+			if( w.HasAnyAmmo() )
+			{
+				if( bForceADifferentWeapon &&
+					W == Instigator.Weapon )
+				{
+					continue;
+				}
+
+				Rating = W.GetWeaponRating();
+				if( BestWeapon == None ||
+					Rating > BestRating )
+				{
+					BestWeapon = W;
+					BestRating = Rating;
+				}
+			}
+		}
+	}
+
+	return BestWeapon;
+}
+
+/**
+ * Switch to best weapon available in loadout
+ * Network: LocalPlayer
+ */
+simulated function SwitchToBestWeapon( optional bool bForceADifferentWeapon, optional bool check_9mm_logic = false )
+{
+	local Weapon BestWeapon;
+	local PlayerController PC;
+	local KFPlayerInput KFPI;
+	local bool bCanSwapTo9mm;
+	
+	if (check_9mm_logic)
+	{
+		// Default behaviour is you can't swap to 9mm
+		bCanSwapTo9mm = false;
+
+		PC = PlayerController(Instigator.Controller);
+		if ( PC != None )
+		{
+			KFPI = KFPlayerInput(PC.PlayerInput);
+			if (KFPI != None)
+			{
+				bCanSwapTo9mm = KFPI.bAllowSwapTo9mm;
+			}
+		}
+	}
+	else
+	{
+		bCanSwapTo9mm = true;
+	}
+
+	`LogInv("bForceADifferentWeapon:" @ bForceADifferentWeapon);
+
+	// if we don't already have a pending weapon,
+	if( bForceADifferentWeapon ||
+		PendingWeapon == None ||
+		(AIController(Instigator.Controller) != None) )
+	{
+		// figure out the new weapon to bring up
+		BestWeapon = GetBestWeapon( bForceADifferentWeapon, bCanSwapTo9mm );
+
+		if( BestWeapon == None )
+		{
+			return;
+		}
+
+		// if it matches our current weapon then don't bother switching
+		if( BestWeapon == Instigator.Weapon )
+		{
+			BestWeapon = None;
+			PendingWeapon = None;
+			Instigator.Weapon.Activate();
+		}
+	}
+
+	// stop any current weapon fire
+	Instigator.Controller.StopFiring();
+
+	// and activate the new pending weapon
+	SetCurrentWeapon(BestWeapon);
+}
+
+/**
  * Switches to Previous weapon
  * Network: Client
  */
@@ -943,7 +1067,7 @@ reliable client function SetCurrentWeapon(Weapon DesiredWeapon)
 	local KFWeapon DesiredKFW;
 	local KFWeapon PendingKFW;
 
-	CurrentKFW = KFWeapon(Instigator.Weapon);
+	CurrentKFW = Instigator != none ? KFWeapon(Instigator.Weapon) : none;
 	if ( CurrentKFW != none )
 	{
 		// Set the flag to switch to ironsights when the weapon is brought up
@@ -963,6 +1087,7 @@ reliable client function SetCurrentWeapon(Weapon DesiredWeapon)
 	// Only change your weapon if it is different or we weant to equip the weapon we are currently putting down
 	DesiredKFW = KFWeapon(DesiredWeapon);
 	if( DesiredKFW != none &&
+		Instigator != none &&
 		(DesiredKFW != Instigator.Weapon || Instigator.Weapon.IsInState('WeaponPuttingDown')) )
 	{
 		if ( DesiredKFW.bHasIronSights )

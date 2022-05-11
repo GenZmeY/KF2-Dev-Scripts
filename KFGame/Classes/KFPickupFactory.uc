@@ -37,17 +37,29 @@ var() bool bEnabledAtStart<EditCondition=bKismetDriven>;
 /** Whether this pickup node has been modified by kismet (enabled or disabled) */
 var transient bool bKismetEnabled;
 
+function bool CanUsePickup()
+{
+	return true;
+}
+
 /** Pick a weapon from 'ItemPickups' and enable it in the world */
 function Reset()
 {
-	if( bKismetDriven )
+	if (CanUsePickup())
 	{
-		SetInitialState();
+		if( bKismetDriven )
+		{
+			SetInitialState();
+		}
+		else
+		{
+			bToBeActivated = false;
+			GotoState('Pickup');
+		}
 	}
 	else
 	{
-		bToBeActivated = false;
-		GotoState('Pickup');
+		SetPickupHidden();
 	}
 }
 

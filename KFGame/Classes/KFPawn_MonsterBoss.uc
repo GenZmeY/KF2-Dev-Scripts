@@ -445,4 +445,6 @@ defaultproperties
 	bCanBePinned=false
 
 	VortexAttracionModifier=0.3f
+
+	bCanBeKilledByShrinking=false
 }

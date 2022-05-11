@@ -1181,6 +1181,9 @@ DefaultProperties
     IncapSettings(AF_Freeze)=   (Vulnerability=(0.5),                       Cooldown=10.0, Duration=1.0)   //0.95
     IncapSettings(AF_Snare)=    (Vulnerability=(1.0, 2.0, 1.0, 1.0, 2.0),   Cooldown=10.5, Duration=3.0)
     IncapSettings(AF_Bleed)=    (Vulnerability=(0.20),                      Cooldown=10.0)
+    IncapSettings(AF_Shrink)=   (Vulnerability=(1.0))
+    
+	ShrinkEffectModifier = 0.15f
 
 	ParryResistance=4
 
@@ -1228,6 +1231,7 @@ DefaultProperties
     DamageTypeModifiers.Add((DamageType=class'KFDT_EMP_ArcGeneratorSphereImpact',       		DamageScale=(2)))
     DamageTypeModifiers.Add((DamageType=class'KFDT_EMP_ArcGenerator_DefaultFiremodeZapDamage', 	DamageScale=(1.5)))
     DamageTypeModifiers.Add((DamageType=class'KFDT_EMP_ArcGenerator_AltFiremodeZapDamage',		DamageScale=(1.5)))
+    DamageTypeModifiers.Add((DamageType=class'KFDT_Shrink_ShrinkRayGun',						DamageScale=(3.0)))
     DamageTypeModifiers.Add((DamageType=class'KFDT_Ballistic_HRGScorcherLightingImpact', 	    DamageScale=(0.6)))
     DamageTypeModifiers.Add((DamageType=class'KFDT_Fire_HRGScorcherDoT',		                DamageScale=(0.9)))
 

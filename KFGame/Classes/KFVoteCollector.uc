@@ -434,7 +434,7 @@ function ServerStartVoteSkipTrader(PlayerReplicationInfo PRI)
 	}
 
 	// Trader is not open, we are not allowed to initiate a skip trader vote
-	if(!KFGRI.bTraderIsOpen)
+	if(!KFGRI.bTraderIsOpen && !KFGRI.bForceShowSkipTrader)
 	{
 		KFPC.ReceiveLocalizedMessage(class'KFLocalMessage', LMT_SkipTraderIsNotOpen);
 		return;

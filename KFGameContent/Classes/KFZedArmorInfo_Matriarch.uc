@@ -71,4 +71,7 @@ defaultproperties
     //special case
     ArmorDamageTypeModifiers.Add((DamageType=class'KFDT_Ballistic_MicrowaveRifle',	DamageScale=(0.7)))
     ArmorDamageTypeModifiers.Add((DamageType=class'KFDT_Toxic_HRGHealthrower',		DamageScale=(0.5)))
+    ArmorDamageTypeModifiers.Add((DamageType=class'KFDT_Shrink_ShrinkRayGun',		DamageScale=(5.0)))
+    ArmorDamageTypeModifiers.Add((DamageType=class'KFDT_Blast_HRG_CranialPopper',	DamageScale=(0.0)))
+    ArmorDamageTypeModifiers.Add((DamageType=class'KFDT_Piercing_HRG_CranialPopper',DamageScale=(2.0)))
 }

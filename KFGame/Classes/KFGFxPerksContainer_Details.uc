@@ -25,53 +25,68 @@ function  LocalizeContainer()
 	GetObject("basicLoadoutTextField").SetString("text", BasicLoadoutString);
 }
 
-function UpdateDetails( class<KFPerk> PerkClass)
+function UpdateDetailsInternal(class<KFPerk> PerkClass, KFPlayerController KFPC, byte WeaponIdx, byte GrenadeIdx)
 {
 	local GFxObject DetailsProvider;
-	local KFPlayerController KFPC;
 	local array<string> WeaponNames;
 	local array<string> WeaponSources;
 	local int i;
 
 	DetailsProvider = CreateObject( "Object" );
 
+	DetailsProvider.SetString( "ExperienceMessage", ExperienceString @ KFPC.GetPerkXP(PerkClass) );
+
+	if(PerkClass.default.PrimaryWeaponDef != none)
+	{
+		AddWeaponInfo(WeaponNames, WeaponSources, PerkClass.static.GetPrimaryWeaponName(WeaponIdx), PerkClass.static.GetPrimaryWeaponImagePath(WeaponIdx));
+	}
+
+	if(PerkClass.default.SecondaryWeaponDef != none)
+	{
+		AddWeaponInfo(WeaponNames, WeaponSources, PerkClass.default.SecondaryWeaponDef.static.GetItemName(), PerkClass.default.SecondaryWeaponDef.static.GetImagePath());
+	}
+	if(PerkClass.default.KnifeWeaponDef != none)
+	{
+		AddWeaponInfo(WeaponNames, WeaponSources, PerkClass.default.KnifeWeaponDef.static.GetItemName(), PerkClass.default.KnifeWeaponDef.static.GetImagePath());
+	}
+	if(PerkClass.default.GrenadeWeaponDef != none)
+	{
+		AddWeaponInfo(WeaponNames, WeaponSources, PerkClass.static.GetGrenadeWeaponName(GrenadeIdx), PerkClass.static.GetGrenadeWeaponImagePath(GrenadeIdx));
+	}
+	
+	for (i = 0; i < WeaponNames.length; i++)
+	{
+		DetailsProvider.SetString( "WeaponName" $ i, WeaponNames[i] );		
+		DetailsProvider.SetString( "WeaponImage" $ i, "img://"$WeaponSources[i] );			
+	}
+
+	DetailsProvider.SetString( "EXPAction1", PerkClass.default.EXPAction1 );
+	DetailsProvider.SetString( "EXPAction2", PerkClass.default.EXPAction2 );		
+
+	DetailsProvider.SetBool("ShowPrimaryWeaponSelectors", PerkClass.static.CanChoosePrimaryWeapon());
+	DetailsProvider.SetBool("ShowGrenadeSelectors", PerkClass.static.CanChooseGrenade());
+
+	SetObject( "detailsData", DetailsProvider );
+}
+
+function UpdateDetails(class<KFPerk> PerkClass, byte SelectedSkills[`MAX_PERK_SKILLS], bool IsChoosingPrev, bool IsChoosingNext)
+{
+	local KFPlayerController KFPC;
+	local byte WeaponIdx, GrenadeIdx;
+
 	KFPC = KFPlayerController( GetPC() );  
 
-	if ( KFPC != none)
+	if ( KFPC == none)
 	{
-		if(KFPC != none)
-		{
-			DetailsProvider.SetString( "ExperienceMessage", ExperienceString @ KFPC.GetPerkXP(PerkClass) );
-		}
-		
-		if(PerkClass.default.PrimaryWeaponDef != none)
-		{
-			AddWeaponInfo(WeaponNames, WeaponSources, PerkClass.default.PrimaryWeaponDef.static.GetItemName(), PerkClass.default.PrimaryWeaponDef.static.GetImagePath());
-		}
-		if(PerkClass.default.SecondaryWeaponDef != none)
-		{
-			AddWeaponInfo(WeaponNames, WeaponSources, PerkClass.default.SecondaryWeaponDef.static.GetItemName(), PerkClass.default.SecondaryWeaponDef.static.GetImagePath());
-		}
-		if(PerkClass.default.KnifeWeaponDef != none)
-		{
-			AddWeaponInfo(WeaponNames, WeaponSources, PerkClass.default.KnifeWeaponDef.static.GetItemName(), PerkClass.default.KnifeWeaponDef.static.GetImagePath());
-		}
-		if(PerkClass.default.GrenadeWeaponDef != none)
-		{
-			AddWeaponInfo(WeaponNames, WeaponSources, PerkClass.default.GrenadeWeaponDef.static.GetItemName(), PerkClass.default.GrenadeWeaponDef.static.GetImagePath());
-		}
-		
-		for (i = 0; i < WeaponNames.length; i++)
-		{
-			DetailsProvider.SetString( "WeaponName" $ i, WeaponNames[i] );		
-			DetailsProvider.SetString( "WeaponImage" $ i, "img://"$WeaponSources[i] );			
-		}
-
-		DetailsProvider.SetString( "EXPAction1", PerkClass.default.EXPAction1 );
-		DetailsProvider.SetString( "EXPAction2", PerkClass.default.EXPAction2 );		
-
-		SetObject( "detailsData", DetailsProvider );
+		return;
 	}
+
+	WeaponIdx = 0;
+	GrenadeIdx = 0;
+
+	UpdateAndGetCurrentWeaponIndexes(PerkClass, KFPC, WeaponIdx, GrenadeIdx, SelectedSkills, IsChoosingPrev, IsChoosingNext);
+
+	UpdateDetailsInternal(PerkClass, KFPC, WeaponIdx, GrenadeIdx);
 }
 
 function AddWeaponInfo(out array<string> WeaponNames, out array<string> WeaponSources, string WeaponName, string WeaponSource)
@@ -108,4 +123,12 @@ function UpdatePassives(Class<KFPerk> PerkClass)
     SetObject( "passivesData", PassivesProvider );
 }
 
-
+function UpdateAndGetCurrentWeaponIndexes(class<KFPerk> PerkClass, KFPlayerController KFPC, out byte WeaponIdx, out byte GrenadeIdx
+											, byte SelectedSkills[`MAX_PERK_SKILLS], bool IsChoosingPrev, bool IsChoosingNext)
+{
+	if (PerkClass.Name == 'KFPerk_Survivalist')
+	{
+		WeaponIdx = KFPC.CurrentPerk.SetWeaponSelectedIndex(KFPC.SurvivalPerkWeapIndex);
+		GrenadeIdx = KFPC.CurrentPerk.SetGrenadeSelectedIndexUsingSkills(KFPC.SurvivalPerkGrenIndex, SelectedSkills, IsChoosingPrev, IsChoosingNext);
+	}
+}

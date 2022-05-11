@@ -37,7 +37,7 @@ defaultproperties
 	MuzzleFlashTemplateName="WEP_M79_ARCH.Wep_M79_MuzzleFlash"
 
    	// Zooming/Position
-	IronSightPosition=(X=0,Y=0,Z=0)
+	IronSightPosition=(X=0,Y=0.05,Z=0.2)
 
 	// Ammo
 	MagazineCapacity[0]=1

@@ -95,6 +95,9 @@ var int	HealByAssistance;
 /** WWL Hat attach name*/
 var name ZEDCowboyHatAttachName;
 
+/** GunGameMode: score given when killed */
+var byte GunGameKilledScore;
+var byte GunGameAssistanceScore;
 
 /**
  * Information on resistant or vulnerable damage types
@@ -567,6 +570,13 @@ var byte MaxNumSeeds;
 var transient array<ParticleSystemComponent> WeakPointVFXComponents;
 var repnotify WeakPoint WeakPoints_TS[`TINY_SKULL_MAX_WEAKPOINTS];
 var ParticleSystem WeakPointParticleTemplate;
+
+/*********************************************************************************************
+ * @name ShrinkRayGun
+********************************************************************************************* */
+
+var bool  bCanBeKilledByShrinking;
+var float ShrinkEffectModifier;
 
 /*********************************************************************************************
  * @name	Delegates
@@ -2050,6 +2060,7 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 	local KFAIController KFAIC;
 	local KFPawn_Monster KFPM;
 	local float NapalmCheckDist;
+	local float InfernoRadius;
 
 	AIMonster = KFAIController_Monster(InstigatedBy);
 	KFDT = class<KFDamageType>(DamageType);
@@ -2098,9 +2109,9 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 		&& DamageCauser != none
 		&& KFDT != none
 		&& KFDT.default.DoT_Type == DOT_Fire
-		&& KFDT != class'KFDT_Fire_Napalm'
-		&& WorldInfo.RealTimeSeconds - LastNapalmInfectCheckTime > 0.25f )
+		&& KFDT != class'KFDT_Fire_Napalm')
 	{
+
 		if( KFPC != none
 			&& KFPC.GetPerk() != none
 			&& KFPC.GetPerk().CanSpreadNapalm()
@@ -2127,6 +2138,29 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 			{
 				InfectWithNapalm( self, KFPC );
 			}
+		}
+	}
+
+	if( Damage > 0
+		&& InstigatedBy != none
+		&& KFDT != none
+		&& KFDT.default.DoT_Type == DOT_Fire
+		&& KFDT != class'KFDT_Fire_Napalm'
+		&& KFPC != none
+		&& KFPC.GetPerk() != none
+		&& KFPC.GetPerk().CanSpreadInferno()
+		&& class'KFPerk'.static.IsDamageTypeOnThisPerk(KFDT, class'KFPerk_Firebug') )
+	{
+
+		InfernoRadius = CylinderComponent.CollisionRadius + class'KFPerk_Firebug'.static.GetInfernoRadius();
+
+		//PawnOwner.DrawDebugSphere(PawnOwner.Location, InfernoRadius, 20, 255, 255, 0, true);
+
+		foreach CollidingActors(class'KFPawn_Monster', KFPM, InfernoRadius, Location, true,,)
+		{
+			KFPM.ApplyDamageOverTime(Damage,
+						KFPC,
+						KFDT);
 		}
 	}
 
@@ -4907,7 +4941,8 @@ DefaultProperties
 	IncapSettings(AF_Microwave)=(Cooldown=5.0, Duration=5.0,)
 	IncapSettings(AF_Freeze)=(Cooldown=5.0)
 	IncapSettings(AF_Snare)=(Cooldown=5.0, Duration=5.0,)
-
+	IncapSettings(AF_BigHead)=(Cooldown=0.0, Duration=10.0)
+	IncapSettings(AF_Shrink)=(Cooldown=0.0, Duration=10.0)
 	// ---------------------------------------------
 	// Movement / Physics
 	bCanCrouch=false
@@ -5052,4 +5087,10 @@ DefaultProperties
 	ZEDCowboyHatAttachName=HEAD_Attach
 
 	WeakPointParticleTemplate=ParticleSystem'FX_Gameplay_EMIT.FX_Weak_Indicator'
+
+	GunGameKilledScore=0
+	GunGameAssistanceScore=0
+
+	bCanBeKilledByShrinking=true
+	ShrinkEffectModifier=1.0f
 }

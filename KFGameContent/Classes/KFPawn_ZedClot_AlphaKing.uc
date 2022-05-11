@@ -196,6 +196,9 @@ defaultproperties
 	IncapSettings(AF_Freeze)=	(Vulnerability=(2.5),                     Cooldown=1.5,  Duration=4.0)
 	IncapSettings(AF_Snare)=	(Vulnerability=(10.0, 10.0, 10.0, 10.0),  Cooldown=5.5,  Duration=4.0)
     IncapSettings(AF_Bleed)=    (Vulnerability=(2.0))
+    IncapSettings(AF_Shrink)=   (Vulnerability=(1.0))
+	
+	ShrinkEffectModifier = 0.4f
 
 	ParryResistance=0
 

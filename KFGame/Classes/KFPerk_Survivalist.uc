@@ -47,13 +47,23 @@ var class<KFWeaponDefinition>		HealingGrenadeWeaponDef;
 var class<KFWeaponDefinition>		MolotovGrenadeWeaponDef;
 
 var private const array<class<KFWeaponDefinition> > PrimaryWeaponPaths;
+var private const array<class<KFWeaponDefinition> > GrenadeWeaponPaths;
 var private const array<string>	KnifeWeaponPaths;
-var int StartingWeaponClassIndex;
+var byte StartingWeaponClassIndex;
+var byte StartingGrenadeClassIndex;	// This is the cached value for the tentative Grenade selection (only applied when gameplay time)
+var byte CurrentGrenadeClassIndex; 	// This is the gameplay value we use for Grenade Index, it can only be changed while TraderTime / Wave Start / Wave Ended
 
 var private const array<name>		TacticalReloadAsReloadRateClassNames;
 
 /** When MakeThingsGoBoom skill is selected the survivalist gets additional explosive resistance */
 var private const float				MakeThingsGoBoomExplosiveResistance;
+
+var private const byte MedicGrenadeIndex;
+var private const byte FirebugGrenadeIndex;
+
+var private transient bool bIsGrenadeDirty;
+
+`define WEAP_IDX_NONE 255
 
 /*********************************************************************************************
 * @name	 Perk init and spawning
@@ -105,7 +115,11 @@ function bool ShouldGetAllTheXP()
 /* Returns the primary weapon's class path for this perk */
 simulated function string GetPrimaryWeaponClassPath()
 {
-	StartingWeaponClassIndex = Rand(PrimaryWeaponPaths.length);
+	if (StartingWeaponClassIndex == `WEAP_IDX_NONE)
+	{
+		StartingWeaponClassIndex = Rand(PrimaryWeaponPaths.length);
+	}
+
 	AutoBuyLoadOutPath.InsertItem(0,PrimaryWeaponPaths[StartingWeaponClassIndex]);
     return PrimaryWeaponPaths[StartingWeaponClassIndex].default.WeaponClassPath;
 }
@@ -556,16 +570,7 @@ simulated function float GetSnarePowerModifier( optional class<DamageType> Damag
 /* Returns the grenade class for this perk */
 simulated function class< KFProj_Grenade > GetGrenadeClass()
 {
-    if( IsAmmoVestActive() )
-    {
-    	return class<KFProj_Grenade>(DynamicLoadObject(HealingGrenadeWeaponDef.default.WeaponClassPath, class'Class'));
-    }
-    else if( IsBigPocketsActive() )
-    {
-		return class<KFProj_Grenade>(DynamicLoadObject(MolotovGrenadeWeaponDef.default.WeaponClassPath, class'Class'));
-    }
-
-    return GrenadeClass;
+	return class<KFProj_Grenade>(DynamicLoadObject(GrenadeWeaponPaths[CurrentGrenadeClassIndex].default.WeaponClassPath, class'Class'));
 }
 
 /**
@@ -744,41 +749,379 @@ simulated static function GetPassiveStrings( out array<string> PassiveValues, ou
 
 simulated function string GetGrenadeImagePath()
 {
-	if( IsAmmoVestActive() )
-    {
-		return default.HealingGrenadeWeaponDef.Static.GetImagePath();
-    }
-    else if( IsBigPocketsActive() )
-    {
-		return default.MolotovGrenadeWeaponDef.Static.GetImagePath();
-	}
-
-	return default.GrenadeWeaponDef.Static.GetImagePath();
+	return CurrentGrenadeClassIndex == `WEAP_IDX_NONE ? default.GrenadeWeaponDef.static.GetImagePath() : default.GrenadeWeaponPaths[CurrentGrenadeClassIndex].static.GetImagePath();
 }
-
 
 simulated function class<KFWeaponDefinition> GetGrenadeWeaponDef()
 {
-	if( IsAmmoVestActive() )
-    {
-		return default.HealingGrenadeWeaponDef;
-    }
-    else if( IsBigPocketsActive() )
-    {
-		return default.MolotovGrenadeWeaponDef;
+	return GrenadeWeaponPaths[CurrentGrenadeClassIndex];
+}
+
+static simulated function bool CanChoosePrimaryWeapon()
+{
+	return true;
+}
+
+static simulated function bool CanChooseGrenade()
+{
+	return true;
+}
+
+simulated function byte OnPrevWeaponSelected()
+{
+	if (StartingWeaponClassIndex == `WEAP_IDX_NONE)
+	{
+		StartingWeaponClassIndex = PrimaryWeaponPaths.Length - 1;
+	}
+	else if (StartingWeaponClassIndex == 0)
+	{
+		StartingWeaponClassIndex = `WEAP_IDX_NONE;
+	}
+	else
+	{
+		--StartingWeaponClassIndex;
 	}
 
-	return default.GrenadeWeaponDef;
+	return StartingWeaponClassIndex;
+}
+
+simulated function byte OnNextWeaponSelected()
+{
+	if (StartingWeaponClassIndex == `WEAP_IDX_NONE)
+	{
+		StartingWeaponClassIndex = 0;
+	}
+	else if (StartingWeaponClassIndex == PrimaryWeaponPaths.Length - 1)
+	{
+		StartingWeaponClassIndex = `WEAP_IDX_NONE;
+	}
+	else
+	{
+		++StartingWeaponClassIndex;
+	}
+
+	return StartingWeaponClassIndex;
+}
+
+simulated function byte OnPrevGrenadeSelected()
+{
+	if (StartingGrenadeClassIndex == `WEAP_IDX_NONE)
+	{
+		StartingGrenadeClassIndex = GrenadeWeaponPaths.Length - 1;
+	}
+	else
+	{
+		--StartingGrenadeClassIndex;
+
+		if (StartingGrenadeClassIndex == FirebugGrenadeIndex && !IsBigPocketsActive())
+		{
+			--StartingGrenadeClassIndex;
+		}
+
+		if (StartingGrenadeClassIndex == MedicGrenadeIndex && !IsAmmoVestActive())
+		{
+			--StartingGrenadeClassIndex;
+		}
+
+		if (StartingGrenadeClassIndex > GrenadeWeaponPaths.Length - 1)
+		{
+			StartingGrenadeClassIndex = `WEAP_IDX_NONE;
+		}
+	}
+
+	bIsGrenadeDirty=true;
+
+	return StartingGrenadeClassIndex;
+}
+
+simulated function byte OnNextGrenadeSelected()
+{
+	if (StartingGrenadeClassIndex == `WEAP_IDX_NONE)
+	{
+		StartingGrenadeClassIndex = 0;
+	}
+	else
+	{
+		++StartingGrenadeClassIndex;
+
+		if (StartingGrenadeClassIndex == MedicGrenadeIndex && !IsAmmoVestActive())
+		{
+			++StartingGrenadeClassIndex;
+		}
+
+		if (StartingGrenadeClassIndex == FirebugGrenadeIndex && !IsBigPocketsActive())
+		{
+			++StartingGrenadeClassIndex;
+		}
+
+		if (StartingGrenadeClassIndex > GrenadeWeaponPaths.Length - 1)
+		{
+			StartingGrenadeClassIndex = `WEAP_IDX_NONE;
+		}
+	}
+
+	bIsGrenadeDirty=true;
+
+	return StartingGrenadeClassIndex;
+}
+
+static simulated function string GetPrimaryWeaponName(byte Idx)
+{
+	return Idx == `WEAP_IDX_NONE ? default.PrimaryWeaponDef.static.GetItemName() : default.PrimaryWeaponPaths[Idx].static.GetItemName();
+}
+
+static simulated function string GetPrimaryWeaponImagePath(byte Idx)
+{
+	return Idx == `WEAP_IDX_NONE ? default.PrimaryWeaponDef.static.GetImagePath() : default.PrimaryWeaponPaths[Idx].static.GetImagePath();
+}
+
+static simulated function string GetGrenadeWeaponName(byte Idx)
+{
+	return Idx == `WEAP_IDX_NONE ? default.GrenadeWeaponDef.static.GetItemName() : default.GrenadeWeaponPaths[Idx].static.GetItemName();
+}
+
+static simulated function string GetGrenadeWeaponImagePath(byte Idx)
+{
+	return Idx == `WEAP_IDX_NONE ? default.GrenadeWeaponDef.static.GetImagePath() : default.GrenadeWeaponPaths[Idx].static.GetImagePath();
+}
+
+/* Returns the primary weapon's class path for this perk */
+simulated function string GetGrenadeClassPath()
+{
+    return GrenadeWeaponPaths[StartingGrenadeClassIndex].default.WeaponClassPath;
+}
+
+simulated function byte GetGrenadeSelectedIndex() { return CurrentGrenadeClassIndex; }
+
+simulated function byte SetWeaponSelectedIndex(byte idx)
+{
+	if (idx >= default.PrimaryWeaponPaths.Length && idx < 255)
+	{
+		StartingWeaponClassIndex = 0;
+	}
+	else if (idx == 255)
+	{
+		StartingWeaponClassIndex = `WEAP_IDX_NONE;
+	}
+	else
+	{
+		StartingWeaponClassIndex = idx;
+	}
+
+	ServerUpdateCurrentWeapon(StartingWeaponClassIndex);
+
+	return StartingWeaponClassIndex;
+}
+
+simulated function byte SetGrenadeSelectedIndex(byte idx)
+{
+    local KFGameReplicationInfo KFGRI;
+
+    KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	if (idx >= default.GrenadeWeaponPaths.Length && idx < 255)
+	{
+		StartingGrenadeClassIndex = 0;
+	}
+	else if (idx == 255)
+	{
+		StartingGrenadeClassIndex = `WEAP_IDX_NONE;
+	}
+	else
+	{
+		StartingGrenadeClassIndex = idx;
+
+		if (StartingGrenadeClassIndex == MedicGrenadeIndex || StartingGrenadeClassIndex == FirebugGrenadeIndex)
+		{
+			if (IsAmmoVestActive())
+			{
+				StartingGrenadeClassIndex = MedicGrenadeIndex;
+			}
+			else if (IsBigPocketsActive())
+			{
+				StartingGrenadeClassIndex = FirebugGrenadeIndex;
+			}
+			else
+			{
+				StartingGrenadeClassIndex = 0;
+			}
+		}
+	}
+
+	// If we are in no gameplay time insta change
+	if (!KFGRI.bWaveIsActive)
+	{
+		UpdateCurrentGrenade();
+	}
+
+	return StartingGrenadeClassIndex;
+}
+
+simulated function byte SetGrenadeSelectedIndexUsingSkills(byte idx, byte InSelectedSkills[`MAX_PERK_SKILLS], bool IsChoosingPrev, bool IsChoosingNext)
+{
+    local KFGameReplicationInfo KFGRI;
+	local bool AmmoVestActive, BigPocketsActive;
+
+    KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	AmmoVestActive = false;
+	BigPocketsActive = false;
+
+	if (idx >= default.GrenadeWeaponPaths.Length && idx < 255)
+	{
+		StartingGrenadeClassIndex = 0;
+	}
+	else if (idx == 255)
+	{
+		StartingGrenadeClassIndex = `WEAP_IDX_NONE;
+	}
+	else
+	{
+		StartingGrenadeClassIndex = idx;
+
+		if (StartingGrenadeClassIndex == MedicGrenadeIndex || StartingGrenadeClassIndex == FirebugGrenadeIndex)
+		{
+			AmmoVestActive = InSelectedSkills[2] == 1;
+			BigPocketsActive = InSelectedSkills[2] == 2;
+
+			if (IsChoosingPrev)
+			{
+				if (StartingGrenadeClassIndex == FirebugGrenadeIndex)
+				{
+					if (BigPocketsActive == false)
+					{
+						--StartingGrenadeClassIndex;
+					}
+				}
+
+				if (StartingGrenadeClassIndex == MedicGrenadeIndex)
+				{
+					if (AmmoVestActive == false)
+					{
+						--StartingGrenadeClassIndex;
+					}
+				}
+			}
+			else if (IsChoosingNext)
+			{
+				if (StartingGrenadeClassIndex == MedicGrenadeIndex)
+				{
+					if (AmmoVestActive == false)
+					{
+						++StartingGrenadeClassIndex;
+					}
+				}
+		
+				if (StartingGrenadeClassIndex == FirebugGrenadeIndex)
+				{
+					if (BigPocketsActive == false)
+					{
+						++StartingGrenadeClassIndex;
+					}
+				}
+			}
+			else
+			{
+				if (AmmoVestActive)
+				{
+					StartingGrenadeClassIndex = MedicGrenadeIndex;
+				}
+				else if (BigPocketsActive)
+				{
+					StartingGrenadeClassIndex = FirebugGrenadeIndex;
+				}
+				else
+				{
+					StartingGrenadeClassIndex = 0;
+				}
+			}
+
+			if (StartingGrenadeClassIndex > GrenadeWeaponPaths.Length - 1)
+			{
+				StartingGrenadeClassIndex = `WEAP_IDX_NONE;
+			}
+		}
+	}
+
+	// If we are in no gameplay time insta change
+	if (!KFGRI.bWaveIsActive)
+	{
+		UpdateCurrentGrenade();
+	}
+
+	return StartingGrenadeClassIndex;
+}
+
+simulated function InitializeGrenades()
+{
+	local byte MaxValue;
+
+	if (StartingGrenadeClassIndex == `WEAP_IDX_NONE && ( bIsGrenadeDirty || CurrentGrenadeClassIndex == `WEAP_IDX_NONE))
+	{
+		MaxValue = (!IsAmmoVestActive() && !IsBigPocketsActive()) ? GrenadeWeaponPaths.length - 1 : GrenadeWeaponPaths.length;
+		CurrentGrenadeClassIndex = Rand(MaxValue);
+
+		if ( (!IsAmmoVestActive()   && CurrentGrenadeClassIndex == MedicGrenadeIndex) ||
+		     (!IsBigPocketsActive() && CurrentGrenadeClassIndex == FirebugGrenadeIndex) ||
+			 (CurrentLevel < 15 && (CurrentGrenadeClassIndex == MedicGrenadeIndex || CurrentGrenadeClassIndex == FirebugGrenadeIndex)))
+		{
+			CurrentGrenadeClassIndex = GrenadeWeaponPaths.length - 1;
+		}
+
+		bIsGrenadeDirty = false;
+
+		if (Controller(Owner).IsLocalController())
+		{
+			ServerUpdateCurrentGrenade(CurrentGrenadeClassIndex);
+		}
+	}
+}
+
+simulated function OnClientWaveEnded()
+{
+	super.OnWaveEnded();
+	UpdateCurrentGrenade();
+}
+
+simulated function UpdateCurrentGrenade()
+{
+	if (StartingGrenadeClassIndex == `WEAP_IDX_NONE)
+	{
+		InitializeGrenades();
+	}
+	else if (CurrentGrenadeClassIndex != StartingGrenadeClassIndex || bIsGrenadeDirty)
+	{
+		CurrentGrenadeClassIndex = StartingGrenadeClassIndex;
+
+		if (Controller(Owner).IsLocalController())
+		{
+			ServerUpdateCurrentGrenade(CurrentGrenadeClassIndex);
+		}
+	}
+}
+
+reliable server function ServerUpdateCurrentWeapon(byte Value)
+{
+	StartingWeaponClassIndex = Value;
+}
+
+reliable server function ServerUpdateCurrentGrenade(byte CurrentIndex)
+{
+	CurrentGrenadeClassIndex = CurrentIndex;
 }
 
 DefaultProperties
 {
-	StartingWeaponClassIndex=Index_None
+	StartingWeaponClassIndex=0
+	StartingGrenadeClassIndex=0
+	CurrentGrenadeClassIndex=0
+	bIsGrenadeDirty=true
+
 	PerkIcon=Texture2D'UI_PerkIcons_TEX.UI_PerkIcon_Survivalist'
 
 	PrimaryWeaponDef=class'KFWeapDef_Random'
 	KnifeWeaponDef=class'KFweapDef_Knife_Survivalist'
-	GrenadeWeaponDef=class'KFWeapDef_Grenade_Commando'
+	GrenadeWeaponDef=class'KFWeapDef_RandomGrenade'
 	HealingGrenadeWeaponDef=class'KFWeapDef_Grenade_Medic'
 	MolotovGrenadeWeaponDef=class'KFWeapDef_Grenade_Firebug'
 
@@ -856,16 +1199,26 @@ DefaultProperties
 	ZedTimeModifyingStates(11)="WeaponSonicGunSingleFiring"
 	ZedTimeModifyingStates(12)="WeaponSonicGunCharging"
 
-   	PrimaryWeaponPaths(0)=class'KFWeapDef_AR15'
-   	PrimaryWeaponPaths(1)=class'KFWeapDef_MB500'
-   	PrimaryWeaponPaths(2)=class'KFWeapDef_Crovel'
-   	PrimaryWeaponPaths(3)=class'KFWeapDef_HX25'
-   	PrimaryWeaponPaths(4)=class'KFWeapDef_MedicPistol'
+	PrimaryWeaponPaths(0)=class'KFWeapDef_Crovel'
+   	PrimaryWeaponPaths(1)=class'KFWeapDef_AR15'
+   	PrimaryWeaponPaths(2)=class'KFWeapDef_MB500'
+   	PrimaryWeaponPaths(3)=class'KFWeapDef_MedicPistol'
+   	PrimaryWeaponPaths(4)=class'KFWeapDef_HX25'
    	PrimaryWeaponPaths(5)=class'KFWeapDef_CaulkBurn'
    	PrimaryWeaponPaths(6)=class'KFWeapDef_Remington1858Dual'
    	PrimaryWeaponPaths(7)=class'KFWeapDef_Winchester1894'
    	PrimaryWeaponPaths(8)=class'KFWeapDef_MP7'
    	AutoBuyLoadOutPath=(class'KFWeapDef_DragonsBreath', class'KFWeapDef_FreezeThrower', class'KFWeapDef_MedicRifle', class'KFWeapDef_LazerCutter')
+
+	GrenadeWeaponPaths(0)=class'KFWeapDef_Grenade_Commando'
+	GrenadeWeaponPaths(1)=class'KFWeapDef_Grenade_Support'
+	GrenadeWeaponPaths(2)=class'KFWeapDef_Grenade_Medic'
+	GrenadeWeaponPaths(3)=class'KFWeapDef_Grenade_Firebug'
+	GrenadeWeaponPaths(4)=class'KFWeapDef_Grenade_Gunslinger'
+	GrenadeWeaponPaths(5)=class'KFWeapDef_Grenade_SWAT'
+
+	MedicGrenadeIndex   = 2;
+	FirebugGrenadeIndex = 3;
 
    	// Prestige Rewards
 	PrestigeRewardItemIconPaths[0]="WEP_SkinSet_Prestige01_Item_TEX.knives.SurvivalistKnife_PrestigePrecious_Mint_large"

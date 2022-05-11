@@ -34,8 +34,11 @@ function UpdateGameInfo()
 		}
 		else
 		{
-			// Show the upcoming wave number for every wave except the boss wave
-			if (KFGRI.default.bEndlessMode)
+			if (KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 16)
+			{
+				FinalWaveString = WaveString @ (KFGRI.GunGameWavesCurrent) $"/?";
+			}
+			else if (KFGRI.default.bEndlessMode) // Show the upcoming wave number for every wave except the boss wave
 			{
 				// Show wave number, since there is no max
 				FinalWaveString = WaveString @ (KFGRI.WaveNum);

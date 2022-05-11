@@ -474,7 +474,7 @@ defaultproperties
 
 	// Inventory / Grouping
 	InventoryGroup=IG_Equipment
-	GroupPriority=25
+	GroupPriority=11
 	WeaponSelectTexture=Texture2D'WEP_UI_C4_TEX.UI_WeaponSelect_C4'
 	InventorySize=3
 

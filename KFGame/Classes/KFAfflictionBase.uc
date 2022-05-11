@@ -57,7 +57,7 @@ function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
 }
 
 /** */
-function Accrue(float InPower)
+function Accrue(float InPower, optional class<KFDamageType> DamageType = none)
 {
 	// total immunity during cooldown
 	if ( LastActivationTime > 0 && `TimeSinceEx(PawnOwner, LastActivationTime) < Cooldown )
@@ -80,14 +80,14 @@ function Accrue(float InPower)
 	CurrentStrength = fClamp(CurrentStrength + InPower, InPower, INCAP_THRESHOLD);
 	if ( CurrentStrength >= INCAP_THRESHOLD )
 	{
-		Activate();
+		Activate(DamageType);
 	}
 
 	`log(Class.Name@"Added="$InPower@"NewStrength="$CurrentStrength, bDebug);
 }
 
 /** */
-function Activate()
+function Activate(optional class<KFDamageType> DamageType = none)
 {
 	if ( SpecialMove != SM_None )
 	{
@@ -157,6 +157,11 @@ function float GetSpeedModifier()
 function float GetAttackSpeedModifier()
 {
 	return 1.f;
+}
+
+function float GetDamageTakenModifier()
+{
+	return 0.f;
 }
 
 defaultproperties

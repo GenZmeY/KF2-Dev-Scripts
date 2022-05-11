@@ -25,9 +25,12 @@ function DropFrom(vector StartLocation, vector StartVelocity)
 	local KFDroppedPickup_Cash KFDP;
 	local PlayerReplicationInfo PRI;
 	local int Amount;
+	local KFGameReplicationInfo KFGRI;
+	
+	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
 
 	// if cannot spawn a pickup, then destroy and quit
-	if( DroppedPickupClass == None || DroppedPickupMesh == None )
+	if( DroppedPickupClass == None || DroppedPickupMesh == None || (KFGRI != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 16))
 	{
 		return;
 	}

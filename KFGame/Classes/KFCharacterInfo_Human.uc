@@ -871,7 +871,7 @@ private function SetAttachmentMeshAndSkin(
 				CharAttachmentSocketName, KFP.ArmsMesh, KFP, true);
 
 			KFGRI = KFGameReplicationInfo(KFP.WorldInfo.GRI);
-			if (AttachmentSlotIndex == 2 && KFP != none && KFGRI.bIsWeeklyMode && (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12))
+			if (AttachmentSlotIndex == 2 && KFP != none && KFGRI.bIsWeeklyMode && (KFGRI.CurrentWeeklyIndex == 12))
 			{
 				SetWeeklyCowboyAttachmentSkinMaterial(
 					AttachmentSlotIndex,
@@ -917,7 +917,7 @@ private function SetAttachmentMeshAndSkin(
 				CharAttachmentSocketName, KFP.Mesh, KFP, false);
 
 			KFGRI = KFGameReplicationInfo(KFP.WorldInfo.GRI);
-			if (AttachmentSlotIndex == 2 && KFP != none && KFGRI.bIsWeeklyMode && (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12))
+			if (AttachmentSlotIndex == 2 && KFP != none && KFGRI.bIsWeeklyMode && (KFGRI.CurrentWeeklyIndex == 12))
 			{
 				SetWeeklyCowboyAttachmentSkinMaterial(
 					AttachmentSlotIndex,

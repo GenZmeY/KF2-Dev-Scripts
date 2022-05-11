@@ -163,6 +163,25 @@ simulated protected function PrepareExplosionTemplate()
 	super.PrepareExplosionTemplate();
 }
 
+simulated protected function SetExplosionActorClass()
+{
+   local KFPlayerReplicationInfo InstigatorPRI;
+
+    if( WorldInfo.TimeDilation < 1.f && Instigator != none )
+    {
+       InstigatorPRI = KFPlayerReplicationInfo(Instigator.PlayerReplicationInfo);
+        if( InstigatorPRI != none )
+        {
+            if( InstigatorPRI.bNukeActive && class'KFPerk_Demolitionist'.static.ProjectileShouldNuke( self ) )
+            {
+                ExplosionActorClass = class'KFPerk_Demolitionist'.static.GetNukeExplosionActorClass();
+            }
+        }
+    }
+
+    super.SetExplosionActorClass();
+}
+
 simulated function SyncOriginalLocation()
 {
 	// IMPORTANT NOTE: We aren't actually syncing to the original location (or calling the super).

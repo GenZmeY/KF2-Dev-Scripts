@@ -216,7 +216,11 @@ function SetSumarryInfo()
 		}
 		else
 		{
-			if (KFGRI.default.bEndlessMode)
+			if (KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 16)
+			{
+				TextObject.SetString("waveTime", WaveString @ KFGRI.GunGameWavesCurrent  @"-" @FormatTime(KFGRI.ElapsedTime));
+			}
+			else if (KFGRI.default.bEndlessMode)
 			{
 				TextObject.SetString("waveTime", WaveString @ KFGRI.WaveNum  @"-" @FormatTime(KFGRI.ElapsedTime));
 			}

@@ -806,7 +806,7 @@ simulated function bool ShouldDisableZedTimeSkillsForWildWest()
 {
 	if (WorldInfo.NetMode == NM_Client)
 	{
-		return MyKFGRI.bIsWeeklyMode && class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12;
+		return MyKFGRI.bIsWeeklyMode && MyKFGRI.CurrentWeeklyIndex == 12;
 	}
 	else
 	{

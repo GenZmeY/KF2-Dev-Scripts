@@ -115,7 +115,7 @@ function float GetAttackSpeedModifier()
 	return 1.f;
 }
 
-function Accrue(float InPower)
+function Accrue(float InPower, optional class<KFDamageType> DamageType = none)
 {
     super.Accrue(InPower);
     if (PawnOwner != none)

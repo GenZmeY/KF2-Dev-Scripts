@@ -71,7 +71,7 @@ function TickHud(float DeltaTime)
 
 function UpdateWaveCount()
 {
-    local int CurrentWaveMax,CurrentWave;
+    local int CurrentWaveMax, CurrentWave;
 
     if( KFGRI == none )
     {
@@ -83,21 +83,46 @@ function UpdateWaveCount()
         return;
     }
 
-    // Max # of waves.
-	CurrentWaveMax = KFGRI.GetFinalWaveNum();
-    if(LastWaveMax != CurrentWaveMax)
-    {
-        SetInt("maxWaves" , KFGRI.default.bEndlessMode ? INDEX_NONE : CurrentWaveMax);
-        LastWaveMax = CurrentWaveMax;
-    }
+	if (KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 16)
+	{
+        CurrentWave = KFGRI.GunGameWavesCurrent;
+        CurrentWaveMax = KFGRI.GetFinalWaveNum();
 
-    // Current wave we're on.
-    CurrentWave = KFGRI.WaveNum;
-    if(CurrentWave != LastWave)
-    {
-        SetInt("currentWave" , CurrentWave);
+		if (KFGRI.bWaveGunGameIsFinal)
+		{
+            CurrentWave = CurrentWaveMax + 1;
+        }
+        else
+        {
+            CurrentWaveMax = -1;            
+        }
+
+        Setint("maxGunGameWave" , CurrentWaveMax);
+        Setint("currentGunGameWave" , CurrentWave);
+
+        LastWaveMax = CurrentWaveMax;
         LastWave = CurrentWave;
     }
+    else
+    {
+        CurrentWave = KFGRI.WaveNum;
+        CurrentWaveMax = KFGRI.GetFinalWaveNum();    
+
+        // Max # of waves.
+        if (LastWaveMax != CurrentWaveMax)
+        {
+            SetInt("maxWaves" , KFGRI.default.bEndlessMode ? INDEX_NONE : CurrentWaveMax);      
+            LastWaveMax = CurrentWaveMax;
+        }
+
+        // Current wave we're on.
+        if (CurrentWave != LastWave)
+        {
+            SetInt("currentWave" , CurrentWave);
+
+            LastWave = CurrentWave;
+        }
+    }    
 }
 
 function UpdateZEDCount()

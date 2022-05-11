@@ -291,6 +291,12 @@ simulated function bool ShouldAutoReload(byte FireModeNum)
 	return super.ShouldAutoReload(FireModeNum);
 }
 
+/** Called during reload state */
+simulated function bool CanOverrideMagReload(byte FireModeNum)
+{
+	return super.CanOverrideMagReload(FireModeNum) || FireModeNum == ALTFIRE_FIREMODE;
+}
+
 defaultproperties
 {
 	SeedFullRechargeSeconds=14 //10

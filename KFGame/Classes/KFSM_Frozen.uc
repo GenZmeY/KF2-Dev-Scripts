@@ -182,6 +182,8 @@ function SetFrozenParameter(float FreezeAmount)
 	local MaterialInstanceConstant MIC;
     local int i;
 	local bool bIsWWLMode;
+	local KFGameReplicationInfo KFGRI;
+
     if ( PawnOwner.WorldInfo.NetMode != NM_DedicatedServer )
     {
     	FreezeMatParamValue = FreezeAmount;
@@ -201,7 +203,8 @@ function SetFrozenParameter(float FreezeAmount)
 
 		if (KFPawn_Monster(KFPOwner) != none)
 		{
-			bIsWWLMode = class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12 && KFGameReplicationInfo(PawnOwner.WorldInfo.GRI) != none && KFGameReplicationInfo(PawnOwner.WorldInfo.GRI).bIsWeeklyMode; 
+			KFGRI = KFGameReplicationInfo(PawnOwner.WorldInfo.GRI);
+			bIsWWLMode = KFGRI != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 12; 
 
 			for (i = 0; i < KFPawn_Monster(KFPOwner).StaticAttachList.length; i++)
 			{

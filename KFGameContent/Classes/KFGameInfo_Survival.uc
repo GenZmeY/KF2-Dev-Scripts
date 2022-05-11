@@ -41,8 +41,12 @@ var	byte								WaveMax;	// The "end" wave
 var	int									WaveNum;	// The wave we are currently in
 var bool                                bHumanDeathsLastWave; //Track this separate from player count in case someone dies and leaves
 var int									ObjectiveSpawnDelay; // How long should the first wave be delayed if there is an active objective.
+
 // The boss waves spams the WaveEnd functions, adding this to prevent it (was affecting seasonal events).
 var protected transient bool    		bWaveStarted;
+
+// When this is true next wave will be last
+var protected bool						bGunGamePlayerOnLastGun;
 
 /** Whether this game mode should play music from the get-go (lobby) */
 static function bool ShouldPlayMusicAtStart()
@@ -69,6 +73,8 @@ event PostBeginPlay()
 	super.PostBeginPlay();
 
 	TimeBetweenWaves = GetTraderTime();
+
+	bGunGamePlayerOnLastGun = false;
 }
 
 /** Set up the spawning */
@@ -252,6 +258,16 @@ function RestartPlayer(Controller NewPlayer)
 						   "#"$KFPRI.Score ));
 		}
 	}
+}
+
+function ResetGunGame(KFPlayerController_WeeklySurvival KFPC_WS)
+{
+	super.ResetGunGame(KFPC_WS);
+}
+
+function RestartGunGamePlayerWeapon(KFPlayerController_WeeklySurvival KFPC_WS, byte WaveToUse)
+{
+	super.RestartGunGamePlayerWeapon(KFPC_WS, WaveToUse);
 }
 
 function Killed(Controller Killer, Controller KilledPlayer, Pawn KilledPawn, class<DamageType> damageType)
@@ -1186,7 +1202,31 @@ function WaveEnded(EWaveEndCondition WinCondition)
 			}
 		}
 
-		if( WaveNum < WaveMax )
+		if (OutbreakEvent != none && OutbreakEvent.ActiveEvent.bGunGameMode)
+		{
+			MyKFGRI.GunGameWavesCurrent += 1;
+
+			// If we unlocked last weapon we only finish if we completed the boss wave
+			// If we didn't unlock to last weapon and we just finished last wave (before BOSS), repeat
+			if (bGunGamePlayerOnLastGun)
+			{
+				MyKFGRI.bWaveGunGameIsFinal = true;
+
+				if (WaveNum < WaveMax)
+				{
+					WaveNum = WaveMax - 1;
+				}
+			}
+			else if (WaveNum >= WaveMax - 1)
+			{
+				// Repeat wave before BOSS till forever
+				WaveNum = WaveMax - 2;
+			}
+
+			MyKFGRI.bNetDirty = true;
+		}
+
+		if (WaveNum < WaveMax)
 		{
 			GotoState( 'TraderOpen', 'Begin' );
 		}
@@ -1841,6 +1881,7 @@ DefaultProperties
 	bCanPerkAlwaysChange=false
 	MaxGameDifficulty=3
 	bWaveStarted=false
+	bGunGamePlayerOnLastGun=false
 	
 	ObjectiveSpawnDelay=5
 

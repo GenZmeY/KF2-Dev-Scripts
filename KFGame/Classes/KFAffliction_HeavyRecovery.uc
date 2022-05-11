@@ -9,7 +9,7 @@
 class KFAffliction_HeavyRecovery extends KFAfflictionBase;
 
 /** */
-function Activate()
+function Activate(optional class<KFDamageType> DamageType = none)
 {
 	// Attempt to interrupt the special move
 	if( PawnOwner.SpecialMove != SM_None )

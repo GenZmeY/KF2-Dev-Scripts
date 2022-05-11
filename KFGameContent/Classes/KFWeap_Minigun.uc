@@ -303,11 +303,11 @@ defaultproperties
 	
 	// movement and rotation speed values when winding up
 	WindUpViewRotationSpeed=2000 // base rotation speed is 2000
-	WindUpPawnMovementSpeed=0.8f //0.7f // base modifier is 1
+	WindUpPawnMovementSpeed=0.9f //0.8f //0.7f // base modifier is 1
 	
 	// movement and rotation speed values when firing
-	FiringViewRotationSpeed=488 //320 //270
-	FiringPawnMovementSpeed=0.3f //0.2f //0.08f
+	FiringViewRotationSpeed=1000 //488 //320 //270
+	FiringPawnMovementSpeed=1.8f //0.3f //0.2f //0.08f
 }
 
 

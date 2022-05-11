@@ -386,7 +386,7 @@ simulated function float GetWeaponRatingFor( Weapon W )
 /**
  * returns the best weapon for this Pawn in loadout
  */
-simulated function Weapon GetBestWeapon( optional bool bForceADifferentWeapon  )
+simulated function Weapon GetBestWeapon( optional bool bForceADifferentWeapon, optional bool allow9mm )
 {
 	local Weapon	W, BestWeapon;
 	local float		Rating, BestRating;
@@ -419,7 +419,7 @@ simulated function Weapon GetBestWeapon( optional bool bForceADifferentWeapon  )
  * Switch to best weapon available in loadout
  * Network: LocalPlayer
  */
-simulated function SwitchToBestWeapon( optional bool bForceADifferentWeapon )
+simulated function SwitchToBestWeapon( optional bool bForceADifferentWeapon, optional bool check_9mm_logic = false )
 {
 	local Weapon BestWeapon;
 

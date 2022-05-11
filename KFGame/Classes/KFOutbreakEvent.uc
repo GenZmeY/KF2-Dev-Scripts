@@ -99,6 +99,10 @@ struct StatAdjustments
 	/** WeakPoints to show special VFX*/
 	var() array<WeakPoint> WeakPoints;
 
+	/** Score given when killed on GunGame weekly  */
+	var() byte GunGameKilledScore;
+	var() byte GunGameAssistanceScore;
+
 	structdefaultproperties
 	{
 		HealthScale = 1.f;
@@ -118,6 +122,8 @@ struct StatAdjustments
 		DoshGiven=INDEX_NONE
 
 		InitialGroundSpeedModifierScale = 1.0
+		GunGameKilledScore = 0;
+		GunGameAssistanceScore = 0;
 	}
 };
 
@@ -138,6 +144,24 @@ struct BossRushOverridesPerWave
 struct BossRushOverrides
 {
 	var() array <BossRushOverridesPerWave> PerWaves;
+};
+
+struct GunGameLevel
+{
+	var() int RequiredScore;
+	var() array< class<KFWeaponDefinition> > GrantedWeapons;
+};
+
+struct GunGameRespawnLevel
+{
+	var() int Wave;
+	var() int Level;
+};
+
+struct GunGamePerkData
+{
+	var() array<GunGameLevel> GunGameLevels;
+	var() array<GunGameRespawnLevel> GunGameRespawnLevels;
 };
 
 /** Individual property overrides that drive other behavior to allow for
@@ -209,6 +233,9 @@ struct WeeklyOverrides
 
 	/** Whether or not to skip opening of the trader */
 	var() bool bDisableTraders;
+
+	/** Whether or not to force show skip trader button */
+	var() bool bForceShowSkipTrader;
 
 	/** When to reset pickups */
 	var() PickupResetTime PickupResetTime;
@@ -394,6 +421,12 @@ struct WeeklyOverrides
 	/** Global modifier of dosh received by players when a zed is killed. Default value is 1.0 */
 	var() float DoshOnKillGlobalModifier;
 
+	/** Disable Add Dosh */
+	var() bool bDisableAddDosh;
+
+	/** Disable Throw Weapon */
+	var() bool bDisableThrowWeapon;
+
 	/** Delay After a wave starts for applying global damage. */
 	var() float DamageDelayAfterWaveStarted;
 
@@ -411,8 +444,23 @@ struct WeeklyOverrides
 
 	var() BossRushOverrides BossRushOverrideParams;
 
+	/**  */
+	var() bool bGunGameMode;
+
+	/** Information about each level in Gun Game Mode */
+	var() GunGamePerkData GunGamePerksData; 
+
 	/** Ignores damage caused by headshots. */
 	var() bool bInvulnerableHeads;
+
+	/** Trade time override. */
+	var() float TraderTimeModifier;
+
+	/** Time between waves override. */
+	var() float TimeBetweenWaves;
+
+	/** Wether or not we only can spawn Armor on the Item pickups */
+	var() bool bOnlyArmorItemPickup;
 
 	structdefaultproperties
 	{
@@ -471,7 +519,14 @@ struct WeeklyOverrides
 		DroppedItemLifespan=-1.0f
 		bForceWWLMusic = false;
 		bBossRushMode = false;
+		bDisableAddDosh = false;
+		bDisableThrowWeapon = false;
+		bGunGameMode = false;
 		bInvulnerableHeads = false;
+		TraderTimeModifier = 1.f;
+		TimeBetweenWaves = -1.f;
+		bOnlyArmorItemPickup=false;
+		bForceShowSkipTrader = false;
 	}
 };
 
@@ -485,12 +540,14 @@ struct CachedOutbreakInfo
 	var float CachedWorldGravityZ;
 	var float CachedGlobalGravityZ;
 	var PerkAvailableData PerksAvailableData;
+	var bool bForceShowSkipTrader;
 
 	structdefaultproperties
 	{
-		bTradersEnabled=true,
+		bTradersEnabled=true
 		bAllowGrenadePurchase=true
 		GameAmmoCostScale=1.0
+		bForceShowSkipTrader=false
 	}
 };
 
@@ -506,7 +563,7 @@ var WeeklyOverrides ActiveEvent;
 /** Stored values of World Info and GRI items incase we need to reset it. */
 var CachedOutbreakInfo CachedItems;
 
-function SetActiveEvent(int ActiveEventIdx)
+function int SetActiveEvent(int ActiveEventIdx)
 {
 `if(`notdefined(ShippingPC))
 	local string LocalURL;
@@ -537,6 +594,8 @@ function SetActiveEvent(int ActiveEventIdx)
 		ActiveEvent = SetEvents[ActiveEventIdx];
 	}
 `endif
+
+	return ActiveEventIdx;
 }
 
 function ClearActiveEvent()
@@ -562,6 +621,7 @@ function ClearActiveEvent()
 		KFGameReplicationInfo(GameReplicationInfo).bAllowGrenadePurchase = CachedItems.bAllowGrenadePurchase;
 		KFGameReplicationInfo(GameReplicationInfo).bTradersEnabled = CachedItems.bTradersEnabled;
 		KFGameReplicationInfo(GameReplicationInfo).MaxPerkLevel = CachedItems.MaxPerkLevel;
+		KFGameReplicationInfo(GameReplicationInfo).bForceShowSkipTrader = CachedItems.bForceShowSkipTrader;
 	}
 
 	ActiveEvent = EmptyEvent;
@@ -588,6 +648,7 @@ function CacheGRI()
 		CachedItems.bAllowGrenadePurchase = KFGameReplicationInfo(GameReplicationInfo).bAllowGrenadePurchase;
 		CachedItems.bTradersEnabled = KFGameReplicationInfo(GameReplicationInfo).bTradersEnabled;
 		CachedItems.MaxPerkLevel = KFGameReplicationInfo(GameReplicationInfo).MaxPerkLevel;
+		CachedItems.bForceShowSkipTrader = KFGameReplicationInfo(GameReplicationInfo).bForceShowSkipTrader;
 	}
 }
 
@@ -641,6 +702,7 @@ function UpdateGRI()
 		KFGRI.bAllowGrenadePurchase = !ActiveEvent.bDisableGrenades;
 		KFGRI.bTradersEnabled = !ActiveEvent.bDisableTraders;
 		KFGRI.MaxPerkLevel = ActiveEvent.MaxPerkLevel;
+		KFGRI.bForceShowSkipTrader = ActiveEvent.bForceShowSkipTrader;
 	}
 }
 
@@ -892,6 +954,9 @@ function AdjustDefaults(out KFPawn_Monster P, array <StatAdjustments> Adjustment
 			P.HealByKill = ToAdjust.HealByKill;
 			P.HealByAssistance = ToAdjust.HealByAssistance;
 			P.InitialGroundSpeedModifier *= ToAdjust.InitialGroundSpeedModifierScale;
+
+			P.GunGameKilledScore = ToAdjust.GunGameKilledScore;
+			P.GunGameAssistanceScore = ToAdjust.GunGameAssistanceScore;
 
 			if (ToAdjust.bStartEnraged)
 			{

@@ -36,6 +36,8 @@ var bool                            bUsesSecondaryAmmo;
 var bool							bUsesGrenadesAsSecondaryAmmo;
 var bool                            bUsesSecondaryAmmoAltHUD;
 
+var transient bool                  bLastDoshVisibility;
+
 var class<KFPerk> LastPerkClass;
 var KFWeapon LastWeapon;
 
@@ -44,6 +46,8 @@ var KFInventoryManager MyKFInvManager;
 var ASColorTransform DefaultColor;
 var ASColorTransform RedColor;
 var name OldState;
+
+var transient byte LastGrenadeIndex;
 
 function InitializeHUD()
 {
@@ -87,6 +91,20 @@ function UpdateDosh()
 {
     local int CurrentDosh;
     local int DeltaDosh;
+    local bool bCanUseDosh;
+
+    bCanUseDosh = MyKFPC.CanUseDosh();
+    
+    if (bCanUseDosh != bLastDoshVisibility)
+    {
+        UpdateDoshVisibility(bCanUseDosh);
+        bLastDoshVisibility = bCanUseDosh;
+    }
+
+    if (!bCanUseDosh)
+    {
+        return;
+    }
 
     if (MyKFPC.PlayerReplicationInfo != none)
     {
@@ -99,6 +117,18 @@ function UpdateDosh()
             SetInt("backpackDosh" ,DeltaDosh);
             LastDosh = CurrentDosh;
         }
+    } 
+}
+
+function UpdateDoshVisibility(bool visible)
+{
+    if (visible)
+    {
+        SetBool("DoshSetVisibility", true);
+    }
+    else
+    {
+        SetBool("DoshSetVisibility", false);
     }
 }
 
@@ -125,7 +155,13 @@ function UpdateGrenades()
             SetString("backpackGrenadeType", "img://" $ MyKFPC.CurrentPerk.GetGrenadeImagePath());
             LastPerkClass = MyKFPC.CurrentPerk.Class;
             LastSavedBuild = MyKFPC.CurrentPerk.GetSavedBuild();
-        }  
+            LastGrenadeIndex = MyKFPC.CurrentPerk.GetGrenadeSelectedIndex();
+        } 
+        else if (MyKFPC.CurrentPerk.GetGrenadeSelectedIndex() != LastGrenadeIndex)
+        {
+            SetString("backpackGrenadeType", "img://" $ MyKFPC.CurrentPerk.GetGrenadeImagePath());
+            LastGrenadeIndex = MyKFPC.CurrentPerk.GetGrenadeSelectedIndex();
+        }
     }
     // Update the grenades count value
     if(CurrentGrenades != LastGrenades)
@@ -328,4 +364,6 @@ DefaultProperties
 {
     LastMaxWeight=-1   
     LastWeight=-1
+    bLastDoshVisibility=true
+    LastGrenadeIndex=0
 }

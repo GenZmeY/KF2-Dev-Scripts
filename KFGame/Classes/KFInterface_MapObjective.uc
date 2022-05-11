@@ -11,6 +11,7 @@
 interface KFInterface_MapObjective;
 
 // Status
+simulated function bool CanActivateObjectiveByWeekly();
 simulated function ActivateObjective();
 simulated function DeactivateObjective();
 simulated function GrantReward(KFPlayerReplicationInfo KFPRI, KFPlayerController KFPC);

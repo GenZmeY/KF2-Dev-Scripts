@@ -1525,6 +1525,8 @@ defaultproperties
 			/*AF_Freeze*/	(Vulnerability=(0.0),						Cooldown=10.0, Duration=1.0),
 			/*AF_Microwave*/(Vulnerability=(0.08),						Cooldown=10.0, Duration=3.0),
 			/*AF_Bleed*/	(Vulnerability=(0.15),						Cooldown=10.0),
+			/*AF_Bighead*/  (Vulnerability=(0.0)),
+			/*AF_Shrink*/   (Vulnerability=(1.0))
 		)}
 	)}
 	BattlePhases(1)={(
@@ -1554,6 +1556,8 @@ defaultproperties
 			/*AF_Freeze*/	(Vulnerability=(0.65),                      Cooldown=10.0, Duration=1.0),
 			/*AF_Microwave*/(Vulnerability=(0.08),                      Cooldown=10.0, Duration=3.0),
 			/*AF_Bleed*/	(Vulnerability=(0.15),                      Cooldown=10.0),
+			/*AF_Bighead*/  (Vulnerability=(0.0)),
+			/*AF_Shrink*/   (Vulnerability=(1.0))
 		)},
 		DamageFX={(
 			FXInfo={(
@@ -1595,6 +1599,8 @@ defaultproperties
 			/*AF_Freeze*/	(Vulnerability=(0.65),                      Cooldown=10.0, Duration=1.0),
 			/*AF_Microwave*/(Vulnerability=(0.08),                      Cooldown=10.0, Duration=3.0),
 			/*AF_Bleed*/	(Vulnerability=(0.15),                      Cooldown=10.0),
+			/*AF_Bighead*/  (Vulnerability=(0.0)),
+			/*AF_Shrink*/   (Vulnerability=(1.0))
 		)},
 		DamageFX={(
 			FXInfo={(
@@ -1648,6 +1654,8 @@ defaultproperties
 			/*AF_Freeze*/	(Vulnerability=(0.65),                      Cooldown=10.0, Duration=1.0),
 			/*AF_Microwave*/(Vulnerability=(0.08),                      Cooldown=10.0, Duration=3.0),
 			/*AF_Bleed*/	(Vulnerability=(0.15),                      Cooldown=10.0),
+			/*AF_Bighead*/  (Vulnerability=(0.0)),
+			/*AF_Shrink*/   (Vulnerability=(1.0))
 		)},
 		DamageFX={(
 			FXInfo={(
@@ -1960,6 +1968,7 @@ defaultproperties
     DamageTypeModifiers.Add((DamageType=class'KFDT_EMP_ArcGeneratorSphereImpact',       		DamageScale=(2)))
     DamageTypeModifiers.Add((DamageType=class'KFDT_EMP_ArcGenerator_DefaultFiremodeZapDamage', 	DamageScale=(1.5)))
     DamageTypeModifiers.Add((DamageType=class'KFDT_EMP_ArcGenerator_AltFiremodeZapDamage',		DamageScale=(1.5)))
+    DamageTypeModifiers.Add((DamageType=class'KFDT_Shrink_ShrinkRayGun',						DamageScale=(3.0)))
 	DamageTypeModifiers.Add((DamageType=class'KFDT_Ballistic_HRGScorcherLightingImpact', 	    DamageScale=(0.4)))
     DamageTypeModifiers.Add((DamageType=class'KFDT_Fire_HRGScorcherDoT',		                DamageScale=(0.4)))
 
@@ -1972,6 +1981,7 @@ defaultproperties
 	DamageTypeModifiers.Add((DamageType=class'KFDT_Ballistic_HRG_Vampire_BloodBallHeavyImpact',	DamageScale=(0.4)))
 	DamageTypeModifiers.Add((DamageType=class'KFDT_Piercing_HRG_Vampire_CrystalSpike',			DamageScale=(0.3)))
 	DamageTypeModifiers.Add((DamageType=class'KFDT_Bleeding_HRG_Vampire_BloodSuck',				DamageScale=(0.7)))
+	DamageTypeModifiers.Add((DamageType=class'KFDT_Piercing_HRG_CranialPopper',					DamageScale=(2.0)))
 
 	// ---------------------------------------------
     // Armor
@@ -2021,4 +2031,6 @@ defaultproperties
 	GunTargetBoneName=Spine2
 
 	ZEDCowboyHatAttachName=Hat_Attach
+
+	ShrinkEffectModifier = 0.15f
 }

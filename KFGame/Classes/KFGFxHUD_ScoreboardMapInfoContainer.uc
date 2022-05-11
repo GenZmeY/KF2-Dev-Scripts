@@ -89,7 +89,19 @@ function UpdateWaveCount()
 	}
 
 	CurrentWaveNum = KFGRI.WaveNum;
-    if(KFGRI.IsBossWave())
+
+	if (KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 16)
+	{
+		if (KFGRI.bWaveGunGameIsFinal)
+		{
+			SetString("waveNumber", FinalString);
+		}
+		else
+		{
+			SetString("waveNumber", "" $ KFGRI.GunGameWavesCurrent);
+		}
+	}
+	else if(KFGRI.IsBossWave())
     {
 		SetString("waveNumber", class'KFGFxHUD_WaveInfo'.default.BossWaveString);
     }

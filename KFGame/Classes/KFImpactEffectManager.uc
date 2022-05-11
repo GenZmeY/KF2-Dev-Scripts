@@ -92,7 +92,7 @@ simulated function PlayImpactEffects(const vector HitLocation, const Pawn Effect
 			}
 		}
 
-		bIsWeaponHandlingEffects = KFPawn(EffectInstigator).MyKFWeapon.bForceHandleImpacts;
+		bIsWeaponHandlingEffects = KFPawn(EffectInstigator).MyKFWeapon != none ? KFPawn(EffectInstigator).MyKFWeapon.bForceHandleImpacts : false;
 
 		// Trace using the Instigator as the TraceOwner so that melee weapons don't collide with Instigator
 		HitActor = EffectInstigator.Trace(NewHitLoc, HitNormal, (HitLocation - (HitNormal * 32)), HitLocation + (HitNormal * 32), !bWorldImpactsOnly,, HitInfo, TRACEFLAG_Bullet);

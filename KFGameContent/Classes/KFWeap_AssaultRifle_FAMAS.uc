@@ -676,9 +676,9 @@ defaultproperties
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Ballistic_FAMAS_Shotgun'
 	InstantHitDamage(ALTFIRE_FIREMODE)=30.0 //25.0
 	PenetrationPower(ALTFIRE_FIREMODE)=2.0
-   	FireInterval(ALTFIRE_FIREMODE)=+1.2 //50 RPM
+   	FireInterval(ALTFIRE_FIREMODE)=+0.77 //78 RPM //+1.2 //50 RPM
 	NumPellets(ALTFIRE_FIREMODE)=7 //6
-	Spread(ALTFIRE_FIREMODE)=0.10 //0.12
+	Spread(ALTFIRE_FIREMODE)=0.08 //0.10 //0.12
     SecondaryAmmoTexture=Texture2D'ui_firemodes_tex.UI_FireModeSelect_ShotgunSingle'
 
 	// BASH_FIREMODE

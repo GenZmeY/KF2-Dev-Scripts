@@ -131,8 +131,21 @@ struct InventoryHelper
 	var int ItemDefinition;
 	var int ItemIndex;
 	var int ItemCount;
+	var ItemType Type;
 	var GFxObject GfxItemObject;
+	
+	// For ordering in weapon skins
+	var int WeaponDef;
+	var int Price;
+	//var string FullName;
+	var int SkinType;
+	var ItemRarity Rarity;
+	var int Quality;
 };
+
+var array<InventoryHelper> SkinListWeaponsSearchCache;
+var array<InventoryHelper> SkinListOrderedCache;
+var bool NeedToRegenerateSkinList;
 
 var EInventoryWeaponType_Filter CurrentWeaponTypeFilter;
 var int CurrentPerkIndexFilter;
@@ -142,9 +155,14 @@ var EINventory_Filter CurrentInventoryFilter;
 
 var ExchangeRuleSets RuleToExchange;
 
+var private int CrcTable[256];
+
 function InitializeMenu( KFGFxMoviePlayer_Manager InManager )
 {
 	super.InitializeMenu( InManager );
+
+	CrcInit();
+
 	KFPC = KFPlayerController(GetPC());
 	CurrentPerkIndexFilter = KFPC.PerkList.length; //default value
 
@@ -229,15 +247,95 @@ function OnClose()
 	}
 }
 
+final function CrcInit() {
+ 
+  const CrcPolynomial = 0xedb88320;
+ 
+  local int CrcValue;
+  local int IndexBit;
+  local int IndexEntry;
+ 
+  for (IndexEntry = 0; IndexEntry < 256; IndexEntry++) {
+    CrcValue = IndexEntry;
+ 
+    for (IndexBit = 8; IndexBit > 0; IndexBit--)
+      if ((CrcValue & 1) != 0)
+        CrcValue = (CrcValue >>> 1) ^ CrcPolynomial;
+      else
+        CrcValue = CrcValue >>> 1;
+ 
+    CrcTable[IndexEntry] = CrcValue;
+    }
+  }
+
+final function int Crc(coerce string Text)
+{
+  local int CrcValue;
+  local int IndexChar;
+  local int StrLen;
+ 
+  CrcValue = 0xffffffff;
+  StrLen = Len(Text);
+  for (IndexChar = 0; IndexChar < StrLen; IndexChar++)
+    CrcValue = (CrcValue >>> 8) ^ CrcTable[(Asc(Mid(Text, IndexChar, 1)) ^ CrcValue) & 0xff];
+ 
+  return CrcValue;
+}
+
+delegate int SortByWeaponTypeDefinition(InventoryHelper A, InventoryHelper B)
+{
+	return A.WeaponDef < B.WeaponDef ? -1 : +1;
+}
+
+delegate int SortByPrice(InventoryHelper A, InventoryHelper B)
+{
+	return A.Price > B.Price ? -1 : +1;
+}
+
+delegate int SortByRarity(InventoryHelper A, InventoryHelper B)
+{
+	return A.Rarity > B.Rarity ? -1 : +1;
+}
+
+delegate int SortBySkinType(InventoryHelper A, InventoryHelper B)
+{
+	return A.SkinType > B.SkinType ? -1 : +1;
+}
+
+delegate int SortByQuality(InventoryHelper A, InventoryHelper B)
+{
+	return A.Quality < B.Quality ? -1 : +1;
+}
+
+delegate int SortByAll(InventoryHelper A, InventoryHelper B)
+{
+	//local int WeapDefValue, SkinTypeValue;
+
+	/** Format: Compare lower ? -1 : (Compare upper) : 1 : (Equal case, repeat formula with the next sort condition)  */
+	return  A.Price > B.Price ? -1 : (A.Price < B.Price ? 1 : (
+				//STRCompare(A.WeaponDef, B.WeaponDef, WeapDefValue) < 0 ? -1 : ( WeapDefValue != 0 ? 1 : ( 
+				A.WeaponDef < B.WeaponDef ? -1 : (A.WeaponDef > B.WeaponDef ? 1 : (
+					A.Rarity > B.Rarity ? -1 : (A.Rarity < B.Rarity ? 1 : (
+						//STRCompare(A.SkinType, B.SkinType, SkinTypeValue) > 0 ? -1 : ( SkinTypeValue != 0 ? 1 : ( 
+						A.SkinType > B.SkinType ? -1 : (A.SkinType < B.SkinType ? 1 : (
+							A.Quality < B.Quality ? -1 : 1
+						))
+					))
+				))
+	));
+}
+
 function InitInventory()
 {
-	local int i, ItemIndex, HelperIndex;
+	local int i, ItemIndex, HelperIndex, WeaponItemID, SearchWeaponSkinIndex;
 	local ItemProperties TempItemDetailsHolder;
 	local GFxObject ItemArray, ItemObject;
 	local bool bActiveItem;
-	local array<InventoryHelper> ActiveItems;
+	local array<InventoryHelper> ActiveItems, ValidSkinItems, FailedSkinItems;
 	local InventoryHelper HelperItem;
 	local array<ExchangeRuleSets> ExchangeRules;
+	local class<KFWeaponDefinition> WeaponDef;
+	local string SkinType;
 
 	local GFxObject PendingItem;
 
@@ -249,6 +347,7 @@ function InitInventory()
 		SetObject("inventoryList", ItemArray);
 		return;
 	}
+
 	for (i = 0; i < OnlineSub.CurrentInventory.length; i++)
 	{
 		//look item up to get info on it.
@@ -264,10 +363,62 @@ function InitInventory()
 				ItemObject = CreateObject("Object");
 				HelperIndex = ActiveItems.Find('ItemDefinition', onlineSub.CurrentInventory[i].Definition);
 
-				if(HelperIndex == INDEX_NONE)
+				if (HelperIndex == INDEX_NONE)
 				{
-					HelperItem.ItemDefinition = onlineSub.CurrentInventory[i].Definition;
-					HelperItem.ItemCount = onlineSub.CurrentInventory[i].Quantity;
+					HelperItem.ItemDefinition 	= onlineSub.CurrentInventory[i].Definition;
+					HelperItem.ItemCount 		= onlineSub.CurrentInventory[i].Quantity;
+
+					if (TempItemDetailsHolder.Type == ITP_WeaponSkin)
+					{
+						// Copy required stuff
+						//HelperItem.FullName		= TempItemDetailsHolder.Name;
+						HelperItem.Rarity 			= TempItemDetailsHolder.Rarity;
+						HelperItem.Quality 			= TempItemDetailsHolder.Quality;
+
+						if (bool(OnlineSub.CurrentInventory[i].NewlyAdded))
+						{
+							NeedToRegenerateSkinList = true;
+						}
+
+						// Search on the cache, to speed up
+						WeaponItemID = SkinListWeaponsSearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
+
+						if (WeaponItemID != INDEX_NONE)
+						{
+							HelperItem.WeaponDef 	= SkinListWeaponsSearchCache[WeaponItemID].WeaponDef;
+							HelperItem.Price 		= SkinListWeaponsSearchCache[WeaponItemID].Price;
+							HelperItem.SkinType 	= SkinListWeaponsSearchCache[WeaponItemID].SkinType;
+						}
+						else
+						{
+							// Get right part of the string without from the first "| "
+							SearchWeaponSkinIndex 	= InStr(TempItemDetailsHolder.Name, "|");
+							SkinType 				= Right(TempItemDetailsHolder.Name, Len(TempItemDetailsHolder.Name) - SearchWeaponSkinIndex - 2);
+
+							// Get the left part of the string without the next "| "
+							SearchWeaponSkinIndex	= InStr(SkinType, "|");
+							HelperItem.SkinType 	= CrC(Left(SkinType, SearchWeaponSkinIndex));
+
+							WeaponItemID = class'KFWeaponSkinList'.default.Skins.Find('Id', HelperItem.ItemDefinition);
+
+							if (WeaponItemID != INDEX_NONE)
+							{
+								WeaponDef = class'KFWeaponSkinList'.default.Skins[WeaponItemID].WeaponDef;
+
+								// All Weapons start by KFGameContent.KFWeap_ Skip that prefix.
+								HelperItem.WeaponDef 	= CrC(Mid(WeaponDef.default.WeaponClassPath, 21));
+								HelperItem.Price 		= WeaponDef.default.BuyPrice;
+							}
+							else
+							{
+								HelperItem.WeaponDef	= -1;
+								HelperItem.Price 		= 0;
+							}
+
+							SkinListWeaponsSearchCache.AddItem(HelperItem);
+						}
+					}
+
 					ActiveItems.AddItem(HelperItem);
 					HelperIndex = ActiveItems.length - 1;
 				}
@@ -314,9 +465,87 @@ function InitInventory()
 
 	OnlineSub.ClearNewlyAdded();
 
-	for (i = 0; i < ActiveItems.length; i++)
+	if (CurrentInventoryFilter == EInv_WeaponSkins)
 	{
-		ItemArray.SetElementObject(i, ActiveItems[i].GfxItemObject);
+		// If need to refresh... we regenerate the list, if not reuse our Cache
+		NeedToRegenerateSkinList = NeedToRegenerateSkinList || ActiveItems.Length != SkinListOrderedCache.Length;
+		if (NeedToRegenerateSkinList)
+		{
+			NeedToRegenerateSkinList = false;
+
+			/*`Log("START ORDERING!!!");
+			`Log("----------");*/
+
+			for (i = 0 ; i < ActiveItems.Length; i++)
+			{
+				// If doesn't have weapon definition, don't consider, only add as FailedItem to be added at the end
+				if (ActiveItems[i].WeaponDef != -1)
+				{
+					ValidSkinItems.AddItem(ActiveItems[i]);
+				}
+				else
+				{
+					FailedSkinItems.AddItem(ActiveItems[i]);
+				}
+			}
+
+			// Now we have all valid weapons
+
+			// We want to order by Price - Weapon Def - Rarity - Quality
+			// So we order inverse that way we keep the final list with the design intention
+
+			ValidSkinItems.Sort(SortByAll);
+
+			SkinListOrderedCache = ValidSkinItems;
+
+			/*for (i = 0 ; i < SkinListOrderedCache.Length; i++)
+			{
+				`Log("ID : " $SkinListOrderedCache[i].ItemDefinition);
+				`Log("Weapon Def : " $SkinListOrderedCache[i].WeaponDef);
+				`Log("Price : " $SkinListOrderedCache[i].Price);
+				//`Log("Full Name : " $SkinListOrderedCache[i].FullName);
+				`Log("Skin : " $SkinListOrderedCache[i].SkinType);
+				`Log("Rarity : " $SkinListOrderedCache[i].Rarity);
+				`Log("Quality : " $SkinListOrderedCache[i].Quality);
+				`Log("----------");
+			}*/
+
+			// FailedItems are weapons that don't have a Weapon Definition, this might be a case with old unsupported content?
+			for (i = 0; i < FailedSkinItems.Length; i++)
+			{
+				/*if (FailedSkinItems[i].FullName != "")
+				{
+					`Log("FailedSkinItems ID : " $FailedSkinItems[i].ItemDefinition);
+					`Log("FailedSkinItems Price : " $FailedSkinItems[i].Price);
+					`Log("FailedSkinItems Full Name : " $FailedSkinItems[i].FullName);
+					`Log("FailedSkinItems Skin : " $FailedSkinItems[i].SkinType);
+					`Log("FailedSkinItems Rarity : " $FailedSkinItems[i].Rarity);
+					`Log("FailedFailedSkinItemsItems Quality : " $FailedSkinItems[i].Quality);
+					`Log("----------");
+				}*/
+
+				SkinListOrderedCache.AddItem(FailedSkinItems[i]);
+			}
+
+			/*`Log("FINISH ORDERING!!!");
+			`Log("----------");*/
+		}
+		else
+		{
+			//`Log("USING SKIN LIST CACHE!!!");
+		}
+
+		for (i = 0; i < SkinListOrderedCache.length; i++)
+		{
+			ItemArray.SetElementObject(i, SkinListOrderedCache[i].GfxItemObject);
+		}	
+	}
+	else
+	{
+		for (i = 0; i < ActiveItems.length; i++)
+		{
+			ItemArray.SetElementObject(i, ActiveItems[i].GfxItemObject);
+		}
 	}
 
 	SetObject("inventoryList", ItemArray);
@@ -376,6 +605,9 @@ function OnItemExhangeTimeOut()
 function FinishCraft()
 {
 	SetVisible(true);
+
+	`Log("FinishCraft");
+	NeedToRegenerateSkinList = true;
 }
 
 function SetMatineeColor(int ItemRarity)
@@ -494,9 +726,11 @@ function bool IsItemActive(int ItemDefinition)
 
 	if(WeaponDef != none)
 	{
-		return class'KFWeaponSkinList'.Static.IsSkinEquip(WeaponDef, ItemDefinition);
+		if (class'KFWeaponSkinList'.Static.IsSkinEquip(WeaponDef, ItemDefinition))
+		{
+			return true;
+		}
 	}
-
 
 	return false;
 }
@@ -953,6 +1187,7 @@ function Callback_Equip( int ItemDefinition )
 	}
 
 	//refresh inventory
+	NeedToRegenerateSkinList = true; // need to regenerate as the equipped state changed
 	InitInventory();
 }
 
@@ -1249,6 +1484,8 @@ function Callback_PreviewItem( int ItemDefinition )
 
 defaultproperties
 {
+	NeedToRegenerateSkinList=false
+
 	CurrentWeaponTypeFilter = EInvWT_None;
 	CurrentRarityFilter = ITR_NONE;
 

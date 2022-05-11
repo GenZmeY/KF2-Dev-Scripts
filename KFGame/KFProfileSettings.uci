@@ -74,3 +74,5 @@ const KFID_GamepadDeadzoneScale = 175;
 const KFID_GamepadAccelerationJumpScale = 176;
 const KFID_HasTabbedToStore = 177;
 const KFID_AllowSwapTo9mm = 178; // Halloween 2021 QoL: added option to quick switch weapons to 9mm 
+const KFID_SurvivalStartingWeapIdx=179; // Summer 2022 QoL: added option to choose starting weapon for survival perk
+const KFID_SurvivalStartingGrenIdx=180; // Summer 2022 QoL: added option to choose starting grenade for survival perk

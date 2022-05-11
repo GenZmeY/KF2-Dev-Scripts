@@ -70,6 +70,9 @@ var KFGFxWidget_BossHealthBar bossHealthBar;
 var KFGFxWidget_MapText MapTextWidget;
 // Widget that displays map texts
 var KFGFxWidget_MapCounterText MapCounterTextWidget;
+// Widget that displays gun mode texts
+var KFGFxWidget_GunGame GunGameWidget;
+
 
 var KFPlayerController KFPC;
 
@@ -101,6 +104,9 @@ var Protected float LastUpdateTime;
 
 // The name of the player currently being voted on to kick
 var string PendingKickPlayerName;
+
+// Gun game variables
+var transient bool                  bLastGunGameVisibility;
 
 /** On creation of the HUD */
 function Init(optional LocalPlayer LocPlay)
@@ -348,6 +354,13 @@ event bool WidgetInitialized(name WidgetName, name WidgetPath, GFxObject Widget)
             GoompaCounterWidget=KFGFxWidget_GoompaCounter(Widget);
         }
         break;
+    case 'GunGameContainer':
+        if (GunGameWidget == none)
+        {
+            GunGameWidget=KFGFxWidget_GunGame(Widget);
+            SetWidgetPathBinding( Widget, WidgetPath );
+        }
+        break;
     }
    
     return true;
@@ -376,6 +389,8 @@ function UpdateWeaponSelect()
 /** Update all the unique HUD pieces */
 function TickHud(float DeltaTime)
 {
+    local bool bGunGameVisibility;
+
     if(KFPC == none || KFPC.WorldInfo.TimeSeconds - LastUpdateTime < UpdateInterval )
     {
         return;
@@ -446,6 +461,22 @@ function TickHud(float DeltaTime)
     if(GfxScoreBoardPlayer != none)
     {
         GfxScoreBoardPlayer.TickHud(DeltaTime);
+    }
+
+    if (GunGameWidget != none)
+    {
+        bGunGameVisibility = KFPC.CanUseGunGame();
+
+        if (bGunGameVisibility)
+        {
+             bGunGameVisibility = KFPC.Pawn.Health > 0;
+        }
+    
+        if (bGunGameVisibility != bLastGunGameVisibility)
+        {
+            GunGameWidget.UpdateGunGameVisibility(bGunGameVisibility);
+            bLastGunGameVisibility = bGunGameVisibility;
+        }
     }
 }
 
@@ -781,7 +812,18 @@ function DisplayExpandedWaveInfo()
 		}
 		else
 		{
-			if (KFGRI.IsBossWave())
+            if (KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 16)
+            {
+				if (KFGRI.bWaveGunGameIsFinal)
+				{
+					PriorityMessageObject.SetString("waveNum", class'KFGFxHUD_WaveInfo'.default.FinalWaveString);
+				}
+				else
+				{
+	                PriorityMessageObject.SetString("waveNum", KFGRI.GunGameWavesCurrent $"/?");
+				}
+            }
+            else if (KFGRI.IsBossWave())
 			{
 				PriorityMessageObject.SetString("waveNum", class'KFGFxHUD_WaveInfo'.default.BossWaveString);
 			}
@@ -1088,6 +1130,14 @@ function UpdateGoompaCounterWidget(int value, int max)
     if(GoompaCounterWidget != none)
     {
         GoompaCounterWidget.SetCount(value, max);
+    }
+}
+
+function UpdateGunGameWidget(int score, int max_score, int level, int max_level)
+{
+    if (GunGameWidget != none)
+    {
+        GunGameWidget.SetData(score, max_score, level, max_level);
     }
 }
 
@@ -1441,6 +1491,8 @@ DefaultProperties
     bAutoPlay=true
     bIsSpectating=false
 
+    bLastGunGameVisibility=true
+
     WidgetBindings.Add((WidgetName="ObjectiveContainer",WidgetClass=class'KFGFxHUD_ObjectiveConatiner'))
     WidgetBindings.Add((WidgetName="SpectatorInfoWidget",WidgetClass=class'KFGFxHUD_SpectatorInfo'))
     WidgetBindings.Add((WidgetName="PlayerStatWidgetMC",WidgetClass=class'KFGFxHUD_PlayerStatus'))
@@ -1465,6 +1517,7 @@ DefaultProperties
     WidgetBindings.Add((WidgetName="bossHealthBar", WidgetClass=class'KFGFxWidget_BossHealthBar'))
     WidgetBindings.Add((WidgetName="mapTextWidget", WidgetClass=class'KFGFxWidget_MapText'))
     WidgetBindings.Add((WidgetName="counterMapTextWidget", WidgetClass=class'KFGFxWidget_MapCounterText'))
+    WidgetBindings.ADD((WidgetName="GunGameContainer", WidgetClass=class'KFGFxWidget_GunGame'));
 
 
 	SpecialWaveIconPath(AT_Clot)="UI_Endless_TEX.ZEDs.UI_ZED_Endless_Cyst"

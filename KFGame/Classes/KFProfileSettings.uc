@@ -380,4 +380,10 @@ defaultproperties
 	// Added 16/07/2021 - QoL: Quick Swap button allowing 9mm as an option.
 	ProfileMappings.Add((Id=KFID_AllowSwapTo9mm, Name="AllowSwitchTo9mm", MappingType=PVMT_RawValue))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_AllowSwapTo9mm,Data=(Type=SDT_Int32,Value1=0))))
+
+	// Added 07/02/2022 - QoL: Allow survivalits to chose starting weapons.
+	ProfileMappings.Add((Id=KFID_SurvivalStartingWeapIdx, Name="Survival Starting Weapon Index", MappingType=PVMT_RawValue))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SurvivalStartingWeapIdx,Data=(Type=SDT_Int32,Value1=0))))
+	ProfileMappings.Add((Id=KFID_SurvivalStartingGrenIdx, Name="Survival Starting Grenade Index", MappingType=PVMT_RawValue))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SurvivalStartingGrenIdx,Data=(Type=SDT_Int32,Value1=0))))
 }

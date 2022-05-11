@@ -234,7 +234,7 @@ function Callback_ReadyClicked( bool bReady )
 	    if (KFGRI.bMatchHasBegun)
 	    {
 			//player has spawned, skip trader time
-			if (KFGRI.bTraderIsOpen && KFPRI.bHasSpawnedIn)
+			if ((KFGRI.bTraderIsOpen || KFGRI.bForceSkipTraderUI) && KFPRI.bHasSpawnedIn)
 			{
 				if (KFPC.MyGFxManager.bMenusOpen && KFPC.MyGFxManager.CurrentMenu != KFPC.MyGFxManager.TraderMenu)
 				{
@@ -504,6 +504,26 @@ function Callback_ChatFocusIn()
 function Callback_ChatFocusOut()
 {
 	Manager.UpdateDynamicIgnoreKeys();
+}
+
+function Callback_OnLoadoutPrevWeaponPressed()
+{
+	Manager.PerksMenu.OnPrevWeaponPressed();
+}
+
+function Callback_OnLoadoutNextWeaponPressed()
+{
+	Manager.PerksMenu.OnNextWeaponPressed();
+}
+
+function Callback_OnLoadoutPrevGrenadePressed()
+{
+	Manager.PerksMenu.OnPrevGrenadePressed();
+}
+
+function Callback_OnLoadoutNextGrenadePressed()
+{
+	Manager.PerksMenu.OnNextGrenadePressed();
 }
 
 /** RETURN TO THESE FUNCTIONS */

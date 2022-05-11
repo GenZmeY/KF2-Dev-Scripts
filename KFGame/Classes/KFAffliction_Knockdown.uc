@@ -9,9 +9,9 @@
 class KFAffliction_Knockdown extends KFAfflictionBase;
 
 /** */
-function Activate()
+function Activate(optional class<KFDamageType> DamageType = none)
 {
-	ActivateKnockdown(PawnOwner.HitFxInfo.DamageType, 
+	ActivateKnockdown(DamageType, 
 		PawnOwner.HitFxInfo.HitLocation, 
 		PawnOwner.DecodeUnitVector( PawnOwner.HitFxInfo.EncodedHitDirection ), 
 		PawnOwner.HitFxInfo.HitBoneIndex);

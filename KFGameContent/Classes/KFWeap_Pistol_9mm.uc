@@ -87,7 +87,7 @@ defaultproperties
 
 	// Inventory
 	InventorySize=0
-	GroupPriority=10
+	GroupPriority=13
 	bCanThrow=false
 	bDropOnDeath=false
 	WeaponSelectTexture=Texture2D'ui_weaponselect_tex.UI_WeaponSelect_9mm'

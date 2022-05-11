@@ -60,6 +60,7 @@ var repnotify bool bTraderIsOpen;
 var repnotify bool bWaveIsActive;
 var repnotify bool bWaveStarted;
 var bool bIsEndlessPaused;
+var bool bForceSkipTraderUI;
 
 /** Replicates at beginning and end of waves to change track / track type */
 var repnotify byte MusicTrackRepCount;
@@ -107,6 +108,8 @@ var repnotify PerkAvailableData PerksAvailableData;
 var					byte						WaveMax;	// The "end" wave
 var repnotify		byte						WaveNum; 	// The wave we are currently in
 var					bool						bWaveIsEndless;
+var repnotify		byte						GunGameWavesCurrent;
+var repnotify		bool						bWaveGunGameIsFinal;
 var					int							AIRemaining;
 var					int							WaveTotalAICount;
 var					bool						bEndlessMode;
@@ -358,6 +361,9 @@ var transient bool bIsBrokenTrader;
  ************************************/
 var int CurrentWeeklyIndex;
 
+/** If true, force show skip time between waves ready button */
+var bool bForceShowSkipTrader;
+
 /************************************
  *  Steam heartbeat
  ************************************/
@@ -389,11 +395,12 @@ cpptext
 replication
 {
 	if ( bNetDirty )
-		TraderVolume, TraderVolumeCheckType, bTraderIsOpen, NextTrader, WaveNum, bWaveIsEndless, AIRemaining, WaveTotalAICount, bWaveIsActive, MaxHumanCount, bGlobalDamage, 
+		TraderVolume, TraderVolumeCheckType, bTraderIsOpen, NextTrader, WaveNum, bWaveIsEndless, GunGameWavesCurrent, bWaveGunGameIsFinal, AIRemaining, WaveTotalAICount, bWaveIsActive, MaxHumanCount, bGlobalDamage, 
 		CurrentObjective, PreviousObjective, PreviousObjectiveResult, PreviousObjectiveXPResult, PreviousObjectiveVoshResult, MusicIntensity, ReplicatedMusicTrackInfo, MusicTrackRepCount,
-		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective, bIsBrokenTrader, bIsWeeklyMode, CurrentWeeklyIndex, bIsEndlessPaused; //@HSL - JRO - 3/21/2016 - PS4 Sessions
+		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective, bIsBrokenTrader, bIsWeeklyMode,
+		CurrentWeeklyIndex, bIsEndlessPaused, bForceSkipTraderUI; //@HSL - JRO - 3/21/2016 - PS4 Sessions
 	if ( bNetInitial )
-		GameLength, WaveMax, bCustom, bVersusGame, TraderItems, GameAmmoCostScale, bAllowGrenadePurchase, MaxPerkLevel, bTradersEnabled;
+		GameLength, WaveMax, bCustom, bVersusGame, TraderItems, GameAmmoCostScale, bAllowGrenadePurchase, MaxPerkLevel, bTradersEnabled, bForceShowSkipTrader;
 	if ( bNetInitial || bNetDirty )
 		PerksAvailableData;
 	if ( bNetInitial && Role == ROLE_Authority )
@@ -542,6 +549,14 @@ simulated event ReplicatedEvent(name VarName)
 	else if(VarName == nameof(PerksAvailableData))
 	{
 		UpdatePerksAvailable();
+	}
+	else if (VarName == 'GunGameWavesCurrent')
+	{
+		UpdateHUDWaveCount();
+	}
+	else if (VarName == 'bWaveGunGameIsFinal')
+	{
+		UpdateHUDWaveCount();
 	}
 	else
 	{
@@ -797,7 +812,7 @@ simulated function EndGame()
 	bMatchHasBegun = false;
 	bMatchIsOver = true;
 
-	class'KFGameEngine'.static.RefreshOnlineGameData(false);
+	class'KFGameEngine'.static.RefreshOnlineGameData(true);
 }
 
 /* Welcome screen shenanigans */
@@ -1111,6 +1126,7 @@ function SetWaveActive(bool bWaveActive, optional byte NewMusicIntensity)
     // set up music intensity for this wave
     MusicIntensity = NewMusicIntensity;
 	bTraderIsOpen = !bWaveActive && bMatchHasBegun && bTradersEnabled;
+	bForceSkipTraderUI = !bWaveActive && bMatchHasBegun && bForceShowSkipTrader;
     bWaveIsActive = bWaveActive;
 	bForceNetUpdate = true;
 
@@ -2029,21 +2045,25 @@ function int SetNextObjective(array<KFInterface_MapObjective> PossibleObjectives
     while (PossibleObjectives.Length > 0)
     {
         RandID = Rand(PossibleObjectives.Length);
-		PctChanceToActivate = PossibleObjectives[RandID].GetActivationPctChance();
-        if (bForceNextObjective || (PossibleObjectives[RandID].CanActivateObjective() && PreviousObjective != PossibleObjectives[RandID] && (PctChanceToActivate >= 1.f || DieRoll <= PctChanceToActivate)))
-        {
-			if (bActivateImmediately)
+
+		if (PossibleObjectives[RandID].CanActivateObjectiveByWeekly())
+		{
+			PctChanceToActivate = PossibleObjectives[RandID].GetActivationPctChance();
+			if (bForceNextObjective || (PossibleObjectives[RandID].CanActivateObjective() && PreviousObjective != PossibleObjectives[RandID] && (PctChanceToActivate >= 1.f || DieRoll <= PctChanceToActivate)))
 			{
-				ActivateObjective(PossibleObjectives[RandID], bUseEndlessSpawning);
+				if (bActivateImmediately)
+				{
+					ActivateObjective(PossibleObjectives[RandID], bUseEndlessSpawning);
+				}
+				else
+				{
+					NextObjective = Actor(PossibleObjectives[RandID]);
+					NextObjectiveIsEndless = bUseEndlessSpawning;
+					KFInterface_MapObjective(NextObjective).NotifyObjectiveSelected();
+				}
+				return RandID;
 			}
-			else
-			{
-				NextObjective = Actor(PossibleObjectives[RandID]);
-				NextObjectiveIsEndless = bUseEndlessSpawning;
-				KFInterface_MapObjective(NextObjective).NotifyObjectiveSelected();
-			}
-            return RandID;
-        }
+		}
 
         PossibleObjectives.Remove(RandID, 1);
     }
@@ -2268,4 +2288,8 @@ defaultproperties
 	PreviousObjectiveXPResult=-1
 	bIsBrokenTrader=false
 	bIsWeeklyMode=false
+	bForceShowSkipTrader=false
+	bForceSkipTraderUI=false
+	GunGameWavesCurrent=1
+	bWaveGunGameIsFinal=false
 }

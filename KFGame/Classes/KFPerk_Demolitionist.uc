@@ -126,6 +126,7 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 {
 	local KFWeapon KFW;
 	local float TempDamage;
+	local bool bIsCrossboom;
 
 	if( DamageType != none && IsDamageIgnoredDT( DamageType ) )
 	{
@@ -140,7 +141,9 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 		KFW = GetWeaponFromDamageCauser( DamageCauser );
 	}
 
-	if( (KFW != none && IsWeaponOnPerk( KFW,, self.class )) || (DamageType != none && IsDamageTypeOnPerk( DamageType )) )
+	bIsCrossboom = IsHRGCrossboom(KFW);
+
+	if( (KFW != none && (IsWeaponOnPerk( KFW,, self.class )) || bIsCrossboom) || (DamageType != none && IsDamageTypeOnPerk( DamageType )) )
 	{
 		`QALog( "Base Damage Given" @ DamageType @ KFW @ InDamage, bLogPerk );
 		//Passive
@@ -153,9 +156,9 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 			`QALog( "Bombadier Given" @ DamageType @ KFW @ InDamage * GetSkillValue( PerkSkills[EDemoDamage] ), bLogPerk );
 		}
 
-		if( IsDirectHitActive() && DamageType != none && IsDamageTypeOnPerk( DamageType ) )
+		if( IsDirectHitActive() && ((DamageType != none && IsDamageTypeOnPerk( DamageType )) || bIsCrossboom ))
 		{
-			if( class<KFDT_Ballistic_Shell>(DamageType) != none || class<KFDT_Bludgeon>(DamageType)!=none)
+			if( class<KFDT_Ballistic_Shell>(DamageType) != none || class<KFDT_Bludgeon>(DamageType)!=none || (bIsCrossboom && class<KFDT_Piercing>(DamageType) != none))
 			{
 				TempDamage += InDamage * GetSkillValue( PerkSkills[EDemoDirectHit] );
 				`QALog( "High Impact Damage Given" @ DamageType @ KFW @ InDamage * GetSkillValue( PerkSkills[EDemoDirectHit] ), bLogPerk );

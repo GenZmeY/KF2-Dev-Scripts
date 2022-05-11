@@ -52,7 +52,7 @@ defaultproperties
 	MeshIronSightFOV=52
     PlayerIronSightFOV=70
 	PlayerViewOffset=(X=1,Y=8,Z=-5)
-	IronSightPosition=(X=-13,Y=0,Z=0)
+	IronSightPosition=(X=-13,Y=0,Z=-0.015)
 
 	// AI warning system
 	bWarnAIWhenAiming=true

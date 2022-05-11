@@ -273,7 +273,7 @@ simulated function SetCharacterMeshFromArch( KFPawn KFP, optional KFPlayerReplic
             }
         }
 
-		if (KFP != none && KFGRI.bIsWeeklyMode && (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12))
+		if (KFP != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 12)
 		{
 			NewAttachment.StaticAttachment =  StaticMesh(DynamicLoadObject(ZEDCowboyHatMeshPath, class'StaticMesh'));
 			NewAttachment.AttachSocketName = KFPawn_Monster(KFP).ZEDCowboyHatAttachName;

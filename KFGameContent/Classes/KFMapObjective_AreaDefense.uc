@@ -194,6 +194,29 @@ simulated function bool IsActive()
 	return bActive;
 }
 
+simulated function bool CanActivateObjectiveByWeekly()
+{
+	if (Role == Role_Authority)
+	{
+		if (KFGameInfo(WorldInfo.Game).OutbreakEvent != none
+			&& KFGameInfo(WorldInfo.Game).OutbreakEvent.ActiveEvent.bGunGameMode)
+		{
+			return false;
+		}	
+	}
+	else 
+	{
+		if (KFGameReplicationInfo(WorldInfo.GRI) != none
+			&& KFGameReplicationInfo(WorldInfo.GRI).bIsWeeklyMode
+			&& KFGameReplicationInfo(WorldInfo.GRI).CurrentWeeklyIndex == 16)
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 function bool CanActivateObjective()
 {
 	return !IsCurrentGameModeBlacklisted();

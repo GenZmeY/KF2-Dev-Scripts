@@ -25,7 +25,7 @@ var protected AkEvent OnEMPSound;
 /** Sound to play when this pawn stops being EMP'd */
 var protected AkEvent OnEMPEndSound;
 
-function Activate()
+function Activate(optional class<KFDamageType> DamageType = none)
 {
 	Super.Activate();
 	SetEMPPanicked(true);

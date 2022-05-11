@@ -8,7 +8,7 @@
 //=============================================================================
 class KFAffliction_Poison extends KFAfflictionAdvanced;
 
-function Activate()
+function Activate(optional class<KFDamageType> DamageType = none)
 {
 	Super.Activate();
 	SetPoisoned(true);

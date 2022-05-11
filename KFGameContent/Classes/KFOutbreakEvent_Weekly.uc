@@ -908,6 +908,288 @@ defaultproperties
                                 )}
     )}
 
+    // Gun Run
+    SetEvents[16]={(
+                EventDifficulty=2,
+                GameLength=GL_Normal,
+                bGunGameMode=true,
+                PerksAvailableList=(class'KFPerk_Survivalist'),
+                bDisableTraders=true,
+                bForceShowSkipTrader=true,
+                SpawnWeaponList=KFGFxObject_TraderItems'GP_Trader_ARCH.GunGameWeeklySpawnList',
+                bSpawnWeaponListAffectsSecondaryWeapons=true,
+                OverrideItemPickupModifier= 0.5f, //1.0f, //2.0f, // 0.f,
+                OverrideAmmoPickupModifier= 1.0f, //2.0f, //3.0f, // 0.01f,
+                bOnlyArmorItemPickup=true,
+                TraderTimeModifier=1.0f, // 0.1f,
+				TimeBetweenWaves=30.f,
+                bDisableAddDosh=true,
+                bDisableThrowWeapon=true,
+                ZedsToAdjust={(
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Cyst',GunGameKilledScore=10, GunGameAssistanceScore=2),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Alpha',GunGameKilledScore=10, GunGameAssistanceScore=2),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_AlphaKing',GunGameKilledScore=30, GunGameAssistanceScore=5),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedClot_Slasher',GunGameKilledScore=10, GunGameAssistanceScore=2),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedSiren',GunGameKilledScore=30, GunGameAssistanceScore=5),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedStalker',GunGameKilledScore=10, GunGameAssistanceScore=2),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedCrawler',GunGameKilledScore=10, GunGameAssistanceScore=2),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedCrawlerKing',GunGameKilledScore=20, GunGameAssistanceScore=4),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedGorefast',GunGameKilledScore=20, GunGameAssistanceScore=4),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedGorefastDualBlade',GunGameKilledScore=30, GunGameAssistanceScore=4),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedBloat',GunGameKilledScore=30, GunGameAssistanceScore=5),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedHusk',GunGameKilledScore=30, GunGameAssistanceScore=5),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedDAR_EMP',GunGameKilledScore=20, GunGameAssistanceScore=4),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedDAR_Laser',GunGameKilledScore=20, GunGameAssistanceScore=4),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedDAR_Rocket',GunGameKilledScore=20, GunGameAssistanceScore=4),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedScrake',GunGameKilledScore=50, GunGameAssistanceScore=10),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpound',GunGameKilledScore=50, GunGameAssistanceScore=10),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedFleshpoundMini',GunGameKilledScore=40, GunGameAssistanceScore=8),
+                                (ClassToAdjust=class'KFGameContent.KFPawn_ZedBloatKingSubspawn',GunGameKilledScore=0, GunGameAssistanceScore=0)
+                 )},
+                 // 
+                 GunGamePerksData={(GunGameRespawnLevels={(
+                                        (Wave=1, Level=3), (Wave=2, Level=7),
+										(Wave=3, Level=10), (Wave=4, Level=12),
+										(Wave=5, Level=14), (Wave=6, Level=16),
+										(Wave=7, Level=18), (Wave=8, Level=19),
+                                        (Wave=9, Level=20) // We have to take in account that players spawn during trade time, and the wave changes after that
+                                    )},
+                                    GunGameLevels={(
+                                        (   RequiredScore=50
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_9mm'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=100
+                                            ,  GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_9mmDual'
+                                                                        , class'KFGame.KFWeapDef_MedicPistol'
+                                                                        , class'KFGame.KFWeapDef_Crovel'
+                                                                    )
+                                                               }
+                                        ),
+                                        (   RequiredScore=200
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_HX25'
+                                                                        , class'KFGame.KFWeapDef_FlareGun'
+                                                                        , class'KFGame.KFWeapDef_HRGWinterbite'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=300
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_AR15'
+                                                                        , class'KFGame.KFWeapDef_CaulkBurn'
+                                                                        , class'KFGame.KFWeapDef_MP7'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=400
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_Remington1858Dual'
+                                                                        , class'KFGame.KFWeapDef_Winchester1894'
+                                                                        , class'KFGame.KFWeapDef_MB500'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=500
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_FireAxe'
+                                                                        , class'KFGame.KFWeapDef_MedicSMG'
+                                                                        , class'KFGame.KFWeapDef_SW500_HRG'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=600
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_M79'
+                                                                        , class'KFGame.KFWeapDef_Crossbow'
+                                                                        , class'KFGame.KFWeapDef_Colt1911Dual'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=750
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_MP5RAS'
+                                                                        , class'KFGame.KFWeapDef_Thompson'
+                                                                        , class'KFGame.KFWeapDef_HRG_Boomy'
+                                                                        , class'KFGame.KFWeapDef_Bullpup'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=900
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_FlareGunDual'
+                                                                        , class'KFGame.KFWeapDef_HRGWinterbiteDual'
+                                                                        , class'KFGame.KFWeapDef_Katana'
+                                                                        , class'KFGame.KFWeapDef_CenterfireMB464'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=1050
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_Nailgun'
+                                                                        , class'KFGame.KFWeapDef_DoubleBarrel'
+                                                                        , class'KFGame.KFWeapDef_HZ12'
+                                                                        , class'KFGame.KFWeapDef_DragonsBreath'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=1200
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_Healthrower_HRG'
+                                                                        , class'KFGame.KFWeapDef_Mac10'
+                                                                        , class'KFGame.KFWeapDef_HRG_Crossboom'
+                                                                        , class'KFGame.KFWeapDef_HRGScorcher'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=1350
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_SealSqueal'
+                                                                        , class'KFGame.KFWeapDef_HRG_CranialPopper'
+                                                                        , class'KFGame.KFWeapDef_HRG_SonicGun'
+                                                                        , class'KFGame.KFWeapDef_Hemogoblin'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=1500
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_AK12'
+                                                                        , class'KFGame.KFWeapDef_MKB42'
+                                                                        , class'KFGame.KFWeapDef_FlameThrower'
+                                                                        , class'KFGame.KFWeapDef_FreezeThrower'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=1650
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_Pulverizer'
+                                                                        , class'KFGame.KFWeapDef_MedicBat'
+                                                                        , class'KFGame.KFWeapDef_Nailgun_HRG'
+                                                                        , class'KFGame.KFWeapDef_P90'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=1800
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_DeagleDual'
+                                                                        , class'KFGame.KFWeapDef_HRG_Energy'
+                                                                        , class'KFGame.KFWeapDef_AF2011Dual'
+                                                                        , class'KFGame.KFWeapDef_HRG_Vampire'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=2000
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_HRG_Kaboomstick'
+                                                                        , class'KFGame.KFWeapDef_MedicShotgun'
+                                                                        , class'KFGame.KFWeapDef_M4'
+                                                                        , class'KFGame.KFWeapDef_SW500Dual_HRG'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=2200
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_HK_UMP'
+                                                                        , class'KFGame.KFWeapDef_HRGIncendiaryRifle'
+                                                                        , class'KFGame.KFWeapDef_M16M203'
+                                                                        , class'KFGame.KFWeapDef_M14EBR'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=2400
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_PowerGloves'
+                                                                        , class'KFGame.KFWeapDef_HRG_BlastBrawlers'
+                                                                        , class'KFGame.KFWeapDef_HRGTeslauncher'
+                                                                        , class'KFGame.KFWeapDef_MaceAndShield'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=2600
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_MedicRifle'
+                                                                        , class'KFGame.KFWeapDef_HRG_EMP_ArcGenerator'
+                                                                        , class'KFGame.KFWeapDef_HRG_Stunner'
+                                                                        , class'KFGame.KFWeapDef_SCAR'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=2800
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_HuskCannon'
+                                                                        , class'KFGame.KFWeapDef_AA12'
+                                                                        , class'KFGame.KFWeapDef_FNFal'
+                                                                        , class'KFGame.KFWeapDef_HRGIncision'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=3000
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_Stoner63A'
+                                                                        , class'KFGame.KFWeapDef_ElephantGun'
+                                                                        , class'KFGame.KFWeapDef_Seeker6'
+                                                                        , class'KFGame.KFWeapDef_Eviscerator'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=3300
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_AbominationAxe'
+                                                                        , class'KFGame.KFWeapDef_RailGun'
+                                                                        , class'KFGame.KFWeapDef_MicrowaveGun'
+                                                                        , class'KFGame.KFWeapDef_SW500Dual'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=3600
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_MedicRifleGrenadeLauncher'
+                                                                        , class'KFGame.KFWeapDef_Kriss'
+                                                                        , class'KFGame.KFWeapDef_RPG7'
+                                                                        , class'KFGame.KFWeapDef_M99'
+                                                                    )
+                                                                }
+                                        ),
+                                        (   RequiredScore=4000
+                                            ,   GrantedWeapons= {
+                                                                    (
+                                                                        class'KFGame.KFWeapDef_M32'
+                                                                        , class'KFGame.KFWeapDef_LazerCutter'
+                                                                        , class'KFGame.KFWeapDef_MicrowaveRifle'
+                                                                        , class'KFGame.KFWeapDef_HRG_BarrierRifle'
+                                                                    )
+                                                                }
+                                        )
+                                )})}
+                
+    )}
+
     //Test events from here down.  These don't end up in the regular rotation.
     //      The override ID starts from one higher than the last SetEvents entry above.
     //      Ex: Big head = 7, Horde = 8

@@ -471,6 +471,14 @@ function AddDefaultInventory()
 	DefaultInventory.AddItem(class<Inventory>(DynamicLoadObject("KFGameContent.KFInventory_Money", class'Class')));
 
 	Super.AddDefaultInventory();
+
+	if (GameInfo.OutbreakEvent != none && GameInfo.OutbreakEvent.ActiveEvent.bGunGameMode)
+	{		
+		if (KFPlayerController_WeeklySurvival(Controller) != none)
+		{
+			KFPlayerController_WeeklySurvival(Controller).UpdateInitialHeldWeapon();
+		}
+	}
 }
 
 /** When switching weapon modify GroundSpeed by encumbrance level */
@@ -490,6 +498,12 @@ simulated function PlayWeaponSwitch(Weapon OldWeapon, Weapon NewWeapon)
 simulated function bool CanThrowWeapon()
 {
 	local KFPlayerController KFPC;
+
+	if (KFGameInfo(WorldInfo.Game).OutbreakEvent != none
+		&& KFGameInfo(WorldInfo.Game).OutbreakEvent.ActiveEvent.bDisableThrowWeapon)
+	{
+		return false;
+	}
 
 	KFPC = KFPlayerController(Controller);
 	if (KFPC != none && KFPC.MyGFxManager != none && KFPC.MyGFxManager.TraderMenu != none && KFPC.MyGFxManager.CurrentMenu == KFPC.MyGFxManager.TraderMenu)
@@ -2128,11 +2142,11 @@ client reliable function ClientOverrideHumanDefaults()
 	{
 		return;
 	}
-
+	
 	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
 	
-	if (KFGRI != none && KFGRI.CurrentWeeklyIndex == 12)		
-    {
+	if (KFGRI != none && KFGRI.CurrentWeeklyIndex == 12)
+	{
 		KFPRI = KFPlayerReplicationInfo(KFPC_WS.PlayerReplicationInfo);
 		if (KFPRI != none)
 		{
@@ -2144,7 +2158,7 @@ client reliable function ClientOverrideHumanDefaults()
 				KFPRI.SetWeeklyCharacterAttachment(CowboyHatIndex, 0);
 			}
 		}
-    }
+	}
 }
 
 defaultproperties

@@ -284,7 +284,10 @@ defaultproperties
     IncapSettings(AF_Freeze)=	(Vulnerability=(0.98),                    Cooldown=6.0,  Duration=1.0)
     IncapSettings(AF_Snare)=	(Vulnerability=(1.0, 2.0, 1.0, 1.0),      Cooldown=5.5,  Duration=3.0)
     IncapSettings(AF_Bleed)=    (Vulnerability=(0.75)) //0.5
-
+    IncapSettings(AF_Shrink)=   (Vulnerability=(1.0)) // Normal Vulnerability
+	
+	ShrinkEffectModifier = 0.2f
+		
 	Begin Object Name=Afflictions_0
         FireFullyCharredDuration=5
 		AfflictionClasses(AF_EMP)=class'KFAffliction_EMPDisrupt'

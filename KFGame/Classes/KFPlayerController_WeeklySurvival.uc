@@ -38,8 +38,26 @@ var	protected const	AkEvent	RhythmMethodSoundReset;
 var	protected const	AkEvent	RhythmMethodSoundHit;
 var	protected const	AkEvent	RhythmMethodSoundTop;
 var	protected const	AkEvent	AracnoStompSoundEvent;
+var protected const AKEvent GunGameLevelUpSoundEvent;
+var protected const AKEvent GunGameLevelUpFinalWeaponSoundEvent;
 
+struct native GunGameInfo
+{
+    var transient byte Level;
+    var transient int  Score;
+    var array<byte> GunGamePreselectedWeapons;
+    var byte WaveToUseForRestart;
+    var bool GiveWeaponMaster;
 
+structdefaultproperties
+{
+    Level=0;
+    Score=0;
+    WaveToUseForRestart=0;
+    GiveWeaponMaster=false;
+}
+};
+var transient GunGameInfo GunGameData;
 
 cpptext
 {
@@ -49,7 +67,7 @@ cpptext
 replication
 {
     if (bNetDirty)
-        bUsingPermanentZedTime, ZedTimeRadius, ZedTimeBossRadius, ZedTimeHeight, GoompaStreak;
+        bUsingPermanentZedTime, ZedTimeRadius, ZedTimeBossRadius, ZedTimeHeight, GoompaStreak, GunGameData;
 }
 
 simulated event PostBeginPlay()
@@ -112,6 +130,22 @@ function EnterZedTime()
 function RecheckZedTime()
 {
     EnterZedTime();
+}
+
+reliable client function UpdateWaveCount()
+{
+    if (MyGFxHUD != none)
+	{
+        MyGFxHUD.UpdateWaveCount();
+    } 
+}
+
+reliable client function UpdateGunGameWidget(int score, int max_score, int level, int max_level)
+{
+    if (MyGFxHUD != none)
+	{
+		MyGFxHUD.UpdateGunGameWidget(score, max_score, level, max_level);
+	}
 }
 
 /**
@@ -195,13 +229,35 @@ reliable client function GoompaStompMessage( byte StompNum)
     }
 }
 
+reliable client function PlayGunGameMessage(bool isLastLevel)
+{
+    if (isLastLevel)
+    {
+        if (GunGameLevelUpFinalWeaponSoundEvent != none)
+        {
+            PlaySoundBase(GunGameLevelUpFinalWeaponSoundEvent);
+        }
+    }
+    else
+    {
+        if (GunGameLevelUpSoundEvent != none)
+        {
+            PlaySoundBase(GunGameLevelUpSoundEvent);
+        }
+    }
+}
+
 /** Resets all gameplay FX to initial state.
 	Append to this list if additional effects are added. */
 function ResetGameplayPostProcessFX()
 {
+    local KFGameReplicationInfo KFGRI;
+
     super.ResetGameplayPostProcessFX();
 
-	if( GameplayPostProcessEffectMIC != none && (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12))
+    KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	if((KFGRI != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 12) && GameplayPostProcessEffectMIC != none)
 	{
 		GameplayPostProcessEffectMIC.SetScalarParameterValue(EffectZedTimeSepiaParamName, 1.f);
 	}
@@ -228,6 +284,55 @@ simulated function ResetBossCamera()
     super(PlayerController).ResetCameraMode();
 }
 
+function RestartGunGame()
+{
+    local KFGameInfo KFGI;
+    local KFGameReplicationInfo KFGRI;
+
+    KFGI = KFGameInfo(WorldInfo.Game);
+    KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	if (KFGI != none && KFGRI != none)
+    {
+        KFGI.RestartGunGamePlayerWeapon(self, GunGameData.WaveToUseForRestart);
+    }
+}
+
+function UpdateInitialHeldWeapon()
+{
+    //local KFWeapon KFW;
+    local KFPawn_Human KFPH;
+    local KFGameInfo KFGI;
+    local KFGameReplicationInfo KFGRI;
+
+    KFPH = KFPawn_Human(Pawn);
+
+    if (KFPH == none || KFPH.InvManager == none)
+    {
+        return;
+    }
+
+    /*foreach KFPH.InvManager.InventoryActors( class'KFWeapon', KFW )
+    {
+        /** Seems its in order, so knife goes first. Equip it */
+
+        KFPH.InvManager.SetCurrentWeapon(KFW);
+        break;
+    }*/
+
+    KFGI = KFGameInfo(WorldInfo.Game);
+    KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	if (KFGI != none && KFGRI != none)
+    {
+        KFGI.ResetGunGame(self);
+
+        GunGameData.WaveToUseForRestart = KFGRI.WaveNum;
+
+        SetTimer(1.0, false, 'RestartGunGame');
+    }
+}
+
 //
 defaultProperties
 {
@@ -239,4 +344,6 @@ defaultProperties
 	RhythmMethodSoundHit   =AkEvent'WW_UI_PlayerCharacter.Play_R_Method_Hit'
 	RhythmMethodSoundTop   =AkEvent'WW_UI_PlayerCharacter.Play_R_Method_Top'
     AracnoStompSoundEvent   =AkEvent'WW_GLO_Runtime.WeeklyArcno'
+    GunGameLevelUpSoundEvent=AkEvent'WW_GLO_Runtime.WeeklyAALevelUp'
+    GunGameLevelUpFinalWeaponSoundEvent=AkEvent'WW_GLO_Runtime.WeeklyAALevelFinal'
 }

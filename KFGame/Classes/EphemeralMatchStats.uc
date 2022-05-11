@@ -42,7 +42,8 @@ struct AARAward
 var array<AARAward> TeamAwardList;
 
 enum ETeamAwards
-{
+{	
+	ETA_WeaponMaster,
 	ETA_ZedStomper,
 	ETA_MedicineMaster,
 	ETA_ZedSlayer,
@@ -1103,6 +1104,9 @@ static function GetTeamAward(ETeamAwards AwardIndex, out AARAward TempAwardObjec
 		case ETA_ZedStomper:
 			Give_ZedStomper(TempAwardObject, KFPCArray);
 			break;
+		case ETA_WeaponMaster:
+			GiveWeaponMaster(TempAwardObject, KFPCArray);
+			break;
 	}
 }
 
@@ -1416,6 +1420,27 @@ static function Give_ZedStomper(out AARAward outAward, const out Array<KFPlayerC
 	}
 }
 
+static function GiveWeaponMaster(out AARAward outAward, const out Array<KFPlayerController> KFPCArray)
+{
+	local int i;
+	local KFPlayerController_WeeklySurvival KFPC_WS;
+
+	for(i = 0; i < KFPCArray.Length; i++)
+	{
+		KFPC_WS = KFPlayerController_WeeklySurvival(KFPCArray[i]);
+		if (KFPC_WS != none)
+		{
+			if (KFPC_WS.GunGameData.GiveWeaponMaster)
+			{
+				outAward.PRI = KFPCArray[i].PlayerReplicationInfo;
+				outAward.DisplayValue = 1;
+				`log(KFPCArray[i].PlayerReplicationInfo.PlayerName @"Weapon Master", class'EphemeralMatchStats'.default.bShowMatchStatsLogging);
+				return;
+			}
+		}
+	}
+}
+
 function ReceiveAwardInfo(byte AwardID, PlayerReplicationInfo PRI, int Value)
 {
 	TeamAwardList[AwardID].PRI = PRI;
@@ -1435,6 +1460,7 @@ DefaultProperties
 	TeamAwardList(ETA_HeadPopper)=(TitleIdentifier="HeadPopper",ValueIdentifier="HeadPopperValue",IconPath="UI_Award_Team.UI_Award_Team-Headshots")
 	TeamAwardList(ETA_Dominator)=(TitleIdentifier="Dominator",ValueIdentifier="DominatorValue",IconPath="UI_Award_Team.UI_Award_Team-BossKO")
 	TeamAwardList(ETA_ZedStomper)=(TitleIdentifier="ZedStomper",ValueIdentifier="ZedStomperValue",IconPath="UI_Award_Team.UI_Award_Team-ZedStomper")
+	TeamAwardList(ETA_WeaponMaster)=(TitleIdentifier="WeaponMaster",ValueIdentifier="WeaponMasterValue",IconPath="UI_Award_Team.UI_Award_Team_GunMode")
 	//zed awards
 	TeamAwardList(ETA_Carnage)=(TitleIdentifier="Carnage",ValueIdentifier="CarnageValue",IconPath="ui_award_zeds.UI_Award_ZED_RawDmg")
 	TeamAwardList(ETA_Closer)=(TitleIdentifier="Closer",ValueIdentifier="CloserValue",IconPath="ui_award_zeds.UI_Award_ZED_Kills")

@@ -1866,7 +1866,7 @@ event bool FilterButtonInput(int ControllerId, name ButtonName, EInputEvent Inpu
 				PartyWidget.ReadyButton.SetBool("selected", KFPRI.bReadyToPlay);
 
 			}
-			else if(KFPRI.bHasSpawnedIn && !KFGRI.bMatchIsOver && KFGRI.bMatchHasBegun && KFGRI.bTraderIsOpen && CurrentMenu != TraderMenu && bMenusOpen)
+			else if(KFPRI.bHasSpawnedIn && !KFGRI.bMatchIsOver && KFGRI.bMatchHasBegun && (KFGRI.bTraderIsOpen || KFGRI.bForceSkipTraderUI) && CurrentMenu != TraderMenu && bMenusOpen)
 			{
 				bForceCloseMenuNextTime = true;
 				CurrentMenu.Callback_ReadyClicked(true);

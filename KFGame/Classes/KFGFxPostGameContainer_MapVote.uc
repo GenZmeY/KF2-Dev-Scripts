@@ -14,6 +14,14 @@ var localized string YourVoteString;
 var localized string TopVotesString;
 var string MapVoteString; //localized in parent and parent passes it to this class
 
+// Maps to skip
+const MapBiolapse = 'KF-Biolapse';
+const MapNightmare = 'KF-Nightmare';
+const MapPowerCore = 'KF-PowerCore_Holdout';
+const MapDescent = 'KF-TheDescent';
+const MapKrampus = 'KF-KrampusLair';
+const MapSteam = 'KF-SteamFortress';
+
 //==============================================================
 // Initialization
 //==============================================================
@@ -47,36 +55,46 @@ function SetMapOptions()
 	local bool IsWeeklyMode;
 	local bool IsBrokenTrader;
 	local bool IsBossRush;
+	local bool IsGunGame;
+	local bool bShouldSkipMaps;
+	local name MapName;
 
 	KFGRI = KFGameReplicationInfo(GetPC().WorldInfo.GRI);
 
+	bShouldSkipMaps = false;
 	Counter = 0;
+
 	if(KFGRI != none && KFGRI.VoteCollector != none)
 	{
 		ServerMapList  = KFGRI.VoteCollector.MapList;
 		IsWeeklyMode   = KFGRI.bIsWeeklyMode;
 		IsBrokenTrader = KFGRI.CurrentWeeklyIndex == 11;
 		IsBossRush     = KFGRI.CurrentWeeklyIndex == 14;
+		IsGunGame      = KFGRI.CurrentWeeklyIndex == 16;
+
+		bShouldSkipMaps = IsWeeklyMode && (IsBrokenTrader || IsBossRush || IsGunGame);
+
 		//gfx
 		MapList = CreateArray();
 
 		for (i = 0; i < ServerMapList.length; i++)
 		{
-			if ( IsWeeklyMode && (IsBrokenTrader || IsBossRush) && ( ServerMapList[i] == "KF-Biolapse" || 
-																	ServerMapList[i] == "KF-Nightmare" ||
-																	ServerMapList[i] == "KF-PowerCore_Holdout" ||
-																	ServerMapList[i] == "KF-TheDescent" ||
-																	ServerMapList[i] == "KF-KrampusLair"))
+			MapName = name(ServerMapList[i]);
+			if ( bShouldSkipMaps && ( MapName == MapBiolapse || 
+									  MapName == MapNightmare ||
+									  MapName == MapPowerCore ||
+									  MapName == MapDescent ||
+									  MapName == MapKrampus))
 			{
 				continue;
 			}
 
 			/* Temporary removal of SteamFrotress for BossRush */
-			if (IsWeeklyMode && IsBossRush && ServerMapList[i] == "KF-SteamFortress")
+			if (IsWeeklyMode && IsBossRush && MapName == MapSteam)
 			{
 				continue;
 			}
-			/**/
+			/* */
 
 			MapObject = CreateObject("Object");
 			MapObject.SetString("label", class'KFCommon_LocalizedStrings'.static.GetFriendlyMapName(ServerMapList[i]) );

@@ -441,6 +441,10 @@ const KFACHID_CarillonHamletHard 			    =   289;
 const KFACHID_CarillonHamletHellOnEarth        	=   290;
 const KFACHID_CarillonHamletCollectibles		=   291;
 
+const KFACHID_RigHard 							=   292;
+const KFACHID_RigHellOnEarth        			=   293;
+const KFACHID_RigCollectibles					=   294;
+
 /* __TW_ANALYTICS_ */
 var int PerRoundWeldXP;
 var int PerRoundHealXP;
@@ -2078,6 +2082,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Thrown_C4, KFDT_Explosive_C4,KFDT_Bludgeon_C4),CompletionAmount=2500))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_GrenadeLauncher_M79, KFDT_Ballistic_M79Impact,KFDT_Explosive_M79,KFDT_Bludgeon_M79),CompletionAmount=7000))
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Boomy, KFDT_Ballistic_HRG_Boomy,KFDT_Explosive_HRG_Boomy,KFDT_Bludgeon_HRG_Boomy),CompletionAmount=7000))
+    DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Crossboom, KFDT_Piercing_HRG_Crossboom,KFDT_Explosive_HRG_Crossboom,KFDT_Explosive_HRG_CrossboomAlt,KFDT_Bludgeon_HRG_Crossboom),CompletionAmount=7000))
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_HRG_Kaboomstick, KFDT_Ballistic_HRG_Kaboomstick,KFDT_Explosive_HRG_Kaboomstick,KFDT_Bludgeon_HRG_Kaboomstick),CompletionAmount=9000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_RocketLauncher_RPG7, KFDT_Ballistic_RPG7Impact,KFDT_Explosive_RPG7,KFDT_Explosive_RPG7BackBlast,KFDT_Bludgeon_RPG7),CompletionAmount=7500))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_M16M203, KFDT_Ballistic_M16M203,KFDT_Bludgeon_M16M203,KFDT_Ballistic_M203Impact,KFDT_Explosive_M16M203),CompletionAmount=9000)) //7000
@@ -2124,6 +2129,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Bow_Crossbow, KFDT_Bludgeon_Crossbow,KFDT_Piercing_Crossbow),CompletionAmount=7000)) //5000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_M14EBR, KFDT_Bludgeon_M14EBR,KFDT_Ballistic_M14EBR),CompletionAmount=9000)) //7000
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_SonicGun, KFDT_Bludgeon_HRG_SonicGun, KFDT_Ballistic_HRG_SonicGun_SonicBlastUncharged, KFDT_Ballistic_HRG_SonicGun_SonicBlastHalfCharged, KFDT_Ballistic_HRG_SonicGun_SonicBlastFullyCharged),CompletionAmount=7000))
+    DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_CranialPopper, KFDT_Bludgeon_HRG_CranialPopper,KFDT_Piercing_HRG_CranialPopper,KFDT_Blast_HRG_CranialPopper),CompletionAmount=7000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_RailGun, KFDT_Bludgeon_RailGun,KFDT_Ballistic_RailGun),CompletionAmount=5000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_CenterfireMB464, KFDT_Bludgeon_CenterfireMB464,KFDT_Ballistic_CenterfireMB464),CompletionAmount=7000)) //5000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_M99, KFDT_Bludgeon_M99,KFDT_Ballistic_M99),CompletionAmount=5000))
@@ -2277,6 +2283,9 @@ defaultproperties
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CARILLONHAMLET),CompletionAmount=1))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CARILLONHAMLET),CompletionAmount=2))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CARILLONHAMLET),CompletionAmount=3))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-RIG),CompletionAmount=1))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-RIG),CompletionAmount=2))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-RIG),CompletionAmount=3))
 	
     //Versus Damage
     //    Per design doc that I have right now, these are x class damage y players, not damage y amount

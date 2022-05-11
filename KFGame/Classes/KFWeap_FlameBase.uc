@@ -33,6 +33,8 @@ var AkEvent                         PilotLightPlayEvent;
 /** Pilot light sound stop event */
 var AkEvent	                        PilotLightStopEvent;
 
+var protected bool 					bInvertPilot;
+
 /** Effect for the pilot light. */
 var() protected KFParticleSystemComponent	PSC_PilotLight;
 /** Socket to attach the pilot light to. */
@@ -46,6 +48,9 @@ var float                           LastBarrelHeat;
 
 /** Whether this weapon should warn AI when it fires */
 var() const bool					bWarnAIWhenFiring;
+
+/** Modifier to the speed for barrel cooldown */
+var const float CooldownBarrelModifier;
 
 /*********************************************************************************************
 * @name Optional dynamic pilot lights
@@ -147,13 +152,26 @@ simulated event Tick(float DeltaTime)
     	}
         else
         {
-            if( BarrelHeat > 0 )
+			if (ActiveFlameSpray != none)
+			{
+				FlameHeat = ActiveFlameSpray.MaterialHeatRange.X;
+			}
+			else if (FlameSprayArchetype != none)
+			{
+				FlameHeat = FlameSprayArchetype.default.MaterialHeatRange.X;
+			}
+			else
+			{
+				FlameHeat = 0;
+			}
+
+            if( BarrelHeat != FlameHeat )
             {
                 // Cool the barrel down when not shooting
-                BarrelHeat -= DeltaTime * 0.5;
-                if( BarrelHeat < 0 )
+                BarrelHeat -= DeltaTime * CooldownBarrelModifier;
+                if( BarrelHeat < FlameHeat )
                 {
-                    BarrelHeat = 0;
+                    BarrelHeat = FlameHeat;
                 }
             }
         }
@@ -340,9 +358,17 @@ simulated protected function TurnOffPilot()
 simulated function SetPilotDynamicLightEnabled( bool bLightEnabled )
 {
     local int Idx;
+	local bool doEnable;
+
+	doEnable = bLightEnabled;
+
+	if (bInvertPilot)
+	{		
+		doEnable = bLightEnabled == false;
+	}
 
     // Don't turn these on if we're not the local playercontroller
-    if( bLightEnabled && (Instigator == none || !Instigator.IsLocallyControlled() || !Instigator.IsFirstPerson()) )
+    if (doEnable && (Instigator == none || !Instigator.IsLocallyControlled() || !Instigator.IsFirstPerson()))
     {
         return;
     }
@@ -350,7 +376,7 @@ simulated function SetPilotDynamicLightEnabled( bool bLightEnabled )
 	// turn off lights
 	for (Idx=0; Idx<PilotLights.length; ++Idx)
 	{
-		PilotLights[Idx].Light.SetEnabled(bLightEnabled);
+		PilotLights[Idx].Light.SetEnabled(doEnable);
 	}
 }
 
@@ -379,7 +405,9 @@ simulated function StopPilotSound()
 simulated function StartLoopingFireEffects(byte FireModeNum, optional bool bForceAnim)
 {
     StopPilotSound();
-    SetPilotDynamicLightEnabled(false);
+
+	SetPilotDynamicLightEnabled(false);
+
     super.StartLoopingFireEffects(FireModeNum, bForceAnim);
 }
 
@@ -389,8 +417,10 @@ simulated function StartLoopingFireEffects(byte FireModeNum, optional bool bForc
 simulated function StopLoopingFireEffects(byte FireModeNum)
 {
     super.StopLoopingFireEffects(FireModeNum);
+
     StartPilotSound();
-    SetPilotDynamicLightEnabled(true);
+
+	SetPilotDynamicLightEnabled(true);
 }
 
 /**
@@ -800,10 +830,14 @@ defaultproperties
 
 	bWeaponNeedsServerPosition=true
 
+	bInvertPilot=false
+
 	// Aim Assist
 	AimCorrectionSize=0.f
 
  	// AI Warning
     MaxAIWarningDistSQ=1000000
     MaxAIWarningDistFromPointSQ=40000
+
+	CooldownBarrelModifier=0.5f
 }
