@@ -65,7 +65,7 @@ function AdjustDamage(out int InDamage, class<DamageType> DamageType, Actor Dama
 defaultproperties
 {
 	// Inventory
-	InventorySize=7
+	InventorySize=6
 	GroupPriority=70
 	WeaponSelectTexture=Texture2D'WEP_UI_HRG_Crossboom_TEX.UI_WeaponSelect_Crossboom'
    	AssociatedPerkClasses(0)=class'KFPerk_Demolitionist'

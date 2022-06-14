@@ -539,7 +539,7 @@ End Object
     IncapSettings(AF_Bleed)=    (Vulnerability=(0.75)) //0.25
     IncapSettings(AF_Shrink)=   (Vulnerability=(1.0))
 	
-	ShrinkEffectModifier = 0.2f
+	ShrinkEffectModifier = 0.1f
 
 	Begin Object Name=Afflictions_0
 		FireFullyCharredDuration=5

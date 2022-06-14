@@ -207,7 +207,7 @@ function SendItems(const out Array<ItemProperties> StoreItemArray)
 		}
 		else if (CurrentStoreFilter == EStore_Featured)
 		{
-			if (class'WorldInfo'.static.IsConsoleBuild())
+			if (class'WorldInfo'.static.IsConsoleBuild() || class'WorldInfo'.static.IsEOSBuild())
 			{
 				for (j = 0; j < ConsoleFeaturedItemIDs.length; j++)
 				{

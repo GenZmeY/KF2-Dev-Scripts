@@ -74,7 +74,7 @@ defaultproperties
     IncapSettings(AF_Bleed)=    (Vulnerability=(0.75))
     IncapSettings(AF_Shrink)=   (Vulnerability=(1.0))
     
-	ShrinkEffectModifier = 0.3f
+	ShrinkEffectModifier = 0.2f
 
 	ZEDCowboyHatAttachName=HEAD_Attach
 }

@@ -438,7 +438,7 @@ defaultproperties
                     GoompaStreakMax = 5,
                     GoompaBonusDuration=8.0f, //10.0f,
                     DoshOnKillGlobalModifier=1.0,
-                    SpawnWeaponList=KFGFxObject_TraderItems'GP_Trader_ARCH.AracnophobiaWeeklySpawnList',
+                    //SpawnWeaponList=KFGFxObject_TraderItems'GP_Trader_ARCH.AracnophobiaWeeklySpawnList',
                     bAddSpawnListToLoadout=true,
                     WaveAICountScale=(0.6, 0.6, 0.6, 0.6, 0.6, 0.6),
                     JumpZ=700.f, // 650.0 by default; -1 used for not overriding.
@@ -1130,7 +1130,7 @@ defaultproperties
                                             ,   GrantedWeapons= {
                                                                     (
                                                                         class'KFGame.KFWeapDef_MedicRifle'
-                                                                        , class'KFGame.KFWeapDef_HRG_EMP_ArcGenerator'
+                                                                        , class'KFGame.KFWeapDef_HRG_BarrierRifle'
                                                                         , class'KFGame.KFWeapDef_HRG_Stunner'
                                                                         , class'KFGame.KFWeapDef_SCAR'
                                                                     )
@@ -1182,7 +1182,7 @@ defaultproperties
                                                                         class'KFGame.KFWeapDef_M32'
                                                                         , class'KFGame.KFWeapDef_LazerCutter'
                                                                         , class'KFGame.KFWeapDef_MicrowaveRifle'
-                                                                        , class'KFGame.KFWeapDef_HRG_BarrierRifle'
+                                                                        , class'KFGame.KFWeapDef_HRG_EMP_ArcGenerator'
                                                                     )
                                                                 }
                                         )

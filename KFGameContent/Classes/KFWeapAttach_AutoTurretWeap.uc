@@ -256,6 +256,7 @@ simulated event SetWeaponSkin(int ItemId, optional bool bFinishedLoading = false
 		}
 
 		SkinMICs = class'KFWeaponSkinList'.static.GetWeaponSkin(ItemId, WST_ThirdPerson);
+
 		if ( SkinMICs.Length > 0 )
 		{
 			WeapMesh.SetMaterial(0, SkinMICs[0]);

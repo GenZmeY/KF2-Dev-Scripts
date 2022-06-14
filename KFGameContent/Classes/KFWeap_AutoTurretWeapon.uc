@@ -293,6 +293,18 @@ simulated function PlayFireEffects( byte FireModeNum, optional vector HitLocatio
 	}
 }
 
+/** True if we want to override the looping fire sounds with fire sounds from another firemode */
+simulated function bool ShouldForceSingleFireSound()
+{
+	// If this weapon has a single-shot firemode, disable looping fire sounds during zedtime
+	if ( `IsInZedTime(Instigator) && SingleFireSoundIndex != 255 )
+	{
+		return true;
+	}
+
+	return false;
+}
+
 defaultproperties
 {
 	// Shooting Animations
@@ -358,7 +370,7 @@ defaultproperties
 	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Bullet_Pistol9mm'
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_AutoTurret'
 	FireInterval(DEFAULT_FIREMODE)=+0.12 // 500 rpm
-	InstantHitDamage(DEFAULT_FIREMODE)=8
+	InstantHitDamage(DEFAULT_FIREMODE)=10
 	Spread(DEFAULT_FIREMODE)=0.01
 	FireOffset=(X=30,Y=4.5,Z=-4)
 
@@ -372,6 +384,9 @@ defaultproperties
 	// Fire Effects
 	WeaponFireSnd(DEFAULT_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_LP_3P', FirstPersonCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_LP_1P')
 	WeaponFireLoopEndSnd(DEFAULT_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_EndLP_3P', FirstPersonCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_EndLP_1P')
+	
+	WeaponFireSnd(ALTFIRE_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shoot_3P', FirstPersonCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shoot_1P')
+	SingleFireSoundIndex=ALTFIRE_FIREMODE
 
 	bLoopingFireSnd(DEFAULT_FIREMODE)=true
 	bLoopingFireAnim(DEFAULT_FIREMODE)=true

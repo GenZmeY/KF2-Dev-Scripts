@@ -161,6 +161,7 @@ simulated function ProcessTouch(Actor Other, Vector HitLocation, Vector HitNorma
 	local KFPawn KFP;
 	local KFPawn_Human KFPH;
 	local KFPlayerReplicationInfo KFPRI;
+	local TraceHitInfo HitInfo;
 
 	KFPH = KFPawn_Human(Other); 
 	if ( KFPH != none && KFPH != Instigator)
@@ -173,7 +174,7 @@ simulated function ProcessTouch(Actor Other, Vector HitLocation, Vector HitNorma
 			return;
 		}
 	}
-	else if ( Other != Instigator && Other.bCanBeDamaged && (!Other.bWorldGeometry || !Other.bStatic) )
+	else if ( Other != Instigator && Other.bCanBeDamaged )
 	{
 		KFP = KFPawn( Other );
 		if ( KFP != None )
@@ -191,7 +192,9 @@ simulated function ProcessTouch(Actor Other, Vector HitLocation, Vector HitNorma
 		}
 		else
 		{
-			ProcessDestructibleTouchOnBounce( Other, HitLocation, HitNormal );
+	  		HitInfo.HitComponent = LastTouchComponent;
+			HitInfo.Item = INDEX_None;	// force TraceComponent on fractured meshes
+		    Other.TakeDamage(Damage, InstigatorController, HitLocation, MomentumTransfer * Normal(Velocity), MyDamageType, HitInfo, self);// special cases for types of destructibles, bShouldBreakSolidGlassOnBounce 
 			return;
 		}
 	}

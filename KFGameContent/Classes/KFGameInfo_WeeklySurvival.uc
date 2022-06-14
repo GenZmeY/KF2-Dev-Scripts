@@ -141,7 +141,7 @@ function SetPickupItemList()
     local KFPickupFactory_Item ItemFactory;
     local int Idx;
     
-    if (OutbreakEvent.ActiveEvent.bOnlyArmorItemPickup)
+    if (MyKFGRI.IsGunGameMode())
     {
         foreach AllActors(class'KFPickupFactory_Item', ItemFactory)
         {
@@ -600,8 +600,6 @@ function EndOfMatch(bool bVictory)
 {
     local KFPlayerController KFPC;
 
-    super.EndOfMatch(bVictory);
-
     if (bVictory)
     {
         foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
@@ -609,6 +607,8 @@ function EndOfMatch(bool bVictory)
 			KFPC.CompletedWeeklySurvival();
 		}
     }
+	
+    super.EndOfMatch(bVictory);
 }
 
 function StartWave()

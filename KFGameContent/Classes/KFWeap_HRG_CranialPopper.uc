@@ -247,7 +247,7 @@ simulated function DetachWeapon()
 
 defaultproperties
 {
-    AltAmmoFullRechargeSeconds=5
+    AltAmmoFullRechargeSeconds=3.5
 
     // Inventory / Grouping
     InventorySize=7

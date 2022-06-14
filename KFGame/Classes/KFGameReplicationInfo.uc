@@ -2268,6 +2268,12 @@ simulated function NotifyWeeklyEventIndex(int EventIndex)
 	bNetDirty = true;
 }
 
+
+simulated function bool IsGunGameMode()
+{
+	return bIsWeeklyMode && CurrentWeeklyIndex == 16;
+}
+
 defaultproperties
 {
 	TraderItemsPath="GP_Trader_ARCH.DefaultTraderItems"
