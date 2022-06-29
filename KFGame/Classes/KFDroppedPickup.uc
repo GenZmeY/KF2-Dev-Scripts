@@ -48,6 +48,9 @@ var protected float PostAuthorityChangeLifeSpan;
 /** Amount of delay before anything can pick this up */
 var protected float PickupDelay;
 
+/** Previous Owner (Added for Autoturret) */
+var KFPlayerController PreviousOwner;
+
 // Visuals
 var             bool                        bEmptyPickup;       // pickup has an inventory with no ammo
 var             LinearColor                 EmptyPickupColor;
@@ -430,6 +433,11 @@ function GiveTo(Pawn P)
             KFW = KFWeapon(NewInventory);
             if (KFW != none)
             {
+				if (PreviousOWner != none)
+				{
+					KFW.KFPlayer = PreviousOwner;
+				}
+
                 KFW.SetOriginalValuesFromPickup(KFWeapon(Inventory));
                 KFW = KFIM.CombineWeaponsOnPickup(KFW);
                 KFW.NotifyPickedUp();

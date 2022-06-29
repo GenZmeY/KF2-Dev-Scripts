@@ -109,6 +109,20 @@ simulated function InstantFireClient()
 	}
 }
 
+simulated function HandleProjectileImpact(byte ProjectileFireMode, ImpactInfo Impact, optional float PenetrationValue)
+{
+	// local player only for clientside hit detection
+	if ( Instigator != None)
+	{
+		if ( Instigator.Role < ROLE_Authority )
+		{
+			SendClientProjectileImpact(ProjectileFireMode, Impact, PenetrationValue);
+		}
+
+		ProcessInstantHitEx(ProjectileFireMode, Impact,, PenetrationValue, 0);
+	}
+}
+
 
 simulated function Projectile ProjectileFire()
 {
@@ -142,6 +156,55 @@ simulated function Projectile ProjectileFire()
 	}
 
 	return None;
+}
+
+simulated function KFProjectile SpawnProjectile( class<KFProjectile> KFProjClass, vector RealStartLoc, vector AimDir )
+{
+	local KFProjectile	SpawnedProjectile;
+	local int ProjDamage;
+	local Pawn OriginalInstigator;
+
+	/*
+	 * Instigator issues here. The instigator of the weapon here is the PlayerController which won't replicate the projectile.  
+	 * Changing it to the drone pawn for spawning, then swapping it again to be able to apply perk effects.
+	 */
+
+	// Spawn projectile
+	OriginalInstigator = Instigator;
+	Instigator = InstigatorDrone;
+	SpawnedProjectile = Spawn( KFProjClass, self,, RealStartLoc);
+	if( SpawnedProjectile != none && !SpawnedProjectile.bDeleteMe )
+	{
+		// Mirror damage and damage type from weapon. This is set on the server only and
+		// these properties are replicated via TakeHitInfo
+		if ( InstantHitDamage.Length > CurrentFireMode && InstantHitDamageTypes.Length > CurrentFireMode )
+		{
+            ProjDamage = GetModifiedDamage(CurrentFireMode);
+            SpawnedProjectile.Damage = ProjDamage;
+            SpawnedProjectile.MyDamageType = InstantHitDamageTypes[CurrentFireMode];
+		}
+
+		// Set the penetration power for this projectile
+		// because of clientside hit detection, we need two variables --
+		// one that replicates on init and one that updates but doesn't replicate
+		SpawnedProjectile.InitialPenetrationPower = GetInitialPenetrationPower(CurrentFireMode);
+		SpawnedProjectile.PenetrationPower = SpawnedProjectile.InitialPenetrationPower;
+
+		SpawnedProjectile.UpgradeDamageMod = GetUpgradeDamageMod();
+		SpawnedProjectile.Init( AimDir );
+	}
+
+	if (MedicComp != none && KFProj_HealingDart(SpawnedProjectile) != None)
+	{
+		if (TargetingComp != none && TargetingComp.LockedTarget[1] != none)
+		{
+			KFProj_HealingDart(SpawnedProjectile).SeekTarget = TargetingComp.LockedTarget[1];
+		}
+	}
+
+	Instigator = OriginalInstigator;
+	// return it up the line
+	return SpawnedProjectile;
 }
 
 simulated function IncrementFlashCount()
@@ -293,6 +356,22 @@ simulated function PlayFireEffects( byte FireModeNum, optional vector HitLocatio
 	}
 }
 
+simulated function WeaponPlayFireSound(AkBaseSoundObject DefaultSound, AkBaseSoundObject FirstPersonSound)
+{
+    // ReplicateSound needs an "out" vector
+    local vector SoundLocation;
+
+	if( Owner != None && !bSuppressSounds  )
+	{
+        SoundLocation = KFPawn(Owner).GetPawnViewLocation();
+
+		if ( DefaultSound != None )
+		{
+            Owner.PlaySoundBase( DefaultSound, false, false, false, SoundLocation );
+		}
+	}
+}
+
 /** True if we want to override the looping fire sounds with fire sounds from another firemode */
 simulated function bool ShouldForceSingleFireSound()
 {
@@ -385,7 +464,7 @@ defaultproperties
 	WeaponFireSnd(DEFAULT_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_LP_3P', FirstPersonCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_LP_1P')
 	WeaponFireLoopEndSnd(DEFAULT_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_EndLP_3P', FirstPersonCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_EndLP_1P')
 	
-	WeaponFireSnd(ALTFIRE_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shoot_3P', FirstPersonCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shoot_1P')
+	WeaponFireSnd(ALTFIRE_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shoot_3P', FirstPersonCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shoot_3P')
 	SingleFireSoundIndex=ALTFIRE_FIREMODE
 
 	bLoopingFireSnd(DEFAULT_FIREMODE)=true

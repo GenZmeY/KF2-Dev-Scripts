@@ -58,6 +58,7 @@ var repnotify rotator ReplicatedRotation;
 var repnotify float CurrentAmmoPercentage;
 var repnotify AKEvent TurretWeaponAmbientSound;
 var repnotify int WeaponSkinID;
+var repnotify int AutoTurretFlashCount;
 
 var transient rotator DeployRotation;
 
@@ -107,7 +108,7 @@ var transient ParticleSystemComponent NoAmmoFX;
 replication
 {
     if( bNetDirty )
-		CurrentState, ReplicatedRotation, CurrentAmmoPercentage, TurretWeaponAmbientSound, EnemyTarget, WeaponSkinID;
+		CurrentState, ReplicatedRotation, CurrentAmmoPercentage, TurretWeaponAmbientSound, EnemyTarget, WeaponSkinID, AutoTurretFlashCount;
 }
 
 simulated event ReplicatedEvent(name VarName)
@@ -131,6 +132,14 @@ simulated event ReplicatedEvent(name VarName)
     else if (VarName == nameof(WeaponSkinID))
     {
         SetWeaponSkin(WeaponSkinID);
+    }
+    else if (VarName == nameof(AutoTurretFlashCount))
+    {
+        FlashCountUpdated(Weapon, AutoTurretFlashCount, TRUE);
+    }
+    else if (VarName == nameof(FlashCount))
+    {
+        // Intercept Flash Count: do nothing
     }
     else
 	{
@@ -158,6 +167,8 @@ simulated event PreBeginPlay()
 
         if (Weapon != none)
         {
+            Weapon.bReplicateInstigator=true;
+            Weapon.bReplicateMovement=true;
             Weapon.Instigator = Instigator;
             TurretWeapon.InstigatorDrone = self;
             Weapon.SetCollision(false, false);
@@ -315,16 +326,6 @@ auto simulated state Throw
         if (Role == Role_Authority)
         {
             UpdateReadyToUse(false);
-        }
-    }
-
-    simulated function EndState(name NextStateName)
-    {
-        super.EndState(NextStateName);
-
-        if (Role == Role_Authority)
-        {
-            UpdateReadyToUse(true);
         }
     }
 
@@ -1036,6 +1037,28 @@ simulated function SetWeaponAmbientSound(AkEvent NewAmbientSound, optional AkEve
     }
 }
 
+/**
+ * This function's responsibility is to signal clients that non-instant hit shot
+ * has been fired. Call this on the server and local player.
+ *
+ * Network: Server and Local Player
+ */
+simulated function IncrementFlashCount(Weapon InWeapon, byte InFiringMode)
+{
+    Super.IncrementFlashCount(InWeapon, InFiringMode);
+    AutoTurretFlashCount = FlashCount;
+    // bNetDirty = true;
+    bForceNetUpdate = true;
+}
+
+simulated function ClearFlashCount(Weapon InWeapon)
+{
+    Super.ClearFlashCount(InWeapon);
+
+    AutoTurretFlashCount = FlashCount;
+    bForceNetUpdate=true;
+}
+
 defaultproperties
 {
     bCollideComplex=TRUE
@@ -1136,4 +1159,8 @@ defaultproperties
     bIsTurret=true
 
     NoAmmoFX=none
+
+    bAlwaysRelevant=true
+
+    AutoTurretFlashCount=0
 }

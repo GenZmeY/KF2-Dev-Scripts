@@ -17,8 +17,6 @@ var(Animations) const editconst name DetonateLastAnim;
 
 /** Sound to play upon successful detonation */
 var() AkEvent DetonateAkEvent;
-/** Sound to play upon attempted but unsuccessful detonation */
-var() AkEvent DryFireAkEvent;
 
 /** Strenght applied to forward dir to get the throwing velocity */
 var const float ThrowStrength;
@@ -119,6 +117,7 @@ simulated function Projectile ProjectileFire()
 
 			KFPC.DeployedTurrets.AddItem( SpawnedActor );
 			NumDeployedTurrets = KFPC.DeployedTurrets.Length;
+			bTurretReadyToUse  = false;
 			bForceNetUpdate    = true;
 		}
 
@@ -179,14 +178,20 @@ simulated function GetTurretSpawnLocationAndDir(out vector SpawnLocation, out ve
 /** Detonates the oldest turret */
 simulated function Detonate()
 {
+	local int i;
+	local array<Actor> TurretsCopy;
+
 	// auto switch weapon when out of ammo and after detonating the last deployed turret
 	if( Role == ROLE_Authority )
 	{
-		if( KFPC.DeployedTurrets.Length > 0 )
+		TurretsCopy = KFPC.DeployedTurrets;
+		for (i = 0; i < TurretsCopy.Length; i++)
 		{
-			KFPawn_AutoTurret(KFPC.DeployedTurrets[0]).SetTurretState(ETS_Detonate);
+			KFPawn_AutoTurret(TurretsCopy[i]).SetTurretState(ETS_Detonate);
 		}
-		
+
+		KFPC.DeployedTurrets.Remove(0, KFPC.DeployedTurrets.Length);
+
 		SetReadyToUse(true);
 
 		if( !HasAnyAmmo() && NumDeployedTurrets == 0 )
@@ -224,10 +229,12 @@ function SetOriginalValuesFromPickup( KFWeapon PickedUpWeapon )
 
 	super.SetOriginalValuesFromPickup( PickedUpWeapon );
 
-	if (PickedUpWeapon.Instigator.Controller != none && PickedUpWeapon.Instigator.Controller != KFPC)
+	if (PickedUpWeapon.KFPlayer != none && PickedUpWeapon.KFPlayer != KFPC)
 	{
-		KFPC.DeployedTurrets = KFPlayerController(PickedUpWeapon.Instigator.Controller).DeployedTurrets;
+		KFPC.DeployedTurrets = PickedUpWeapon.KFPlayer.DeployedTurrets;
 	}
+
+	PickedUpWeapon.KFPlayer = none;
 
 	NumDeployedTurrets   = KFPC.DeployedTurrets.Length;
 	bForceNetUpdate      = true;
@@ -243,6 +250,62 @@ function SetOriginalValuesFromPickup( KFWeapon PickedUpWeapon )
 			KFPawn_AutoTurret(KFPC.DeployedTurrets[i]).InstigatorController = Instigator.Controller;
 		}
 	}
+}
+
+
+/**
+ * Drop this item out in to the world
+ */
+function DropFrom(vector StartLocation, vector StartVelocity)
+{
+	local DroppedPickup P;
+
+	// Offset spawn closer to eye location
+	StartLocation.Z += Instigator.BaseEyeHeight / 2;
+
+	// for some reason, Inventory::DropFrom removes weapon from inventory whether it was able to spawn the pickup or not.
+	// we only want the weapon removed from inventory if pickup was successfully spawned, so instead of calling the supers,
+	// do all the super functionality here.
+
+	if( !CanThrow() )
+	{
+		return;
+	}
+
+	if( DroppedPickupClass == None || DroppedPickupMesh == None )
+	{
+		Destroy();
+		return;
+	}
+
+	// the last bool param is to prevent collision from preventing spawns
+	P = Spawn(DroppedPickupClass,,, StartLocation,,,true);
+	if( P == None )
+	{
+		// if we can't spawn the pickup (likely for collision reasons),
+		// just return without removing from inventory or destroying, which removes from inventory
+		PlayerController(Instigator.Controller).ReceiveLocalizedMessage( class'KFLocalMessage_Game', GMT_FailedDropInventory );
+		return;
+	}
+
+	if( Instigator != None && Instigator.InvManager != None )
+	{
+		Instigator.InvManager.RemoveFromInventory(Self);
+
+		if( Instigator.IsAliveAndWell() && !Instigator.InvManager.bPendingDelete )
+		{
+			`DialogManager.PlayDropWeaponDialog( KFPawn(Instigator) );
+		}
+	}
+
+	SetupDroppedPickup( P, StartVelocity );
+
+	KFDroppedPickup(P).PreviousOwner = KFPlayerController(Instigator.Controller);
+
+	Instigator = None;
+	GotoState('');
+
+	AIController = None;
 }
 
  /**
@@ -288,18 +351,14 @@ simulated function BeginFire( byte FireModeNum )
 	{
 		if (FireModeNum == DEFAULT_FIREMODE
 			&& NumDeployedTurrets >= MaxTurretsDeployed
-			&& HasAmmo(THROW_FIREMODE))
+			&& HasAnyAmmo())
 		{
 			if (!bTurretReadyToUse)
 			{
 				return;
 			}
-		
+
 			PrepareAndDetonate();
-		}
-		else if (HasAmmo(THROW_FIREMODE) == false)
-		{
-			PlaySoundBase( DryFireAkEvent, true );		
 		}
 		
 		super.BeginFire( FireModeNum );
@@ -321,10 +380,6 @@ simulated function PrepareAndDetonate()
 		if( NumDeployedTurrets > 0 )
 		{
 			PlaySoundBase( DetonateAkEvent, true );
-		}
-		else
-		{
-			PlaySoundBase( DryFireAkEvent, true );
 		}
 
 		if( bInSprintState )
@@ -496,6 +551,11 @@ function CheckTurretAmmo()
 
 	if (Role == Role_Authority)
 	{
+		if (KFPC == none)
+		{
+			return;
+		}
+
 		if (KFPC.DeployedTurrets.Length > 0)
 		{
 			Weapon = KFWeapon(KFPawn_AutoTurret(KFPC.DeployedTurrets[0]).Weapon);
@@ -514,7 +574,10 @@ function CheckTurretAmmo()
 					else
 					{
 						KFP = KFPawn(Instigator);
-						KFP.OnWeaponSpecialAction( 1 + (CurrentAmmoPercentage * 100) );
+						if (KFP != none)
+						{
+							KFP.OnWeaponSpecialAction( 1 + (CurrentAmmoPercentage * 100) );
+						}
 					}
 				}
 			}
@@ -701,7 +764,6 @@ defaultproperties
 	InventorySize=3
 
    	DetonateAkEvent=AkEvent'ww_wep_autoturret.Play_WEP_AutoTurret_Detonate_Trigger'
-	
 
 	// Weapon Upgrade stat boosts
 	//WeaponUpgrades[1]=(IncrementDamage=1.05f,IncrementWeight=1)
