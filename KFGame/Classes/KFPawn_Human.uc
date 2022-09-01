@@ -157,7 +157,16 @@ var float MinHealthPctToTriggerSurrounded;
 /*********************************************************************************************
 * @name Perk @ToDo: Move stuff to PRI and combine in a byte/INT
 ********************************************************************************************* */
-var array<string> ActiveSkillIconPaths;
+
+struct native ActiveSkill
+{
+	var string IconPath;
+	var int Multiplier;
+	var float MaxDuration;
+	var float Duration;
+};
+
+var private array<ActiveSkill> ActiveSkills;
 
 var repnotify private byte HealingSpeedBoost;
 var repnotify private byte HealingDamageBoost;
@@ -632,6 +641,7 @@ function float GetHealthMod()
 simulated function WeaponStateChanged(byte NewState, optional bool bViaReplication)
 {
 	CurrentWeaponState = NewState;
+	bForceNetUpdate=true;
 
 	// skip if this pawn was recently spawned, so we don't play out-of-date anims when pawns become relevant
 	if( `TimeSince(CreationTime) < 1.f )
@@ -711,6 +721,18 @@ event bool HealDamage(int Amount, Controller Healer, class<DamageType> DamageTyp
 	local KFPlayerController KFPC;
 	local KFPowerUp KFPowerUp;
 	local KFGameInfo GameInfo;
+	local KFPlayerController_WeeklySurvival KFPCWS;
+
+	KFPCWS = KFPlayerController_WeeklySurvival(Healer);
+
+	if (Controller != none && KFPCWS != none && KFPCWS.VIPGameData.IsVIP)
+	{
+		// VIP can't heal itself
+		if (Controller == KFPCWS)
+		{
+			return false;
+		}
+	}
 
 	KFPC = KFPlayerController(Controller);
 	if ( KFPC != none )
@@ -895,6 +917,11 @@ function GiveHealthOverTime()
 		{
 			KFPRI.PlayerHealth = Health;
 			KFPRI.PlayerHealthPercent = FloatToByte( float(Health) / float(HealthMax) );
+		}
+
+		if (KFPlayerController_WeeklySurvival(Controller) != none)
+		{
+			KFPlayerController_WeeklySurvival(Controller).UpdateVIPDamage();
 		}
 	}
 	else
@@ -1272,6 +1299,15 @@ function AdjustDamage(out int InDamage, out vector Momentum, Controller Instigat
 		}
 	}
 
+	if (KFPlayerController_WeeklySurvival(Controller) != none)
+	{
+		KFPlayerController_WeeklySurvival(Controller).AdjustVIPDamage(InDamage, InstigatedBy);
+	}	
+	else if (KFPlayerController_WeeklySurvival(InstigatedBy) != none)
+	{
+		KFPlayerController_WeeklySurvival(InstigatedBy).AdjustVIPDamage(InDamage, InstigatedBy);
+	}
+
 	if( bHasSacrificeSkill && Health >= 5 && Health - InDamage < 5 )
 	{
 		Health = InDamage + 5;
@@ -1302,7 +1338,13 @@ function AdjustDamage(out int InDamage, out vector Momentum, Controller Instigat
 		}
 	}
 `endif
+
+	if (KFPlayerController_WeeklySurvival(Controller) != none)
+	{
+		KFPlayerController_WeeklySurvival(Controller).UpdateVIPDamage();
+	}
 }
+
 
 event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector Momentum, class<DamageType> DamageType, optional TraceHitInfo HitInfo, optional Actor DamageCauser)
 {
@@ -1451,11 +1493,16 @@ function StartAirBorneAgentEvent()
 simulated function UpdateHealingSpeedBoost()
 {
 	HealingSpeedBoost = Min( HealingSpeedBoost + class'KFPerk_FieldMedic'.static.GetHealingSpeedBoost(), class'KFPerk_FieldMedic'.static.GetMaxHealingSpeedBoost() );
+
 	SetTimer( class'KFPerk_FieldMedic'.static.GetHealingSpeedBoostDuration(),, nameOf(ResetHealingSpeedBoost) );
 
-	if ( WorldInfo.NetMode == NM_STANDALONE)
+	if (WorldInfo.NetMode == NM_STANDALONE)
 	{
 		NotifyHealingSpeedBoostBuff(HealingSpeedBoost);
+	}
+	else
+	{
+		ClientNotifyHealingSpeedBoostBuff(HealingSpeedBoost);
 	}
 }
 
@@ -1482,11 +1529,16 @@ simulated function float GetHealingDamageBoostModifier()
 simulated function UpdateHealingDamageBoost()
 {
 	HealingDamageBoost = Min( HealingDamageBoost + class'KFPerk_FieldMedic'.static.GetHealingDamageBoost(), class'KFPerk_FieldMedic'.static.GetMaxHealingDamageBoost() );
+
 	SetTimer( class'KFPerk_FieldMedic'.static.GetHealingDamageBoostDuration(),, nameOf(ResetHealingDamageBoost) );
 
-	if ( WorldInfo.NetMode == NM_STANDALONE)
+	if (WorldInfo.NetMode == NM_STANDALONE)
 	{
 		NotifyHealingDamageBoostBuff(HealingDamageBoost);
+	}
+	else
+	{
+		ClientNotifyHealingDamageBoostBuff(HealingDamageBoost);
 	}
 }
 
@@ -1513,11 +1565,16 @@ simulated function float GetHealingShieldModifier()
 simulated function UpdateHealingShield()
 {
 	HealingShield = Min( HealingShield + class'KFPerk_FieldMedic'.static.GetHealingShield(), class'KFPerk_FieldMedic'.static.GetMaxHealingShield() );
+
 	SetTimer( class'KFPerk_FieldMedic'.static.GetHealingShieldDuration(),, nameOf(ResetHealingShield) );
 
-	if ( WorldInfo.NetMode == NM_STANDALONE)
+	if (WorldInfo.NetMode == NM_STANDALONE)
 	{
 		NotifyHealingShieldBoostBuff(HealingShield);
+	}
+	else
+	{
+		ClientNotifyHealingShieldBoostBuff(HealingShield);
 	}
 }
 
@@ -1572,11 +1629,6 @@ function float GetPerkDoTScaler( optional Controller InstigatedBy, optional clas
 	}
 
 	return DoTScaler;
-}
-
-function array<string> GetUpdatedSkillIndicators()
-{
-	return ActiveSkillIconPaths;
 }
 
 /*********************************************************************************************
@@ -2060,8 +2112,28 @@ simulated function NotifyHealingSpeedBoostBuff(byte Speed)
 
 	if( IsLocallyControlled() )
 	{
-		UpdateActiveSkillsPath(class'KFPerk_FieldMedic'.default.PerkSkills[EMedicHealingSpeedBoost].IconPath, Speed > 0.0f);
+		UpdateHealingSpeedBoostBuff(Speed);
 	}
+}
+
+reliable client function ClientNotifyHealingSpeedBoostBuff(byte Speed)
+{
+	UpdateHealingSpeedBoostBuff(Speed);
+}
+
+simulated function UpdateHealingSpeedBoostBuff(byte Speed)
+{
+	local float TotalTimes, Multiplier;
+
+	TotalTimes = class'KFPerk_FieldMedic'.static.GetMaxHealingSpeedBoost() / float(class'KFPerk_FieldMedic'.static.GetHealingSpeedBoost());
+
+	Multiplier = Speed / float(class'KFPerk_FieldMedic'.static.GetMaxHealingSpeedBoost());
+	Multiplier *= TotalTimes;
+
+	UpdateActiveSkillsPath(class'KFPerk_FieldMedic'.default.PerkSkills[EMedicHealingSpeedBoost].IconPath
+							, Multiplier
+							, Speed > 0
+							, class'KFPerk_FieldMedic'.static.GetHealingSpeedBoostDuration());
 }
 
 simulated function NotifyHealingDamageBoostBuff(byte Damage)
@@ -2074,8 +2146,28 @@ simulated function NotifyHealingDamageBoostBuff(byte Damage)
 
 	if( IsLocallyControlled() )
 	{
-		UpdateActiveSkillsPath(class'KFPerk_FieldMedic'.default.PerkSkills[EMedicHealingDamageBoost].IconPath, Damage > 0.0f);
+		UpdateHealingDamageBoostBuff(Damage);
 	}
+}
+
+reliable client function ClientNotifyHealingDamageBoostBuff(byte Damage)
+{
+	UpdateHealingDamageBoostBuff(Damage);
+}
+
+simulated function UpdateHealingDamageBoostBuff(byte Damage)
+{
+	local float TotalTimes, Multiplier;
+
+	TotalTimes = class'KFPerk_FieldMedic'.static.GetMaxHealingDamageBoost() / float(class'KFPerk_FieldMedic'.static.GetHealingDamageBoost());
+
+	Multiplier = Damage /  float(class'KFPerk_FieldMedic'.static.GetMaxHealingDamageBoost());
+	Multiplier *= TotalTimes;
+
+	UpdateActiveSkillsPath(class'KFPerk_FieldMedic'.default.PerkSkills[EMedicHealingDamageBoost].IconPath
+							, Multiplier
+							, Damage > 0
+							, class'KFPerk_FieldMedic'.static.GetHealingDamageBoostDuration());
 }
 
 simulated function NotifyHealingShieldBoostBuff(byte Shield)
@@ -2088,28 +2180,70 @@ simulated function NotifyHealingShieldBoostBuff(byte Shield)
 
 	if( IsLocallyControlled() )
 	{
-		UpdateActiveSkillsPath(class'KFPerk_FieldMedic'.default.PerkSkills[EMedicHealingShield].IconPath, Shield > 0.0f);
+		UpdateHealingShieldBoostBuff(Shield);
 	}
 }
 
-function UpdateActiveSkillsPath(string IconPath, bool Active)
+reliable client function ClientNotifyHealingShieldBoostBuff(byte Shield)
+{
+	UpdateHealingShieldBoostBuff(Shield);
+}
+
+simulated function UpdateHealingShieldBoostBuff(byte Shield)
+{
+	local float TotalTimes, Multiplier;
+
+	TotalTimes = class'KFPerk_FieldMedic'.static.GetMaxHealingShield() / float(class'KFPerk_FieldMedic'.static.GetHealingShield());
+
+	Multiplier = Shield / float(class'KFPerk_FieldMedic'.static.GetMaxHealingShield());
+	Multiplier *= TotalTimes;
+
+	UpdateActiveSkillsPath(class'KFPerk_FieldMedic'.default.PerkSkills[EMedicHealingShield].IconPath
+							, Multiplier
+							, Shield > 0
+							, class'KFPerk_FieldMedic'.static.GetHealingShieldDuration());
+}
+
+function UpdateActiveSkillsPath(string IconPath, int Multiplier, bool Active, float MaxDuration)
 {
 	local KFPlayerController KFPC;
+	local int i, IndexSearch;
+	local ActiveSkill active_Skill;
 
-	if(Active)
+	if (Active)
 	{
-		if (ActiveSkillIconPaths.Find(IconPath) == INDEX_NONE)
+		IndexSearch = ActiveSkills.Find('IconPath', IconPath);
+
+		if (IndexSearch == INDEX_NONE)
 		{
-			ActiveSkillIconPaths.AddItem(IconPath);
+			active_Skill.IconPath = IconPath;
+			active_Skill.Multiplier = Multiplier;
+			active_Skill.MaxDuration = MaxDuration;
+			active_Skill.Duration = MaxDuration;
+
+			ActiveSkills.AddItem(active_Skill);
+		}
+		else
+		{
+			ActiveSkills[IndexSearch].Multiplier = Multiplier;
+			ActiveSkills[IndexSearch].MaxDuration = MaxDuration;
+			ActiveSkills[IndexSearch].Duration = MaxDuration;
 		}
 	}
 	else
 	{
-		ActiveSkillIconPaths.RemoveItem(IconPath);
+		for (i=0; i < ActiveSkills.Length; ++i)
+		{
+			if (ActiveSkills[i].IconPath == IconPath)
+			{
+				ActiveSkills.Remove(i, 1);
+				break;
+			}
+		}
 	}
 
 	KFPC = KFPlayerController(Controller);
-	KFPC.MyGFxHUD.PlayerStatusContainer.ShowActiveIndicators(ActiveSkillIconPaths);
+	KFPC.MyGFxHUD.PlayerStatusContainer.ShowActiveIndicators(ActiveSkills);
 }
 
 event Landed(vector HitNormal, actor FloorActor)

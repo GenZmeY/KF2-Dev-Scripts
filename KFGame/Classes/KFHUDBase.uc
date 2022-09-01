@@ -126,6 +126,10 @@ var const Texture2D GenericHumanIconTexture;
 /** Texture used for the generic zed icon */
 var const Texture2D GenericZedIconTexture;
 
+/** Texture used for the VIP representation over a player */
+var const Texture2D VIPIconTexture;
+var const float OriginalVIPIconSize;
+
 /**
  * Draw a glowing string
  */
@@ -772,7 +776,7 @@ simulated function bool DrawFriendlyHumanPlayerInfo( KFPawn_Human KFPH )
 	local float ResModifier;
 	local float PerkIconPosX, PerkIconPosY, SupplyIconPosX, SupplyIconPosY, PerkIconSize;
 	local color CurrentArmorColor, CurrentHealthColor;
-
+	local float VIPIconSize, VIPIconPosX, VIPIconPosY;
 
 	ResModifier = WorldInfo.static.GetResolutionBasedHUDScale() * FriendlyHudScale;
 
@@ -812,13 +816,10 @@ simulated function bool DrawFriendlyHumanPlayerInfo( KFPawn_Human KFPH )
 	CurrentArmorColor = ClassicPlayerInfo ? ClassicArmorColor : ArmorColor;
 	DrawKFBar(Percentage, BarLength, BarHeight, ScreenPos.X - (BarLength * 0.5f), ScreenPos.Y + BarHeight + (36 * FontScale * ResModifier), CurrentArmorColor);
 
-
-
 	//Draw health bar
 	PercentageHealth = FMin(float(KFPH.Health) / float(KFPH.HealthMax), 100);
 	CurrentHealthColor = ClassicPlayerInfo ? ClassicHealthColor : HealthColor;
 	DrawKFBar(PercentageHealth, BarLength, BarHeight, ScreenPos.X - (BarLength * 0.5f), ScreenPos.Y + BarHeight * 2 + (36 * FontScale * ResModifier), CurrentHealthColor);
-
 
 	//Draw health being regenerated bar
 	PercentageHealthToRegen = FMin(float(KFPH.HealthToRegen) / float(KFPH.HealthMax), 100);
@@ -826,6 +827,19 @@ simulated function bool DrawFriendlyHumanPlayerInfo( KFPawn_Human KFPH )
 	PercentageHealthToRegen = FMin(PercentageHealthToRegen, PercentageHealthMissing);
 	CurrentHealthColor = HealthBeingRegeneratedColor;
 	DrawKFBar(1, PercentageHealthToRegen * BarLength, BarHeight, ScreenPos.X + BarLength * (PercentageHealth - 0.5f), ScreenPos.Y + BarHeight * 2 + (36 * FontScale * ResModifier), HealthBeingRegeneratedColor);
+
+	if (KFGRI != none
+		&& KFGRI.IsVIPMode()
+		&& KFPH.PlayerReplicationInfo != none
+		&& KFGRI.VIPModeData.VIPPlayer != none
+		&& KFPH.PlayerReplicationInfo == KFGRI.VIPModeData.VIPPlayer)
+	{
+		// Draw VIP Icon
+		VIPIconSize = OriginalVIPIconSize * ResModifier;
+		VIPIconPosX = ScreenPos.X - VIPIconSize * 0.5f;
+		VIPIconPosY = ScreenPos.Y - 2.5f * BarHeight + (36 * FontScale * ResModifier) - 20.f * ResModifier - VIPIconSize * 0.5f - 1.f;
+		DrawVIPIcon(VIPIconSize , VIPIconPosX, VIPIconPosY);
+	}
 
 	if( KFPRI.CurrentPerkClass == none )
 	{
@@ -860,6 +874,12 @@ simulated function bool DrawFriendlyHumanPlayerInfo( KFPawn_Human KFPH )
 	DrawPerkIcons(KFPH, PerkIconSize, PerkIconPosX, PerkIconPosY, SupplyIconPosX, SupplyIconPosY, false);
 
 	return true;
+}
+
+simulated function DrawVIPIcon(float VIPIconSize, float VIPIconPosX, float VIPIconPosY)
+{
+	Canvas.SetPos(VIPIconPosX, VIPIconPosY);
+	Canvas.DrawTile(VIPIconTexture, VIPIconSize, VIPIconSize, 0, 0, 256, 256);
 }
 
 simulated function bool DrawScriptedPawnInfo(KFPawn_Scripted KFPS, float NormalizedAngle, bool bRendered)
@@ -1088,7 +1108,7 @@ simulated function CheckAndDrawHiddenPlayerIcons( array<PlayerReplicationInfo> V
 	        }
         }
 
-        DrawHiddenHumanPlayerIcon( PRI, PawnLocation, Normal((PawnLocation + (class'KFPawn_Human'.default.CylinderComponent.CollisionHeight * vect(0, 0, 2))) - ViewLocation) dot ViewVector);
+        DrawHiddenHumanPlayerIcon(PRI, PawnLocation, ViewLocation, ViewVector);
     }
 }
 
@@ -1099,13 +1119,15 @@ simulated function CheckAndDrawHiddenPlayerIcons( array<PlayerReplicationInfo> V
  * @param IconWorldLocation The "player's" location in the world
  * @Note:This is the one we want to clamp
  */
-function DrawHiddenHumanPlayerIcon( PlayerReplicationInfo PRI, vector IconWorldLocation, float NormalizedAngle)
+function DrawHiddenHumanPlayerIcon(PlayerReplicationInfo PRI, vector IconWorldLocation, vector ViewLocation, vector ViewVector)
 {
-    local vector ScreenPos;
+    local vector ReferencePosition, UpVector, ScreenPos, VIPIconPos, ViewLeftVector;
     local float IconSizeMult;
     local KFPlayerReplicationInfo KFPRI;
     local Texture2D PlayerIcon;
 	local float ResModifier;
+	local float VIPIconSize;
+	local float NormalizedAngle, NormalizedAngleWithLeftView;
 
 	ResModifier = WorldInfo.static.GetResolutionBasedHUDScale() * FriendlyHudScale;
 
@@ -1115,7 +1137,91 @@ function DrawHiddenHumanPlayerIcon( PlayerReplicationInfo PRI, vector IconWorldL
     	return;
     }
 
-	ScreenPos = Canvas.Project(IconWorldLocation + class'KFPawn_Human'.default.CylinderComponent.CollisionHeight * vect(0, 0, 2));
+	ReferencePosition = IconWorldLocation + (class'KFPawn_Human'.default.CylinderComponent.CollisionHeight * vect(0, 0, 2));
+
+	NormalizedAngle = Normal(ReferencePosition - ViewLocation) dot ViewVector;
+
+	ScreenPos = Canvas.Project(ReferencePosition);
+
+	if (KFGRI != none
+		&& KFGRI.IsVIPMode()
+		&& KFGRI.VIPModeData.VIPPlayer != none
+		&& PRI != none
+		&& PRI == KFGRI.VIPModeData.VIPPlayer)
+	{
+		VIPIconSize = OriginalVIPIconSize * ResModifier;
+
+		VIPIconPos = ScreenPos;
+		VIPIconPos.X -= VIPIconSize * 0.5f;
+
+		// If the player is on front of you
+		if (NormalizedAngle > 0)
+		{
+			// Adjust on X
+			if (ScreenPos.X < 0 || ScreenPos.X > (Canvas.ClipX - VIPIconSize))
+			{
+				if (ScreenPos.X < 0)
+				{
+					VIPIconPos.X = 0;
+				}
+				else
+				{
+					VIPIconPos.X = Canvas.ClipX - VIPIconSize;
+				}
+			}
+			
+			// Adjust on Y
+			if (ScreenPos.Y < 0 || ScreenPos.Y > (Canvas.ClipY - VIPIconSize))
+			{
+				if (ScreenPos.Y < 0)
+				{
+					VIPIconPos.Y = 0;
+				}
+				else
+				{
+					VIPIconPos.Y = Canvas.ClipY - VIPIconSize;
+				}
+			}
+		}
+		// If the player is behind you
+		else
+		{
+			// New to know if Player is on your left or on your right side..
+			UpVector.Z = 1;
+			ViewLeftVector = ViewVector cross UpVector;
+			NormalizedAngleWithLeftView = Normal(ReferencePosition - ViewLocation) dot ViewLeftVector;
+
+			// The X position clamps between minimum and maximum, we don't interpolate in the middle as it makes more difficult for the player to understand
+			// Where the VIP is
+
+			// Adjust on X
+			if (NormalizedAngleWithLeftView > 0)
+			{
+				VIPIconPos.X = 0;
+			}
+			else
+			{
+				VipIconPos.X = Canvas.ClipX - VIPIconSize;
+			}
+
+			// Adjust on Y
+			if (ScreenPos.Y < 0 || ScreenPos.Y > (Canvas.ClipY - VIPIconSize))
+			{
+				if (ScreenPos.Y < 0)
+				{
+					VIPIconPos.Y = 0;
+				}
+				else
+				{
+					VIPIconPos.Y = Canvas.ClipY - VIPIconSize;
+				}
+			}
+		}
+
+		Canvas.SetDrawColorStruct(PlayerBarIconColor);
+		DrawVIPIcon(VIPIconSize, VIPIconPos.X, VIPIconPos.Y);
+	}
+
 	// Fudge by icon size
 	IconSizeMult = (PlayerStatusIconSize * 0.8) * ResModifier;
 	ScreenPos.X -= IconSizeMult;
@@ -1135,6 +1241,7 @@ function DrawHiddenHumanPlayerIcon( PlayerReplicationInfo PRI, vector IconWorldL
 				{
 					CurrentAlphaDelta = 5;
 				}
+
 				ScreenPos.X = Canvas.ClipX - ScreenPos.x;
 				ScreenPos = GetClampedScreenPosition(ScreenPos);
 				CurrentVoiceCommsHighlightAlpha += CurrentAlphaDelta;
@@ -1142,7 +1249,6 @@ function DrawHiddenHumanPlayerIcon( PlayerReplicationInfo PRI, vector IconWorldL
 				Canvas.SetDrawColor(255, 255, 255, CurrentVoiceCommsHighlightAlpha);
 				Canvas.SetPos(ScreenPos.X - (IconSizeMult * VoiceCommsIconHighlightScale / 2), ScreenPos.Y - (IconSizeMult * VoiceCommsIconHighlightScale / 2));
 				Canvas.DrawTile(IconHighLightTexture, IconSizeMult + (IconSizeMult * VoiceCommsIconHighlightScale), IconSizeMult + (IconSizeMult * VoiceCommsIconHighlightScale), 0, 0, 128, 128);
-
 			}
 			else
 			{
@@ -1371,6 +1477,9 @@ defaultproperties
 
 	GenericHumanIconTexture = Texture2D'UI_PerkIcons_TEX.UI_Horzine_H_Logo'
 	GenericZedIconTexture = Texture2D'UI_PerkIcons_TEX.UI_PerkIcon_ZED'
+	
+	VIPIConTexture = Texture2D'UI_PerkIcons_TEX.UI_Overscreen_vip_icon_'
+	OriginalVIPIconSize = 64;
 
 	IconHighLightTexture = Texture2D'UI_World_TEX.VoicCommsCircleHighlight'
 	VoiceCommsIconHighlightScale = 0.5f

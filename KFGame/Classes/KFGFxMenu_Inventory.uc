@@ -141,11 +141,20 @@ struct InventoryHelper
 	var int SkinType;
 	var ItemRarity Rarity;
 	var int Quality;
+
+	// For ordering items
+	var string KeyName;
+	var bool IsKey;
 };
 
 var array<InventoryHelper> SkinListWeaponsSearchCache;
 var array<InventoryHelper> SkinListOrderedCache;
 var bool NeedToRegenerateSkinList;
+
+struct ByTypeItemsHelper
+{
+  var() array<InventoryHelper> ItemsOnType;
+};
 
 var EInventoryWeaponType_Filter CurrentWeaponTypeFilter;
 var int CurrentPerkIndexFilter;
@@ -282,41 +291,12 @@ final function int Crc(coerce string Text)
   return CrcValue;
 }
 
-delegate int SortByWeaponTypeDefinition(InventoryHelper A, InventoryHelper B)
+delegate int SortSkinList(InventoryHelper A, InventoryHelper B)
 {
-	return A.WeaponDef < B.WeaponDef ? -1 : +1;
-}
-
-delegate int SortByPrice(InventoryHelper A, InventoryHelper B)
-{
-	return A.Price > B.Price ? -1 : +1;
-}
-
-delegate int SortByRarity(InventoryHelper A, InventoryHelper B)
-{
-	return A.Rarity > B.Rarity ? -1 : +1;
-}
-
-delegate int SortBySkinType(InventoryHelper A, InventoryHelper B)
-{
-	return A.SkinType > B.SkinType ? -1 : +1;
-}
-
-delegate int SortByQuality(InventoryHelper A, InventoryHelper B)
-{
-	return A.Quality < B.Quality ? -1 : +1;
-}
-
-delegate int SortByAll(InventoryHelper A, InventoryHelper B)
-{
-	//local int WeapDefValue, SkinTypeValue;
-
 	/** Format: Compare lower ? -1 : (Compare upper) : 1 : (Equal case, repeat formula with the next sort condition)  */
 	return  A.Price > B.Price ? -1 : (A.Price < B.Price ? 1 : (
-				//STRCompare(A.WeaponDef, B.WeaponDef, WeapDefValue) < 0 ? -1 : ( WeapDefValue != 0 ? 1 : ( 
 				A.WeaponDef < B.WeaponDef ? -1 : (A.WeaponDef > B.WeaponDef ? 1 : (
 					A.Rarity > B.Rarity ? -1 : (A.Rarity < B.Rarity ? 1 : (
-						//STRCompare(A.SkinType, B.SkinType, SkinTypeValue) > 0 ? -1 : ( SkinTypeValue != 0 ? 1 : ( 
 						A.SkinType > B.SkinType ? -1 : (A.SkinType < B.SkinType ? 1 : (
 							A.Quality < B.Quality ? -1 : 1
 						))
@@ -325,13 +305,33 @@ delegate int SortByAll(InventoryHelper A, InventoryHelper B)
 	));
 }
 
+delegate int SortItemList(InventoryHelper A, InventoryHelper B)
+{
+	if (A.IsKey && B.IsKey)
+	{
+		return 0;
+	}
+
+	if (A.IsKey == false && B.IsKey == false)
+	{
+		return 0;
+	}
+
+	if (A.IsKey)
+	{
+		return 1;
+	}
+
+	return -1;
+}
+
 function InitInventory()
 {
-	local int i, ItemIndex, HelperIndex, WeaponItemID, SearchWeaponSkinIndex;
+	local int i, j, z, ItemIndex, HelperIndex, WeaponItemID, SearchWeaponSkinIndex, SearchKeyKeywordIndex;
 	local ItemProperties TempItemDetailsHolder;
 	local GFxObject ItemArray, ItemObject;
 	local bool bActiveItem;
-	local array<InventoryHelper> ActiveItems, ValidSkinItems, FailedSkinItems;
+	local ByTypeItemsHelper ByTypeItems[7];
 	local InventoryHelper HelperItem;
 	local array<ExchangeRuleSets> ExchangeRules;
 	local class<KFWeaponDefinition> WeaponDef;
@@ -348,6 +348,10 @@ function InitInventory()
 		return;
 	}
 
+	// While reading from the profile we also order by type, then we might want to order again some stuff that's inside the same item type later
+
+	//`Log("NEW MENU OPEN: " $CurrentInventoryFilter);
+
 	for (i = 0; i < OnlineSub.CurrentInventory.length; i++)
 	{
 		//look item up to get info on it.
@@ -358,22 +362,25 @@ function InitInventory()
 		{
 			TempItemDetailsHolder = OnlineSub.ItemPropertiesList[ItemIndex];
 
-			if (((CurrentInventoryFilter == EInv_All || Int(CurrentInventoryFilter) == Int(TempItemDetailsHolder.Type)) && DoesMatchFilter(TempItemDetailsHolder)) || bool(OnlineSub.CurrentInventory[i].NewlyAdded))
+			if (((CurrentInventoryFilter == EInv_All || Int(CurrentInventoryFilter) == Int(TempItemDetailsHolder.Type))
+					&& DoesMatchFilter(TempItemDetailsHolder))
+				|| bool(OnlineSub.CurrentInventory[i].NewlyAdded))
 			{
-				ItemObject = CreateObject("Object");
-				HelperIndex = ActiveItems.Find('ItemDefinition', onlineSub.CurrentInventory[i].Definition);
+				ItemObject 	= CreateObject("Object");
+				HelperIndex = ByTypeItems[TempItemDetailsHolder.Type].ItemsOnType.Find('ItemDefinition', onlineSub.CurrentInventory[i].Definition);
 
 				if (HelperIndex == INDEX_NONE)
 				{
+					HelperItem.Type				= TempItemDetailsHolder.Type;
+					//HelperItem.FullName			= TempItemDetailsHolder.Name;
 					HelperItem.ItemDefinition 	= onlineSub.CurrentInventory[i].Definition;
 					HelperItem.ItemCount 		= onlineSub.CurrentInventory[i].Quantity;
 
 					if (TempItemDetailsHolder.Type == ITP_WeaponSkin)
 					{
 						// Copy required stuff
-						//HelperItem.FullName		= TempItemDetailsHolder.Name;
-						HelperItem.Rarity 			= TempItemDetailsHolder.Rarity;
-						HelperItem.Quality 			= TempItemDetailsHolder.Quality;
+						HelperItem.Rarity 		= TempItemDetailsHolder.Rarity;
+						HelperItem.Quality 		= TempItemDetailsHolder.Quality;
 
 						if (bool(OnlineSub.CurrentInventory[i].NewlyAdded))
 						{
@@ -397,6 +404,7 @@ function InitInventory()
 
 							// Get the left part of the string without the next "| "
 							SearchWeaponSkinIndex	= InStr(SkinType, "|");
+							// Store as CRC, that speeds up comparisons later
 							HelperItem.SkinType 	= CrC(Left(SkinType, SearchWeaponSkinIndex));
 
 							WeaponItemID = class'KFWeaponSkinList'.default.Skins.Find('Id', HelperItem.ItemDefinition);
@@ -406,6 +414,7 @@ function InitInventory()
 								WeaponDef = class'KFWeaponSkinList'.default.Skins[WeaponItemID].WeaponDef;
 
 								// All Weapons start by KFGameContent.KFWeap_ Skip that prefix.
+								// Store as CRC, that speeds up comparisons later
 								HelperItem.WeaponDef 	= CrC(Mid(WeaponDef.default.WeaponClassPath, 21));
 								HelperItem.Price 		= WeaponDef.default.BuyPrice;
 							}
@@ -418,18 +427,22 @@ function InitInventory()
 							SkinListWeaponsSearchCache.AddItem(HelperItem);
 						}
 					}
+					else
+					{
+						HelperItem.KeyName = TempItemDetailsHolder.KeyName;
+					}
 
-					ActiveItems.AddItem(HelperItem);
-					HelperIndex = ActiveItems.length - 1;
+					ByTypeItems[TempItemDetailsHolder.Type].ItemsOnType.AddItem(HelperItem);
+					HelperIndex = ByTypeItems[TempItemDetailsHolder.Type].ItemsOnType.Length - 1;
 				}
 				else
 				{
-					ActiveItems[HelperIndex].ItemCount += onlineSub.CurrentInventory[i].Quantity;
+					ByTypeItems[TempItemDetailsHolder.Type].ItemsOnType[HelperIndex].ItemCount += onlineSub.CurrentInventory[i].Quantity;
 				}
 
 				OnlineSub.IsExchangeable(onlineSub.CurrentInventory[i].Definition, ExchangeRules);
 
-				ItemObject.SetInt("count", ActiveItems[HelperIndex].ItemCount);
+				ItemObject.SetInt("count", ByTypeItems[TempItemDetailsHolder.Type].ItemsOnType[HelperIndex].ItemCount);
 				ItemObject.SetString("label", TempItemDetailsHolder.Name);
 				ItemObject.SetString("price", TempItemDetailsHolder.price);
 				ItemObject.Setstring("typeRarity", TempItemDetailsHolder.ShortDescription);
@@ -445,7 +458,7 @@ function InitInventory()
 				ItemObject.SetInt("definition", TempItemDetailsHolder.Definition);
 				ItemObject.SetBool("newlyAdded", bool(OnlineSub.CurrentInventory[i].NewlyAdded) );
 
-				ActiveItems[HelperIndex].GfxItemObject = ItemObject;
+				ByTypeItems[TempItemDetailsHolder.Type].ItemsOnType[HelperIndex].GfxItemObject = ItemObject;
 
 				if(onlineSub.CurrentInventory[i].Definition == Manager.SelectIDOnOpen)
 				{
@@ -465,86 +478,84 @@ function InitInventory()
 
 	OnlineSub.ClearNewlyAdded();
 
-	if (CurrentInventoryFilter == EInv_WeaponSkins)
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_WeaponSkins)
 	{
 		// If need to refresh... we regenerate the list, if not reuse our Cache
-		NeedToRegenerateSkinList = NeedToRegenerateSkinList || ActiveItems.Length != SkinListOrderedCache.Length;
+		NeedToRegenerateSkinList = NeedToRegenerateSkinList || ByTypeItems[ITP_WeaponSkin].ItemsOnType.Length != SkinListOrderedCache.Length;
+
 		if (NeedToRegenerateSkinList)
 		{
 			NeedToRegenerateSkinList = false;
 
-			/*`Log("START ORDERING!!!");
-			`Log("----------");*/
-
-			for (i = 0 ; i < ActiveItems.Length; i++)
-			{
-				// If doesn't have weapon definition, don't consider, only add as FailedItem to be added at the end
-				if (ActiveItems[i].WeaponDef != -1)
-				{
-					ValidSkinItems.AddItem(ActiveItems[i]);
-				}
-				else
-				{
-					FailedSkinItems.AddItem(ActiveItems[i]);
-				}
-			}
-
-			// Now we have all valid weapons
-
 			// We want to order by Price - Weapon Def - Rarity - Quality
 			// So we order inverse that way we keep the final list with the design intention
 
-			ValidSkinItems.Sort(SortByAll);
+			ByTypeItems[ITP_WeaponSkin].ItemsOnType.Sort(SortSkinList);
 
-			SkinListOrderedCache = ValidSkinItems;
+			SkinListOrderedCache = ByTypeItems[ITP_WeaponSkin].ItemsOnType;
+
+			/*`Log("----------");*/
 
 			/*for (i = 0 ; i < SkinListOrderedCache.Length; i++)
 			{
 				`Log("ID : " $SkinListOrderedCache[i].ItemDefinition);
 				`Log("Weapon Def : " $SkinListOrderedCache[i].WeaponDef);
 				`Log("Price : " $SkinListOrderedCache[i].Price);
-				//`Log("Full Name : " $SkinListOrderedCache[i].FullName);
+				`Log("Full Name : " $SkinListOrderedCache[i].FullName);
 				`Log("Skin : " $SkinListOrderedCache[i].SkinType);
 				`Log("Rarity : " $SkinListOrderedCache[i].Rarity);
 				`Log("Quality : " $SkinListOrderedCache[i].Quality);
 				`Log("----------");
-			}*/
-
-			// FailedItems are weapons that don't have a Weapon Definition, this might be a case with old unsupported content?
-			for (i = 0; i < FailedSkinItems.Length; i++)
-			{
-				/*if (FailedSkinItems[i].FullName != "")
-				{
-					`Log("FailedSkinItems ID : " $FailedSkinItems[i].ItemDefinition);
-					`Log("FailedSkinItems Price : " $FailedSkinItems[i].Price);
-					`Log("FailedSkinItems Full Name : " $FailedSkinItems[i].FullName);
-					`Log("FailedSkinItems Skin : " $FailedSkinItems[i].SkinType);
-					`Log("FailedSkinItems Rarity : " $FailedSkinItems[i].Rarity);
-					`Log("FailedFailedSkinItemsItems Quality : " $FailedSkinItems[i].Quality);
-					`Log("----------");
-				}*/
-
-				SkinListOrderedCache.AddItem(FailedSkinItems[i]);
 			}
 
-			/*`Log("FINISH ORDERING!!!");
 			`Log("----------");*/
 		}
 		else
 		{
 			//`Log("USING SKIN LIST CACHE!!!");
+
+			ByTypeItems[ITP_WeaponSkin].ItemsOnType = SkinListOrderedCache;
+		}
+	}
+
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_Consumables)
+	{
+		// Consumables is the type for the "Items" category on the UI
+
+		// First we have to distinguish if the Item is a KEY or not
+		for (i = 0; i < ByTypeItems[ITP_KeyCrate].ItemsOnType.Length; i++)
+		{
+			// KeyName is something like : "NameItem:KeyCrate", we first remove the part from the : to the right
+			SearchKeyKeywordIndex = InStr(ByTypeItems[ITP_KeyCrate].ItemsOnType[i].KeyName, ":");
+			ByTypeItems[ITP_KeyCrate].ItemsOnType[i].KeyName = Left(ByTypeItems[ITP_KeyCrate].ItemsOnType[i].KeyName, SearchKeyKeywordIndex);
+
+			// Then we search if the name of the Item contains "Key"
+			SearchKeyKeywordIndex = InStr(ByTypeItems[ITP_KeyCrate].ItemsOnType[i].KeyName, "Key");
+
+			if (SearchKeyKeywordIndex != -1)
+			{
+				ByTypeItems[ITP_KeyCrate].ItemsOnType[i].IsKey = true;
+			}
+			else
+			{
+				ByTypeItems[ITP_KeyCrate].ItemsOnType[i].IsKey = false;
+			}
 		}
 
-		for (i = 0; i < SkinListOrderedCache.length; i++)
-		{
-			ItemArray.SetElementObject(i, SkinListOrderedCache[i].GfxItemObject);
-		}	
+		ByTypeItems[ITP_KeyCrate].ItemsOnType.Sort(SortItemList);
 	}
-	else
+
+	//`Log("--------------------------------");
+
+	z = 0;
+
+	for (i = 0; i < ArrayCount(ByTypeItems); i++)
 	{
-		for (i = 0; i < ActiveItems.length; i++)
+		for (j = 0 ; j < ByTypeItems[i].ItemsOnType.Length; j++)
 		{
-			ItemArray.SetElementObject(i, ActiveItems[i].GfxItemObject);
+			ItemArray.SetElementObject(z, ByTypeItems[i].ItemsOnType[j].GfxItemObject);
+
+			++z;
 		}
 	}
 

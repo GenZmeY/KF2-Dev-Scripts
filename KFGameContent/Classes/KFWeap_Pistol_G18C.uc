@@ -121,7 +121,7 @@ defaultproperties
 
 	// Zooming/Position [FFERRANDO NEEDS TO BE UPDATED TO G18]
 	PlayerViewOffset=(X=-15,Y=12,Z=-6)
-	IronSightPosition=(X=0,Y=0,Z=0) //(X=-3,Y=-0.38,Z=-0.2)
+	IronSightPosition=(X=0,Y=-0.12,Z=-0.1) //(X=-3,Y=-0.38,Z=-0.2)
 	
 	// Content [FFERRANDO NEEDS TO BE UPDATED TO G18]
 	PackageKey="G18C"

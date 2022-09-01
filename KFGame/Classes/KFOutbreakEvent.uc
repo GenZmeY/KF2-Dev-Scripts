@@ -448,7 +448,12 @@ struct WeeklyOverrides
 	var() bool bGunGameMode;
 
 	/** Information about each level in Gun Game Mode */
-	var() GunGamePerkData GunGamePerksData; 
+	var() GunGamePerkData GunGamePerksData;
+
+	/** VIP targetting */
+	var() const array< class<KFPawn_Monster> > VIPTargetting;
+
+	var() bool bVIPGameMode;
 
 	/** Ignores damage caused by headshots. */
 	var() bool bInvulnerableHeads;
@@ -458,9 +463,6 @@ struct WeeklyOverrides
 
 	/** Time between waves override. */
 	var() float TimeBetweenWaves;
-
-	/** Wether or not we only can spawn Armor on the Item pickups */
-	var() bool bOnlyArmorItemPickup;
 
 	structdefaultproperties
 	{
@@ -522,10 +524,10 @@ struct WeeklyOverrides
 		bDisableAddDosh = false;
 		bDisableThrowWeapon = false;
 		bGunGameMode = false;
+		bVIPGameMode = false;
 		bInvulnerableHeads = false;
 		TraderTimeModifier = 1.f;
 		TimeBetweenWaves = -1.f;
-		bOnlyArmorItemPickup=false;
 		bForceShowSkipTrader = false;
 	}
 };

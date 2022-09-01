@@ -184,7 +184,7 @@ defaultproperties
     PlayerIronSightFOV=80
 
 	// Zooming/Position
-	IronSightPosition=(X=3,Y=0,Z=0)
+	IronSightPosition=(X=3,Y=-0.032,Z=-0.03)
 	PlayerViewOffset=(X=5.0,Y=9,Z=-3)
 
 	// Depth of field

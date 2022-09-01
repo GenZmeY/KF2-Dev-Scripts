@@ -121,14 +121,14 @@ protected simulated function bool DoExplosionDamage(bool bCauseDamage, bool bCau
 
 	if(bOnlyDamagePawns)
 	{
-		return ExplodePawns();
+		return ExplodePawns(bCauseDamage);
 	}
 
 	return super.DoExplosionDamage(bCauseDamage, bCauseEffects);
 }
 
 /** Stripped down and optimized version of DoExplosionDamage that only checks for pawns */
-protected simulated function bool ExplodePawns()
+protected simulated function bool ExplodePawns(bool bCauseDamage)
 {
 	local Pawn 		Victim;
 	local float 	CheckRadius;
@@ -171,6 +171,11 @@ protected simulated function bool ExplodePawns()
 					DamageScale = (DamageScalePerStack < 1.f) ? CalcStackingDamageScale(KFPawn(Victim), Interval) : 1.f;
 					if ( DamageScale > 0.f )
 					{
+						if (bCauseDamage == false)
+						{
+							DamageScale = 0.f; // We still want effects
+						}
+
 						AffectsPawn(Victim, DamageScale);
 						bHitPawn = true;
 					}

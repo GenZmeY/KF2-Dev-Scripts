@@ -182,7 +182,7 @@ function FillWhatsNew()
     local SWhatsNew item;
     WhatsNewItems.Remove(0, WhatsNewItems.Length);
 // Latest Update
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2022_TidalTerror", "LatestUpdate", "http://www.tripwireinteractive.com/redirect/KF2LatestUpdate/");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween2022_BloodBonfire", "LatestUpdate", "http://www.tripwireinteractive.com/redirect/KF2LatestUpdate/");
     WhatsNewItems.AddItem(item);
 // Featured Ultimate Edition
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2022_UltimateEdition_Upgrade", "FeaturedItemBundle", "https://store.steampowered.com/app/1914560/KF2__Ultimate_Edition_Upgrade_DLC/");
@@ -194,31 +194,31 @@ function FillWhatsNew()
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_Armory_Season_Pass", "ArmorySeasonPass", "https://store.steampowered.com/app/1524820/Killing_Floor_2__Armory_Season_Pass");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2022_Weaponsbundle", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9369");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Blodd_Bornfires_Weapon_Bundle", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9471");
     WhatsNewItems.AddItem(item);
 // Featured Weapon
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2022_ReductoRay", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9367");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Blood_Sickle_Weapon_bundle", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9469");
     WhatsNewItems.AddItem(item);
 // Featured Weapon
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2022_Sentinel","FeaturedItemBundle","https://store.steampowered.com/buyitem/232090/9368");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_G36C_Weapon_Bundle","FeaturedItemBundle","https://store.steampowered.com/buyitem/232090/9467");
     WhatsNewItems.AddItem(item);
 // Featured Outfit Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2022_DeepSea_Explorer_Uniforms", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9366");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween2022_PlagueDoctor_Uniforms", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9465");
     WhatsNewItems.AddItem(item);
 // Featured Time Limited Item
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_SS_PremiumTicket", "FeaturedEventItem", "https://store.steampowered.com/buyitem/232090/4928");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween_PremiumTicket", "FeaturedEventItem", "https://store.steampowered.com/buyitem/232090/5246");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Skin Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2022_DeepSea_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9364");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween2022_Plague_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9457");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Skin Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2022_NeonMKVIII_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9362");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween2022_Weapon_skins_XenoPack", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9459");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Skin Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2022_Classic_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9363");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween2022_Classic2_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9461");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Skin Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2022_Chameleon_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9365");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Halloween2022_Chamaleon2_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9463");
     WhatsNewItems.AddItem(item);
 // Misc Community Links
     item=SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_CommunityHub", "Jaegorhorn", "https://steamcommunity.com/app/232090");

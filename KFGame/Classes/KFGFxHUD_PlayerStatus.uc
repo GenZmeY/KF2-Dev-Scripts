@@ -30,6 +30,8 @@ var int                             LastEXPValue;
 
 var localized string EXPString;
 
+var float LastUpdateTime;
+
 function InitializeHUD()
 {
 	MyPC = KFPlayerController(GetPC());    
@@ -48,9 +50,11 @@ function TickHud(float DeltaTime)
 	UpdateArmor();
 	UpdateHealer();
 	UpdateGlobalDamage();
+
+    LastUpdateTime = MyPC.WorldInfo.TimeSeconds;
 }
 
-function ShowActiveIndicators( array<string> IconPathStrings )
+function ShowActiveIndicators( array<ActiveSkill> ActiveSkills )
 {
     local byte i;
     local GFxObject DataProvider;
@@ -58,11 +62,14 @@ function ShowActiveIndicators( array<string> IconPathStrings )
 
     DataProvider = CreateArray();
 
-    for (i = 0; i < IconPathStrings.length; i++)
+    for (i = 0; i < ActiveSkills.length; i++)
     {
         //Corresponding AS3 class reads string off of the object to load in icon
         TempObj = CreateObject( "Object" );
-        TempObj.SetString( "iconPath", "img://"$IconPathStrings[i] );
+        TempObj.SetString( "iconPath", "img://" $ActiveSkills[i].IconPath );
+        TempObj.SetInt( "Multiplier", ActiveSkills[i].Multiplier );
+        TempObj.SetFloat( "MaxDuration", ActiveSkills[i].MaxDuration );
+        TempObj.SetFloat( "Duration", ActiveSkills[i].Duration );
         DataProvider.SetElementObject( i, TempObj );
     }
 
@@ -229,5 +236,5 @@ function UpdateGlobalDamage()
 
 DefaultProperties
 {
-    
+    LastUpdateTime = 0.f;
 }

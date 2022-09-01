@@ -72,7 +72,8 @@ var KFGFxWidget_MapText MapTextWidget;
 var KFGFxWidget_MapCounterText MapCounterTextWidget;
 // Widget that displays gun mode texts
 var KFGFxWidget_GunGame GunGameWidget;
-
+// Widget that displays vip mode texts
+var KFGFxWidget_VIP VIPWidget;
 
 var KFPlayerController KFPC;
 
@@ -107,6 +108,9 @@ var string PendingKickPlayerName;
 
 // Gun game variables
 var transient bool                  bLastGunGameVisibility;
+
+// VIP variables
+var transient bool                  bLastVIPVisibility;
 
 /** On creation of the HUD */
 function Init(optional LocalPlayer LocPlay)
@@ -361,6 +365,13 @@ event bool WidgetInitialized(name WidgetName, name WidgetPath, GFxObject Widget)
             SetWidgetPathBinding( Widget, WidgetPath );
         }
         break;
+    case 'VIPContainer':
+        if (VIPWidget == none)
+        {
+            VIPWidget=KFGFxWidget_VIP(Widget);
+            SetWidgetPathBinding( Widget, WidgetPath );
+        }
+        break;
     }
    
     return true;
@@ -389,7 +400,7 @@ function UpdateWeaponSelect()
 /** Update all the unique HUD pieces */
 function TickHud(float DeltaTime)
 {
-    local bool bGunGameVisibility;
+    local bool bGunGameVisibility, bVIPModeVisibility;
 
     if(KFPC == none || KFPC.WorldInfo.TimeSeconds - LastUpdateTime < UpdateInterval )
     {
@@ -456,8 +467,6 @@ function TickHud(float DeltaTime)
         TraderCompassWidget.TickHUD( DeltaTime);
     }
 
-
-
     if(GfxScoreBoardPlayer != none)
     {
         GfxScoreBoardPlayer.TickHud(DeltaTime);
@@ -476,6 +485,17 @@ function TickHud(float DeltaTime)
         {
             GunGameWidget.UpdateGunGameVisibility(bGunGameVisibility);
             bLastGunGameVisibility = bGunGameVisibility;
+        }
+    }
+
+    if (VIPWidget != none)
+    {
+        bVIPModeVisibility = KFPC.CanUseVIP();
+
+        if (bVIPModeVisibility != bLastVIPVisibility)
+        {
+            VIPWidget.UpdateVIPVisibility(bVIPModeVisibility);
+            bLastVIPVisibility = bVIPModeVisibility;
         }
     }
 }
@@ -1141,6 +1161,26 @@ function UpdateGunGameWidget(int score, int max_score, int level, int max_level)
     }
 }
 
+function UpdateVIP(ReplicatedVIPGameInfo VIPInfo, bool bIsVIP)
+{
+    local KFGameReplicationInfo KFGRI;
+    KFGRI=KFGameReplicationInfo(KFPC.WorldInfo.GRI);
+
+    if (VipWidget == none || KFGRI == none || !KFGRI.IsVIPMode())
+    {
+        return;
+    }
+
+    if (bIsVIP)
+    {
+        VIPWidget.SetVIP();
+    }
+    else if (VipInfo.VIPPlayer != none)
+    {
+        VIPWidget.SetNOVIP(VIPInfo.VIPPlayer.PlayerName, VIPInfo.CurrentHealth, VIPInfo.MaxHealth);
+    }
+}
+
 //==============================================================
 // Input
 //==============================================================
@@ -1303,8 +1343,6 @@ function UpdatePauseGameVoteCount(byte YesVotes, byte NoVotes)
 {
     if(KickVoteWidget != none)
     {
-        `Log("UPDATING PAUSE GAME VOTE COUNT - YES: "$YesVotes);
-        `Log("UPDATING PAUSE GAME VOTE COUNT - NO: "$NoVotes);
         KickVoteWidget.UpdateVoteCount(YesVotes, NoVotes);
     }
 }
@@ -1492,6 +1530,7 @@ DefaultProperties
     bIsSpectating=false
 
     bLastGunGameVisibility=true
+    bLastVIPVisibility=true
 
     WidgetBindings.Add((WidgetName="ObjectiveContainer",WidgetClass=class'KFGFxHUD_ObjectiveConatiner'))
     WidgetBindings.Add((WidgetName="SpectatorInfoWidget",WidgetClass=class'KFGFxHUD_SpectatorInfo'))
@@ -1518,7 +1557,7 @@ DefaultProperties
     WidgetBindings.Add((WidgetName="mapTextWidget", WidgetClass=class'KFGFxWidget_MapText'))
     WidgetBindings.Add((WidgetName="counterMapTextWidget", WidgetClass=class'KFGFxWidget_MapCounterText'))
     WidgetBindings.ADD((WidgetName="GunGameContainer", WidgetClass=class'KFGFxWidget_GunGame'));
-
+    WidgetBindings.ADD((WidgetName="VIPContainer", WidgetClass=class'KFGFxWidget_VIP'));
 
 	SpecialWaveIconPath(AT_Clot)="UI_Endless_TEX.ZEDs.UI_ZED_Endless_Cyst"
 	SpecialWaveIconPath(AT_SlasherClot)="UI_Endless_TEX.ZEDs.UI_ZED_Endless_Slasher"

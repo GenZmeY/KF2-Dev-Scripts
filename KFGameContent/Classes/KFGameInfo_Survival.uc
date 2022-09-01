@@ -48,6 +48,8 @@ var protected transient bool    		bWaveStarted;
 // When this is true next wave will be last
 var protected bool						bGunGamePlayerOnLastGun;
 
+var transient array<KFBarmwichBonfireVolume> BonfireVolumes;
+
 /** Whether this game mode should play music from the get-go (lobby) */
 static function bool ShouldPlayMusicAtStart()
 {
@@ -75,6 +77,8 @@ event PostBeginPlay()
 	TimeBetweenWaves = GetTraderTime();
 
 	bGunGamePlayerOnLastGun = false;
+
+	UpdateBonfires();
 }
 
 /** Set up the spawning */
@@ -1144,6 +1148,8 @@ function WaveEnded(EWaveEndCondition WinCondition)
 		return;
 	}
 
+	ClearAllActorsFromBonfire();
+
 	if (WorldInfo.NetMode == NM_DedicatedServer)
 	{
 		scripttrace();
@@ -1202,28 +1208,9 @@ function WaveEnded(EWaveEndCondition WinCondition)
 			}
 		}
 
-		if (OutbreakEvent != none && OutbreakEvent.ActiveEvent.bGunGameMode)
+		if (OutbreakEvent != none)
 		{
-			MyKFGRI.GunGameWavesCurrent += 1;
-
-			// If we unlocked last weapon we only finish if we completed the boss wave
-			// If we didn't unlock to last weapon and we just finished last wave (before BOSS), repeat
-			if (bGunGamePlayerOnLastGun)
-			{
-				MyKFGRI.bWaveGunGameIsFinal = true;
-
-				if (WaveNum < WaveMax)
-				{
-					WaveNum = WaveMax - 1;
-				}
-			}
-			else if (WaveNum >= WaveMax - 1)
-			{
-				// Repeat wave before BOSS till forever
-				WaveNum = WaveMax - 2;
-			}
-
-			MyKFGRI.bNetDirty = true;
+			OnOutbreakWaveWon();
 		}
 
 		if (WaveNum < WaveMax)
@@ -1870,6 +1857,38 @@ function DebugKillZeds()
 				return;
 			}
 		}
+	}
+}
+
+function OnOutbreakWaveWon() {}
+
+function UpdateBonfires()
+{
+	local KFBarmwichBonfireVolume BonfireVolume;
+
+	foreach AllActors(class'KFBarmwichBonfireVolume', BonfireVolume)
+	{
+		BonfireVolumes.AddItem(BonfireVolume);
+	}
+}
+
+function ClearAllActorsFromBonfire()
+{
+	local KFBarmwichBonfireVolume BonfireVolume;
+
+	foreach BonfireVolumes(BonfireVolume)
+	{
+		BonfireVolume.ClearAllActors();
+	}
+}
+
+function ClearActorFromBonfire(Actor Other)
+{
+	local KFBarmwichBonfireVolume BonfireVolume;
+
+	foreach BonfireVolumes(BonfireVolume)
+	{
+		BonfireVolume.ClearActor(Other);
 	}
 }
 

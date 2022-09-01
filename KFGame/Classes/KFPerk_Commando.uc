@@ -504,7 +504,7 @@ final private function bool IsHealthIncreaseActive()
  *
  * @return true/false
  */
-final private function bool IsEatLeadActive()
+simulated final private function bool IsEatLeadActive()
 {
 	return PerkSkills[ECommandoEatLead].bActive && IsPerkLevelAllowed(ECommandoEatLead);
 }

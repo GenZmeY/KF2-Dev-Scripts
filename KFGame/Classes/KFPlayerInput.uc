@@ -241,6 +241,12 @@ var bool 	bVersusInput;
 /** Cached value of bUsingGamepad so we can handle button releases across devices */
 var bool    bUsingVersusGamepadScheme;
 
+/*********************************************************************************************
+ * @name QoL: Mouse input options
+********************************************************************************************* */
+var float MouseLookUpScale;
+var float MouseLookRightScale;
+
 cpptext
 {
 	/** Searches the bind and skips the mainCommand */
@@ -405,6 +411,7 @@ function EDoubleClickDir CheckForDoubleClickMove(float DeltaTime)
 event PlayerInput( float DeltaTime )
 {
 	local float FOVScale, TimeScale;
+	local float MouseYScale, MouseXScale;
 	local vector RawJoyVector;
 
 	// Save Raw values
@@ -437,8 +444,12 @@ event PlayerInput( float DeltaTime )
 	aBaseY		*= TimeScale * MoveForwardSpeed;
 	aStrafe		*= TimeScale * MoveStrafeSpeed;
 	aUp			*= TimeScale * MoveStrafeSpeed;
-	aTurn		*= TimeScale * LookRightScale;
-	aLookUp		*= TimeScale * LookUpScale;
+
+	if (class'WorldInfo'.static.IsConsoleBuild() || bUsingGamepad)
+	{
+		aTurn		*= TimeScale * LookRightScale;
+		aLookUp		*= TimeScale * LookUpScale;
+	}
 
 	PostProcessInput( DeltaTime );
 
@@ -462,14 +473,16 @@ event PlayerInput( float DeltaTime )
 	aLookUp			*= FOVScale;
 	aTurn			*= FOVScale;
 
+	MouseXScale = (TimeScale * -MouseLookUpScale / 100.0f);
 	// Turning and strafing share the same axis.
 	if( bStrafe > 0 )
-		aStrafe		+= aBaseX + aMouseX;
+		aStrafe		+= aBaseX + aMouseX * ( MouseXScale > 0.0f ? MouseXScale : 1.0f);
 	else
-		aTurn		+= aBaseX + aMouseX;
-
+		aTurn		+= aBaseX + aMouseX * ( MouseXScale > 0.0f ? MouseXScale : 1.0f);
+		
 	// Look up/down.
-	aLookup += aMouseY;
+	MouseYScale = (TimeScale * -MouseLookUpScale / 100.0f);
+	aLookup += aMouseY * ( MouseYScale > 0.0f ? MouseYScale : 1.0f);
 	if ( (!bUsingGamepad && bInvertMouse) || (bInvertController && bUsingGamepad) )
 	{
 		aLookup *= -1.f;

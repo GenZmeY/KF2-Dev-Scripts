@@ -228,8 +228,18 @@ simulated function bool CanReload(optional byte FireModeNum);
 /** Instead of switch fire mode use as immediate alt fire */
 simulated function AltFireMode()
 {
+	local KFPlayerController_WeeklySurvival Instigator_KFPC_WS;
+
 	if ( !Instigator.IsLocallyControlled()  )
 	{
+		return;
+	}
+
+	Instigator_KFPC_WS = KFPlayerController_WeeklySurvival(Instigator.Controller);
+
+	if (Instigator_KFPC_WS != none && Instigator_KFPC_WS.VIPGameData.IsVIP)
+	{
+		// VIP can't heal himself
 		return;
 	}
 

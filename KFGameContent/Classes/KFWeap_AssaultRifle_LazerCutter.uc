@@ -998,7 +998,7 @@ defaultproperties
 
    	// Zooming/Position
 	PlayerViewOffset = (X = 3.0, Y = 10, Z = -1)
-	IronSightPosition = (X = 0, Y = 0, Z = 0)
+	IronSightPosition = (X = 0, Y = 0.037, Z = 0.11)
 
 	// Ammo
 	MagazineCapacity[0] = 50

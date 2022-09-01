@@ -842,8 +842,8 @@ defaultproperties
 	ValueIncreaseTime=0.2
 
 	//FOR LERPING DAMANGE
-	MaxDamageByCharge=300 //250 //200 //120
-	MinDamageByCharge=30 //25 //30
+	MaxDamageByCharge=350 //300 //250 //200 //120
+	MinDamageByCharge=35 //30 //25 //30
     // FOV
     Meshfov=80
 	MeshIronSightFOV=65 //52
@@ -895,7 +895,7 @@ defaultproperties
     HippedRecoilModifier=1.5
 
     // Inventory
-	InventorySize=8
+	InventorySize=7 //8
 	GroupPriority=80 //75
 	WeaponSelectTexture=Texture2D'WEP_UI_Mine_Reconstructor_TEX.UI_WeaponSelect_HMTechMineReconstructor' //@TODO: Replace me
 

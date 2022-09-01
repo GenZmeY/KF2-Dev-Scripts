@@ -28,6 +28,10 @@ var const float MinMouseLookSensitivity;
 var const float MaxMouseLookSensitivity;
 var const float MinMouseLookZoomSensitivity;
 var const float MaxMouseLookZoomSensitivity;
+var const float MinMouseLookUpScale;
+var const float MaxMouseLookUpScale;
+var const float MinMouseLookRightScale;
+var const float MaxMouseLookRightScale;
 
 var localized array<string> TabStrings;
 var localized string HeaderText;
@@ -330,6 +334,55 @@ function CallBack_ResetInputOptions()
 	}
 }
 
+function Callback_MouseLookUpScale(float NewValue)
+{
+	local KFPlayerInput KFPI;
+
+	NewValue = -NewValue;
+
+	KFPI = KFPlayerInput(GetPC().PlayerInput);
+	KFPI.MouseLookUpScale = NewValue;
+	KFPI.LookUpScale = NewValue;
+	class'PlayerInput'.default.LookUpScale = KFPI.MouseLookUpScale;
+	class'PlayerInput'.static.StaticSaveConfig();
+
+	Manager.CachedProfile.SetProfileSettingValueFloat(KFID_MouseLookUpScale, NewValue);
+}
+
+function Callback_MouseLookRightScale(float NewValue)
+{
+	local KFPlayerInput KFPI;
+
+	KFPI = KFPlayerInput(GetPC().PlayerInput);
+	KFPI.MouseLookRightScale = NewValue;
+	KFPI.LookRightScale = NewValue;
+	class'PlayerInput'.default.LookRightScale = KFPI.MouseLookRightScale;
+	class'PlayerInput'.static.StaticSaveConfig();
+
+	Manager.CachedProfile.SetProfileSettingValueFloat(KFID_MouseLookRightScale, NewValue);
+
+}
+
+function Callback_ViewSmoothingChanged(bool bActive)
+{
+	local KFPlayerInput KFPI;
+	
+	KFPI = KFPlayerInput(GetPC().PlayerInput);
+	KFPI.bViewSmoothingEnabled = bActive;
+	
+	Manager.CachedProfile.SetProfileSettingValueInt(KFID_ViewSmoothingEnabled, bActive ? 1 : 0);
+}
+
+function Callback_ViewAccelerationChanged(bool bActive)
+{
+	local KFPlayerInput KFPI;
+		
+	KFPI = KFPlayerInput(GetPC().PlayerInput);
+	KFPI.bViewAccelerationEnabled = bActive;
+
+	Manager.CachedProfile.SetProfileSettingValueInt(KFID_ViewAccelerationEnabled, bActive ? 1 : 0);
+}
+
 defaultproperties
 {
 	MinControllerLookSensitivity=.4 
@@ -344,6 +397,11 @@ defaultproperties
 	MaxMouseLookSensitivity=.7
 	MinMouseLookZoomSensitivity=.2
 	MaxMouseLookZoomSensitivity=1
+
+	MinMouseLookUpScale=20
+	MaxMouseLookUpScale=500
+	MinMouseLookRightScale=20
+	MaxMouseLookRightScale=500
 
 	SubWidgetBindings.Add((WidgetName="keybindingsContainer",WidgetClass=class'KFGFxControlsContainer_Keybinding'))
 	SubWidgetBindings.Add((WidgetName="inputContainer",WidgetClass=class'KFGFxControlsContainer_Input'))

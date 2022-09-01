@@ -19,8 +19,15 @@ var localized string FailedToReachInventoryServerString;
 var localized array<string> DifficultyStrings;
 var localized array<string> LengthStrings;
 var localized string SpecialLengthString;
+
 var localized string WeaponLevelString;
 var localized string GunPointsString;
+
+var localized string VIPString;
+var localized string VIPObjectiveAString;
+var localized string VIPObjectiveBString;
+var localized string VIPObjectiveCString;
+
 var localized array<string> ServerTypeStrings;
 var localized array<string> PermissionStrings;
 var localized array<string> ConsolePermissionStrings;

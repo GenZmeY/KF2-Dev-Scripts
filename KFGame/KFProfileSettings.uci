@@ -76,3 +76,7 @@ const KFID_HasTabbedToStore = 177;
 const KFID_AllowSwapTo9mm = 178; // Halloween 2021 QoL: added option to quick switch weapons to 9mm 
 const KFID_SurvivalStartingWeapIdx=179; // Summer 2022 QoL: added option to choose starting weapon for survival perk
 const KFID_SurvivalStartingGrenIdx=180; // Summer 2022 QoL: added option to choose starting grenade for survival perk
+const KFID_MouseLookUpScale=181; // Halloweeen 2022 QoL: added mouse options to menu
+const KFID_MouseLookRightScale=182; // Halloweeen 2022 QoL: added mouse options to menu
+const KFID_ViewSmoothingEnabled=183; // Halloweeen 2022 QoL: added mouse options to menu
+const KFID_ViewAccelerationEnabled=184; // Halloweeen 2022 QoL: added mouse options to menu

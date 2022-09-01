@@ -180,7 +180,7 @@ protected simulated function bool DoExplosionDamage(bool bCauseDamage, bool bCau
 
 	if( bOnlyDamagePawns )
 	{
-		return ExplodePawns();
+		return ExplodePawns(bCauseDamage);
 	}
 
 	return super(KFExplosionActor).DoExplosionDamage(bCauseDamage, bCauseEffects);

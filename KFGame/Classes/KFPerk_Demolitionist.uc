@@ -380,7 +380,7 @@ static function PrepareExplosive( Pawn ProjOwner, KFProjectile Proj, optional fl
 	                Proj.ExplosionTemplate.DamageRadius = Proj.default.ExplosionTemplate.DamageRadius * class'KFPerk_Demolitionist'.static.GetNukeRadiusModifier() * AuxRadiusMod;
 	                Proj.ExplosionTemplate.DamageFalloffExponent = Proj.default.ExplosionTemplate.DamageFalloffExponent;
 	            }
-	            else if( InstigatorPRI.bConcussiveActive && Proj.AltExploEffects != none )
+	            else if( InstigatorPRI.bConcussiveActive && Proj.AltExploEffects != none && class'KFPerk_Demolitionist'.static.ProjectileShouldConcussive(Proj) )
 	            {
 	                Proj.ExplosionTemplate.ExplosionEffects = Proj.AltExploEffects;
 	                Proj.ExplosionTemplate.ExplosionSound = class'KFPerk_Demolitionist'.static.GetConcussiveExplosionSound();
@@ -394,8 +394,13 @@ static function PrepareExplosive( Pawn ProjOwner, KFProjectile Proj, optional fl
 	    	KFPC = KFPlayerController( ProjOwner.Controller );
 	    	if( KFPC != none )
 	    	{
-		        InstigatorPerk = KFPC.GetPerk();
-		        Proj.ExplosionTemplate.DamageRadius *= InstigatorPerk.GetAoERadiusModifier() * AuxRadiusMod;
+				Proj.ExplosionTemplate.DamageRadius *= AuxRadiusMod;
+
+				if (class'KFPerk_Demolitionist'.static.ProjectileShouldExplosionChangeRadius(Proj))
+				{
+					InstigatorPerk = KFPC.GetPerk();
+		        	Proj.ExplosionTemplate.DamageRadius *= InstigatorPerk.GetAoERadiusModifier();
+				}
 		    }
 	    }
 	}
@@ -684,6 +689,16 @@ function float GetReactionModifier( optional class<KFDamageType> DamageType )
 simulated static function bool ProjectileShouldNuke( KFProjectile Proj )
 {
 	return Proj.AllowNuke();
+}
+
+simulated static function bool ProjectileShouldConcussive( KFProjectile Proj )
+{
+	return Proj.AllowDemolitionistConcussive();
+}
+
+simulated static function bool ProjectileShouldExplosionChangeRadius( KFProjectile Proj )
+{
+	return Proj.AllowDemolitionistExplosionChangeRadius();
 }
 
 simulated function bool DoorShouldNuke()

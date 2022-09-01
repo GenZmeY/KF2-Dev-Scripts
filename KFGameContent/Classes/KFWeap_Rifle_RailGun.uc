@@ -509,7 +509,7 @@ defaultproperties
 
 	// Zooming/Position
 	PlayerViewOffset=(X=3.0,Y=7,Z=-2)
-	IronSightPosition=(X=-0.25,Y=0,Z=0) // any further back along X and the scope clips through the camera during firing
+	IronSightPosition=(X=-0.25,Y=0.005,Z=-0.005) // any further back along X and the scope clips through the camera during firing
 
 	// AI warning system
 	bWarnAIWhenAiming=true

@@ -129,7 +129,7 @@ var() float MaxDistanceToPlayer;
 var() bool bOutOfSight;
 
 /** Result of last time this volume was rated & sorted */
-var const transient float  CurrentRating;
+var transient float  CurrentRating;
 
 /** Cached visibility for performance */
 var const transient bool 	bCachedVisibility;

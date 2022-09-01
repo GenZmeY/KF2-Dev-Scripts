@@ -71,6 +71,7 @@ defaultproperties
 	ColumnIds.Add(STATID_ACHIEVE_NetherholdCollectibles)
 	ColumnIds.Add(STATID_ACHIEVE_CarillonHamletCollectibles)
 	ColumnIds.Add(STATID_ACHIEVE_RigCollectibles)
+	ColumnIds.Add(STATID_ACHIEVE_BarmwichCollectibles)
 
 	ColumnMappings.Add((Id=STATID_ACHIEVE_MrPerky5, Name="AchievementMrPerky5"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_MrPerky10, Name = "AchievementMrPerky10"))
@@ -130,4 +131,5 @@ defaultproperties
 	ColumnMappings.Add((Id=STATID_ACHIEVE_NetherholdCollectibles,Name="AchievementCollectNetherhold"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_CarillonHamletCollectibles,Name="AchievementCollectCarillonHamlet"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_RigCollectibles,Name="AchievementCollectRig"))
+	ColumnMappings.Add((Id=STATID_ACHIEVE_BarmwichCollectibles,Name="AchievementCollectBarmwichTown"))
 }

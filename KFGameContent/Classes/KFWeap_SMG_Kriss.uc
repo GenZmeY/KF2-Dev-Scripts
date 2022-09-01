@@ -23,7 +23,7 @@ defaultproperties
 	PlayerIronSightFOV=75
 
 	// Zooming/Position
-	IronSightPosition=(X=15.f,Y=0.f,Z=0.0f)
+	IronSightPosition=(X=15.f,Y=0.03f,Z=0.1f)
 	PlayerViewOffset=(X=20.f,Y=9.5f,Z=-3.0f)
 
 	// Content

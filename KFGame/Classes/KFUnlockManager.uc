@@ -34,7 +34,9 @@ enum ESharedContentUnlock
 	SCU_ParasiteImplanter,
 	SCU_Doshinegun,
 	SCU_AutoTurret,
-	SCU_ShrinkRayGun
+	SCU_ShrinkRayGun,
+	SCU_Scythe,
+	SCU_G36C
 };
 
 
@@ -373,4 +375,12 @@ defaultproperties
 		Name=KFWeap_ShrinkRayGun,
 		IconPath="WEP_UI_ShrinkRay_Gun_TEX.UI_Weapon_Select_Shrink_Ray_Gun",
 		ID=9290)}
+	SharedContentList(SCU_Scythe)={(
+		Name=KFWeap_Edged_Scythe,
+		IconPath="WEP_UI_Scythe_TEX.UI_WeaponSelect_Scythe",
+		ID=9478)}
+	SharedContentList(SCU_G36C)={(
+		Name=KFWeap_AssaultRifle_G36C,
+		IconPath="WEP_UI_G36C_TEX.UI_WeaponSelect_G36C",
+		ID=9484)}
 }

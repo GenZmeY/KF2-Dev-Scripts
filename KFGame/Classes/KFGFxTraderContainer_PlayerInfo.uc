@@ -70,18 +70,25 @@ function SetPerkList()
 	local GFxObject PerkObject;
 	local GFxObject DataProvider;
 	local KFPlayerController KFPC;
-	local byte i;
+	local byte i, counter;
 	local int PerkPercent;
+	local KFGameReplicationInfo KFGRI;
 
 	KFPC = KFPlayerController(GetPC());
 	if (KFPC != none)
 	{
     	DataProvider = CreateArray();
 
+		KFGRI = KFGameReplicationInfo(KFPC.WorldInfo.GRI);
+
+		counter = 0;
 		for (i = 0; i < KFPC.PerkList.Length; i++)
-		{
-
-
+		{	
+			if (KFGRI != none && !KFGRI.IsPerkAllowed(KFPC.PerkList[i].PerkClass))
+			{
+				continue;
+			}
+			
 			PerkObject = CreateObject( "Object" );
 			PerkObject.SetString("name", KFPC.PerkList[i].PerkClass.default.PerkName);
 			PerkObject.SetString("perkIconSource",  "img://"$KFPC.PerkList[i].PerkClass.static.GetPerkIconPath());
@@ -90,8 +97,12 @@ function SetPerkList()
 			PerkPercent = KFPC.GetPerkLevelProgressPercentage(KFPC.PerkList[i].PerkClass);
 			
 			PerkObject.SetInt("perkXP", PerkPercent);
+			
+			PerkObject.SetInt("perkIndex", i);
 
-			DataProvider.SetElementObject(i, PerkObject);
+			DataProvider.SetElementObject(counter, PerkObject);
+			
+			++counter;
 		}
 
 		SetObject("perkList", DataProvider);

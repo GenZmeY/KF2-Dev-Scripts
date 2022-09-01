@@ -1631,6 +1631,13 @@ function OnReadProfileSettingsComplete(byte LocalUserNum,bool bWasSuccessful)
 			KFInput.SetGamepadLayout(Profile.GetProfileInt(KFID_CurrentLayoutIndex));
 			KFInput.bToggleToRun = Profile.GetProfileBool(KFID_ToggleToRun);
 			KFInput.bAllowSwapTo9mm = Profile.GetProfileBool(KFID_AllowSwapTo9mm);
+			
+			// Console?? PC?? 
+			KFInput.MouseLookUpScale = Profile.GetProfileFloat(KFID_MouseLookUpScale);
+			KFInput.MouseLookRightScale = Profile.GetProfileFloat(KFID_MouseLookRightScale);
+			KFInput.bViewSmoothingEnabled = Profile.GetProfileBool(KFID_ViewSmoothingEnabled);
+			KFInput.bViewAccelerationEnabled = Profile.GetProfileBool(KFID_ViewAccelerationEnabled);
+			
 			KFInput.ReInitializeControlsUI();
 		}
 
@@ -2756,6 +2763,30 @@ public function bool CanUseGunGame()
 	}
 
 	return false;
+}
+
+public function bool CanUseVIP()
+{
+	/** If this is run in Server or Standalone, GameInfo exists so can access to the OutbreakEvent */
+	if (Role == Role_Authority)
+	{
+		return KFGameInfo(WorldInfo.Game).OutbreakEvent != none
+				&& KFGameInfo(WorldInfo.Game).OutbreakEvent.ActiveEvent.bVIPGameMode;
+	}
+	/** But in client, GameInfo doesn't exist, so needs to be checked in a different way. */
+	else 
+	{
+		/** 
+			In client there's a kfgame replication info that contains if the mode is a weekly, and the index. 
+		    This way would also work in server, but will need to be in code rather than using the weekly variables. 
+		*/
+		/** Another option is to use instead a variable replicated just with that value */
+		return KFGameReplicationInfo(WorldInfo.GRI) != none
+				&& KFGameReplicationInfo(WorldInfo.GRI).bIsWeeklyMode
+				&& KFGameReplicationInfo(WorldInfo.GRI).CurrentWeeklyIndex == 17;	
+	}
+
+	return false;	
 }
 
 /*********************************************************************************************
@@ -10514,6 +10545,10 @@ protected function MotivatePlayerToMove()
 	}
 
 	SetTimer( class'KFVersusNoGoVolume'.static.GetNoGoHurtInterval(), true, nameOf(MotivatePlayerToMove) );
+}
+
+function AdjustDamage(out int InDamage, Controller InstigatedBy, class<DamageType> DamageType, Actor DamageCauser, Actor DamageReceiver)
+{
 }
 
 exec function GCF()

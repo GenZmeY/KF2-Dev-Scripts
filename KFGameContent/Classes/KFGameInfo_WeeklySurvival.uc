@@ -607,7 +607,7 @@ function EndOfMatch(bool bVictory)
 			KFPC.CompletedWeeklySurvival();
 		}
     }
-	
+
     super.EndOfMatch(bVictory);
 }
 
@@ -988,7 +988,7 @@ function LoadGunGameWeapons(Controller NewPlayer)
                 Weapon = KFWeapon(Inv);
                 if (Weapon != none)
                 {
-                    Weapon.GunGameRemove();
+                    Weapon.RemoveGun();
                 }
             }
         }  
@@ -1108,37 +1108,43 @@ function ResetGunGame(KFPlayerController_WeeklySurvival KFPC_WS)
 function NotifyKilled(Controller Killer, Controller Killed, Pawn KilledPawn, class<DamageType> damageType )
 {
     local KFPawn_Monster KFPM;
-    local KFPlayerController_WeeklySurvival KFPC_WS;
+    local KFPlayerController_WeeklySurvival KFPC_WS_Killer, KFPC_WS_Killed;
     
     super.NotifyKilled(Killer, Killed, KilledPawn, damageType);
-    
-    if (!OutbreakEvent.ActiveEvent.bGunGameMode)
-    {
-       return; 
-    }
-       
-    // If pawn is monster increase gun game score for that monster
 
-    KFPM    = KFPawn_Monster(KilledPawn);
-    KFPC_WS = KFPlayerController_WeeklySurvival(Killer);
+    KFPM            = KFPawn_Monster(KilledPawn);
+    KFPC_WS_Killer  = KFPlayerController_WeeklySurvival(Killer);
+    KFPC_WS_Killed  = KFPlayerController_WeeklySurvival(Killed);
 
-    if (KFPM != none && KFPC_WS != none)
-    {
-        if (KFPC_WS.Pawn.Health > 0)
+    if (OutbreakEvent.ActiveEvent.bGunGameMode)
+    {       
+        // If pawn is monster increase gun game score for that monster
+
+        if (KFPM != none && KFPC_WS_Killer != none)
         {
-            KFPC_WS.GunGameData.Score += KFPM.GunGameKilledScore;
-            UpdateGunGameLevel(KFPC_WS);
+            if (KFPC_WS_Killer.Pawn.Health > 0)
+            {
+                KFPC_WS_Killer.GunGameData.Score += KFPM.GunGameKilledScore;
+                UpdateGunGameLevel(KFPC_WS_Killer);
+            }
+        }
+        else
+        {
+            // If pawn is human reset game score (we can just check Killed exists as Controller
+            if (KFPC_WS_Killed != none)
+            {
+                ResetGunGame(KFPC_WS_Killed);
+            }
         }
     }
-    else
+
+    if (OutbreakEvent.ActiveEvent.bVIPGameMode)
     {
-        // If pawn is human reset game score (we can just check Killed exists as Controller)
-
-        KFPC_WS = KFPlayerController_WeeklySurvival(Killed);
-
-        if (KFPC_WS != none)
+        if (KFPC_WS_Killed != none && KFPC_WS_Killed.VIPGameData.isVIP)
         {
-            ResetGunGame(KFPC_WS);
+			// UnregisterPlayer is done on the same frame but this function comes first..
+            // we queue a petition to end the game if no vip is found
+            SetTimer(1.5f, false, 'OnVIPDiesEndMatch');
         }
     }
 }
@@ -1240,7 +1246,7 @@ function UpdateGunGameLevel(KFPlayerController_WeeklySurvival KFPC_WS)
             {
                 // To prevent audio/vfx lock, while firing when removing the equipped weapon we do a proper gun remove
                 // This new function manages it's state internally
-                CurrentWeapon.GunGameRemove();
+                CurrentWeapon.RemoveGun();
             }
 
             if (class'KFPerk_SWAT'.static.Is9mm(CurrentWeapon))
@@ -1275,6 +1281,222 @@ function UpdateGunGameLevel(KFPlayerController_WeeklySurvival KFPC_WS)
         ToGrantWeaponDefinition = PerkData.GunGameLevels[CurrentLevel-1].GrantedWeapons[RandomNumber];
 
         GunGameLevelGrantWeapon(KFPC_WS, ToGrantWeaponDefinition);
+    }
+}
+
+///////////////////////////////////////////////////////////////////////////////////
+
+function UnregisterPlayer(PlayerController PC)
+{
+	local KFPlayerController_WeeklySurvival KFPC_WS;
+
+	super.UnregisterPlayer(PC);
+
+	KFPC_WS = KFPlayerController_WeeklySurvival(PC);
+    if (OutbreakEvent.ActiveEvent.bVIPGameMode)
+    {
+        if (KFPC_WS != none && KFPC_WS.VIPGameData.IsVIP)
+        {
+            ChooseVIP(false, KFPC_WS);
+        }
+    }
+}
+
+function WaveStarted()
+{
+    Super.WaveStarted();
+    
+    if (OutbreakEvent.ActiveEvent.bVIPGameMode)
+    {
+        if (WaveNum <= 1)
+        {
+            ChooseVIP(true);
+        }
+    }
+}
+
+function OnVIPDiesEndMatch()
+{
+ 	local KFPlayerController KFPC;
+
+	foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+	{
+        KFPC.SetCameraMode('ThirdPerson');   
+    }
+
+    WaveEnded(WEC_TeamWipedOut);
+}
+
+function ChooseVIP_SetupVIP()
+{
+    local KFPlayerController_WeeklySurvival KFPC_WS, NewVIP;
+    local KFGameReplicationInfo KFGRI;
+
+    NewVIP = none;
+    KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+	{
+		if (KFPC_WS != none)
+		{
+  			if (KFPC_WS.VIPGameData.IsVIP)
+			{
+                NewVIP = KFPC_WS;
+                break;
+            }
+        }
+    }
+
+    if (NewVIP != none)
+    {
+        //`Log("Setup new VIP: " $NewVIP);
+
+        if (NewVIP.Pawn != none)
+        {
+            //`Log("Finished setup new VIP: " $NewVIP);
+
+            NewVIP.GetPerk().PerkSetOwnerHealthAndArmor(false);
+
+            if (NewVIP.VIPGameData.PendingHealthReset)
+            {
+                NewVIP.VIPGameData.PendingHealthReset = false;
+
+                // Change current health directly, Pawn.HealDamage does a lot of other stuff that can block the healing
+                NewVIP.Pawn.Health = NewVIP.Pawn.HealthMax;
+            }
+
+            // Replicate new data to clients
+            KFGRI.UpdateVIPPlayer(KFPlayerReplicationInfo(NewVIP.PlayerReplicationInfo));
+            KFGRI.UpdateVIPMaxHealth(NewVIP.Pawn.HealthMax);
+            KFGRI.UpdateVIPCurrentHealth(NewVIP.Pawn.Health);
+
+            NewVIP.PlayVIPGameChosenSound(3.5f);
+
+            ClearTimer('ChooseVIP_SetupVIP');
+        }
+    }
+}
+
+function ChooseVIP(bool ForceAddHealth, optional KFPlayerController_WeeklySurvival PlayerJustLeft = none)
+{
+	local int RandomNumber;
+	local KFPlayerController_WeeklySurvival KFPC_WS, CurrentVIP, NewVIP;
+	local array<KFPlayerController_WeeklySurvival> PotentialVIP;
+	local KFGameReplicationInfo KFGRI;
+
+    //`Log("ChooseVIP!!!!!");
+
+    ClearTimer('ChooseVIP_SetupVIP');
+
+    KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+	{
+		if (KFPC_WS != none)
+		{
+			if (KFPC_WS.VIPGameData.IsVIP == false && KFPC_WS.VIPGameData.WasVIP == false)
+			{
+				PotentialVIP.AddItem(KFPC_WS);
+			}
+
+			if (KFPC_WS.VIPGameData.IsVIP)
+			{
+				CurrentVIP = KFPC_WS;
+			}
+		}
+	}
+
+	if (CurrentVIP != none)
+	{
+		//`Log("Remove old VIP: " $CurrentVIP);
+
+		CurrentVIP.VIPGameData.IsVIP = false;
+
+        CurrentVIP.GetPerk().PerkSetOwnerHealthAndArmor(false);
+	}
+
+	// If there's no potential VIP we restart
+	if (PotentialVIP.Length == 0)
+	{
+		foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+		{
+			if (KFPC_WS != none)
+			{
+				KFPC_WS.VIPGameData.WasVIP = false;
+
+				if (PlayerJustLeft == none
+					|| PlayerJustLeft != KFPC_WS)
+				{
+					PotentialVIP.AddItem(KFPC_WS);
+				}
+			}
+		}
+	}
+
+	if (PotentialVIP.Length > 0)
+	{
+		RandomNumber = Rand(PotentialVIP.Length);
+
+		NewVIP = PotentialVIP[RandomNumber];
+
+		NewVIP.VIPGameData.IsVIP = true;
+		NewVIP.VIPGameData.WasVIP = true;
+	}	
+
+	if (NewVIP != none)
+	{
+        if (ForceAddHealth || (KFGRI != none && KFGRI.bWaveIsActive == false))
+		{
+            NewVIP.VIPGameData.PendingHealthReset = true;
+        }
+
+        // If there's no Pawn we have to wait on a Timer function
+        if (NewVIP.Pawn != none)
+        {
+            ChooseVIP_SetupVIP();
+        }
+        else
+        {
+            SetTimer(0.25f, true, 'ChooseVIP_SetupVIP');
+        }
+
+        ClearTimer('OnVIPDiesEndMatch');
+	}
+}
+
+function OnOutbreakWaveWon()
+{
+    Super.OnOutbreakWaveWon();
+
+    // GunGame Mode
+    if (OutbreakEvent.ActiveEvent.bGunGameMode)
+    {
+        MyKFGRI.GunGameWavesCurrent += 1;
+
+        // If we unlocked last weapon we only finish if we completed the boss wave
+        // If we didn't unlock to last weapon and we just finished last wave (before BOSS), repeat
+        if (bGunGamePlayerOnLastGun)
+        {
+            MyKFGRI.bWaveGunGameIsFinal = true;
+
+            if (WaveNum < WaveMax)
+            {
+                WaveNum = WaveMax - 1;
+            }
+        }
+        else if (WaveNum >= WaveMax - 1)
+        {
+            // Repeat wave before BOSS till forever
+            WaveNum = WaveMax - 2;
+        }
+
+        MyKFGRI.bNetDirty = true;
+    }	
+
+    // VIP Mode
+    if (OutbreakEvent.ActiveEvent.bVIPGameMode)
+    {
+        ChooseVIP(true);
     }
 }
 

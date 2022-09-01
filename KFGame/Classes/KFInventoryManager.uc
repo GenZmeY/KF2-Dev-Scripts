@@ -21,6 +21,7 @@ var transient KFWeap_HealerBase HealerWeapon;
 
 /** Localized message for quick heal */
 var localized string FullHealthMsg;
+var localized string CannotHealthMsg;
 
 /** The number of grenades the character is carrying */
 var byte GrenadeCount;
@@ -1270,6 +1271,20 @@ simulated function AttemptQuickHeal()
 {
 	local KFWeap_HealerBase W;
 	local KFPlayerController KFPC;
+	local KFPlayerController_WeeklySurvival KFPCWS;
+    local KFGameReplicationInfo KFGRI;
+
+    KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+	KFPCWS = KFPlayerController_WeeklySurvival(Instigator.Owner);
+
+    // VIP cannot heal
+    if (KFGRI != none
+		&& KFGRI.VIPRepPlayer != none
+		&& KFGRI.VIPRepPlayer == KFPlayerReplicationInfo(KFPCWS.PlayerReplicationInfo))
+    {
+		KFPCWS.MyGFxHUD.ShowNonCriticalMessage(CannotHealthMsg);
+		return;
+	}
 
 	// Do not heal if we have full health
 	if ( Instigator.Health >= Instigator.HealthMax )

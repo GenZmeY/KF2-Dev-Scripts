@@ -242,6 +242,9 @@ function AdjustBoneDamage(out int InDamage, name BoneName, Vector DamagerSource,
 {
 	local int ArmorZoneIdx, ModDmgMax, ModDmgRem, ObliterateDamage;
 	local float Modifier;
+	local class<KFDamageType> mykfDamageType;
+
+	mykfDamageType = class<KFDamageType>(DamageType);
 
 	// modify damage done and apply to armor
 	Modifier = GetArmorDamageTypeModifier(DamageType);
@@ -259,7 +262,22 @@ function AdjustBoneDamage(out int InDamage, name BoneName, Vector DamagerSource,
 		}
 		else
 		{
+			// If we have armour penetration damage, we calculate the Damage % that is base (and applied to armor)
+			// And we calculate the AP one, that's applied as minimum always
+			if (mykfDamageType != none && mykfDamageType.default.DamageModifierAP > 0.f)
+			{
+				ModDmgRem = (1.0 - mykfDamageType.default.DamageModifierAP) * ModDmgRem;
+			}			
+
 			TakeArmorZoneDamage(ArmorZoneIdx, ModDmgRem, ModDmgRem);
+
+			// Apply to Zed: % AP (unmodified InDamage) + what's left of base after armor applied (unmodified ModDmgRem)
+			if (mykfDamageType != none && mykfDamageType.default.DamageModifierAP > 0.f)
+			{
+				InDamage = InDamage * mykfDamageType.default.DamageModifierAP;
+				InDamage += float(ModDmgRem) / Modifier;
+				return;
+			}
 		}
 	}
 

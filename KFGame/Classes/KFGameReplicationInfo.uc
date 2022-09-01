@@ -364,6 +364,28 @@ var int CurrentWeeklyIndex;
 /** If true, force show skip time between waves ready button */
 var bool bForceShowSkipTrader;
 
+/** Struct with replicated information about the VIP mode */
+struct native ReplicatedVIPGameInfo
+{
+	var int CurrentHealth;
+	var int MaxHealth;
+	var KFPlayerReplicationInfo VIPPlayer;
+
+    structdefaultproperties
+    {
+        VIPPlayer     = none
+        CurrentHealth = 0
+        MaxHealth     = 0
+	}
+};
+var transient ReplicatedVIPGameInfo VIPModeData;
+
+/** Structs are sent as a pack through the network. Split it in variables for optimization. */
+var repnotify int VIPRepCurrentHealth;
+var repnotify int VIPRepMaxHealth;
+var repnotify KFPlayerReplicationInfo VIPRepPlayer;
+
+
 /************************************
  *  Steam heartbeat
  ************************************/
@@ -398,7 +420,7 @@ replication
 		TraderVolume, TraderVolumeCheckType, bTraderIsOpen, NextTrader, WaveNum, bWaveIsEndless, GunGameWavesCurrent, bWaveGunGameIsFinal, AIRemaining, WaveTotalAICount, bWaveIsActive, MaxHumanCount, bGlobalDamage, 
 		CurrentObjective, PreviousObjective, PreviousObjectiveResult, PreviousObjectiveXPResult, PreviousObjectiveVoshResult, MusicIntensity, ReplicatedMusicTrackInfo, MusicTrackRepCount,
 		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective, bIsBrokenTrader, bIsWeeklyMode,
-		CurrentWeeklyIndex, bIsEndlessPaused, bForceSkipTraderUI; //@HSL - JRO - 3/21/2016 - PS4 Sessions
+		CurrentWeeklyIndex, bIsEndlessPaused, bForceSkipTraderUI, VIPRepCurrentHealth, VIPRepMaxHealth, VIPRepPlayer; //@HSL - JRO - 3/21/2016 - PS4 Sessions
 	if ( bNetInitial )
 		GameLength, WaveMax, bCustom, bVersusGame, TraderItems, GameAmmoCostScale, bAllowGrenadePurchase, MaxPerkLevel, bTradersEnabled, bForceShowSkipTrader;
 	if ( bNetInitial || bNetDirty )
@@ -550,13 +572,25 @@ simulated event ReplicatedEvent(name VarName)
 	{
 		UpdatePerksAvailable();
 	}
-	else if (VarName == 'GunGameWavesCurrent')
+	else if (VarName == nameof(GunGameWavesCurrent))
 	{
 		UpdateHUDWaveCount();
 	}
-	else if (VarName == 'bWaveGunGameIsFinal')
+	else if (VarName == nameof(bWaveGunGameIsFinal))
 	{
 		UpdateHUDWaveCount();
+	}
+	else if (VarName == nameof(VIPRepCurrentHealth))
+	{
+		UpdateVIPCurrentHealth(VIPRepCurrentHealth);
+	}
+	else if (VarName == nameof(VIPRepMaxHealth))
+	{
+		UpdateVIPMaxHealth(VIPRepMaxHealth);
+	}
+	else if (VarName == nameof(VIPRepPlayer))
+	{
+		UpdateVIPPlayer(VIPRepPlayer);
 	}
 	else
 	{
@@ -2269,9 +2303,93 @@ simulated function NotifyWeeklyEventIndex(int EventIndex)
 }
 
 
+/** VIP weekly */
+simulated function UpdateVIPMaxHealth(int NewMaxHealth)
+{
+	if (NewMaxHealth != VIPModeData.MaxHealth)
+	{
+		VIPModeData.MaxHealth = NewMaxHealth;
+
+		if (Role == ROLE_Authority)
+		{
+			VIPRepMaxHealth = NewMaxHealth;
+			bNetDirty = true;
+		}
+
+		if (WorldInfo.NetMode != NM_DedicatedServer)
+		{
+			UpdateVIPUI();
+		}
+	}
+}
+
+simulated function UpdateVIPCurrentHealth(int NewCurrentHealth)
+{
+	if (NewCurrentHealth != VIPModeData.CurrentHealth)
+	{
+		VIPModeData.CurrentHealth = NewCurrentHealth;
+
+		if (Role == ROLE_Authority)
+		{
+			VIPRepCurrentHealth = NewCurrentHealth;
+			bNetDirty = true;
+		}
+
+		if (WorldInfo.NetMode != NM_DedicatedServer)
+		{
+			UpdateVIPUI();
+		}
+	}
+}
+
+simulated function UpdateVIPPlayer(KFPlayerReplicationInfo NewVIPPlayer)
+{
+	if (NewVIPPlayer == none)
+	{
+		return;
+	}
+
+	if (NewVIPPlayer != VIPModeData.VIPPlayer)
+	{
+		VIPModeData.VIPPlayer = NewVIPPlayer;
+
+		if (Role == ROLE_Authority)
+		{
+			VIPRepPlayer = NewVIPPlayer;
+			bNetDirty = true;
+		}
+
+		if (WorldInfo.NetMode != NM_DedicatedServer)
+		{
+			UpdateVIPUI();
+		}
+	}
+}
+
+simulated function UpdateVIPUI()
+{
+	local KFPlayerController_WeeklySurvival KFPC_WS;
+
+	if( WorldInfo.NetMode == NM_DedicatedServer )
+	{
+		return;
+	}
+
+	KFPC_WS = KFPlayerController_WeeklySurvival(GetALocalPlayerController());
+	if (KFPC_WS != none)
+	{
+		KFPC_WS.UpdateVIPWidget(VIPModeData);
+	}
+}
+
 simulated function bool IsGunGameMode()
 {
 	return bIsWeeklyMode && CurrentWeeklyIndex == 16;
+}
+
+simulated function bool IsVIPMode()
+{
+	return bIsWeeklyMode && CurrentWeeklyIndex == 17;
 }
 
 defaultproperties
@@ -2298,4 +2416,7 @@ defaultproperties
 	bForceSkipTraderUI=false
 	GunGameWavesCurrent=1
 	bWaveGunGameIsFinal=false
+	VIPRepCurrentHealth=0
+	VIPRepMaxHealth=0
+	VIPRepPlayer=none
 }
