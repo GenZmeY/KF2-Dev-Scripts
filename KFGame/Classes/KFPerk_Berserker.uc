@@ -552,10 +552,12 @@ function NotifyZedTimeStarted()
 	local KFGameInfo GameInfo;
 	local bool bScaredAI;
 	local bool bCannotBeHealed;
+	local KFGameReplicationInfo KFGRI;
 
 	if( IsRageActive() && OwnerPawn != none )
 	{
 		KFPC = KFPlayerController(OwnerPawn.Controller);
+
 		if( KFPC != none )
 		{
 			PowerUp = KFPC.GetPowerUp();
@@ -565,6 +567,15 @@ function NotifyZedTimeStarted()
 			if(GameInfo != none)
 			{
 				bCannotBeHealed = bCannotBeHealed ||(GameInfo.OutbreakEvent != none && GameInfo.OutbreakEvent.ActiveEvent.bCannotBeHealed);
+			}
+
+			// VIP cannot heal
+			KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+		    if (KFGRI != none
+				&& KFGRI.VIPRepPlayer != none
+				&& KFGRI.VIPRepPlayer == KFPlayerReplicationInfo(KFPC.PlayerReplicationInfo))
+    		{
+				bCannotBeHealed = true;
 			}
 		}
 

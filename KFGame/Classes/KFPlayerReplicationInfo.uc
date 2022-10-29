@@ -113,7 +113,7 @@ var private 	byte	ActivePerkLevel;
 var private 	byte	ActivePerkPrestigeLevel;
 /** Kill assists. Need an integer here because it is very easy to exceed 255 assists. */
 var 			int 			Assists;
-var 	byte			PlayerHealth; //represented as a percentage
+var 	int			PlayerHealth;
 var 	byte			PlayerHealthPercent; //represented as a percentage
 /** The firebug range skill increases the range of fire weapons we need to tell other clients if it is on */
 var 			bool 			bExtraFireRange;

@@ -26,6 +26,8 @@ var class<KFDamageType> ZedativeDamageType;
 var class<KFDamageType> ZedativeHealingType;
 var int ZedativeEffectRadius;
 
+var array<KFPawn_Human> AffectedHumans;
+
 replication
 {
 	if(bNetInitial)
@@ -79,16 +81,16 @@ protected simulated function AffectsPawn(Pawn Victim, float DamageScale)
 	local Actor		HitActor;
 	local bool		bDamageBlocked;
 	
+	if( bWasFadedOut|| bDeleteMe || bPendingDelete )
+	{
+		return;
+	}
+
 	if( Victim != none && Victim.IsAliveAndWell() )
 	{
 		MonsterVictim = KFPawn_Monster(Victim);
 		if( MonsterVictim != none )
-		{
-			if( bWasFadedOut|| bDeleteMe || bPendingDelete )
-			{
-				return;
-			}
-			
+		{			
 			Victim.GetComponentsBoundingBox(BBox);
 			BBoxCenter = (BBox.Min + BBox.Max) * 0.5f;
 			HitActor = TraceExplosive(BBoxCenter, Location + vect(0, 0, 20));
@@ -109,7 +111,12 @@ protected simulated function AffectsPawn(Pawn Victim, float DamageScale)
 			HumanVictim = KFPawn_Human(Victim);
 			if( HumanVictim != none && HumanVictim.GetExposureTo(Location) > 0 )
 			{
-				HumanVictim.HealDamage(ZedativeHealth, InstigatorController, ZedativeHealingType, false);
+				if (AffectedHumans.Find(HumanVictim) == INDEX_NONE)
+				{
+					AffectedHumans.AddItem(HumanVictim);
+
+					HumanVictim.HealDamage(ZedativeHealth, InstigatorController, ZedativeHealingType, false);
+				}
 			}
 		}
 	}

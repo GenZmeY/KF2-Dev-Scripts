@@ -57,6 +57,11 @@ var() float AnimBlendRate;
 var transient 			float 			LaserSightAimStrength;
 var transient 			float 			DesiredAimStrength;
 
+// Use for automatic weapons, then the Laser Dot will always steer to the hit location no matter what
+var transient			bool			bForceDotToMatch;
+
+var transient bool IsVisible;
+
 /** Create/Attach lasersight components */
 function AttachLaserSight(SkeletalMeshComponent OwnerMesh, bool bFirstPerson, optional name SocketNameOverride)
 {
@@ -135,6 +140,8 @@ simulated function SetMeshLightingChannels(LightingChannelContainer NewLightingC
 
 simulated event ChangeVisibility(bool bVisible)
 {
+	IsVisible = bVisible;
+
     LaserDotMeshComp.SetHidden(!bVisible);
     LaserSightMeshComp.SetHidden(!bVisible);
     LaserBeamMeshComp.SetHidden(!bVisible);
@@ -158,6 +165,11 @@ simulated function Update(float DeltaTime, KFWeapon OwningWeapon)
 	local vector DirA, DirB;
 	local Quat Q;
 	local TraceHitInfo		HitInfo;
+
+	if (IsVisible == false)
+	{
+		return;
+	}
 
 	if( OwningWeapon != None &&
 		OwningWeapon.Instigator != None &&
@@ -287,6 +299,21 @@ simulated function Update(float DeltaTime, KFWeapon OwningWeapon)
 	}
 }
 
+function bool IsIdleFidgetAnimation(KFWeapon W, name AnimationName)
+{
+	local int i;
+
+	for (i = 0; i < W.IdleFidgetAnims.Length; ++i)
+	{
+		if (AnimationName == W.IdleFidgetAnims[i])
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
 /** Determine how much to weigh screen center versus weapon socket */
 function UpdateFirstPersonAImStrength(float DeltaTime, KFWeapon W)
 {
@@ -297,8 +324,16 @@ function UpdateFirstPersonAImStrength(float DeltaTime, KFWeapon W)
 	{
 		DesiredAimStrength = 1.f - AnimWeight;
 	}
+	// we are forcing the dot to match, don't do while reloading though
+	else if (bForceDotToMatch 
+				&& (W.IsInstate('Reloading') == false
+					&& W.IsInState('WeaponSprinting') == false
+					&& IsIdleFidgetAnimation(W, W.WeaponAnimSeqNode.AnimSeqName) == false))
+	{
+		DesiredAimStrength = 1.f - AnimWeight;
+	}
 	// follow weapon
-	else 
+	else
 	{
 		DesiredAimStrength = 0.f;
 	}
@@ -409,4 +444,8 @@ defaultproperties
     LaserDotLerpEndDistance=6000.f
     LaserDotMaxScale=10.f
     LaserDotDepthBias=0.95f
+
+	IsVisible=true
+
+	bForceDotToMatch=false
 }

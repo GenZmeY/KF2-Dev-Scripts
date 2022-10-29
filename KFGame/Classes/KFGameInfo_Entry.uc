@@ -484,11 +484,11 @@ auto State PendingMatch
     {
    		local int SystemTimeMinutes;
 
-		// Update every 30 minutes using system clock for suspend mode.
+		// Update every minute using system clock for suspend mode.
 		// Originally tried using GameEnding(), but the TitleData response
 		// doesn't come back in time for the new map.
 		SystemTimeMinutes = GetSystemTimeMinutes();
-		if ( (SystemTimeMinutes - LastSystemTimeMinutes) >= 30 )
+		if ( (SystemTimeMinutes - LastSystemTimeMinutes) >= 1 )
 		{
 			class'KFGameEngine'.static.RefreshOnlineGameData();
 			LastSystemTimeMinutes = SystemTimeMinutes;

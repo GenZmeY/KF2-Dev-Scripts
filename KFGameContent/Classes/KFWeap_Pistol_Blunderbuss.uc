@@ -492,7 +492,7 @@ defaultproperties
 
 	// Zooming/Position
 	PlayerViewOffset=(X=-15,Y=12,Z=-6)
-	IronSightPosition=(X=-3,Y=0,Z=0)
+	IronSightPosition=(X=-3,Y=0.145,Z=0)
 
 	// Content
 	PackageKey="Blunderbuss"

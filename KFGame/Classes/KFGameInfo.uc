@@ -3903,6 +3903,11 @@ simulated function AddWeaponsFromSpawnList(KFPawn P);
 simulated function OverrideHumanDefaults(KFPawn_Human P);
 
 /***********************************************
+ * @name        Helper for halloween 2022 barmwich bonfire seasonal objective
+ **********************************************/
+function ClearActorFromBonfire(Actor Other);
+
+/***********************************************
  * @name        Damage Modifier for Event
  **********************************************/
 simulated function ModifyDamageGiven(out int InDamage, optional Actor DamageCauser, optional KFPawn_Monster MyKFPM, optional KFPlayerController DamageInstigator, optional class<KFDamageType> DamageType, optional int HitZoneIdx );

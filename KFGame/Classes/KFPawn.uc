@@ -178,6 +178,10 @@ struct native DamageInfo
 	var array<class<KFDamageType> >		DamageTypes;
 };
 
+// VFX that need to linger when a specific DamageType starts (those should loop), we stop them when the DamageType ends affecting
+var() ParticleSystem					Toxic_HRG_Locust_LoopingParticleEffect;
+var	transient ParticleSystemComponent	Toxic_HRG_Locust_LoopingPSC;
+
 /** List of PRIs who damaged the specimen */
 var	array<DamageInfo> DamageHistory;
 
@@ -885,6 +889,7 @@ var transient byte LastHitZoneIndex;
  */
 var const bool bIsTurret;
 
+var repnotify bool bEnableSwarmVFX;
 
 replication
 {
@@ -893,7 +898,8 @@ replication
 		AmbientSound, WeaponClassForAttachmentTemplate, bIsSprinting, InjuredHitZones,
 		KnockdownImpulse, ReplicatedSpecialMove, bEmpDisrupted, bEmpPanicked, bFirePanicked,
         RepFireBurnedAmount, bUnaffectedByZedTime, bMovesFastInZedTime, IntendedBodyScale,
-		IntendedHeadScale, AttackSpeedModifier, bHasStartedFire, PowerUpAmbientSound, BodyScaleChangePerSecond;
+		IntendedHeadScale, AttackSpeedModifier, bHasStartedFire, PowerUpAmbientSound, BodyScaleChangePerSecond,
+		bEnableSwarmVFX;
 	if ( bNetDirty && WorldInfo.TimeSeconds < LastTakeHitTimeout )
 		HitFxInfo, HitFxRadialInfo, HitFxInstigator, HitFxAddedRelativeLocs, HitFxAddedHitCount;
 	if ( Physics == PHYS_RigidBody && !bTearOff )
@@ -1171,6 +1177,18 @@ simulated event ReplicatedEvent(name VarName)
 		break;
 	case nameof(WeaponSpecialAction):
 		OnWeaponSpecialAction(WeaponSpecialAction);
+		break;
+	
+	case nameof(bEnableSwarmVFX):
+		if (bEnableSwarmVFX)
+		{
+			StartLocustVFX();
+		}
+		else
+		{
+			StopLocustVFX();
+		}
+		break;
 	}
 
 	Super.ReplicatedEvent(VarName);
@@ -2709,7 +2727,7 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 	Super.TakeDamage(Damage, InstigatedBy, HitLocation, Momentum, DamageType, HitInfo, DamageCauser);
 
 	// using the passed in damage type instead of the hitfxinfo since that doesn't get updated when zero damage is done
-	// HandleAfflictionsOnHit(InstigatedBy, Normal(Momentum), class<KFDamageType>(DamageType), DamageCauser);
+	HandleAfflictionsOnHit(InstigatedBy, Normal(Momentum), class<KFDamageType>(DamageType), DamageCauser);
 
 	ActualDamage = OldHealth - Health;
 	if( ActualDamage > 0 )
@@ -2810,6 +2828,15 @@ function AdjustDamage(out int InDamage, out vector Momentum, Controller Instigat
 	}
 
     InDamage *= VolumeDamageScale;
+
+	if (KFPlayerController(Controller) != none)
+	{
+		KFPlayerController(Controller).AdjustDamage(InDamage, InstigatedBy, DamageType, DamageCauser, self);
+	}
+	else if (KFPlayerController(InstigatedBy) != none)
+	{
+		KFPlayerController(InstigatedBy).AdjustDamage(InDamage, InstigatedBy, DamageType, DamageCauser, self);
+	}
 
 	// Check non lethal damage
 	KFDT = class<KFDamageType>(DamageType);
@@ -2915,6 +2942,30 @@ function AddTakenDamage( Controller DamagerController, int Damage, Actor DamageC
 	}
 }
 
+function TimerRestartForceEnemy()
+{
+	local KFAIController KFAIC;
+	local Pawn ForcedEnemy;
+
+	if (Controller != none)
+	{
+		KFAIC = KFAIController( Controller );
+		if (KFAIC != none)
+		{
+			// Forces the ForcedEnemy again
+
+			KFAIC.CanForceEnemy = true;
+
+			ForcedEnemy = KFAIC.FindForcedEnemy();
+
+			if (ForcedEnemy != none)
+			{
+				KFAIC.ChangeEnemy(ForcedEnemy);
+			}
+		}
+	}
+}
+
 function UpdateDamageHistory( Controller DamagerController, int Damage, Actor DamageCauser, class<KFDamageType> DamageType )
 {
 	local DamageInfo Info;
@@ -2943,19 +2994,40 @@ function UpdateDamageHistory( Controller DamagerController, int Damage, Actor Da
 				DamageHistory[KFAIC.CurrentEnemysHistoryIndex].Damage = 0;
 			}
 
-			if( KFAIC.IsAggroEnemySwitchAllowed()
-				&& DamagerController.Pawn != KFAIC.Enemy
-				&& Info.Damage >= DamageThreshold
-				&& Info.Damage > DamageHistory[KFAIC.CurrentEnemysHistoryIndex].Damage )
+			// If we have a forced Enemy break it only if we fulfill the minimum health value
+			if (KFAIC.ForcedEnemy != none)
 			{
-				BlockerPawn = KFAIC.GetPawnBlockingPathTo( DamagerController.Pawn, true );
-				if( BlockerPawn == none )
+				if (GetHealthPercentage() < KFAIC.DamageRatioToChangeForcedEnemy)
 				{
-					bChangedEnemies = KFAIC.SetEnemy(DamagerController.Pawn);
+					// Only if X seconds passed since last time we choose the ForcedEnemy
+					if ((WorldInfo.TimeSeconds - KFAIC.ForcedEnemyLastTime) > KFAIC.TimeCannotChangeFromForcedEnemy)
+					{
+						KFAIC.CanForceEnemy = false; // The timer we will reenable this to allow selection again
+
+						// If we have forced enemy, reactivate ForcedEnemy after X seconds, so it can default to the ForcedEnemy again
+						ClearTimer('TimerRestartForceEnemy');
+						SetTimer(KFAIC.TimeCanRestartForcedEnemy, false, 'TimerRestartForceEnemy');
+
+						KFAIC.ChangeEnemy(DamagerController.Pawn);
+					}
 				}
-				else
+			}
+			else
+			{
+				if (KFAIC.IsAggroEnemySwitchAllowed()
+					&& DamagerController.Pawn != KFAIC.Enemy
+					&& Info.Damage >= DamageThreshold
+					&& Info.Damage > DamageHistory[KFAIC.CurrentEnemysHistoryIndex].Damage)
 				{
-					bChangedEnemies = KFAIC.SetEnemy( BlockerPawn );
+					BlockerPawn = KFAIC.GetPawnBlockingPathTo( DamagerController.Pawn, true );
+					if( BlockerPawn == none )
+					{
+						bChangedEnemies = KFAIC.SetEnemy(DamagerController.Pawn);
+					}
+					else
+					{
+						bChangedEnemies = KFAIC.SetEnemy( BlockerPawn );
+					}
 				}
 			}
 		}
@@ -3403,6 +3475,8 @@ simulated function bool IsHeadless();
 /** Clean up function to terminate any effects on death */
 simulated function TerminateEffectsOnDeath()
 {
+	local int i;
+
 	// Destroy our weapon attachment
 	if( WeaponAttachment != None && !WeaponAttachment.bPendingDelete )
 	{
@@ -3420,10 +3494,17 @@ simulated function TerminateEffectsOnDeath()
 
 	AfflictionHandler.Shutdown();
 
+	StopLocustVFX();
+
 	// send a special stop event to the audio system
 	if ( SoundGroupArch.OnDeathStopEvent != None )
 	{
 		PostAkEvent( SoundGroupArch.OnDeathStopEvent );
+	}
+
+    for (i = 0 ; i < DamageOverTimeArray.Length; i++)
+    {
+		OnEndDamageType(DamageOverTimeArray[i].DamageType);
 	}
 }
 
@@ -4043,12 +4124,12 @@ simulated function KFSkinTypeEffects GetHitZoneSkinTypeEffects( int HitZoneIdx )
  */
 simulated function AdjustAffliction(out float AfflictionPower);
 
-function HandleAfflictionsOnHit(Controller DamageInstigator, vector HitDir, class<DamageType> DamageType, Actor DamageCauser)
+function HandleAfflictionsOnHit(Controller DamageInstigator, vector HitDir, class<KFDamageType> DamageType, Actor DamageCauser)
 {
 	//Handle afflictions
     if (AfflictionHandler != None)
     {
-        AfflictionHandler.NotifyTakeHit(DamageInstigator, HitDir,  class<KFDamageType>(DamageType), DamageCauser);
+        AfflictionHandler.NotifyTakeHit(DamageInstigator, HitDir, DamageType, DamageCauser);
     }
 }
 
@@ -4083,6 +4164,8 @@ function ApplyDamageOverTime(int Damage, Controller InstigatedBy, class<KFDamage
             DoTInfo.Interval = KFDT.default.DoT_Interval;
             DoTInfo.InstigatedBy = InstigatedBy;
 			DoTInfo.TimeUntilNextDamage = KFDT.default.DoT_Interval;
+
+			OnStartDamageType(KFDT);
 
             DamageOverTimeArray[DamageOverTimeArray.Length] = DoTInfo;
         }
@@ -4129,10 +4212,32 @@ function TickDamageOverTime(float DeltaTime)
         // Remove damage over time elements from the array when they have timed out
         if( DamageOverTimeArray[i].Duration <= 0 || DamageOverTimeArray[i].Duration < DamageOverTimeArray[i].Interval )
         {
+			OnEndDamageType(DamageOverTimeArray[i].DamageType);
+
             DamageOverTimeArray.Remove(i,1);
             continue;
         }
     }
+}
+
+simulated function OnStartDamageType(class<KFDamageType> DamageType)
+{
+	switch (DamageType.Name)
+	{
+		case 'KFDT_Toxic_HRG_Locust':
+			StartLocustVFX();
+			break;
+	}
+}
+
+simulated function OnEndDamageType(class<KFDamageType> DamageType)
+{
+	switch (DamageType.Name)
+	{
+		case 'KFDT_Toxic_HRG_Locust':
+			StopLocustVFX();
+			break;
+	}
 }
 
 /*********************************************************************************************
@@ -5408,6 +5513,43 @@ simulated function StopExtraVFX(Name FXLabel)
 
 simulated function SetTurretWeaponAttachment(class<KFWeapon> WeaponClass) {}
 
+simulated function StartLocustVFX()
+{
+	if ( WorldInfo.NetMode == NM_DedicatedServer )
+	{
+		bEnableSwarmVFX=true;
+		bNetDirty = true;
+		return;
+	}
+
+	if (Toxic_HRG_Locust_LoopingParticleEffect != none)
+	{
+		if (Toxic_HRG_Locust_LoopingPSC == none)
+		{
+			Toxic_HRG_Locust_LoopingPSC = WorldInfo.MyEmitterPool.SpawnEmitter(Toxic_HRG_Locust_LoopingParticleEffect, Location, Rotation, self);
+		}
+		else
+		{
+			Toxic_HRG_Locust_LoopingPSC.SetStopSpawning(-1, false);
+		}
+	}
+}
+
+simulated function StopLocustVFX()
+{
+	if ( WorldInfo.NetMode == NM_DedicatedServer )
+	{
+		bEnableSwarmVFX=false;
+		bForceNetUpdate = true;
+		return;
+	}
+
+	if (Toxic_HRG_Locust_LoopingPSC != none)
+	{
+		Toxic_HRG_Locust_LoopingPSC.SetStopSpawning(-1, true);
+	}
+}
+
 defaultproperties
 {
 	InventoryManagerClass=class'KFInventoryManager'
@@ -5674,4 +5816,8 @@ defaultproperties
 	// ---------------------------------------------
 	// AutoTurret
 	bIsTurret=false
+
+	Toxic_HRG_Locust_LoopingParticleEffect=ParticleSystem'WEP_HRG_Locust_EMIT.FX_Flying_Bugs_attacking'
+	Toxic_HRG_Locust_LoopingPSC=none
+	bEnableSwarmVFX=false
 }

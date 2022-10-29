@@ -386,4 +386,17 @@ defaultproperties
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SurvivalStartingWeapIdx,Data=(Type=SDT_Int32,Value1=0))))
 	ProfileMappings.Add((Id=KFID_SurvivalStartingGrenIdx, Name="Survival Starting Grenade Index", MappingType=PVMT_RawValue))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SurvivalStartingGrenIdx,Data=(Type=SDT_Int32,Value1=0))))
+
+	// Added 07/06/2022 - QoL: Add mouse options to menu
+	ProfileMappings.Add((Id=KFID_MouseLookUpScale, Name="Mouse_Look_Up_Scale", MappingType=PVMT_RawValue))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_MouseLookUpScale,Data=(Type=SDT_Float,Value1=0xc2c80000)))) // -100
+	
+	ProfileMappings.Add((Id=KFID_MouseLookRightScale, Name="Mouse_Look_Right_Scale", MappingType=PVMT_RawValue))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_MouseLookRightScale,Data=(Type=SDT_Float,Value1=0x42c80000)))) //100
+	
+	ProfileMappings.Add((Id=KFID_ViewSmoothingEnabled, Name="View_Smoothing_Enabled", MappingType=PVMT_RawValue))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_ViewSmoothingEnabled,Data=(Type=SDT_Int32,Value1=0))))
+	
+	ProfileMappings.Add((Id=KFID_ViewAccelerationEnabled, Name="View_Acceleration_Enabled", MappingType=PVMT_RawValue))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_ViewAccelerationEnabled,Data=(Type=SDT_Int32,Value1=1))))
 }

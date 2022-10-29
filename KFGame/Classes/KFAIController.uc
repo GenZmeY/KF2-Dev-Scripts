@@ -508,6 +508,15 @@ var const int			ZedBumpEffectThreshold;
 /** The chance of obliterating a zed on an enraged bump */
 var const float			ZedBumpObliterationEffectChance;
 
+// Only enabled while we didn't receive damage and we use Aggro for choosing Enemy
+var bool CanForceEnemy;
+var Pawn ForcedEnemy;
+var Pawn LastForcedEnemy;
+var float ForcedEnemyLastTime;
+var float DamageRatioToChangeForcedEnemy;
+var float TimeCanRestartForcedEnemy;
+var float TimeCannotChangeFromForcedEnemy;
+
 /*********************************************************************************************
  Evasion / Blocking
  ********************************************************************************************* */
@@ -1282,6 +1291,33 @@ native function StopAllLatentMoveExecution();
 /** Am I being targeted by a player (optionally returns first found) */
 native function bool IsTargetedByPlayer( optional out KFPawn outThreateningPlayer );
 
+function Pawn FindForcedEnemy()
+{
+	local KFGameInfo KFGI;
+    local KFPlayerController_WeeklySurvival KFPC_WS;
+	local class<KFPawn_Monster> MyMonster;
+
+	KFGI = KFGameInfo(WorldInfo.Game);
+	if(KFGI != none && KFGI.OutbreakEvent != none && KFGI.OutbreakEvent.ActiveEvent.bVIPGameMode)
+	{
+		MyMonster = class<KFPawn_Monster>(Pawn.Class);
+
+		// If this monster is included on the vip targetting, force VIP as enemy
+		if (KFGI.OutbreakEvent.ActiveEvent.VIPTargetting.Find(MyMonster) != INDEX_NONE)
+		{
+			foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+			{
+				if (KFPC_WS.VIPGameData.IsVIP && KFPC_WS.Pawn.IsAliveAndWell() && KFPC_WS.Pawn.CanAITargetThisPawn(self))
+				{
+					return KFPC_WS.Pawn;
+				}
+			}
+		}
+	}
+
+	return none;
+}
+
 /**
 * Originally from KF1, KFMonsterController.uc, added check to take # of Zeds targeting
 * the threat into account.
@@ -1300,45 +1336,50 @@ event bool FindNewEnemy()
 	}
 
 	BestEnemy = none;
-   	foreach WorldInfo.AllPawns( class'Pawn', PotentialEnemy )
-	{
-		if( !PotentialEnemy.IsAliveAndWell() || Pawn.IsSameTeam( PotentialEnemy ) ||
-            !PotentialEnemy.CanAITargetThisPawn(self) )
-		{
-			continue;
-		}
 
-		NewDist = VSizeSq( PotentialEnemy.Location - Pawn.Location );
-		if( BestEnemy == none || BestDist > NewDist )
+	if (BestEnemy == none)
+	{	
+		foreach WorldInfo.AllPawns( class'Pawn', PotentialEnemy )
 		{
-			// New best enemies do not care about the number of zeds around us yet
-			BestEnemyZedCount = INDEX_None;
-			bUpdateBestEnemy = true;
-		}
-		else
-		{
-			// Only update NumZedsTargetingBestEnemy if it's a new best enemy and the best enemy is further
-			if(BestEnemyZedCount == INDEX_None)
+			if( !PotentialEnemy.IsAliveAndWell() || Pawn.IsSameTeam( PotentialEnemy ) ||
+				!PotentialEnemy.CanAITargetThisPawn(self) )
 			{
-				// Cache BestEnemyZedCount so we don't need to calculate it again
-				BestEnemyZedCount = NumberOfZedsTargetingPawn( BestEnemy );
+				continue;
 			}
 
-			PotentialEnemyZedCount = NumberOfZedsTargetingPawn( PotentialEnemy );
-			if( PotentialEnemyZedCount < BestEnemyZedCount )
+			NewDist = VSizeSq( PotentialEnemy.Location - Pawn.Location );
+			if( BestEnemy == none || BestDist > NewDist )
 			{
-				BestEnemyZedCount = PotentialEnemyZedCount;
+				// New best enemies do not care about the number of zeds around us yet
+				BestEnemyZedCount = INDEX_None;
 				bUpdateBestEnemy = true;
 			}
-		}
+			else
+			{
+				// Only update NumZedsTargetingBestEnemy if it's a new best enemy and the best enemy is further
+				if(BestEnemyZedCount == INDEX_None)
+				{
+					// Cache BestEnemyZedCount so we don't need to calculate it again
+					BestEnemyZedCount = NumberOfZedsTargetingPawn( BestEnemy );
+				}
 
-		if( bUpdateBestEnemy )
-		{
-			BestEnemy = PotentialEnemy;
-			BestDist = NewDist;
-			bUpdateBestEnemy = false;
+				PotentialEnemyZedCount = NumberOfZedsTargetingPawn( PotentialEnemy );
+				if( PotentialEnemyZedCount < BestEnemyZedCount )
+				{
+					BestEnemyZedCount = PotentialEnemyZedCount;
+					bUpdateBestEnemy = true;
+				}
+			}
+
+			if( bUpdateBestEnemy )
+			{
+				BestEnemy = PotentialEnemy;
+				BestDist = NewDist;
+				bUpdateBestEnemy = false;
+			}
 		}
 	}
+
 	if( Enemy != none && BestEnemy != none && BestEnemy == Enemy )
 	{
 		return false;
@@ -1536,9 +1577,36 @@ event bool SetEnemy( Pawn NewEnemy )
 
 function ChangeEnemy( Pawn NewEnemy, optional bool bCanTaunt = true )
 {
-	local Pawn OldEnemy;
+	local Pawn OldEnemy, NewForcedEnemy;
 
 	local KFGameInfo KFGI;
+
+	if (CanForceEnemy)
+	{
+		NewForcedEnemy = FindForcedEnemy();
+	}
+	else if (NewEnemy == LastForcedEnemy)
+	{
+		return; // Don't allow to change to the ForcedEnemy while we can't (we reenable that again from outside)
+	}
+
+	if (NewForcedEnemy != none)
+	{
+		ForcedEnemy = NewForcedEnemy;
+
+		if (Enemy != ForcedEnemy)
+		{
+			LastForcedEnemy = ForcedEnemy;
+
+			ForcedEnemyLastTime = WorldInfo.TimeSeconds;
+		}
+		
+		NewEnemy = NewForcedEnemy;
+	}
+	else
+	{
+		ForcedEnemy = none;
+	}
 
 	// gameinfo hook that calls mutator hook
 	KFGI = KFGameInfo( WorldInfo.Game );
@@ -7626,6 +7694,13 @@ DefaultProperties
 	LastFrustrationCheckTime=0.f
 	LowIntensityAttackCooldown=2.0
 	//bUseOldAttackDecisions=true
+	CanForceEnemy=true
+	ForcedEnemy=none
+	LastForcedEnemy=none
+	ForcedEnemyLastTime=0.f
+	DamageRatioToChangeForcedEnemy=0.5f
+	TimeCanRestartForcedEnemy=10.f
+	TimeCannotChangeFromForcedEnemy=10.f
 
 	// ---------------------------------------------
 	// AI / Navigation

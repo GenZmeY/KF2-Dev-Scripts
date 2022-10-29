@@ -41,6 +41,10 @@ var	protected const	AkEvent	AracnoStompSoundEvent;
 var protected const AKEvent GunGameLevelUpSoundEvent;
 var protected const AKEvent GunGameLevelUpFinalWeaponSoundEvent;
 
+var protected const AKEvent VIPChosenSoundEvent;
+var protected const AKEvent VIPLowHealthSoundEvent;
+var protected float VIPLowHealthLastTimePlayed;
+
 struct native GunGameInfo
 {
     var transient byte Level;
@@ -58,6 +62,49 @@ structdefaultproperties
 }
 };
 var transient GunGameInfo GunGameData;
+
+struct native VIPGameInfo
+{
+    var bool IsVIP;
+    var bool WasVIP;
+    var bool PendingHealthReset;
+
+    var int ExtraHealth;
+
+    var int DamageHealthLimit;
+    var int DamageHealthTop;
+    var int DamageHealthBottom;
+
+    var float DamageLimitModifier;
+
+    var float OutputDamageTopModifier;
+    var float InputDamageTopModifier;
+
+    var float OutputDamageBottomModifier;
+    var float InputDamageBottomModifier;
+
+    structdefaultproperties
+    {
+        IsVIP = false
+        WasVIP = false
+        PendingHealthReset = false
+        
+        ExtraHealth = 100
+
+        DamageHealthLimit = 100
+        DamageHealthTop = 50
+        DamageHealthBottom = 25
+
+        DamageLimitModifier = 1.0
+
+        OutputDamageTopModifier = 1.5
+        InputDamageTopModifier = 0.75
+
+        OutputDamageBottomModifier = 1.75
+        InputDamageBottomModifier = 0.5
+   }
+};
+var transient VIPGameInfo VIPGameData;
 
 cpptext
 {
@@ -146,6 +193,31 @@ reliable client function UpdateGunGameWidget(int score, int max_score, int level
 	{
 		MyGFxHUD.UpdateGunGameWidget(score, max_score, level, max_level);
 	}
+}
+
+simulated function UpdateVIPWidget(ReplicatedVIPGameInfo VIPInfo)
+{
+    if (MyGFxHUD != none)
+	{
+		MyGFxHUD.UpdateVIP(VIPInfo, VIPInfo.VIPPlayer == PlayerReplicationInfo);
+	}
+}
+
+function bool CanUseHealObject()
+{
+    local KFGameReplicationInfo KFGRI;
+
+    KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+    // VIP cannot heal
+    if (KFGRI != none
+        && KFGRI.VIPRepPlayer != none
+        && KFGRI.VIPRepPlayer == KFPlayerReplicationInfo(PlayerReplicationInfo))
+    {
+        return false;
+    }
+    
+    return super.CanUseHealObject();
 }
 
 /**
@@ -247,6 +319,34 @@ reliable client function PlayGunGameMessage(bool isLastLevel)
     }
 }
 
+reliable client function PlayVIPSound_ChosenInternal()
+{
+    if (VIPChosenSoundEvent != none)
+    {
+        PlaySoundBase(VIPChosenSoundEvent);
+    }
+}
+
+reliable client function PlayVIPGameChosenSound(float delay)
+{
+    // Put a timer because the sound happens at the same time as end wave and it's difficult to distinguish
+    SetTimer(delay, false, nameof(PlayVIPSound_ChosenInternal));
+}
+
+reliable client function PlayVIPGameLowHealthSound()
+{
+    if (VIPLowHealthSoundEvent != none)
+    {
+        if (WorldInfo.TimeSeconds - VIPLowHealthLastTimePlayed > 8.f)
+        {
+            VIPLowHealthLastTimePlayed = WorldInfo.TimeSeconds;
+
+            PlaySoundBase(VIPLowHealthSoundEvent);
+        }
+    }
+}
+
+
 /** Resets all gameplay FX to initial state.
 	Append to this list if additional effects are added. */
 function ResetGameplayPostProcessFX()
@@ -333,6 +433,174 @@ function UpdateInitialHeldWeapon()
     }
 }
 
+function AdjustDamage(out int InDamage, Controller InstigatedBy, class<DamageType> DamageType, Actor DamageCauser, Actor DamageReceiver)
+{
+    local KFGameInfo KFGI;
+    local float Multiplier, ModifierRange, HealthTop, HealthRange;
+    local KFGameReplicationInfo KFGRI;
+
+    super.AdjustDamage(InDamage, InstigatedBy, DamageType, DamageCauser, DamageReceiver);
+
+    KFGI = KFGameInfo(WorldInfo.Game);
+
+	if (Pawn != None && KFGI != none && KFGI.OutbreakEvent != none && KFGI.OutbreakEvent.ActiveEvent.bVIPGameMode)
+    {
+        KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+        // If I am the VIP doing the damage, and I am NOT doing damage to myself
+        if (KFGRI != none
+            && KFGRI.VIPRepPlayer != none
+            && KFGRI.VIPRepPlayer == KFPlayerReplicationInfo(PlayerReplicationInfo)
+            && InstigatedBy == self
+            && DamageReceiver != self.Pawn)
+        {            
+            Multiplier = 1.0;
+
+            //`Log("Current health for VIP OUTPUT DAMAGE: " $Pawn.Health);
+
+            if (Pawn.Health < VIPGameData.DamageHealthLimit)
+            {
+                if (Pawn.Health <= VIPGameData.DamageHealthBottom)
+                {
+                    Multiplier = VIPGameData.OutputDamageBottomModifier;
+                }
+                else
+                {
+                    if (Pawn.Health > VIPGameData.DamageHealthTop)
+                    {
+                        Multiplier = VIPGameData.DamageLimitModifier;
+
+                        // From 1.0 to 1.5 on the range of 100 - 50
+                        ModifierRange = VIPGameData.OutputDamageTopModifier - VIPGameData.DamageLimitModifier;
+                    
+                        HealthTop = VIPGameData.DamageHealthLimit;
+                        HealthRange = Abs(HealthTop - VIPGameData.DamageHealthTop);
+                    }
+                    else
+                    {
+                        // From 1.5 to 1.75 on the range of 50 - 25
+                        Multiplier = VIPGameData.OutputDamageTopModifier;
+
+                        ModifierRange = VIPGameData.OutputDamageBottomModifier - VIPGameData.OutputDamageTopModifier;
+
+                        HealthTop = VIPGameData.DamageHealthTop;
+                        HealthRange = Abs(HealthTop - VIPGameData.DamageHealthBottom);
+                    }
+
+                    Multiplier += ModifierRange * ((HealthTop - Pawn.Health) / HealthRange);
+                }
+            }
+            else
+            {
+                Multiplier = VIPGameData.DamageLimitModifier;
+            }
+
+            //`Log("Multiplier for VIP OUTPUT DAMAGE: Output: " $Multiplier);
+
+            InDamage = int(float(InDamage) * Multiplier);   
+        }
+    }
+}
+
+function AdjustVIPDamage(out int InDamage, Controller InstigatedBy)
+{
+    local KFGameInfo KFGI;
+    local float Multiplier, ModifierRange, HealthTop, HealthRange;
+    local KFGameReplicationInfo KFGRI;
+
+    KFGI = KFGameInfo(WorldInfo.Game);
+	if (Pawn != None && KFGI != none && KFGI.OutbreakEvent != none && KFGI.OutbreakEvent.ActiveEvent.bVIPGameMode)
+    {
+        KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+        // If I am the VIP
+        // We do it on a different step as don't want to scale InDamage to VIP Armour when receiving damage
+        if (KFGRI != none
+            && KFGRI.VIPRepPlayer != none
+            && KFGRI.VIPRepPlayer == KFPlayerReplicationInfo(PlayerReplicationInfo))
+        {
+            Multiplier = 1.0;            
+
+            //`Log("Current health for VIP INPUT DAMAGE: " $Pawn.Health);
+
+            if (Pawn.Health < VIPGameData.DamageHealthLimit)
+            {
+                if (Pawn.Health <= VIPGameData.DamageHealthBottom)
+                {
+                    Multiplier = VIPGameData.InputDamageBottomModifier;
+                }
+                else
+                {
+                    if (Pawn.Health > VIPGameData.DamageHealthTop)
+                    {
+                        Multiplier = VIPGameData.DamageLimitModifier;
+
+                        // From 1.0 to 0.5 on the range of 100 - 50
+                        ModifierRange = VIPGameData.InputDamageTopModifier - VIPGameData.DamageLimitModifier;
+                       
+                        HealthTop = VIPGameData.DamageHealthLimit;
+                        HealthRange = Abs(HealthTop - VIPGameData.DamageHealthTop);
+                    }
+                    else
+                    {
+                        // From 0.5 to 0.25 on the range of 50 - 25
+                        Multiplier = VIPGameData.InputDamageTopModifier;
+
+                        ModifierRange = VIPGameData.InputDamageBottomModifier - VIPGameData.InputDamageTopModifier;
+
+                        HealthTop = VIPGameData.DamageHealthTop;
+                        HealthRange = Abs(HealthTop - VIPGameData.DamageHealthBottom);                        
+                    }
+
+                    Multiplier += ModifierRange * ((HealthTop - Pawn.Health) / HealthRange);
+                }
+            }
+            else
+            {
+                Multiplier = VIPGameData.DamageLimitModifier;
+            }
+
+            //`Log("Multiplier for VIP INPUT DAMAGE: Output: " $Multiplier);
+
+            InDamage = int(float(InDamage) * Multiplier);
+        }
+    }
+}
+
+function NotifyTakeHit(Controller InstigatedBy, vector HitLocation, int Damage, class<DamageType> damageType, vector Momentum)
+{
+    local KFPlayerController_WeeklySurvival KFPC_WS;
+
+	Super.NotifyTakeHit(InstigatedBy,HitLocation,Damage,damageType,Momentum);
+
+    if (VIPGameData.IsVIP)
+    {
+        // Only sound once we pass down 50, sound again if recovered health and go down again
+        if (Pawn.Health < 50 && Pawn.Health + Damage >= 50)
+        {
+            foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+            {
+                KFPC_WS.PlayVIPGameLowHealthSound();
+            }
+        }
+    }
+}
+
+function UpdateVIPDamage()
+{
+    local KFGameReplicationInfo KFGRI;
+
+    if (VIPGameData.IsVIP)
+    {
+        KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+        if (KFGRI != none)
+        {
+            KFGRI.UpdateVIPCurrentHealth(Pawn.Health);
+        }
+    }
+}
+
 //
 defaultProperties
 {
@@ -346,4 +614,7 @@ defaultProperties
     AracnoStompSoundEvent   =AkEvent'WW_GLO_Runtime.WeeklyArcno'
     GunGameLevelUpSoundEvent=AkEvent'WW_GLO_Runtime.WeeklyAALevelUp'
     GunGameLevelUpFinalWeaponSoundEvent=AkEvent'WW_GLO_Runtime.WeeklyAALevelFinal'
+    VIPChosenSoundEvent=AkEvent'WW_UI_Menu.Play_AAR_TOPWEAPON_SLIDEIN_B'
+    VIPLowHealthSoundEvent=AkEvent'WW_GLO_Runtime.WeeklyVIPAlarm'
+    VIPLowHealthLastTimePlayed = 0.f
 }

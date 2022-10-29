@@ -137,7 +137,7 @@ simulated function bool FindTargets( out Pawn RecentlyLocked )
 	local byte TeamNum;
 	local vector AimStart, AimDir, TargetLoc, Projection, DirToPawn, LinePoint;
 	local Actor HitActor;
-	local float PointDistSQ, Score, BestScore;
+	local float PointDistSQ, Score, BestScore, TargetSizeSQ;
 
 	TeamNum = Instigator.GetTeamNum();
 	AimStart = GetSafeStartTraceLocation();
@@ -172,7 +172,11 @@ simulated function bool FindTargets( out Pawn RecentlyLocked )
 			// Check to make sure target isn't too far from center
             PointDistToLine( TargetLoc, AimDir, AimStart, LinePoint );
             PointDistSQ = VSizeSQ( LinePoint - P.Location );
-            if( PointDistSQ > MinTargetDistFromCrosshairSQ )
+
+			TargetSizeSQ = P.GetCollisionRadius() * 2.f;
+			TargetSizeSQ *= TargetSizeSQ;
+
+            if( PointDistSQ > (TargetSizeSQ + MinTargetDistFromCrosshairSQ) )
             {
             	continue;
             }

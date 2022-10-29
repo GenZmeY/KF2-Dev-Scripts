@@ -43,7 +43,7 @@ defaultproperties
 	//KDeathUpKick=120
 	//KDeathVel=10
 
-    StumblePower=12
+    StumblePower=48 //12
 	GunHitPower=12
 
 	OverrideImpactEffect=ParticleSystem'WEP_HRG_BlastBrawlers_EMIT.FX_BlastBrawlers_Impact'

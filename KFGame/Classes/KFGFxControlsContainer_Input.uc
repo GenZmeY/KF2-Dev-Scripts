@@ -31,9 +31,12 @@ var localized string AimAssistLockOnString;
 var localized string AimAssistRotationString;
 var localized string AimAssistSlowDownString;
 var localized string ForceFeedbackString;
+var localized string MouseLookUpScaleString;
+var localized string MouseLookRightScaleString;
+var localized string ViewSmoothingString;
+var localized string ViewAccelerationString;
 
 var KFGFxOptionsMenu_Controls ControlsMenu;
-
 
 function Initialize( KFGFxObject_Menu NewParentMenu )
 {
@@ -60,6 +63,14 @@ function LocalizeText()
 	LocalizedObject.SetString("controllerZoomSensitivityLabel"					, ControllerZoomSensitivityString);
 	LocalizedObject.SetString("controllerDeadzoneLabel"							, ControllerDeadzoneString);
 	LocalizedObject.SetString("controllerAccelerationJumpLabel"					, ControllerAccelerationJumpString);
+
+	if(!class'WorldInfo'.static.IsConsoleBuild() )
+	{
+		LocalizedObject.SetString("lookUpScaleLabel", MouseLookUpScaleString);
+		LocalizedObject.SetString("lookRightScaleLabel", MouseLookRightScaleString);
+		LocalizedObject.SetString("viewSmoothingLabel", ViewSmoothingString);
+		LocalizedObject.SetString("viewAccelerationLabel", ViewAccelerationString);
+	}
 
 	// Localization alternative for Xbox
 	if( class'WorldInfo'.static.IsConsoleBuild(CONSOLE_Durango) )
@@ -103,8 +114,19 @@ function InitializeOptions()
 
 		ValuesObject.SetBool("invertedValue"						, KFPI.bInvertMouse);
 		ValuesObject.SetBool("mouseSmoothingLabel"					, KFPI.bEnableMouseSmoothing);
-		
+
+		ValuesObject.SetFloat("lookUpScaleValue"					, -KFPI.MouseLookUpScale);
+		ValuesObject.SetFloat("lookUpScaleMin"					    , ControlsMenu.MinMouseLookUpScale);
+		ValuesObject.SetFloat("lookUpScaleMax"				    	, ControlsMenu.MaxMouseLookUpScale);
+
+		ValuesObject.SetFloat("lookRightScaleValue"					, KFPI.MouseLookRightScale);
+		ValuesObject.SetFloat("lookRightScaleMin"					, ControlsMenu.MinMouseLookRightScale);
+		ValuesObject.SetFloat("lookRightScaleMax"				    , ControlsMenu.MaxMouseLookRightScale);
+
+		ValuesObject.SetBool("viewSmoothingValue"					, KFPI.bViewSmoothingEnabled);
+		ValuesObject.SetBool("viewAccelerationValue"				, KFPI.bViewAccelerationEnabled);
 	}
+
 
 	ValuesObject.SetBool("forceFeedbackValue"					, KFPI.bForceFeedbackEnabled);
 	
@@ -152,6 +174,20 @@ function ResetInputOptions()
 		
 		KFPI.bEnableMouseSmoothing = ControlsMenu.Manager.CachedProfile.GetDefaultBool(KFID_EnableMouseSmoothing);		
 		ControlsMenu.Manager.CachedProfile.SetProfileSettingValueBool(KFID_EnableMouseSmoothing, KFPI.bEnableMouseSmoothing);
+
+		KFPI.MouseLookUpScale = ControlsMenu.Manager.CachedProfile.GetDefaultFloat(KFID_MouseLookUpScale);
+		ControlsMenu.Manager.CachedProfile.SetProfileSettingValueFloat(KFID_MouseLookUpScale, KFPI.MouseLookUpScale);
+	
+		KFPI.MouseLookRightScale = ControlsMenu.Manager.CachedProfile.GetDefaultFloat(KFID_MouseLookRightScale);
+		ControlsMenu.Manager.CachedProfile.SetProfileSettingValueFloat(KFID_MouseLookRightScale, KFPI.MouseLookRightScale);
+
+		KFPI.ResetLookScales();
+
+		KFPI.bViewSmoothingEnabled = ControlsMenu.Manager.CachedProfile.GetDefaultBool(KFID_ViewSmoothingEnabled);
+		ControlsMenu.Manager.CachedProfile.SetProfileSettingValueBool(KFID_ViewSmoothingEnabled, KFPI.bViewSmoothingEnabled);
+
+		KFPI.bViewAccelerationEnabled = ControlsMenu.Manager.CachedProfile.GetDefaultBool(KFID_ViewAccelerationEnabled);
+		ControlsMenu.Manager.CachedProfile.SetProfileSettingValueBool(KFID_ViewAccelerationEnabled, KFPI.bViewAccelerationEnabled);
 	}
 
 	//durango
@@ -187,4 +223,3 @@ function ResetInputOptions()
 	
 	InitializeOptions();
 }
-

@@ -213,11 +213,15 @@ simulated function ModifyMagSizeAndNumber( KFWeapon KFW, out int MagazineCapacit
 
 	TempCapacity = MagazineCapacity;
 
-	if( IsWeaponOnPerk( KFW, WeaponPerkClass, self.class ) && (KFW == none || !KFW.bNoMagazine) && !bSecondary )
+	// Fix this function on the trader because KFW is None and the check cannot look for bNoMagazine = true
+	if(WeaponClassname != 'KFWeap_Rifle_HRGIncision')
 	{
-		if( IsCombatantActive() )
+		if( IsWeaponOnPerk( KFW, WeaponPerkClass, self.class ) && (KFW == none || !KFW.bNoMagazine) && !bSecondary )
 		{
-			TempCapacity += MagazineCapacity * GetSkillValue( PerkSkills[EMedicCombatant] );
+			if( IsCombatantActive() )
+			{
+				TempCapacity += MagazineCapacity * GetSkillValue( PerkSkills[EMedicCombatant] );
+			}
 		}
 	}
 

@@ -17,6 +17,7 @@ var localized string            ScavengeMessage;
 var localized string            YouLostMessage;
 var localized string            YouWonMessage;
 var localized string            SquadWipedOutMessage;
+var localized string			SquadWipedOutVIPMessage;
 var localized string            SquadSurvivedMessage;
 var localized string            ObjectiveStartMessage;
 var localized string            ObjectiveWonMessage;
@@ -231,6 +232,8 @@ static function ClientReceive(
 
 static function string GetMessageString(int Switch, optional out String SecondaryString, optional byte TeamIndex)
 {
+	local KFGameReplicationInfo KFGRI;
+
 	SecondaryString = "";
 
 	switch ( Switch )
@@ -281,7 +284,16 @@ static function string GetMessageString(int Switch, optional out String Secondar
 		case GMT_MatchLost:
 			if(class'WorldInfo'.static.GetWorldInfo().NetMode != NM_Standalone)
 			{
-				SecondaryString = default.SquadWipedOutMessage;
+				KFGRI = KFGameReplicationInfo(class'WorldInfo'.static.GetWorldInfo().GRI);
+
+				if (KFGRI != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 17)
+				{
+					SecondaryString = default.SquadWipedOutVIPMessage;
+				}
+				else
+				{
+					SecondaryString = default.SquadWipedOutMessage;
+				}
 			}
 
 			return default.YouLostMessage;

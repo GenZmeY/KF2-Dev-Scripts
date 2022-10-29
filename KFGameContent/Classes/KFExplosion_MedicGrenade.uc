@@ -87,6 +87,7 @@ protected simulated function AffectsPawn(Pawn Victim, float DamageScale)
 			if( HumanVictim != none && HumanVictim.GetExposureTo(Location) > 0 )
 			{
 				OwnerProjectile = KFProj_MedicGrenade(Owner);
+
 				if( OwnerProjectile != none )
 				{
 					bCanRepairArmor = OwnerProjectile.HealedPawns.Find( HumanVictim ) == INDEX_NONE;

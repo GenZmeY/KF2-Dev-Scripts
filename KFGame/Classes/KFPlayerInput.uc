@@ -241,6 +241,16 @@ var bool 	bVersusInput;
 /** Cached value of bUsingGamepad so we can handle button releases across devices */
 var bool    bUsingVersusGamepadScheme;
 
+/*********************************************************************************************
+ * @name QoL: Mouse input options
+********************************************************************************************* */
+var config float MouseLookUpScale;
+var config float MouseLookRightScale;
+var config bool bUseDefaultLookScales;
+
+var const float DefaultLookRightScale;
+var const float DefaultLookUpScale;
+
 cpptext
 {
 	/** Searches the bind and skips the mainCommand */
@@ -335,6 +345,17 @@ function ClientInitInputSystem()
 	}
 }
 
+simulated function ResetLookScales()
+{
+	LookRightScale = DefaultLookRightScale;
+	LookUpScale = DefaultLookUpScale;
+	SaveConfig();
+
+	class'PlayerInput'.default.LookRightScale = DefaultLookRightScale;
+	class'PlayerInput'.default.LookUpScale = DefaultLookUpScale;
+	class'PlayerInput'.static.StaticSaveConfig();
+}
+
 function UpdatePushToTalk(bool bValue)
 {
 	if(bValue != bRequiresPushToTalk)
@@ -406,6 +427,14 @@ event PlayerInput( float DeltaTime )
 {
 	local float FOVScale, TimeScale;
 	local vector RawJoyVector;
+
+	/** For checking if init values needs to be reset */
+	if (bUseDefaultLookScales)
+	{
+		bUseDefaultLookScales = false;
+		ResetLookScales();
+	}
+	/** */
 
 	// Save Raw values
 	RawJoyUp		= aBaseY;
@@ -574,6 +603,8 @@ function AdjustMouseSensitivity(float FOVScale)
 	}
 
 	Super.AdjustMouseSensitivity(FOVScale);
+	aMouseX			*= MouseLookRightScale / 100.0f;
+	aMouseY			*= MouseLookUpScale / -100.0f;
 }
 
 
@@ -2989,5 +3020,8 @@ defaultproperties
 	ForceLookAtPawnRotationRate=22
 	ForceLookAtPawnDampenedRotationRate=8
 
-	WeakBoneDistance = 0.02; //0.01;
+	WeakBoneDistance = 0.02 //0.01;
+
+	DefaultLookRightScale=300
+	DefaultLookUpScale=-250
 }

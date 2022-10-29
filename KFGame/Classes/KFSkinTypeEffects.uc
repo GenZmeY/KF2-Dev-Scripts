@@ -85,13 +85,20 @@ cpptext
 	virtual void PostLoad();
 }
 
-function PlayImpactParticleEffect(
-	KFPawn P, vector HitLocation, vector HitDirection, byte HitZoneIndex, EEffectDamageGroup EffectGroup)
+function PlayImpactParticleEffect(KFPawn P, vector HitLocation, vector HitDirection, byte HitZoneIndex, EEffectDamageGroup EffectGroup, optional ParticleSystem ForceParticleTemplate)
 {
 	local ParticleSystem ParticleTemplate;
 	local name HitBoneName;
 
-	ParticleTemplate = GetImpactParticleEffect(EffectGroup);
+	if (ForceParticleTemplate != none)
+	{
+		ParticleTemplate = ForceParticleTemplate;
+	}
+	else
+	{
+		ParticleTemplate = GetImpactParticleEffect(EffectGroup);
+	}
+
 	if (ParticleTemplate == None)
 	{
 		return;
@@ -212,7 +219,7 @@ function ParticleSystem GetImpactParticleEffect(EEffectDamageGroup EffectGroup)
 }
 
 /** Play an impact sound on taking damage */
-function PlayTakeHitSound(KFPawn P, vector HitLocation, Pawn DamageCauser, EEffectDamageGroup EffectGroup)
+function PlayTakeHitSound(KFPawn P, vector HitLocation, Pawn DamageCauser, EEffectDamageGroup EffectGroup, optional AKEvent ForceImpactSound)
 {
 	local AKEvent ImpactSound;
 	local float ArmorPct;
@@ -225,7 +232,14 @@ function PlayTakeHitSound(KFPawn P, vector HitLocation, Pawn DamageCauser, EEffe
 			return;
 		}
 
-		ImpactSound = GetImpactSound(EffectGroup, DamageCauser, P);
+		if (ForceImpactSound != none)
+		{
+			ImpactSound = ForceImpactSound;
+		}
+		else
+		{
+			ImpactSound = GetImpactSound(EffectGroup, DamageCauser, P);
+		}
 
 		if (ShouldSetArmorValue(P, ArmorPct))
 		{

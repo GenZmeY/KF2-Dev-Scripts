@@ -1498,6 +1498,7 @@ struct native ItemProperties
 	/** Key ID used to open this item (used for playfab locked containers) */
 	var string RequiredKeyId;
 	var string Name;
+	var string KeyName;
 	var ItemType Type;
 	var ItemRarity Rarity;
 	var string ShortDescription;

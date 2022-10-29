@@ -72,7 +72,7 @@ defaultproperties
 
 	// Zooming/Position
 	PlayerViewOffset=(X=14.0,Y=6.5,Z=-3.5)
-	IronSightPosition=(X=12.0,Y=0,Z=0)
+	IronSightPosition=(X=12.0,Y=-0.03,Z=-0.07)
 
 	// Content
 	PackageKey="Medic_Shotgun"

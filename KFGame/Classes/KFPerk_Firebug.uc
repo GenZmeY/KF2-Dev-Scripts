@@ -273,13 +273,12 @@ simulated function ModifyMagSizeAndNumber( KFWeapon KFW, out int MagazineCapacit
 	TempCapacity = MagazineCapacity;
 
 	// Fix this function on the trader because KFW is None and the check cannot look for bNoMagazine = true
-	if(WeaponClassname == 'KFWeap_Pistol_HRGScorcher')
+	if(WeaponClassname != 'KFWeap_Pistol_HRGScorcher' && WeaponClassname != 'KFWeap_HRG_Dragonbreath')
 	{
-		TempCapacity = TempCapacity;
-	}
-	else if( IsWeaponOnPerk( KFW, WeaponPerkClass, self.class ) && IsHighCapFuelTankActive() && (KFW == none || !KFW.bNoMagazine) )
-	{
-		TempCapacity += MagazineCapacity * GetSkillValue( PerkSkills[EFirebugHighCapFuelTank] );
+		if( IsWeaponOnPerk( KFW, WeaponPerkClass, self.class ) && IsHighCapFuelTankActive() && (KFW == none || !KFW.bNoMagazine) )
+		{
+			TempCapacity += MagazineCapacity * GetSkillValue( PerkSkills[EFirebugHighCapFuelTank] );
+		}
 	}
 
 	MagazineCapacity = Round(TempCapacity);

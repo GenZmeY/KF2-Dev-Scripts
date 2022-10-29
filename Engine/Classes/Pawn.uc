@@ -2596,17 +2596,10 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 		Killer = SetKillInstigator(InstigatedBy, DamageType);
 		TearOffMomentum = momentum;
 		Died(Killer, damageType, HitLocation);
-		
-		// using the passed in damage type instead of the hitfxinfo since that doesn't get updated when zero damage is done
-		HandleAfflictionsOnHit(InstigatedBy, Normal(Momentum), DamageType, DamageCauser);
 	}
 	else
 	{
 		HandleMomentum( momentum, HitLocation, DamageType, HitInfo );
-
-		// using the passed in damage type instead of the hitfxinfo since that doesn't get updated when zero damage is done
-		HandleAfflictionsOnHit(InstigatedBy, Normal(Momentum), DamageType, DamageCauser);
-
 		NotifyTakeHit(InstigatedBy, HitLocation, ActualDamage, DamageType, Momentum, DamageCauser);
 		if (DrivenVehicle != None)
 		{
@@ -2625,8 +2618,6 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 	MakeNoise(1.0);
 `endif
 }
-
-function HandleAfflictionsOnHit(Controller DamageInstigator, vector HitDir, class<DamageType> DamageType, Actor DamageCauser);
 
 /*
  * Queries the PRI and returns our current team index.

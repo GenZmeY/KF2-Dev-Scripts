@@ -57,7 +57,7 @@ defaultproperties
 
 	// Zooming/Position
 	PlayerViewOffset=(X=15.0,Y=11.5,Z=-4)
-	IronSightPosition=(X=0.0,Y=0,Z=0)
+	IronSightPosition=(X=0.0,Y=-0.016,Z=-0.016)
 
 	// AI warning system
 	bWarnAIWhenAiming=true

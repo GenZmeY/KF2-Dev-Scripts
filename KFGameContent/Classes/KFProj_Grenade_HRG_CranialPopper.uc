@@ -39,6 +39,7 @@ state WaveState
 		local TraceHitInfo   HitInfo;
 		local float Radius;
 		local float DamageHead;
+		local name HitBoneName;
 
 		if(bWaveActive)
 		{
@@ -54,9 +55,17 @@ state WaveState
 					if(DamageHead > 0)
 					{
 						//`Log("Take: "$Victim);
-						//HitInfo.BoneName = 'head';
+												
+						HitBoneName = Victim.HeadBoneName;
+
+						if(HitBoneName != `NAME_NONE)
+						{
+							HitInfo.BoneName = HitBoneName;
+						}
+
+						//`Log("HitInfo.BoneName: "$HitInfo.BoneName);
+
 						Victim.TakeDamage(DamageHead * UpgradeDamageMod, InstigatorController, Victim.Location, Normal(Victim.Location - Instigator.Location), MyDamageType, HitInfo, (Owner != None) ? Owner : self);
-						//Monster.PlayDismemberment(0, MyDamageType, WaveImpactMomentum);
 
 						if (Victim.Health <= 0)
 						{

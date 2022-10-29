@@ -1117,6 +1117,18 @@ simulated function bool AllowNuke()
     return true;
 }
 
+/** Can be overridden in subclasses to exclude specific projectiles from using changing explosion radius */
+simulated function bool AllowDemolitionistExplosionChangeRadius()
+{
+	return true;
+}
+
+/** Can be overridden in subclasses to exclude specific projectiles from using concussive */
+simulated function bool AllowDemolitionistConcussive()
+{
+	return true;
+}
+
 /**
  * Give the projectiles a chance to situationally customize/tweak any explosion parameters.
  * We will also copy in any data we exposed here for .ini file access.

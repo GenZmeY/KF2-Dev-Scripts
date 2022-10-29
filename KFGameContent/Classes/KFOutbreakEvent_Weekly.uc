@@ -920,7 +920,6 @@ defaultproperties
                 bSpawnWeaponListAffectsSecondaryWeapons=true,
                 OverrideItemPickupModifier= 0.5f, //1.0f, //2.0f, // 0.f,
                 OverrideAmmoPickupModifier= 1.0f, //2.0f, //3.0f, // 0.01f,
-                bOnlyArmorItemPickup=true,
                 TraderTimeModifier=1.0f, // 0.1f,
 				TimeBetweenWaves=30.f,
                 bDisableAddDosh=true,
@@ -1188,6 +1187,37 @@ defaultproperties
                                         )
                                 )})}
                 
+    )}
+
+    // VIP
+    SetEvents[17]={(
+                EventDifficulty=2,
+                GameLength=GL_Normal,
+                bVIPGameMode=true,
+                VIPTargetting=(class'KFGameContent.KFPawn_ZedScrake'
+                , class'KFGameContent.KFPawn_ZedFleshpound'
+                , class'KFGameContent.KFPawn_ZedFleshpoundMini'
+                , class'KFGameContent.KFPawn_ZedGorefast'
+                , class'KFGameContent.KFPawn_ZedGorefastDualBlade'
+                , class'KFGameContent.KFPawn_ZedClot_Cyst'
+                , class'KFGameContent.KFPawn_ZedClot_Slasher'
+                , class'KFGameContent.KFPawn_ZedClot_Alpha'
+                , class'KFGameContent.KFPawn_ZedClot_AlphaKing'
+                , class'KFGameContent.KFPawn_ZedBloat'
+                , class'KFGameContent.KFPawn_ZedHusk'
+                , class'KFGameContent.KFPawn_ZedSiren'
+                , class'KFGameContent.KFPawn_ZedCrawler'
+                , class'KFGameContent.KFPawn_ZedCrawlerKing'
+                , class'KFGameContent.KFPawn_ZedStalker'
+                , class'KFGameContent.KFPawn_ZedDAR_EMP'
+                , class'KFGameContent.KFPawn_ZedDAR_Laser'
+                , class'KFGameContent.KFPawn_ZedDAR_Rocket'
+                , class'KFGameContent.KFPawn_ZedMatriarch'
+                , class'KFGameContent.KFPawn_ZedPatriarch'
+                , class'KFGameContent.KFPawn_ZedBloatKing'
+                , class'KFGameContent.KFPawn_ZedBloatKingSubspawn'
+                , class'KFGameContent.KFPawn_ZedFleshpoundKing'
+                , class'KFGameContent.KFPawn_ZedHans'),
     )}
 
     //Test events from here down.  These don't end up in the regular rotation.

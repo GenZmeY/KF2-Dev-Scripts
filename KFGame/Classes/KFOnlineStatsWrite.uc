@@ -445,6 +445,10 @@ const KFACHID_RigHard 							=   292;
 const KFACHID_RigHellOnEarth        			=   293;
 const KFACHID_RigCollectibles					=   294;
 
+const KFACHID_BarmwichHard						=   295;
+const KFACHID_BarmwichHellOnEarth      			=   296;
+const KFACHID_BarmwichCollectibles				=   297;
+
 /* __TW_ANALYTICS_ */
 var int PerRoundWeldXP;
 var int PerRoundHealXP;
@@ -2093,15 +2097,16 @@ defaultproperties
     //Firebug Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Flame_CaulkBurn, KFDT_Bludgeon_CaulkBurn,KFDT_Fire_CaulkBurn,KFDT_Fire_Ground_CaulkNBurn),CompletionAmount=5000)) //3000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Pistol_Flare, KFDT_Bludgeon_FlareGun,KFDT_Fire_FlareGun,KFDT_Fire_FlareGun_Dual,KFDT_Fire_FlareGunDoT),CompletionAmount=7000)) //5000
-    DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_DragonsBreath, KFDT_Ballistic_DragonsBreath,KFDT_Bludgeon_DragonsBreath,KFDT_Fire_DragonsBreathDoT),CompletionAmount=7000)) //5000
+    DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_DragonsBreath, KFDT_Ballistic_DragonsBreath,KFDT_Bludgeon_DragonsBreath,KFDT_Fire_DragonsBreathDoT, KFDT_Fire_Ground_DragonsBreath),CompletionAmount=7000)) //5000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_SMG_Mac10, KFDT_Bludgeon_Mac10,KFDT_Fire_Mac10,KFDT_Fire_Mac10DoT),CompletionAmount=9000)) //7000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Flame_Flamethrower, KFDT_Bludgeon_Flamethrower,KFDT_Fire_FlameThrower,KFDT_Fire_Ground_FlameThrower),CompletionAmount=9000)) //7000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_HRGIncendiaryRifle, KFDT_Bludgeon_HRGIncendiaryRifle,KFDT_Ballistic_HRGIncendiaryRifle,KFDT_Explosive_HRGIncendiaryRifle,KFDT_Ballistic_HRGIncendiaryRifleGrenadeImpact,KFDT_Fire_HRGIncendiaryRifleBulletDoT,KFDT_Fire_HRGIncendiaryRifleGrenadeDoT,KFDT_Fire_Ground_HRGIncendiaryRifle),CompletionAmount=9000))
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Pistol_HRGScorcher, KFDT_Bludgeon_HRGScorcher,KFDT_Ballistic_HRGScorcherLightingImpact,KFDT_Fire_HRGScorcherDoT,KFDT_Ballistic_HRGScorcherBrokenImpact,KFDT_Fire_Ground_HRGScorcher),CompletionAmount=9000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Beam_Microwave, KFDT_Bludgeon_MicrowaveGun,KFDT_Fire_Ground_MicrowaveGun,KFDT_Microwave,KFDT_Microwave_Beam,KFDT_Microwave_Blast),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HuskCannon, KFDT_Bludgeon_HuskCannon, KFDT_Explosive_HuskCannon, KFDT_HuskCannonDot, KFDT_Explosive_HuskCannonImpact),CompletionAmount=10000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Dragonbreath, KFDT_Ballistic_HRG_Dragonbreath, KFDT_Bludgeon_HRG_Dragonbreath, KFDT_Fire_HRG_DragonsBreathDoT, KFDT_Fire_HRG_DragonsBreathDoT, KFDT_Fire_Ground_HRG_DragonBreath),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_Microwave, KFDT_Ballistic_MicrowaveRifle, KFDT_Fire_MicrowaveRifleDoT, KFDT_Bludgeon_MicrowaveRifle),CompletionAmount=10000))
-
+	
     //Berserker Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Blunt_Crovel, KFDT_Bludgeon_Crovel,KFDT_Bludgeon_CrovelBash,KFDT_Slashing_Crovel),CompletionAmount=5000)) //3000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_Nailgun, KFDT_Ballistic_NailShotgun,KFDT_Bludgeon_NailShotgun),CompletionAmount=7000)) //5000
@@ -2136,6 +2141,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_FNFal, KFDT_Ballistic_FNFal,KFDT_Bludgeon_FNFal),CompletionAmount=10000))
 
     //Survivalist Weapons
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Locust, KFDT_Bludgeon_HRG_Locust, KFDT_Toxic_HRG_Locust, KFDT_Ballistic_HRG_Locust),CompletionAmount=7000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Ice_FreezeThrower, KFDT_Bludgeon_Freezethrower, KFDT_Freeze_FreezeThrower, KFDT_Freeze_FreezeThrower_IceShards, KFDT_Freeze_Ground_FreezeThrower),CompletionAmount=7000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_EMP_ArcGenerator, KFDT_Bludgeon_ArcGenerator, KFDT_EMP_ArcGenerator_Beam, KFDT_EMP_ArcGeneratorSphereImpact, KFDT_EMP_ArcGenerator_DefaultFiremodeZapDamage, KFDT_EMP_ArcGenerator_AltFiremodeZapDamage),CompletionAmount=9000))
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_LazerCutter, KFDT_Ballistic_LazerCutter, KFDT_LazerCutter_Beam, KFDT_Bludgeon_LazerCutter),CompletionAmount=10000))
@@ -2286,6 +2292,9 @@ defaultproperties
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-RIG),CompletionAmount=1))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-RIG),CompletionAmount=2))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-RIG),CompletionAmount=3))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-BARMWICHTOWN),CompletionAmount=1))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-BARMWICHTOWN),CompletionAmount=2))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-BARMWICHTOWN),CompletionAmount=3))
 	
     //Versus Damage
     //    Per design doc that I have right now, these are x class damage y players, not damage y amount

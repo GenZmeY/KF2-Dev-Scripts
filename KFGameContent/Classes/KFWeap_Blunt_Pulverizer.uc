@@ -138,6 +138,8 @@ simulated function CustomFire()
 	// tell remote clients that we fired, to trigger effects in third person
 	IncrementFlashCount();
 
+	ExplosionTemplate.DamageRadius = StartingDamageRadius;
+
 	if ( bDebug )
 	{
 		DrawDebugCone(SpawnLoc, vector(SpawnRot), ExplosionTemplate.DamageRadius, ExplosionTemplate.DirectionalExplosionAngleDeg * DegToRad,

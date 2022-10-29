@@ -73,7 +73,7 @@ defaultproperties
 	DOF_FG_MaxNearBlurSize=2.5
 
 	// Zooming/Position
-	IronSightPosition=(X=10,Y=0,Z=0)    //x20
+	IronSightPosition=(X=10,Y=-0.015,Z=0.09)    //x20
 	PlayerViewOffset=(X=30.0,Y=10,Z=-2.5)  //x18 y9 z0
 
 	// Content

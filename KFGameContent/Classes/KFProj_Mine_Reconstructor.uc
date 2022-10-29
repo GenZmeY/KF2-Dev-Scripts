@@ -886,8 +886,8 @@ defaultproperties
 
 		// Camera Shake
 		CamShake=CameraShake'WEP_Mine_Reconstructor_Arch.Camera_Shake'
-		CamShakeInnerRadius=200
-		CamShakeOuterRadius=400
+		CamShakeInnerRadius=0
+		CamShakeOuterRadius=0
 		CamShakeFalloff=1.f
 		bOrientCameraShakeTowardsEpicenter=true
 	End Object
@@ -905,8 +905,8 @@ defaultproperties
 	MaxDamageRadiusPerPercentage=340
 	MinDamageRadiusPerPercentage=160
 
-	MaxDamagePerPercentage=350 //300
-	MinDamagePerPercentage=35 //30
+	MaxDamagePerPercentage=400 //350 //300
+	MinDamagePerPercentage=40 //35 //30
 
 	MaxCollisionRadius=20
 	MinCollisionRadius=10

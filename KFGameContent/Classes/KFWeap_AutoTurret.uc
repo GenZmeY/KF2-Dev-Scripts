@@ -176,7 +176,7 @@ simulated function GetTurretSpawnLocationAndDir(out vector SpawnLocation, out ve
 }
 
 /** Detonates the oldest turret */
-simulated function Detonate()
+simulated function Detonate(optional bool bKeepTurret = false)
 {
 	local int i;
 	local array<Actor> TurretsCopy;
@@ -187,10 +187,15 @@ simulated function Detonate()
 		TurretsCopy = KFPC.DeployedTurrets;
 		for (i = 0; i < TurretsCopy.Length; i++)
 		{
+			if (bKeepTurret && i == 0)
+			{
+				continue;
+			}
+
 			KFPawn_AutoTurret(TurretsCopy[i]).SetTurretState(ETS_Detonate);
 		}
 
-		KFPC.DeployedTurrets.Remove(0, KFPC.DeployedTurrets.Length);
+		KFPC.DeployedTurrets.Remove(bKeepTurret ? 1 : 0, KFPC.DeployedTurrets.Length);
 
 		SetReadyToUse(true);
 
@@ -231,7 +236,17 @@ function SetOriginalValuesFromPickup( KFWeapon PickedUpWeapon )
 
 	if (PickedUpWeapon.KFPlayer != none && PickedUpWeapon.KFPlayer != KFPC)
 	{
-		KFPC.DeployedTurrets = PickedUpWeapon.KFPlayer.DeployedTurrets;
+		for (i = 0; i < PickedUpWeapon.KFPlayer.DeployedTurrets.Length; i++)
+		{
+			KFPC.DeployedTurrets.AddItem(PickedUpWeapon.KFPlayer.DeployedTurrets[i]);
+		}
+
+		PickedUpWeapon.KFPlayer.DeployedTurrets.Remove(0, PickedUpWeapon.KFPlayer.DeployedTurrets.Length);
+	}
+
+	if (KFPC.DeployedTurrets.Length > 1)
+	{
+		Detonate(true);
 	}
 
 	PickedUpWeapon.KFPlayer = none;

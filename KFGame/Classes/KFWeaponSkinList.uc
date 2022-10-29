@@ -3675,6 +3675,42 @@ defaultproperties
 //Reducto Ray Lucky Strike
     Skins.Add((Id=9295, Weapondef=class'KFWeapDef_ShrinkRayGun', MIC_1P=("wep_skinset55_mat.Wep_1P_LuckyStrike_ShrinkRay_Gun_MIC","WEP_1P_ShrinkRay_Gun_MAT.WEP_ShrinkRay_Glass_MIC"), MIC_3P="wep_skinset55_mat.Wep_3P_LuckyStrike_ShrinkRay_Gun_MIC", MIC_Pickup="wep_skinset55_mat.Wep_3P_LuckyStrike_ShrinkRay_Pickup_MIC")) 
 
+//Blood Sickle Standard
+    Skins.Add((Id=9478, Weapondef=class'KFWeapDef_Scythe', MIC_1P=("wep_1p_scythe_mat.Wep_1stP_Scythe_MIC"), MIC_3P="WEP_3P_Scythe_MAT.WEP_3P_Scythe_MIC", MIC_Pickup="wep_3p_scythe_mat.WEP_3P_ScythePickup_MIC")) 
+
+//Blood Sickle Bloodbath
+	Skins.Add((Id=9473, Weapondef=class'KFWeapDef_Scythe', MIC_1P=("WEP_SkinSet65_MAT.Wep_1P_Bloodbath_Scythe_MIC"), MIC_3P="WEP_SkinSet65_MAT.Wep_3P_Bloodbath_Scythe_MIC", MIC_Pickup="WEP_SkinSet65_MAT.Wep_3P_Bloodbath_Scythe_Pickup_MIC")) 
+
+//Blood Sickle Butchery
+	Skins.Add((Id=9474, Weapondef=class'KFWeapDef_Scythe', MIC_1P=("WEP_SkinSet65_MAT.Wep_1P_Butchery_Scythe_MIC"), MIC_3P="WEP_SkinSet65_MAT.Wep_3P_Butchery_Scythe_MIC", MIC_Pickup="WEP_SkinSet65_MAT.Wep_3P_Butchery_Scythe_Pickup_MIC")) 
+
+//Blood Sickle Carousel
+	Skins.Add((Id=9475, Weapondef=class'KFWeapDef_Scythe', MIC_1P=("WEP_SkinSet65_MAT.Wep_1P_Carousel_Scythe_MIC"), MIC_3P="WEP_SkinSet65_MAT.Wep_3P_Carousel_Scythe_MIC", MIC_Pickup="WEP_SkinSet65_MAT.Wep_3P_Caurel_Scythe_Pickup_MIC")) 
+
+//Blood Sickle Hunter
+	Skins.Add((Id=9477, Weapondef=class'KFWeapDef_Scythe', MIC_1P=("WEP_SkinSet65_MAT.Wep_1P_Hunter_Scythe_MIC"), MIC_3P="WEP_SkinSet65_MAT.Wep_3P_Hunter_Scythe_MIC", MIC_Pickup="WEP_SkinSet65_MAT.Wep_3P_Hunter_Scythe_Pickup_MIC")) 
+
+//Blood Sickle Reaper
+ 	Skins.Add((Id=9476, Weapondef=class'KFWeapDef_Scythe', MIC_1P=("WEP_SkinSet65_MAT.Wep_1P_Reaper_Scythe_MIC"), MIC_3P="WEP_SkinSet65_MAT.Wep_3P_Reaper_Scythe_MIC", MIC_Pickup="WEP_SkinSet65_MAT.Wep_3P_Reaper_Scythe_Pickup_MIC")) 
+
+//G36C Standard
+    Skins.Add((Id=9484, Weapondef=class'KFWeapDef_G36C', MIC_1P=("wep_1p_g36c_mat.Wep_1stP_G36C_MIC","wep_1p_g36c_mat.Wep_1stP_G36C_Scope_MIC"), MIC_3P="wep_3p_g36c_mat.Wep_3rdP_G36C_MIC", MIC_Pickup="wep_3p_g36c_mat.3P_Pickup_G36C_MIC")) 
+
+//G36C Aftermath
+    Skins.Add((Id=9481, Weapondef=class'KFWeapDef_G36C', MIC_1P=("wep_skinset64_mat.Wep_1P_Aftermatch_G36C_MIC","wep_skinset64_mat.Wep_1P_Aftermatch_Scope_G36C_MIC"), MIC_3P="wep_skinset64_mat.Wep_3P_Aftermatch_G36C_MIC", MIC_Pickup="wep_skinset64_mat.Wep_3P_Aftermatch_G36C_Pickup_MIC")) 
+
+//G36C Dazzle
+    Skins.Add((Id=9483, Weapondef=class'KFWeapDef_G36C', MIC_1P=("wep_skinset64_mat.Wep_1P_Dazzle_G36C_MIC","wep_skinset64_mat.Wep_1P_Dazzle_Scope_G36C_MIC"), MIC_3P="wep_skinset64_mat.Wep_3P_Dazzle_G36C_MIC", MIC_Pickup="wep_skinset64_mat.Wep_3P_Dazzle_G36C_Pickup_MIC")) 
+
+//G36C Icepack
+    Skins.Add((Id=9480, Weapondef=class'KFWeapDef_G36C', MIC_1P=("wep_skinset64_mat.Wep_1P_Icepack_G36C_MIC","wep_skinset64_mat.Wep_1P_Icepack_Scope_G36C_MIC"), MIC_3P="wep_skinset64_mat.Wep_3P_Icepack_G36C_MIC", MIC_Pickup="wep_skinset64_mat.Wep_3P_Icepack_G36C_Pickup_MIC")) 
+
+//G36C Jungle
+    Skins.Add((Id=9482, Weapondef=class'KFWeapDef_G36C', MIC_1P=("wep_skinset64_mat.Wep_1P_Jungle_G36C_MIC","wep_skinset64_mat.Wep_1P_Jungle_Scope_G36C_MIC"), MIC_3P="wep_skinset64_mat.Wep_3P_Jungle_G36C_MIC", MIC_Pickup="wep_skinset64_mat.Wep_3P_Jungle_G36C_Pickup_MIC")) 
+
+//G36C Sahara
+    Skins.Add((Id=9479, Weapondef=class'KFWeapDef_G36C', MIC_1P=("wep_skinset64_mat.Wep_1P_Sahara_G36C_MIC","wep_skinset64_mat.Wep_1P_Sahara_Scope_G36C_MIC"), MIC_3P="wep_skinset64_mat.Wep_3P_Sahara_G36C_MIC", MIC_Pickup="wep_skinset64_mat.Wep_3P_Sahara_G36C_Pickup_MIC")) 
+
 //BeyondHorizon AA12
     Skins.Add((Id=8845, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_AA12', MIC_1P=("WEP_SkinSet43_MAT.space_aa12.Space_AA12_1P_Mint_MIC"), MIC_3P="WEP_SkinSet43_MAT.space_aa12.Space_AA12_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet43_MAT.space_aa12.Space_AA12_3P_Pickup_MIC")) 
 
@@ -3992,6 +4028,7 @@ defaultproperties
 
 //Chameleon Dynamic RGB RPG-7
     Skins.Add((Id=9358, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_RPG7', MIC_1P=("wep_skinset58_mat.chameleonrgb_rpg7.ChameleonRGB_RPG7_1P_Mint_MIC"), MIC_3P="WEP_SkinSet58_MAT.chameleonrgb_rpg7.ChameleonRGB_RPG7_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet58_MAT.chameleonrgb_rpg7.ChameleonRGB_RPG7_3P_Pickup_MIC")) 
+
 //Deep Sea Antique AA12
     Skins.Add((Id=9298, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_AA12', MIC_1P=("WEP_SkinSet59_MAT.deepsea_aa12.DeepSea_AA12_1P_Mint_MIC"), MIC_3P="WEP_SkinSet59_MAT.deepsea_aa12.DeepSea_AA12_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet59_MAT.deepsea_aa12.DeepSea_AA12_3P_Pickup_MIC")) 
 
@@ -4099,4 +4136,184 @@ defaultproperties
 
 //Deep Sea Precious RPG-7
     Skins.Add((Id=9333, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_RPG7', MIC_1P=("WEP_SkinSet59_MAT.deepsea_rpg7.DeepSeaPrecious_RPG7_1P_Mint_MIC"), MIC_3P="WEP_SkinSet59_MAT.deepsea_rpg7.DeepSeaPrecious_RPG7_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet59_MAT.deepsea_rpg7.DeepSeaPrecious_RPG7_3P_Pickup_MIC")) 
+
+//Plague Doctor Mint Tommy Gun
+    Skins.Add((Id=9388, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Thompson', MIC_1P=("WEP_SkinSet62_MAT.plague_tommygun.Plague_TommyGun_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_tommygun.Plague_TommyGun_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_tommygun.Plague_TommyGun_3P_Pickup_MIC")) 
+
+//Plague Doctor Sterling Tommy Gun
+    Skins.Add((Id=9389, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Thompson', MIC_1P=("WEP_SkinSet62_MAT.plague_tommygun.PlagueSterling_TommyGun_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_tommygun.PlagueSterling_TommyGun_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_tommygun.PlagueSterling_TommyGun_3P_Pickup_MIC")) 
+
+//Plague Doctor Obsidian Tommy Gun
+    Skins.Add((Id=9390, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Thompson', MIC_1P=("WEP_SkinSet62_MAT.plague_tommygun.PlagueObsidian_TommyGun_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_tommygun.PlagueObsidian_TommyGun_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_tommygun.PlagueObsidian_TommyGun_3P_Pickup_MIC")) 
+
+//Plague Doctor Volcanic Tommy Gun
+    Skins.Add((Id=9391, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Thompson', MIC_1P=("WEP_SkinSet62_MAT.plague_tommygun.PlagueVolcanic_TommyGun_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_tommygun.PlagueVolcanic_TommyGun_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_tommygun.PlagueVolcanic_TommyGun_3P_Pickup_MIC")) 
+
+//Plague Doctor Emerald Tommy Gun
+    Skins.Add((Id=9392, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Thompson', MIC_1P=("WEP_SkinSet62_MAT.plague_tommygun.PlagueEmerald_TommyGun_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_tommygun.PlagueEmerald_TommyGun_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_tommygun.PlagueEmerald_TommyGun_3P_Pickup_MIC")) 
+
+//Plague Doctor Precious Tommy Gun
+    Skins.Add((Id=9393, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Thompson', MIC_1P=("WEP_SkinSet62_MAT.plague_tommygun.PlaguePrecious_TommyGun_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_tommygun.PlaguePrecious_TommyGun_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_tommygun.PlaguePrecious_TommyGun_3P_Pickup_MIC")) 
+
+//Plague Doctor Mint M79
+    Skins.Add((Id=9394, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M79', MIC_1P=("WEP_SkinSet62_MAT.plague_m79.Plague_M79_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_m79.Plague_M79_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_m79.Plague_M79_3P_Pickup_MIC")) 
+
+//Plague Doctor Sterling M79
+    Skins.Add((Id=9395, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M79', MIC_1P=("WEP_SkinSet62_MAT.plague_m79.PlagueSterling_M79_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_m79.PlagueSterling_M79_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_m79.PlagueSterling_M79_3P_Pickup_MIC")) 
+
+//Plague Doctor Obsidian M79
+    Skins.Add((Id=9396, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M79', MIC_1P=("WEP_SkinSet62_MAT.plague_m79.PlagueObsidian_M79_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_m79.PlagueObsidian_M79_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_m79.PlagueObsidian_M79_3P_Pickup_MIC")) 
+
+//Plague Doctor Volcanic M79
+    Skins.Add((Id=9397, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M79', MIC_1P=("WEP_SkinSet62_MAT.plague_m79.PlagueVolcanic_M79_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_m79.PlagueVolcanic_M79_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_m79.PlagueVolcanic_M79_3P_Pickup_MIC")) 
+
+//Plague Doctor Emerald M79
+    Skins.Add((Id=9398, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M79', MIC_1P=("WEP_SkinSet62_MAT.plague_m79.PlagueEmerald_M79_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_m79.PlagueEmerald_M79_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_m79.PlagueEmerald_M79_3P_Pickup_MIC")) 
+
+//Plague Doctor Precious M79
+    Skins.Add((Id=9399, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M79', MIC_1P=("WEP_SkinSet62_MAT.plague_m79.PlaguePrecious_M79_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_m79.PlaguePrecious_M79_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_m79.PlaguePrecious_M79_3P_Pickup_MIC")) 
+
+//Plague Doctor Mint Desert Eagle
+    Skins.Add((Id=9400, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet62_MAT.plague_deagle.Plague_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_deagle.Plague_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_deagle.Plague_Deagle_3P_Pickup_MIC")) 
+
+//Plague Doctor Sterling Desert Eagle
+    Skins.Add((Id=9401, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet62_MAT.plague_deagle.PlagueSterling_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_deagle.PlagueSterling_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_deagle.PlagueSterling_Deagle_3P_Pickup_MIC")) 
+
+//Plague Doctor Obsidian Desert Eagle
+    Skins.Add((Id=9402, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet62_MAT.plague_deagle.PlagueObsidian_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_deagle.PlagueObsidian_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_deagle.PlagueObsidian_Deagle_3P_Pickup_MIC")) 
+
+//Plague Doctor Volcanic Desert Eagle
+    Skins.Add((Id=9403, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet62_MAT.plague_deagle.PlagueVolcanic_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_deagle.PlagueVolcanic_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_deagle.PlagueVolcanic_Deagle_3P_Pickup_MIC")) 
+
+//Plague Doctor Emerald Desert Eagle
+    Skins.Add((Id=9404, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet62_MAT.plague_deagle.PlagueEmerald_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_deagle.PlagueEmerald_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_deagle.PlagueEmerald_Deagle_3P_Pickup_MIC")) 
+
+//Plague Doctor Precious Desert Eagle
+    Skins.Add((Id=9405, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet62_MAT.plague_deagle.PlaguePrecious_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_deagle.PlaguePrecious_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_deagle.PlaguePrecious_Deagle_3P_Pickup_MIC")) 
+
+//Plague Doctor Mint Crossbow
+    Skins.Add((Id=9406, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Crossbow', MIC_1P=("WEP_SkinSet62_MAT.plague_crossbow.Plague_Crossbow_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_crossbow.Plague_Crossbow_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_crossbow.Plague_Crossbow_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_crossbow.Plague_Crossbow_3P_Pickup_MIC")) 
+
+//Plague Doctor Sterling Crossbow
+    Skins.Add((Id=9407, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Crossbow', MIC_1P=("WEP_SkinSet62_MAT.plague_crossbow.PlagueSterling_Crossbow_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_crossbow.PlagueSterling_Crossbow_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_crossbow.PlagueSterling_Crossbow_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_crossbow.PlagueSterling_Crossbow_3P_Pickup_MIC")) 
+
+//Plague Doctor Obsidian Crossbow
+    Skins.Add((Id=9408, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Crossbow', MIC_1P=("WEP_SkinSet62_MAT.plague_crossbow.PlagueObsidian_Crossbow_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_crossbow.PlagueObsidian_Crossbow_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_crossbow.PlagueObsidian_Crossbow_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_crossbow.PlagueObsidian_Crossbow_3P_Pickup_MIC")) 
+
+//Plague Doctor Volcanic Crossbow
+    Skins.Add((Id=9409, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Crossbow', MIC_1P=("WEP_SkinSet62_MAT.plague_crossbow.PlagueVolcanic_Crossbow_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_crossbow.PlagueVolcanic_Crossbow_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_crossbow.PlagueVolcanic_Crossbow_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_crossbow.PlagueVolcanic_Crossbow_3P_Pickup_MIC")) 
+
+//Plague Doctor Emerald Crossbow
+    Skins.Add((Id=9410, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Crossbow', MIC_1P=("WEP_SkinSet62_MAT.plague_crossbow.PlagueEmerald_Crossbow_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_crossbow.PlagueEmerald_Crossbow_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_crossbow.PlagueEmerald_Crossbow_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_crossbow.PlagueEmerald_Crossbow_3P_Pickup_MIC")) 
+
+//Plague Doctor Precious Crossbow
+    Skins.Add((Id=9411, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Crossbow', MIC_1P=("WEP_SkinSet62_MAT.plague_crossbow.PlaguePrecious_Crossbow_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_crossbow.PlaguePrecious_Crossbow_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_crossbow.PlaguePrecious_Crossbow_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_crossbow.PlaguePrecious_Crossbow_3P_Pickup_MIC")) 
+
+//Plague Doctor Mint Doomstick
+    Skins.Add((Id=9412, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_ElephantGun', MIC_1P=("WEP_SkinSet62_MAT.plague_quadbarrel.Plague_QuadBarrel_Main_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_quadbarrel.Plague_QuadBarrel_Barrel_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_quadbarrel.Plague_QuadBarrel_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_quadbarrel.Plague_QuadBarrel_3P_Pickup_MIC")) 
+
+//Plague Doctor Sterling Doomstick
+    Skins.Add((Id=9413, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_ElephantGun', MIC_1P=("WEP_SkinSet62_MAT.plague_quadbarrel.PlagueSterling_QuadBarrel_Main_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_quadbarrel.PlagueSterling_QuadBarrel_Barrel_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_quadbarrel.PlagueSterling_QuadBarrel_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_quadbarrel.PlagueSterling_QuadBarrel_3P_Pickup_MIC")) 
+
+//Plague Doctor Obsidian Doomstick
+    Skins.Add((Id=9414, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_ElephantGun', MIC_1P=("WEP_SkinSet62_MAT.plague_quadbarrel.PlagueObsidian_QuadBarrel_Main_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_quadbarrel.PlagueObsidian_QuadBarrel_Barrel_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_quadbarrel.PlagueObsidian_QuadBarrel_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_quadbarrel.PlagueObsidian_QuadBarrel_3P_Pickup_MIC")) 
+
+//Plague Doctor Volcanic Doomstick
+    Skins.Add((Id=9415, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_ElephantGun', MIC_1P=("WEP_SkinSet62_MAT.plague_quadbarrel.PlagueVolcanic_QuadBarrel_Main_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_quadbarrel.PlagueVolcanic_QuadBarrel_Barrel_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_quadbarrel.PlagueVolcanic_QuadBarrel_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_quadbarrel.PlagueVolcanic_QuadBarrel_3P_Pickup_MIC")) 
+
+//Plague Doctor Emerald Doomstick
+    Skins.Add((Id=9416, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_ElephantGun', MIC_1P=("WEP_SkinSet62_MAT.plague_quadbarrel.PlagueEmerald_QuadBarrel_Main_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_quadbarrel.PlagueEmerald_QuadBarrel_Barrel_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_quadbarrel.PlagueEmerald_QuadBarrel_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_quadbarrel.PlagueEmerald_QuadBarrel_3P_Pickup_MIC")) 
+
+//Plague Doctor Precious Doomstick
+    Skins.Add((Id=9417, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_ElephantGun', MIC_1P=("WEP_SkinSet62_MAT.plague_quadbarrel.PlaguePrecious_QuadBarrel_Main_1P_Mint_MIC", "WEP_SkinSet62_MAT.plague_quadbarrel.PlaguePrecious_QuadBarrel_Barrel_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_quadbarrel.PlaguePrecious_QuadBarrel_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_quadbarrel.PlaguePrecious_QuadBarrel_3P_Pickup_MIC")) 
+
+//Plague Doctor Mint Dragonsbreath
+    Skins.Add((Id=9418, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Dragonsbreath', MIC_1P=("WEP_SkinSet62_MAT.plague_dragonsbreath.Plague_Dragonsbreath_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_dragonsbreath.Plague_Dragonsbreath_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_dragonsbreath.Plague_Dragonsbreath_3P_Pickup_MIC")) 
+
+//Plague Doctor Sterling Dragonsbreath
+    Skins.Add((Id=9419, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Dragonsbreath', MIC_1P=("WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueSterling_Dragonsbreath_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueSterling_Dragonsbreath_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueSterling_Dragonsbreath_3P_Pickup_MIC")) 
+
+//Plague Doctor Obsidian Dragonsbreath
+    Skins.Add((Id=9420, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Dragonsbreath', MIC_1P=("WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueObsidian_Dragonsbreath_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueObsidian_Dragonsbreath_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueObsidian_Dragonsbreath_3P_Pickup_MIC")) 
+
+//Plague Doctor Volcanic Dragonsbreath
+    Skins.Add((Id=9421, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Dragonsbreath', MIC_1P=("WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueVolcanic_Dragonsbreath_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueVolcanic_Dragonsbreath_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueVolcanic_Dragonsbreath_3P_Pickup_MIC")) 
+
+//Plague Doctor Emerald Dragonsbreath
+    Skins.Add((Id=9422, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Dragonsbreath', MIC_1P=("WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueEmerald_Dragonsbreath_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueEmerald_Dragonsbreath_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_dragonsbreath.PlagueEmerald_Dragonsbreath_3P_Pickup_MIC")) 
+
+//Plague Doctor Precious Dragonsbreath
+    Skins.Add((Id=9423, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Dragonsbreath', MIC_1P=("WEP_SkinSet62_MAT.plague_dragonsbreath.PlaguePrecious_Dragonsbreath_1P_Mint_MIC"), MIC_3P="WEP_SkinSet62_MAT.plague_dragonsbreath.PlaguePrecious_Dragonsbreath_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet62_MAT.plague_dragonsbreath.PlaguePrecious_Dragonsbreath_3P_Pickup_MIC")) 
+
+//Chameleon Dynamic AA12
+    Skins.Add((Id=9441, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_AA12', MIC_1P=("WEP_SkinSet60_MAT.chameleon_aa12.Chameleon_AA12_1P_Mint_MIC"), MIC_3P="WEP_SkinSet60_MAT.chameleon_aa12.Chameleon_AA12_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet60_MAT.chameleon_aa12.Chameleon_AA12_3P_Pickup_MIC")) 
+
+//Chameleon Dynamic Flamethrower
+    Skins.Add((Id=9442, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_FlameThrower', MIC_1P=("WEP_SkinSet60_MAT.chameleon_flamethrower.Chameleon_Flamethrower_1P_Mint_MIC"), MIC_3P="WEP_SkinSet60_MAT.chameleon_flamethrower.Chameleon_Flamethrower_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet60_MAT.chameleon_flamethrower.Chameleon_Flamethrower_3P_Pickup_MIC")) 
+
+//Chameleon Dynamic M99
+    Skins.Add((Id=9443, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M99', MIC_1P=("WEP_SkinSet60_MAT.chameleon_m99.Chameleon_M99_1P_Mint_MIC", "WEP_SkinSet60_MAT.chameleon_m99.Chameleon_M99_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet60_MAT.chameleon_m99.Chameleon_M99_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet60_MAT.chameleon_m99.Chameleon_M99_3P_Pickup_MIC")) 
+
+//Chameleon Dynamic SCAR
+    Skins.Add((Id=9444, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_SCAR', MIC_1P=("WEP_SkinSet60_MAT.chameleon_scar.Chameleon_SCAR_1P_Mint_MIC", "WEP_SkinSet60_MAT.chameleon_scar.Chameleon_SCAR_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet60_MAT.chameleon_scar.Chameleon_SCAR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet60_MAT.chameleon_scar.Chameleon_SCAR_3P_Pickup_MIC")) 
+
+//Chameleon Dynamic RGB AA12
+    Skins.Add((Id=9445, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_AA12', MIC_1P=("WEP_SkinSet60_MAT.chameleonrgb_aa12.ChameleonRGB_AA12_1P_Mint_MIC"), MIC_3P="WEP_SkinSet60_MAT.chameleonrgb_aa12.ChameleonRGB_AA12_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet60_MAT.chameleonrgb_aa12.ChameleonRGB_AA12_3P_Pickup_MIC")) 
+
+//Chameleon Dynamic RGB Flamethrower
+    Skins.Add((Id=9446, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_FlameThrower', MIC_1P=("WEP_SkinSet60_MAT.chameleonrgb_flamethrower.ChameleonRGB_Flamethrower_1P_Mint_MIC"), MIC_3P="WEP_SkinSet60_MAT.chameleonrgb_flamethrower.ChameleonRGB_Flamethrower_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet60_MAT.chameleonrgb_flamethrower.ChameleonRGB_Flamethrower_3P_Pickup_MIC")) 
+
+//Chameleon Dynamic RGB M99
+    Skins.Add((Id=9447, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M99', MIC_1P=("WEP_SkinSet60_MAT.chameleonrgb_m99.ChameleonRGB_M99_1P_Mint_MIC", "WEP_SkinSet60_MAT.chameleonrgb_m99.ChameleonRGB_M99_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet60_MAT.chameleonrgb_m99.ChameleonRGB_M99_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet60_MAT.chameleonrgb_m99.ChameleonRGB_M99_3P_Pickup_MIC")) 
+
+//Chameleon Dynamic RGB SCAR
+    Skins.Add((Id=9448, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_SCAR', MIC_1P=("WEP_SkinSet60_MAT.chameleonrgb_scar.ChameleonRGB_SCAR_1P_Mint_MIC", "WEP_SkinSet60_MAT.chameleonrgb_scar.ChameleonRGB_SCAR_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet60_MAT.chameleonrgb_scar.ChameleonRGB_SCAR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet60_MAT.chameleonrgb_scar.ChameleonRGB_SCAR_3P_Pickup_MIC")) 
+
+//Classic Mint AK12
+    Skins.Add((Id=9433, Weapondef=class'KFWeapDef_Ak12', MIC_1P=("WEP_SkinSet61_MAT.classic_ak12.Classic_AK12_1P_Mint_MIC"), MIC_3P="WEP_SkinSet61_MAT.classic_ak12.Classic_AK12_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet61_MAT.classic_ak12.Classic_AK12_3P_Pickup_MIC")) 
+
+//Classic Mint Desert Eagle
+    Skins.Add((Id=9434, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet61_MAT.classic_deagle.Classic_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet61_MAT.classic_deagle.Classic_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet61_MAT.classic_deagle.Classic_Deagle_3P_Pickup_MIC")) 
+
+//Classic Mint M14EBR
+    Skins.Add((Id=9435, Weapondef=class'KFWeapDef_M14EBR', MIC_1P=("WEP_SkinSet61_MAT.classic_m14ebr.Classic_M14EBR_1P_Mint_MIC"), MIC_3P="WEP_SkinSet61_MAT.classic_m14ebr.Classic_M14EBR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet61_MAT.classic_m14ebr.Classic_M14EBR_3P_Pickup_MIC")) 
+
+//Classic Mint Kriss
+    Skins.Add((Id=9436, Weapondef=class'KFWeapDef_Kriss', MIC_1P=("WEP_SkinSet61_MAT.classic_kriss.Classic_Kriss_1P_Mint_MIC"), MIC_3P="WEP_SkinSet61_MAT.classic_kriss.Classic_Kriss_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet61_MAT.classic_kriss.Classic_Kriss_3P_Pickup_MIC")) 
+
+//Classic Precious AK12
+    Skins.Add((Id=9437, Weapondef=class'KFWeapDef_Ak12', MIC_1P=("WEP_SkinSet61_MAT.standard_ak12.Standard_AK12_1P_Mint_MIC"), MIC_3P="WEP_SkinSet61_MAT.standard_ak12.Standard_AK12_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet61_MAT.standard_ak12.Standard_AK12_3P_Pickup_MIC")) 
+
+//Classic Precious Desert Eagle
+    Skins.Add((Id=9438, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet61_MAT.standard_deagle.Standard_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet61_MAT.standard_deagle.Standard_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet61_MAT.standard_deagle.Standard_Deagle_3P_Pickup_MIC")) 
+
+//Classic Precious M14EBR
+    Skins.Add((Id=9439, Weapondef=class'KFWeapDef_M14EBR', MIC_1P=("WEP_SkinSet61_MAT.standard_m14ebr.Standard_M14EBR_1P_Mint_MIC"), MIC_3P="WEP_SkinSet61_MAT.standard_m14ebr.Standard_M14EBR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet61_MAT.standard_m14ebr.Standard_M14EBR_3P_Pickup_MIC")) 
+
+//Classic Precious Kriss
+    Skins.Add((Id=9440, Weapondef=class'KFWeapDef_Kriss', MIC_1P=("WEP_SkinSet61_MAT.standard_kriss.Standard_Kriss_1P_Mint_MIC"), MIC_3P="WEP_SkinSet61_MAT.standard_kriss.Standard_Kriss_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet61_MAT.standard_kriss.Standard_Kriss_3P_Pickup_MIC")) 
+
+//Xeno Dynamic M4
+    Skins.Add((Id=9425, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M4', MIC_1P=("wep_skinset63_mat.xeno_m4.Xeno_M4_1P_Mint_MIC"), MIC_3P="WEP_SkinSet63_MAT.xeno_m4.Xeno_M4_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet63_MAT.xeno_m4.Xeno_M4_3P_Pickup_MIC")) 
+
+//Xeno Dynamic Heckler & Koch UMP
+    Skins.Add((Id=9426, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_HK_UMP', MIC_1P=("WEP_SkinSet63_MAT.xeno_hk_ump.Xeno_HK_UMP_1P_Mint_MIC", "WEP_SkinSet63_MAT.xeno_hk_ump.Xeno_HK_UMP_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet63_MAT.xeno_hk_ump.Xeno_HK_UMP_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet63_MAT.xeno_hk_ump.Xeno_HK_UMP_3P_Pickup_MIC")) 
+
+//Xeno Dynamic Centerfire
+    Skins.Add((Id=9427, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_CenterfireMB464', MIC_1P=("WEP_SkinSet63_MAT.xeno_centerfire.Xeno_Centerfire_1P_Mint_MIC"), MIC_3P="WEP_SkinSet63_MAT.xeno_centerfire.Xeno_Centerfire_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet63_MAT.xeno_centerfire.Xeno_Centerfire_3P_Pickup_MIC")) 
+
+//Xeno Dynamic Hemoclobber
+    Skins.Add((Id=9428, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_MedicBat', MIC_1P=("WEP_SkinSet63_MAT.xeno_medicbat.Xeno_MedicBat_1P_Mint_MIC"), MIC_3P="WEP_SkinSet63_MAT.xeno_medicbat.Xeno_MedicBat_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet63_MAT.xeno_medicbat.Xeno_MedicBat_3P_Pickup_MIC")) 
+
+//Xeno Dynamic RGB M4
+    Skins.Add((Id=9429, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M4', MIC_1P=("WEP_SkinSet63_MAT.xenorgb_m4.XenoRGB_M4_1P_Mint_MIC"), MIC_3P="WEP_SkinSet63_MAT.xenorgb_m4.XenoRGB_M4_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet63_MAT.xenorgb_m4.XenoRGB_M4_3P_Pickup_MIC")) 
+
+//Xeno Dynamic RGB Heckler & Koch UMP
+    Skins.Add((Id=9430, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_HK_UMP', MIC_1P=("WEP_SkinSet63_MAT.xenorgb_hk_ump.XenoRGB_HK_UMP_1P_Mint_MIC", "WEP_SkinSet63_MAT.xenorgb_hk_ump.XenoRGB_HK_UMP_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet63_MAT.xenorgb_hk_ump.XenoRGB_HK_UMP_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet63_MAT.xenorgb_hk_ump.XenoRGB_HK_UMP_3P_Pickup_MIC")) 
+
+//Xeno Dynamic RGB Centerfire
+    Skins.Add((Id=9431, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_CenterfireMB464', MIC_1P=("WEP_SkinSet63_MAT.xenorgb_centerfire.XenoRGB_Centerfire_1P_Mint_MIC"), MIC_3P="WEP_SkinSet63_MAT.xenorgb_centerfire.XenoRGB_Centerfire_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet63_MAT.xenorgb_centerfire.XenoRGB_Centerfire_3P_Pickup_MIC")) 
+
+//Xeno Dynamic RGB Hemoclobber
+    Skins.Add((Id=9432, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_MedicBat', MIC_1P=("WEP_SkinSet63_MAT.xenorgb_medicbat.XenoRGB_MedicBat_1P_Mint_MIC"), MIC_3P="WEP_SkinSet63_MAT.xenorgb_medicbat.XenoRGB_MedicBat_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet63_MAT.xenorgb_medicbat.XenoRGB_MedicBat_3P_Pickup_MIC")) 
 }
