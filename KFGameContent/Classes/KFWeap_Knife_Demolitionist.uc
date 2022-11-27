@@ -20,6 +20,9 @@ defaultproperties
 	FirstPersonMeshName="WEP_1P_Demo_Knife_MESH.Wep_1stP_Demo_Knife_Rig"
 	AttachmentArchetypeName="WEP_Demo_Knife_ARCH.Wep_Demo_Knife_3P"
 
+	Spread(DEFAULT_FIREMODE)=1.0
+	Spread(ALTFIRE_FIREMODE)=1.0
+
 	Begin Object Name=FirstPersonMesh
 		AnimSets(0)=AnimSet'WEP_1P_CommandoKnife_ANIM.Wep_1stP_CommKnife_Anim'
 	End Object

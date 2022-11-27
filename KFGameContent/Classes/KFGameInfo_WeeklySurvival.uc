@@ -445,6 +445,7 @@ event PostLogin( PlayerController NewPlayer )
 {
     local KFPlayerController_WeeklySurvival KFPC_WS;
     local KFPawn_Customization KFCustomizePawn;
+
     super.PostLogin(NewPlayer);
 
     KFPC_WS = KFPlayerController_WeeklySurvival(NewPlayer);
@@ -543,6 +544,12 @@ function WaveEnded(EWaveEndCondition WinCondition)
     
     // This function is called multiple times in a row. Only apply it once.
     bWasFirstTime = bWaveStarted;
+
+    // Choose new perk before the end of wave message triggers in supper. 
+    if (MyKFGRI.IsRandomPerkMode() && WinCondition == WEC_WaveWon)
+    {
+        ChooseRandomPerks();
+    }
 
     super.WaveEnded(WinCondition);
 
@@ -1315,6 +1322,10 @@ function WaveStarted()
     }
 }
 
+/**
+ *  Weekly 17: VIP MODE
+ */
+
 function OnVIPDiesEndMatch()
 {
  	local KFPlayerController KFPC;
@@ -1499,6 +1510,182 @@ function OnOutbreakWaveWon()
         ChooseVIP(true);
     }
 }
+
+/*
+ * Weekly 18: Random Perks
+ */
+
+simulated function NotifyPlayerStatsInitialized(KFPlayerController_WeeklySurvival KFPC)
+{
+    if (KFPC != none && MyKFGRI.IsRandomPerkMode())
+    {
+        ChooseInitialRandomPerk(KFPC);
+    }
+}
+
+function ChooseInitialRandomPerk(KFPlayerController_WeeklySurvival KFPC_WS)
+{
+    local KFPlayerController_WeeklySurvival OtherKFPC;
+    local array<class<KFPerk> > AvailablePerks;
+    local int i;
+    local byte NewPerkIndex;
+    local bool bPerkFound;
+
+    `Log("CHOOSING INITIAL PERKS");
+
+    for (i = 0; i < KFPC_WS.PerkList.Length; ++i)
+    {
+        bPerkFound = false;
+
+        foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', OtherKFPC)
+        {
+            if (OtherKFPC == KFPC_WS)
+            {
+                continue;
+            }
+
+            if (KFPC_WS.Perklist[i].PerkClass == OtherKFPC.CurrentPerk.Class)
+            {
+                bPerkFound = true;
+                break;
+            }
+        }   
+
+        if (!bPerkFound)
+        {
+            AvailablePerks.AddItem(KFPC_WS.PerkList[i].PerkClass);
+        }
+    }
+
+    if (AvailablePerks.Length == 0)
+    {
+        for (i = 0; i < KFPC_WS.Perklist.Length; ++i)
+        {
+            AvailablePerks.AddItem(KFPC_WS.Perklist[i].PerkClass);
+        }
+        KFPC_WS.LockedPerks.Length = 0;
+    }
+
+    NewPerkIndex = Rand(AvailablePerks.Length);
+    
+    KFPC_WS.LockedPerks.AddItem(AvailablePerks[NewPerkIndex]);
+    KFPC_WS.ForceNewPerk(AvailablePerks[NewPerkIndex]);
+}
+
+function ChooseRandomPerks()
+{
+    local KFPlayerController_WeeklySurvival KFPC;
+    local array<class<KFPerk> > AvailablePerks;
+    local array<class<KFPerk> > PickedPerks;
+    local int i, j;
+    local byte NewPerkIndex;
+    local bool bPerkFound;
+
+    foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC)
+    {
+        AvailablePerks.Length = 0;
+
+        for (i = 0; i < KFPC.Perklist.Length; ++i)
+        {
+            bPerkFound = false;
+            for (j = 0; j < PickedPerks.Length; ++j)
+            {
+                if (KFPC.Perklist[i].PerkClass == PickedPerks[j])
+                {
+                    bPerkFound = true;
+                    break;
+                }
+            }
+
+            if (!bPerkFound)
+            {
+                for (j = 0; j < KFPC.LockedPerks.Length; ++j)
+                {
+                    if (KFPC.Perklist[i].PerkClass == KFPC.LockedPerks[j])
+                    {
+                        bPerkFound = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!bPerkFound)
+            {
+                AvailablePerks.AddItem(KFPC.Perklist[i].PerkClass);
+            }
+        }
+
+        if (AvailablePerks.Length == 0)
+        {
+            for (i = 0; i < KFPC.Perklist.Length; ++i)
+            {
+                bPerkFound = false;
+                for (j = 0; j < PickedPerks.Length; ++j)
+                {
+                    if (KFPC.Perklist[i].PerkClass == PickedPerks[j])
+                    {
+                        bPerkFound = true;
+                        break;
+                    }
+                }
+
+                if (!bPerkFound && KFPC.Perklist[i].PerkClass != KFPC.CurrentPerk.Class)
+                {
+                    AvailablePerks.AddItem(KFPC.Perklist[i].PerkClass);
+                }
+            }
+
+            if (AvailablePerks.Length == 0)
+            {
+                for (i = 0; i < KFPC.Perklist.Length; ++i)
+                {
+                    AvailablePerks.AddItem(KFPC.Perklist[i].PerkClass);
+                    PickedPerks.Length = 0;
+                }
+            }
+            
+            KFPC.LockedPerks.Length = 0;
+        }
+
+        NewPerkIndex = Rand(AvailablePerks.Length);
+        PickedPerks.AddItem(AvailablePerks[NewPerkIndex]);
+        KFPC.LockedPerks.AddItem(AvailablePerks[NewPerkIndex]);
+
+        KFPC.ForceNewPerk(AvailablePerks[NewPerkIndex]);
+
+        KFPC.PlayRandomPerkChosenSound();
+    }
+}
+
+//
+// Overide BroadcastLocalizedMessage for the RandomPerk weekly (18)
+// Perk is replicated while the message is sent through a RPC, so the message arrives before
+// the perk is updated on clients. 
+// Override the BroadcastLocalizedMessage function to RPC each player the message with their own 
+// new perk class as the optional object so the client knows the information before it gets the perk updated.
+//
+event BroadcastLocalizedMessage( class<LocalMessage> InMessageClass, optional int Switch, optional PlayerReplicationInfo RelatedPRI_1, optional PlayerReplicationInfo RelatedPRI_2, optional Object OptionalObject )
+{
+    if (!MyKFGRI.IsRandomPerkMode() || Switch != GMT_WaveEnd)
+    {
+        Super.BroadcastLocalizedMessage(InMessageClass, Switch, RelatedPRI_1, RelatedPRI_2, OptionalObject);
+    }
+    else
+    {
+        BroadcastCustomWaveEndMessage(self, InMessageClass, Switch);
+    }
+}
+
+function BroadcastCustomWaveEndMessage( actor Sender, class<LocalMessage> InMessageClass, optional int Switch, optional PlayerReplicationInfo RelatedPRI_1, optional PlayerReplicationInfo RelatedPRI_2, optional Object OptionalObject )
+{
+    local KFPlayerController KFPC;
+
+	foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+	{
+        KFPC.ReceiveLocalizedMessage( InMessageClass, Switch, RelatedPRI_1, RelatedPRI_2, KFPC.GetPerk().Class);
+	}
+}
+//
 
 defaultproperties
 {

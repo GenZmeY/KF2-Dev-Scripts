@@ -45,6 +45,8 @@ var protected const AKEvent VIPChosenSoundEvent;
 var protected const AKEvent VIPLowHealthSoundEvent;
 var protected float VIPLowHealthLastTimePlayed;
 
+var protected const AKEvent RandomPerkChosenSoundEvent;
+
 struct native GunGameInfo
 {
     var transient byte Level;
@@ -105,6 +107,9 @@ struct native VIPGameInfo
    }
 };
 var transient VIPGameInfo VIPGameData;
+
+// RandomPerk weekly
+var array<class<KFPerk> > LockedPerks;
 
 cpptext
 {
@@ -601,6 +606,64 @@ function UpdateVIPDamage()
     }
 }
 
+simulated function ForceNewPerk(class<KFPerk> NewPerk)
+{
+    local int NewPerkIndex;
+    NewPerkIndex = Perklist.Find('PerkClass', NewPerk);
+    ServerSelectPerk(NewPerkIndex, Perklist[NewPerkIndex].PerkLevel, Perklist[NewPerkIndex].PrestigeLevel, true);
+    SavedPerkIndex = NewPerkIndex;
+    ForceNewSavedPerkIndex(NewPerkIndex);
+}
+
+unreliable client function PlayRandomPerkChosenSound(optional float delay = 0.0f)
+{
+    if (delay > 0.0f)
+    {
+        SetTimer(delay, false, nameof(PlayRandomPerkChosenSound_Internal));
+    }
+    else
+    {
+        PlayRandomPerkChosenSound_Internal();
+    }
+}
+
+simulated function PlayRandomPerkChosenSound_Internal()
+{
+    if (RandomPerkChosenSoundEvent != none)
+    {
+        PlaySoundBase(RandomPerkChosenSoundEvent);
+    }
+}
+
+simulated function OnStatsInitialized( bool bWasSuccessful )
+{
+    local KFGameReplicationInfo KFGRI;
+
+    Super.OnStatsInitialized(bWasSuccessful);
+
+    KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+    if (KFGRI != none && KFGRI.IsRandomPerkMode())
+    {
+        ServerOnStatsInitialized();
+    }
+}
+
+reliable server function ServerOnStatsInitialized()
+{
+    local KFGameInfo KFGI;
+
+    KFGI = KFGameInfo(WorldInfo.Game);
+    if (KFGI != none)
+    {
+        KFGI.NotifyPlayerStatsInitialized(self);
+    }
+}
+
+reliable client function ForceNewSavedPerkIndex(byte NewPerkIndex)
+{
+    SavedPerkIndex = NewPerkIndex;
+}
+
 //
 defaultProperties
 {
@@ -615,6 +678,7 @@ defaultProperties
     GunGameLevelUpSoundEvent=AkEvent'WW_GLO_Runtime.WeeklyAALevelUp'
     GunGameLevelUpFinalWeaponSoundEvent=AkEvent'WW_GLO_Runtime.WeeklyAALevelFinal'
     VIPChosenSoundEvent=AkEvent'WW_UI_Menu.Play_AAR_TOPWEAPON_SLIDEIN_B'
+    RandomPerkChosenSoundEvent=AkEvent'WW_UI_Menu.Play_AAR_TOPWEAPON_SLIDEIN_B'
     VIPLowHealthSoundEvent=AkEvent'WW_GLO_Runtime.WeeklyVIPAlarm'
     VIPLowHealthLastTimePlayed = 0.f
 }

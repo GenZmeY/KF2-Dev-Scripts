@@ -385,6 +385,7 @@ var repnotify int VIPRepCurrentHealth;
 var repnotify int VIPRepMaxHealth;
 var repnotify KFPlayerReplicationInfo VIPRepPlayer;
 
+var bool bAllowSeasonalSkins;
 
 /************************************
  *  Steam heartbeat
@@ -422,7 +423,7 @@ replication
 		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective, bIsBrokenTrader, bIsWeeklyMode,
 		CurrentWeeklyIndex, bIsEndlessPaused, bForceSkipTraderUI, VIPRepCurrentHealth, VIPRepMaxHealth, VIPRepPlayer; //@HSL - JRO - 3/21/2016 - PS4 Sessions
 	if ( bNetInitial )
-		GameLength, WaveMax, bCustom, bVersusGame, TraderItems, GameAmmoCostScale, bAllowGrenadePurchase, MaxPerkLevel, bTradersEnabled, bForceShowSkipTrader;
+		GameLength, WaveMax, bCustom, bVersusGame, TraderItems, GameAmmoCostScale, bAllowGrenadePurchase, MaxPerkLevel, bTradersEnabled, bForceShowSkipTrader, bAllowSeasonalSkins;
 	if ( bNetInitial || bNetDirty )
 		PerksAvailableData;
 	if ( bNetInitial && Role == ROLE_Authority )
@@ -2302,6 +2303,11 @@ simulated function NotifyWeeklyEventIndex(int EventIndex)
 	bNetDirty = true;
 }
 
+simulated function NotifyAllowSeasonalSkins(int AllowSeasonalSkinsIndex)
+{
+	bAllowSeasonalSkins = (AllowSeasonalSkinsIndex == 0);
+	bNetDirty = true;
+}
 
 /** VIP weekly */
 simulated function UpdateVIPMaxHealth(int NewMaxHealth)
@@ -2392,6 +2398,11 @@ simulated function bool IsVIPMode()
 	return bIsWeeklyMode && CurrentWeeklyIndex == 17;
 }
 
+simulated function bool IsRandomPerkMode()
+{
+	return bIsWeeklyMode && CurrentWeeklyIndex == 18;
+}
+
 defaultproperties
 {
 	TraderItemsPath="GP_Trader_ARCH.DefaultTraderItems"
@@ -2413,6 +2424,7 @@ defaultproperties
 	bIsBrokenTrader=false
 	bIsWeeklyMode=false
 	bForceShowSkipTrader=false
+	bAllowSeasonalSkins=true
 	bForceSkipTraderUI=false
 	GunGameWavesCurrent=1
 	bWaveGunGameIsFinal=false

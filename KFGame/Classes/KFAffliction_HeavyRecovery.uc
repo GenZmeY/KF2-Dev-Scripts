@@ -9,7 +9,7 @@
 class KFAffliction_HeavyRecovery extends KFAfflictionBase;
 
 /** */
-function Activate(optional class<KFDamageType> DamageType = none)
+function Activate(KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
 	// Attempt to interrupt the special move
 	if( PawnOwner.SpecialMove != SM_None )
@@ -23,7 +23,7 @@ function Activate(optional class<KFDamageType> DamageType = none)
 		PawnOwner.MyKFAIC.DoPauseAI( PawnOwner.DamageRecoveryTimeHeavy, true );
 	}
 
-	Super.Activate();
+	Super.Activate(InstigatorPerk, DamageType);
 }
 
 defaultproperties

@@ -30,9 +30,9 @@ var protected AkEvent OnSteamSound;
 /** Sound to play when this pawn stops being on fire */
 var protected AkEvent OnSteamEndSound;
 
-function Activate(optional class<KFDamageType> DamageType = none)
+function Activate(KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
-	Super.Activate();
+	Super.Activate(InstigatorPerk, DamageType);
 	SetMicrowavePanicked(true);
 }
 

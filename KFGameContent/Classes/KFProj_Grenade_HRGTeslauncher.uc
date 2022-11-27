@@ -133,7 +133,9 @@ simulated protected function PrepareExplosionTemplate()
 {
     class'KFPerk_Berserker'.static.PrepareExplosive( Instigator, self );
 
-    super.PrepareExplosionTemplate();
+	GetRadialDamageValues(ExplosionTemplate.Damage, ExplosionTemplate.DamageRadius, ExplosionTemplate.DamageFalloffExponent);
+
+    //super.PrepareExplosionTemplate();
 }
 
 

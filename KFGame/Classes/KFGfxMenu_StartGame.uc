@@ -32,6 +32,7 @@ var transient int CurrentSearchIndex;
 
 var const string ModeKey, DifficultyKey, MapKey, WhitelistedKey, InProgressKey, PermissionsKey, ServerTypeKey;
 var const string GameLengthKey;
+var const string AllowSeasonalSkinsKey;
 
 var KFGFxStartGameContainer_FindGame FindGameContainer;
 var KFGFxStartGameContainer_Options OptionsComponent;
@@ -66,6 +67,7 @@ var localized string LengthTitle;
 var localized string MapTitle;
 var localized string MutatorTitle;
 var localized string PermissionsTitle;
+var localized string AllowSeasonalSkinsTitle;
 var localized string ServerTypeString;
 var localized string WhiteListedTitle;
 var localized string InfoTitle;
@@ -208,7 +210,7 @@ static function class<KFGFxSpecialeventObjectivesContainer> GetSpecialEventClass
 		case SEI_Fall:
 			return class'KFGFxSpecialEventObjectivesContainer_Fall2022';
 		case SEI_Winter:
-			return class'KFGFXSpecialEventObjectivesContainer_Xmas2021';
+			return class'KFGFXSpecialEventObjectivesContainer_Xmas2022';
 	}
 
 	return class'KFGFxSpecialEventObjectivesContainer';
@@ -605,6 +607,7 @@ function SendLeaderOptions()
 		SetLobbyData(MapKey, OptionsComponent.GetMapName());
 		SetLobbyData(ModeKey, String(Manager.GetModeIndex()));
 		SetLobbyData(PermissionsKey, String(OptionsComponent.GetPrivacyIndex()));
+		SetLobbyData(AllowSeasonalSkinsKey, String(OptionsComponent.GetAllowSeasonalSkinsIndex()));
 	}
 }
 
@@ -634,6 +637,9 @@ function ReceiveLeaderOptions()
 
 	OptionIndex = Int(OnlineLobby.GetLobbyData(0, PermissionsKey));
 	OverviewContainer.UpdatePrivacy(class'KFCommon_LocalizedStrings'.static.GetPermissionString(OptionIndex));
+
+	OptionIndex = Int(OnlineLobby.GetLobbyData(0, AllowSeasonalSkinsKey));
+	OverviewContainer.UpdateAllowSeasonalSkins(class'KFCommon_LocalizedStrings'.static.GetAllowSeasonalSkinsString(OptionIndex));
 }
 
 function ApproveMatchMakingLeave()
@@ -1081,6 +1087,11 @@ function Callback_Region(int RegionIndex)
 	OptionsComponent.SetRegionIndex(RegionIndex);
 }
 
+function Callback_AllowSeasonalSkins(int Index)
+{
+	OptionsComponent.AllowSeasonalSkinsChanged(Index);
+}
+
 function SetLobbyData( string KeyName, string ValueData )
 {
     OnlineLobby.SetLobbyData( KeyName, ValueData );
@@ -1089,7 +1100,7 @@ function SetLobbyData( string KeyName, string ValueData )
 function string MakeMapURL(KFGFxStartGameContainer_Options InOptionsComponent)
 {
 	local string MapName;
-	local int LengthIndex, ModeIndex;
+	local int LengthIndex, ModeIndex, AllowSeasonalSkinsIndex;
 
 	// this is ugly, but effectively makes sure that the player isn't solo with versus selected
 	// or other error cases such as when the game isn't fully installed
@@ -1130,9 +1141,17 @@ function string MakeMapURL(KFGFxStartGameContainer_Options InOptionsComponent)
 		}
 	}
 
+	AllowSeasonalSkinsIndex = InOptionsComponent.GetAllowSeasonalSkinsIndex();
+
+	if (GetStartMenuState() == EMatchmaking || class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None)
+	{
+		AllowSeasonalSkinsIndex = 0; // Default if we don't have a season or it's find a match menu
+	}
+
 	return MapName$"?Game="$class'KFGameInfo'.static.GetGameModeClassFromNum( ModeIndex )
 	       $"?Difficulty="$class'KFGameDifficultyInfo'.static.GetDifficultyValue( InOptionsComponent.GetDifficultyIndex() )
-		   $"?GameLength="$LengthIndex;
+		   $"?GameLength="$LengthIndex
+		   $"?AllowSeasonalSkins="$AllowSeasonalSkinsIndex;
 }
 
 native function bool GetSearchComplete(KFOnlineGameSearch GameSearch);
@@ -1481,6 +1500,7 @@ function BuildServerFilters(OnlineGameInterface GameInterfaceSteam, KFGFxStartGa
 	local int	GameLength;
 	local string GameTagFilters;
 	local ActiveLobbyInfo LobbyInfo;
+	//local bool bAllowSeasonal;
 
 	Search.ClearServerFilters();
 
@@ -1496,6 +1516,18 @@ function BuildServerFilters(OnlineGameInterface GameInterfaceSteam, KFGFxStartGa
 		Search.TestAddBoolGametagFilter(GameTagFilters, true, 'bServerExiled', 0);//Consoles does NOT have this property, so only in PC matchmaking search variables has to be added
 		//TestAddBoolGametagFilter Explanation: if set to true the second param, it will add the property to the search filters. But this property may interest us to search it as "false" or "true" so that is the purpose of the fourth param.
 	}
+
+	// We don't want to force a search with the Seasonal Skins filter, we find any available server
+	// then we do a takeover, that's when we change the server settings
+
+	//bAllowSeasonal = OptionsComponent.GetAllowSeasonalSkinsIndex() == 0;
+
+	//if (GetStartMenuState() == EMatchmaking || class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None)
+	//{
+	//	bAllowSeasonal = true; // Default if we don't have a season or it's find a match menu
+	//}
+
+	//Search.TestAddBoolGametagFilter(GameTagFilters, bAllowSeasonal == false, 'bNoSeasonalSkins', 1);
 
 	if (OptionsComponent.GetMakeNewServer() || bAttemptingServerCreate )
 	{
@@ -1915,6 +1947,8 @@ defaultproperties
 	ServerTypeKey="ServerTypeKey"
 	InProgressKey="InProgress"
 	PermissionsKey="PermissionsKey"
+	AllowSeasonalSkinsKey="AllowSeasonalSkinsKey"
+
 	SearchDSName=KFGameSearch
 
 	CurrentSearchIndex=0

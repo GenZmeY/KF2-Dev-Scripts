@@ -458,11 +458,16 @@ function Callback_ReadyClicked( bool bReady )
 
 function Callback_PerkSelected(byte NewPerkIndex, bool bClickedIndex)
 {
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI = KFGameReplicationInfo( KFPC.WorldInfo.GRI );
+	if (KFGRI != none && KFGRI.IsRandomPerkMode())
+	{
+		return;
+	}
+
 	// bClickedIndex let's us know if the index was clicked and needs to be changed or if it was just selected and we should look at other perk info.
 	PerkChanged(NewPerkIndex,bClickedIndex);
-	if(bClickedIndex)
-	{
-	}
 }
 
 function Callback_SkillSelected( byte TierIndex, byte SkillIndex )

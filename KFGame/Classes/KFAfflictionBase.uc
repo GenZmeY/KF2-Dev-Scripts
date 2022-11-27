@@ -42,11 +42,16 @@ var float LastDissipationTime;
 /** Enable debug logging */
 var bool bDebug;
 
+/** Cache the affliction type for passing to Seasonal objectives */
+var EAfflictionType AfflictionType;
+
 /** */
 function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
 {
 	PawnOwner = P;
 	MonsterOwner = KFPawn_Monster(P);
+
+	AfflictionType = Type;
 
 	Cooldown = P.IncapSettings[Type].Cooldown;
 
@@ -57,7 +62,7 @@ function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
 }
 
 /** */
-function Accrue(float InPower, optional class<KFDamageType> DamageType = none)
+function Accrue(float InPower, KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
 	// total immunity during cooldown
 	if ( LastActivationTime > 0 && `TimeSinceEx(PawnOwner, LastActivationTime) < Cooldown )
@@ -80,14 +85,14 @@ function Accrue(float InPower, optional class<KFDamageType> DamageType = none)
 	CurrentStrength = fClamp(CurrentStrength + InPower, InPower, INCAP_THRESHOLD);
 	if ( CurrentStrength >= INCAP_THRESHOLD )
 	{
-		Activate(DamageType);
+		Activate(InstigatorPerk, DamageType);
 	}
 
 	`log(Class.Name@"Added="$InPower@"NewStrength="$CurrentStrength, bDebug);
 }
 
 /** */
-function Activate(optional class<KFDamageType> DamageType = none)
+function Activate(KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
 	if ( SpecialMove != SM_None )
 	{
@@ -100,6 +105,14 @@ function Activate(optional class<KFDamageType> DamageType = none)
 
 	LastActivationTime = PawnOwner.WorldInfo.TimeSeconds;
 	`log(Class.Name@"was activated", bDebug);
+
+	if (InstigatorPerk != none)
+	{
+		if (InstigatorPerk.OwnerPC != none)
+		{
+			InstigatorPerk.OwnerPC.AddAfflictionCaused(AfflictionType);
+		}
+	}
 }
 
 /** For subclass special instructions */

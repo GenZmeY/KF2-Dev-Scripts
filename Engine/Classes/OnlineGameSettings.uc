@@ -139,6 +139,8 @@ var const int SecondsDeallocatedBucketSize;
 var databinding string Region;
 //@HSL_END
 
+var databinding bool bNoSeasonalSkins;
+
 /** Represents a player in the game */
 struct native PlayerResult
 {
@@ -183,4 +185,5 @@ defaultproperties
 	//@SABER_BEGIN "Exiling" servers which kicks/bans
 	bServerExiled=false
 	//@SABER_END
+	bNoSeasonalSkins=false
 }

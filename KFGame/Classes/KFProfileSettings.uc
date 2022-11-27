@@ -247,6 +247,7 @@ defaultproperties
 	ProfileMappings.Add((Id=KFID_SavedDifficultyIndex, Name="SavedDifficultyIndex", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_SavedLengthIndex, Name="SavedLengthIndex", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_SavedPrivacyIndex, Name="SavedPrivacyIndex", MappingType=PVMT_RawValue))
+	ProfileMappings.Add((Id=KFID_SavedAllowSeasonalSkinsIndex, Name="SavedAllowSeasonalSkinsIndex", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_SavedServerTypeIndex, Name="SavedServerTypeIndex", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_SavedInProgressIndex, Name="SavedInProgressIndex", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_ControllerSoundEnabled, Name="Controller Sound Enabled", MappingType=PVMT_RawValue))
@@ -332,6 +333,7 @@ defaultproperties
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedDifficultyIndex,Data=(Type=SDT_Int32,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedLengthIndex,Data=(Type=SDT_Int32,Value1=0))))	//default to any
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedPrivacyIndex,Data=(Type=SDT_Int32,Value1=0))))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedAllowSeasonalSkinsIndex,Data=(Type=SDT_Int32,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedServerTypeIndex,Data=(Type=SDT_Int32,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedInProgressIndex,Data=(Type=SDT_Int32,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_ControllerSoundEnabled,Data=(Type=SDT_Int32,Value1=0))))

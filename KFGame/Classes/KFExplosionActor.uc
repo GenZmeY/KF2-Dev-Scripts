@@ -308,6 +308,7 @@ simulated function DrawDebug()
 	local Color C;
 	local float Angle;
 	local float ClotKillRadius, HalfFalloffRadius;
+	local float SafeDamage, SafeDamageFallOffExponent;
 
     FlushPersistentDebugLines();
 
@@ -324,13 +325,16 @@ simulated function DrawDebug()
 	}
 	else
 	{
+		SafeDamage = ExplosionTemplate.Damage > 0.f ? ExplosionTemplate.Damage : 1.f;
+		SafeDamageFallOffExponent = ExplosionTemplate.DamageFalloffExponent > 0.f ? ExplosionTemplate.DamageFalloffExponent : 1.f;
+
 		DrawDebugSphere(Location, ExplosionTemplate.DamageRadius, 10, 255, 128, 16, TRUE);
 
-		ClotKillRadius = ExplosionTemplate.DamageRadius * (1.f - FClamp((100 / ExplosionTemplate.Damage) ** (1/ExplosionTemplate.DamageFallOffExponent), 0.f, 1.f));
+		ClotKillRadius = ExplosionTemplate.DamageRadius * (1.f - FClamp((100 / SafeDamage) ** (1 / SafeDamageFallOffExponent), 0.f, 1.f));
 
 		DrawDebugSphere(Location, ClotKillRadius, 10, 255, 0, 0, TRUE);
 
-		HalfFalloffRadius = ExplosionTemplate.DamageRadius * (1.f - FClamp((0.5 ** (1.f/ExplosionTemplate.DamageFalloffExponent)), 0.f, 1.f));
+		HalfFalloffRadius = ExplosionTemplate.DamageRadius * (1.f - FClamp((0.5 ** (1.f / SafeDamageFallOffExponent)), 0.f, 1.f));
 		
 		DrawDebugSphere( Location, HalfFalloffRadius, 10, 255, 63, 0, true );
 	}

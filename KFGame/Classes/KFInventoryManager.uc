@@ -56,6 +56,8 @@ var float LastCreatedWeaponTime;
 /** This stores any GFxMoviePlayers that are inventory may be using */
 var array<GFxMoviePlayer> OpticsUIMovies;
 
+var array<GFxMoviePlayer> RadarUIMovies;
+
 var bool bAutoswitchWeapon;
 
 var const float StartedWithWeaponPriceModifier;	// The selling price reduction for a weapon that we were given at the start of the game
@@ -191,6 +193,29 @@ simulated function GFxMoviePlayer GetOpticsUIMovie(class<GFxMoviePlayer> OpticsC
 	return OpticsUIMovies[OpticsIndex];
 }
 
+simulated function GFxMoviePlayer GetRadarUIMovie(class<GFxMoviePlayer> RadarClass)
+{
+	local byte RadarIndex;
+
+	for (RadarIndex = 0; RadarIndex < RadarUIMovies.Length; RadarIndex++)
+	{
+		if (RadarUIMovies[RadarIndex].class == RadarClass)
+		{
+			return RadarUIMovies[RadarIndex];
+		}
+	}
+
+	// Create the screen's UI piece
+	RadarUIMovies.AddItem(new( self ) RadarClass);
+
+	// Initialize the new movie
+	RadarIndex = RadarUIMovies.length - 1;
+	RadarUIMovies[RadarIndex].Init();
+	RadarUIMovies[RadarIndex].Start();
+
+	return RadarUIMovies[RadarIndex];
+}
+
 /** Create a GFxMoviePlayer for weapon optics if it doesn't exist, otherwise grab the existing GFxMoviePlayer */
 simulated function RemoveOpticsUIMovie(class<KFGFxWorld_MedicOptics> OpticsClass)
 {
@@ -202,6 +227,21 @@ simulated function RemoveOpticsUIMovie(class<KFGFxWorld_MedicOptics> OpticsClass
 		{
 			OpticsUIMovies[OpticsIndex].Close();
 			OpticsUIMovies.Remove(OpticsIndex, 1);
+		}
+	}
+}
+
+/** Create a GFxMoviePlayer for weapon optics if it doesn't exist, otherwise grab the existing GFxMoviePlayer */
+simulated function RemoveRadarUIMovie(class<KFGFxWorld_WeaponRadar> RadarClass)
+{
+	local byte RadarIndex;
+
+	for (RadarIndex = 0; RadarIndex < RadarUIMovies.Length; RadarIndex++)
+	{
+		if (RadarUIMovies[RadarIndex].class == RadarClass)
+		{
+			RadarUIMovies[RadarIndex].Close();
+			RadarUIMovies.Remove(RadarIndex, 1);
 		}
 	}
 }
@@ -2782,5 +2822,5 @@ defaultproperties
 	SwitchFireModeEvent=AkEvent'WW_UI_PlayerCharacter.Play_WEP_ModeSwitch'
 
 	bLogInventory=false
-	DoshinegunSellModifier=0.167f
+	DoshinegunSellModifier=0.25f
 }

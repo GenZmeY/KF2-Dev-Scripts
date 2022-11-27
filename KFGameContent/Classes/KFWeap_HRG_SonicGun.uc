@@ -76,6 +76,7 @@ var Array<bool> HolographicSightUseDefaultByChargeLevel;
 simulated function PostBeginPlay()
 {
     CurrentChargeLevel=0;
+
 	if( WeaponMICs.Length > `SONICGUN_MIC_SIGHT_INDEX )
 	{
 		if (!HolographicSightUseDefaultByChargeLevel[0])
@@ -94,7 +95,6 @@ simulated function PostBeginPlay()
 simulated function AltFireMode()
 {
 	// skip super
-
 	if (!Instigator.IsLocallyControlled())
 	{
 		return;
@@ -125,19 +125,6 @@ simulated function name GetReloadAnimName(bool bTacticalReload)
 	{
 		return (bTacticalReload) ? ReloadEmptyMagEliteAnim : ReloadEmptyMagAnim;
 	}
-}
-
-simulated function StartFire(byte FireModeNum)
-{
-    if (FireModeNum == ALTFIRE_FIREMODE)
-    {
-        if (!IsCanIncrementCharge())
-        {
-            return;
-        }
-    }
-
-    super.StartFire(FireModeNum);
 }
 
 /*********************************************************************************************
@@ -184,7 +171,7 @@ simulated state WeaponSonicGunSingleFiring extends WeaponSingleFiring
    	    local vector UsedKickMomentum;
 
     	// Push the player back when they fire a fully charged sonic blast
-        if (Instigator != none && CurrentChargeLevel == 1 ) //2
+        if (Instigator != none && CurrentChargeLevel == MaxChargeLevel )
     	{
             UsedKickMomentum.X = -FullyChargedKickMomentum;
 
@@ -208,21 +195,26 @@ simulated state WeaponSonicGunSingleFiring extends WeaponSingleFiring
 
 	simulated function FireAmmunition()
 	{
-		super.FireAmmunition();
-        CurrentChargeLevel=0;
+		if (CurrentFireMode == ALTFIRE_FIREMODE)
+		{
+			// Instant shoot: always use max level
+			CurrentChargeLevel = MaxChargeLevel;
+		}
 
 		if( WeaponMICs.Length > `SONICGUN_MIC_SIGHT_INDEX )
 		{
-			if (!HolographicSightUseDefaultByChargeLevel[0])
+			if (!HolographicSightUseDefaultByChargeLevel[CurrentChargeLevel])
 			{
-				WeaponMICs[`SONICGUN_MIC_SIGHT_INDEX].SetVectorParameterValue('Vector_Center_Color_A', HolographicSightByChargeLevel[0]);
-				WeaponMICs[`SONICGUN_MIC_SIGHT_INDEX].SetVectorParameterValue('Vector_Scanline_Color_Mult', HolographicSightScanlineByChargeLevel[0]);
+				WeaponMICs[`SONICGUN_MIC_SIGHT_INDEX].SetVectorParameterValue('Vector_Center_Color_A', HolographicSightByChargeLevel[CurrentChargeLevel]);
+				WeaponMICs[`SONICGUN_MIC_SIGHT_INDEX].SetVectorParameterValue('Vector_Scanline_Color_Mult', HolographicSightScanlineByChargeLevel[CurrentChargeLevel]);
 			}
-			else
-			{
+			else {
 				WeaponMICs[`SONICGUN_MIC_SIGHT_INDEX].ClearParameterValues();
 			}
 		}
+
+		super.FireAmmunition();
+        CurrentChargeLevel=0;
 	}
 }
 
@@ -319,7 +311,7 @@ simulated function float GetForceReloadDelay()
 simulated function KFProjectile SpawnProjectile( class<KFProjectile> KFProjClass, vector RealStartLoc, vector AimDir )
 {
 	local KFProjectile	SpawnedProjectile;
-	local int ProjDamage;
+	local int ProjDamage;	
 
 	// Spawn projectile
 	SpawnedProjectile = Spawn( KFProjClass, Self,, RealStartLoc,,,true);
@@ -329,9 +321,9 @@ simulated function KFProjectile SpawnProjectile( class<KFProjectile> KFProjClass
 		// these properties are replicated via TakeHitInfo
 		if ( InstantHitDamage.Length > CurrentFireMode && InstantHitDamageTypes.Length > CurrentFireMode )
 		{
-            InstantHitDamage[DEFAULT_FIREMODE] = SonicBlastDamageByChargeLevel[CurrentChargeLevel];
-			InstantHitMomentum[DEFAULT_FIREMODE]=SonicBlastMomentumByChargeLevel[CurrentChargeLevel];
-			InstantHitDamageTypes[DEFAULT_FIREMODE]=SonicBlastDamageTypeByChargeLevel[CurrentChargeLevel];
+            InstantHitDamage[CurrentFiremode] = SonicBlastDamageByChargeLevel[CurrentChargeLevel];
+			InstantHitMomentum[CurrentFiremode]=SonicBlastMomentumByChargeLevel[CurrentChargeLevel];
+			InstantHitDamageTypes[CurrentFiremode]=SonicBlastDamageTypeByChargeLevel[CurrentChargeLevel];
 
             ProjDamage = GetModifiedDamage(CurrentFireMode);
             SpawnedProjectile.Damage = ProjDamage;
@@ -341,7 +333,7 @@ simulated function KFProjectile SpawnProjectile( class<KFProjectile> KFProjClass
 		// Set the penetration power for this projectile
 		// because of clientside hit detection, we need two variables --
 		// one that replicates on init and one that updates but doesn't replicate
-		PenetrationPower[DEFAULT_FIREMODE]=SonicBlastPenetrationPowerByChargeLevel[CurrentChargeLevel];
+		PenetrationPower[CurrentFireMode]=SonicBlastPenetrationPowerByChargeLevel[CurrentChargeLevel];
 		SpawnedProjectile.InitialPenetrationPower = GetInitialPenetrationPower(CurrentFireMode);
 		SpawnedProjectile.PenetrationPower = SpawnedProjectile.InitialPenetrationPower;
 
@@ -356,7 +348,7 @@ simulated function KFProjectile SpawnProjectile( class<KFProjectile> KFProjClass
 //Overriding to make KFProjectile Class for default fire mode to be dependant on charge level
 simulated function class<KFProjectile> GetKFProjectileClass()
 {
-    if (CurrentFireMode == DEFAULT_FIREMODE)
+    if (CurrentFireMode == DEFAULT_FIREMODE || CurrentFireMode == ALTFIRE_FIREMODE)
     {
         return SonicBlastProjectileClassByChargeLevel[CurrentChargeLevel];
     }
@@ -377,7 +369,7 @@ simulated function float GetUpgradedPenetration(optional int FireMode = DEFAULT_
 //Overriding to change shot sounds for default fire mode to be dependant on charge level
 simulated function PlayFireEffects( byte FireModeNum, optional vector HitLocation )
 {
-	WeaponFireSnd[DEFAULT_FIREMODE]=SonicBlastFireSoundByChargeLevel[CurrentChargeLevel];
+	WeaponFireSnd[CurrentFireMode]=SonicBlastFireSoundByChargeLevel[CurrentChargeLevel];
 	super.PlayFireEffects(FireModeNum, HitLocation);
 }
 
@@ -398,7 +390,7 @@ simulated function ProcessInstantHitEx(byte FiringMode, ImpactInfo Impact, optio
 		IndexMomentumMultiplierByZed = MomentumMultiplierByZedArray.Find('ZedClassName', Impact.HitActor.Class.Name);
 		if (IndexMomentumMultiplierByZed != INDEX_NONE)
 		{
-			InstantHitMomentum[DEFAULT_FIREMODE] *= MomentumMultiplierByZedArray[IndexMomentumMultiplierByZed].MomentumMultiplier;
+			InstantHitMomentum[CurrentFireMode] *= MomentumMultiplierByZedArray[IndexMomentumMultiplierByZed].MomentumMultiplier;
 		}
 	}
 
@@ -452,8 +444,8 @@ defaultproperties
 	DOF_FG_MaxNearBlurSize=3.5
 
 	// Ammo
-	MagazineCapacity[0]=12 //8
-	SpareAmmoCapacity[0]=96 //72
+	MagazineCapacity[0]=10 //12 //8
+	SpareAmmoCapacity[0]=90 //96 //72
 	InitialSpareMags[0]=1
 	bCanBeReloaded=true
 	bReloadFromMagazine=true
@@ -500,9 +492,16 @@ defaultproperties
 	FallingMomentumReduction=0.5
 
 	// ALTFIRE_FIREMODE (remote detonate)
-	FiringStatesArray(ALTFIRE_FIREMODE)=WeaponSonicGunCharging
-	WeaponFireTypes(ALTFIRE_FIREMODE)=EWFT_Custom
-	AmmoCost(ALTFIRE_FIREMODE)=0
+	FiringStatesArray(ALTFIRE_FIREMODE)=WeaponSonicGunSingleFiring
+	WeaponFireTypes(ALTFIRE_FIREMODE)=EWFT_Projectile
+	WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_SonicBlastFullyCharged_HRG_SonicGun'
+	FireInterval(ALTFIRE_FIREMODE)=0.75
+	InstantHitDamage(ALTFIRE_FIREMODE)=125
+	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Ballistic_HRG_SonicGun_SonicBlastFullyCharged'
+	InstantHitMomentum(ALTFIRE_FIREMODE)=200000
+	Spread(ALTFIRE_FIREMODE)=0.005
+	PenetrationPower(ALTFIRE_FIREMODE)=2.0
+	AmmoCost(ALTFIRE_FIREMODE)=1
 
 	// BASH_FIREMODE
 	InstantHitDamageTypes(BASH_FIREMODE)=class'KFDT_Bludgeon_HRG_SonicGun'

@@ -386,6 +386,8 @@ function UpdateGameSettings()
 	local int NumHumanPlayers, i;
 	local KFGameEngine KFEngine;
 
+	super.UpdateGameSettings();
+
 	if (WorldInfo.NetMode == NM_DedicatedServer || WorldInfo.NetMode == NM_ListenServer)
 	{
 		//`REMOVEMESOON_ServerTakeoverLog("KFGameInfo_Survival.UpdateGameSettings 1 - GameInterface: "$GameInterface);

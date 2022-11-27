@@ -56,6 +56,8 @@ var() vector LandedTranslationOffset;
 //to keep track if we are hitting an actor multiple times.
 var array<Actor> ImpactList;
 
+var() bool bCanApplyDemolitionistPerks;
+
 replication
 {
 	if ( Role == ROLE_Authority && !bNetOwner )
@@ -388,7 +390,10 @@ simulated function bool TraceProjHitZones(Pawn P, vector EndTrace, vector StartT
 // for nukes && concussive force
 simulated protected function PrepareExplosionTemplate()
 {
-    class'KFPerk_Demolitionist'.static.PrepareExplosive( Instigator, self );
+	if (bCanApplyDemolitionistPerks)
+	{
+		class'KFPerk_Demolitionist'.static.PrepareExplosive( Instigator, self );
+	}
 
     super.PrepareExplosionTemplate();
 }
@@ -474,5 +479,7 @@ defaultproperties
 	bCollideWithTeammates=false
 
 	bDamageDestructiblesOnTouch=true
+
+	bCanApplyDemolitionistPerks=true
 }
 

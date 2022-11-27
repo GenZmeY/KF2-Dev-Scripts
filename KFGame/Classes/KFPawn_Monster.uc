@@ -4859,7 +4859,7 @@ function ZedExplodeArmor(int ArmorZoneIdx, name ArmorZoneName)
 /*********************************************************************************************
 * @name   Armor
 ********************************************************************************************* */
-server reliable function AddParasiteSeed(KFProjectile Proj)
+simulated function AddParasiteSeed(KFProjectile Proj)
 {
 	local int i;
 

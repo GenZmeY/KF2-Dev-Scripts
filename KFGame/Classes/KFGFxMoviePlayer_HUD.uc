@@ -784,7 +784,7 @@ function DisplayMapCounterText(string MessageText, float DisplayTime)
     }
 }
 
-function DisplayPriorityMessage(string InPrimaryMessageString, string InSecondaryMessageString, int LifeTime, optional EGameMessageType MessageType)
+function DisplayPriorityMessage(string InPrimaryMessageString, string InSecondaryMessageString, int LifeTime, optional EGameMessageType MessageType, optional string SpecialIconPath)
 {
 	local GFxObject PriorityMessageObject;
 
@@ -796,6 +796,11 @@ function DisplayPriorityMessage(string InPrimaryMessageString, string InSecondar
 		PriorityMessageObject.SetString("priorityTextPrimaryString", InPrimaryMessageString);
 		PriorityMessageObject.SetString("priorityTextSecondaryString", InSecondaryMessageString);
 		PriorityMessageObject.SetInt("priorityTextDisplayTime", LifeTime);
+
+        if (SpecialIconPath != "")
+        {
+            PriorityMessageObject.SetString("specialIconPath", "img://"$SpecialIconPath);
+        }
 
 		PriorityMessageContainer.SetObject("priorityMessage", PriorityMessageObject);
 	}
@@ -911,7 +916,11 @@ function int GetWaveTier()
 	}
 	else
 	{
-		if (KFGRI.IsFinalWave())
+        if (KFGRI.IsRandomPerkMode())
+        {
+            return 5;
+        }
+		else if (KFGRI.IsFinalWave())
 		{
 			return 3;
 		}
@@ -1393,6 +1402,11 @@ function Callback_ObjMessageFired()
 	PlayObjectiveAudio();
 }
 
+function Callback_Log(string text)
+{
+    `Log("Received log from actionscript: " $text);
+}
+
 function Callback_PriorityMessageComplete()
 {
 	local KFInterface_MapObjective ObjectiveInterface;
@@ -1507,6 +1521,7 @@ function Callback_VoteKick(bool Vote)
 		KickVoteWidget.ResetVote();
 	}
 }
+
 
 DefaultProperties
 {

@@ -196,7 +196,7 @@ defaultproperties
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Bludgeon_Doshinegun_Shot' 
 	FireInterval(DEFAULT_FIREMODE)=+0.2
 	Spread(DEFAULT_FIREMODE)=0.015
-	InstantHitDamage(DEFAULT_FIREMODE)=60.0 //55.0 //60.0
+	InstantHitDamage(DEFAULT_FIREMODE)=80 //60.0 //55.0 //60.0
 	FireOffset=(X=30,Y=4.5,Z=-5)
 
 	// ALT_FIREMODE
@@ -206,7 +206,7 @@ defaultproperties
 	WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_Dosh'
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Bludgeon_Doshinegun_Shot'
 	FireInterval(ALTFIRE_FIREMODE)=+0.2
-	InstantHitDamage(ALTFIRE_FIREMODE)=60.0 //55.0 //60.0
+	InstantHitDamage(ALTFIRE_FIREMODE)=80 //60.0 //55.0 //60.0
 	Spread(ALTFIRE_FIREMODE)=0.015
 
 	// BASH_FIREMODE
@@ -239,7 +239,7 @@ defaultproperties
 	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.47f), (Stat=EWUS_Damage1, Scale=1.47f), (Stat=EWUS_Weight, Add=2)))
 	WeaponUpgrades[3]=(Stats=((Stat=EWUS_Damage0, Scale=1.70f), (Stat=EWUS_Damage1, Scale=1.70f), (Stat=EWUS_Weight, Add=3)))
 
-    DoshCost = 20; //25;
+    DoshCost = 10 //20; //25;
 	bUsesSecondaryAmmoAltHUD=true
 	bAllowClientAmmoTracking=false
 	bIsBeingDropped=false

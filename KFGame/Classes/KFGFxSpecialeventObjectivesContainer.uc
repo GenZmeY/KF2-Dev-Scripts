@@ -117,6 +117,9 @@ static function GetObjectiveProgressValues(int ObjectiveID, out int CurrentValue
 	local KFPlayerController LocalKFPC;
 	local int TempCurrentValue, TempMaxValue;
 	
+    TempCurrentValue = 0;
+    TempMaxValue = 0;
+
 	LocalKFPC = KFPlayerController(class'WorldInfo'.static.GetWorldInfo().GetALocalPlayerController());
 	LocalKFPC.GetSeasonalEventStatInfo(ObjectiveID, TempCurrentValue, TempMaxValue);
 

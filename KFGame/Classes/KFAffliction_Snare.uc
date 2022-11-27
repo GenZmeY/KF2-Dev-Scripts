@@ -24,11 +24,11 @@ function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
 }
 
 /** */
-function Activate(optional class<KFDamageType> DamageType = none)
+function Activate(KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
 	if( !bIsActive )
 	{
-		super.Activate();
+		super.Activate(InstigatorPerk, DamageType);
 		PawnOwner.SetTimer(Duration, false, nameof(DeActivate), self);
 		bIsActive = true;		
 		PawnOwner.SetAfflictionSpeedModifier();

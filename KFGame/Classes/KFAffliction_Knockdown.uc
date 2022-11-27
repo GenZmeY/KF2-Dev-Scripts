@@ -9,14 +9,14 @@
 class KFAffliction_Knockdown extends KFAfflictionBase;
 
 /** */
-function Activate(optional class<KFDamageType> DamageType = none)
+function Activate(KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
 	ActivateKnockdown(DamageType, 
 		PawnOwner.HitFxInfo.HitLocation, 
 		PawnOwner.DecodeUnitVector( PawnOwner.HitFxInfo.EncodedHitDirection ), 
 		PawnOwner.HitFxInfo.HitBoneIndex);
 
-	Super.Activate();
+	Super.Activate(InstigatorPerk, DamageType);
 }
 
 /** Apply a knockdown (on hit) to this character */

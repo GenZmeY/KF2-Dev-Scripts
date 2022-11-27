@@ -143,7 +143,7 @@ cpptext
 {
 	// static members
 	static FString GetSeasonalEventPrefix();
-	static FString GetSeasonalEventPackageName(INT EventId = -1, UMapInfo* MapInfo = NULL);
+	static FString GetSeasonalEventPackageName(INT EventId = -1, UMapInfo* MapInfo = NULL, bool bUnload = false);
 	static FString GetSeasonalEventStatsClassPath();
 
 	// UEngine interface.

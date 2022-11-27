@@ -137,19 +137,51 @@ struct InventoryHelper
 	// For ordering in weapon skins
 	var int WeaponDef;
 	var int Price;
-	//var string FullName;
-	var int SkinType;
+	var int SkinType; // also used in Cosmetics
 	var ItemRarity Rarity;
 	var int Quality;
 
+	// For ordering cosmetics
+	var string CosmeticType;
+
+	// For ordering crafting
+	var int CraftingType;
+	var int CraftingRarity;
+	var int CraftingTicketType;
+
 	// For ordering items
-	var string KeyName;
 	var bool IsKey;
 };
 
-var array<InventoryHelper> SkinListWeaponsSearchCache;
-var array<InventoryHelper> SkinListOrderedCache;
-var bool NeedToRegenerateSkinList;
+struct WeaponSkinListCacheState
+{
+	var array<InventoryHelper> SearchCache;
+
+	var array<InventoryHelper> OrderedCache;
+
+	var bool NeedToRegenerate;
+
+	var EInventoryWeaponType_Filter WeaponTypeFilter;
+	var int PerkIndexFilter;
+	var ItemRarity RarityFilter;
+
+	structdefaultproperties
+	{
+		NeedToRegenerate = false
+
+		WeaponTypeFilter = EInvWT_None
+		PerkIndexFilter = 0
+		RarityFilter = ITR_NONE
+	}
+};
+
+var WeaponSkinListCacheState WeaponSkinListCache;
+
+var array<InventoryHelper> CosmeticSkinListSearchCache;
+
+var array<InventoryHelper> CraftingListSearchCache;
+
+var array<InventoryHelper> ItemListSearchCache;
 
 struct ByTypeItemsHelper
 {
@@ -291,7 +323,7 @@ final function int Crc(coerce string Text)
   return CrcValue;
 }
 
-delegate int SortSkinList(InventoryHelper A, InventoryHelper B)
+delegate int SortWeaponSkinList(InventoryHelper A, InventoryHelper B)
 {
 	/** Format: Compare lower ? -1 : (Compare upper) : 1 : (Equal case, repeat formula with the next sort condition)  */
 	return  A.Price > B.Price ? -1 : (A.Price < B.Price ? 1 : (
@@ -301,6 +333,26 @@ delegate int SortSkinList(InventoryHelper A, InventoryHelper B)
 							A.Quality < B.Quality ? -1 : 1
 						))
 					))
+				))
+	));
+}
+
+delegate int SortCosmeticsList(InventoryHelper A, InventoryHelper B)
+{
+	/** Format: Compare lower ? -1 : (Compare upper) : 1 : (Equal case, repeat formula with the next sort condition)  */
+	return  A.CosmeticType > B.CosmeticType ? -1 : (A.CosmeticType < B.CosmeticType ? 1 : (
+				A.SkinType < B.SkinType ? -1 : (A.SkinType > B.SkinType ? 1 : (
+					A.Rarity > B.Rarity ? -1 : (A.Rarity < B.Rarity ? 1 : 1)
+				))
+	));
+}
+
+delegate int SortCraftingList(InventoryHelper A, InventoryHelper B)
+{
+	/** Format: Compare lower ? -1 : (Compare upper) : 1 : (Equal case, repeat formula with the next sort condition)  */
+	return  A.CraftingType > B.CraftingType ? -1 : (A.CraftingType < B.CraftingType ? 1 : (
+				A.CraftingRarity > B.CraftingRarity ? -1 : (A.CraftingRarity < B.CraftingRarity ? 1 : (
+					A.CraftingTicketType > B.CraftingTicketType ? -1 : (A.CraftingTicketType < B.CraftingTicketType ? 1 : 1)
 				))
 	));
 }
@@ -327,7 +379,7 @@ delegate int SortItemList(InventoryHelper A, InventoryHelper B)
 
 function InitInventory()
 {
-	local int i, j, z, ItemIndex, HelperIndex, WeaponItemID, SearchWeaponSkinIndex, SearchKeyKeywordIndex;
+	local int i, j, z, ItemIndex, HelperIndex, ItemID, SearchIndex;
 	local ItemProperties TempItemDetailsHolder;
 	local GFxObject ItemArray, ItemObject;
 	local bool bActiveItem;
@@ -335,7 +387,7 @@ function InitInventory()
 	local InventoryHelper HelperItem;
 	local array<ExchangeRuleSets> ExchangeRules;
 	local class<KFWeaponDefinition> WeaponDef;
-	local string SkinType;
+	local string SkinType, CosmeticType, KeyType;
 
 	local GFxObject PendingItem;
 
@@ -378,40 +430,43 @@ function InitInventory()
 
 					if (TempItemDetailsHolder.Type == ITP_WeaponSkin)
 					{
-						// Copy required stuff
 						HelperItem.Rarity 		= TempItemDetailsHolder.Rarity;
 						HelperItem.Quality 		= TempItemDetailsHolder.Quality;
 
 						if (bool(OnlineSub.CurrentInventory[i].NewlyAdded))
 						{
-							NeedToRegenerateSkinList = true;
+							WeaponSkinListCache.NeedToRegenerate = true;
 						}
 
-						// Search on the cache, to speed up
-						WeaponItemID = SkinListWeaponsSearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
+						// Now find the name of the weapon skin
 
-						if (WeaponItemID != INDEX_NONE)
+						// Search on the cache, to speed up
+						ItemID = WeaponSkinListCache.SearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
+
+						if (ItemID != INDEX_NONE)
 						{
-							HelperItem.WeaponDef 	= SkinListWeaponsSearchCache[WeaponItemID].WeaponDef;
-							HelperItem.Price 		= SkinListWeaponsSearchCache[WeaponItemID].Price;
-							HelperItem.SkinType 	= SkinListWeaponsSearchCache[WeaponItemID].SkinType;
+							HelperItem.WeaponDef 	= WeaponSkinListCache.SearchCache[ItemID].WeaponDef;
+							HelperItem.Price 		= WeaponSkinListCache.SearchCache[ItemID].Price;
+							HelperItem.SkinType 	= WeaponSkinListCache.SearchCache[ItemID].SkinType;
 						}
 						else
 						{
+							// Skin Type
+
 							// Get right part of the string without from the first "| "
-							SearchWeaponSkinIndex 	= InStr(TempItemDetailsHolder.Name, "|");
-							SkinType 				= Right(TempItemDetailsHolder.Name, Len(TempItemDetailsHolder.Name) - SearchWeaponSkinIndex - 2);
+							SearchIndex 			= InStr(TempItemDetailsHolder.Name, "|");
+							SkinType 				= Right(TempItemDetailsHolder.Name, Len(TempItemDetailsHolder.Name) - SearchIndex - 2);
 
 							// Get the left part of the string without the next "| "
-							SearchWeaponSkinIndex	= InStr(SkinType, "|");
+							SearchIndex				= InStr(SkinType, "|");
 							// Store as CRC, that speeds up comparisons later
-							HelperItem.SkinType 	= CrC(Left(SkinType, SearchWeaponSkinIndex));
+							HelperItem.SkinType 	= CrC(Left(SkinType, SearchIndex));
 
-							WeaponItemID = class'KFWeaponSkinList'.default.Skins.Find('Id', HelperItem.ItemDefinition);
+							ItemID = class'KFWeaponSkinList'.default.Skins.Find('Id', HelperItem.ItemDefinition);
 
-							if (WeaponItemID != INDEX_NONE)
+							if (ItemID != INDEX_NONE)
 							{
-								WeaponDef = class'KFWeaponSkinList'.default.Skins[WeaponItemID].WeaponDef;
+								WeaponDef = class'KFWeaponSkinList'.default.Skins[ItemID].WeaponDef;
 
 								// All Weapons start by KFGameContent.KFWeap_ Skip that prefix.
 								// Store as CRC, that speeds up comparisons later
@@ -424,12 +479,202 @@ function InitInventory()
 								HelperItem.Price 		= 0;
 							}
 
-							SkinListWeaponsSearchCache.AddItem(HelperItem);
+							WeaponSkinListCache.SearchCache.AddItem(HelperItem);
 						}
 					}
-					else
+					else if (TempItemDetailsHolder.Type == ITP_CharacterSkin)
 					{
-						HelperItem.KeyName = TempItemDetailsHolder.KeyName;
+						// Search on the cache, to speed up
+						ItemID = CosmeticSkinListSearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
+
+						if (ItemID != INDEX_NONE)
+						{
+							HelperItem.Rarity 		= CosmeticSkinListSearchCache[ItemID].Rarity;
+							HelperItem.CosmeticType = CosmeticSkinListSearchCache[ItemID].CosmeticType;
+							HelperItem.SkinType 	= CosmeticSkinListSearchCache[ItemID].SkinType;
+						}
+						else
+						{
+							HelperItem.Rarity = TempItemDetailsHolder.Rarity;
+
+							// Cosmetic Type
+
+							// Get left part of the string from the first "| "
+							SearchIndex = InStr(TempItemDetailsHolder.Name, "|");
+
+							// If we can't find the substring the equipment doesn't fit the pattern, we use the whole string as Cosmetic Type
+							if (SearchIndex < 0)
+							{
+								CosmeticType 			= TempItemDetailsHolder.Name;
+								HelperItem.CosmeticType = CosmeticType;
+
+								HelperItem.SkinType 	= 0;
+							}
+							else
+							{
+								CosmeticType 			= Left(TempItemDetailsHolder.Name, SearchIndex);
+								HelperItem.CosmeticType = CosmeticType;
+
+								// Skin Type
+
+								// Get right part of the string without from the first "| "
+								SearchIndex 			= InStr(TempItemDetailsHolder.Name, "|");
+								SkinType 				= Right(TempItemDetailsHolder.Name, Len(TempItemDetailsHolder.Name) - SearchIndex - 2);
+
+								// Get the left part of the string without the next "| "
+								SearchIndex				= InStr(SkinType, "|");
+								SkinType				= Left(SkinType, SearchIndex);
+
+								// Store as CRC, that speeds up comparisons later
+								HelperItem.SkinType 	= CrC(SkinType);
+							}
+
+							CosmeticSkinListSearchCache.AddItem(HelperItem);
+						}
+					}
+					else if (TempItemDetailsHolder.Type == ITP_CraftingComponent)
+					{
+						ItemId = CraftingListSearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
+
+						if (ItemID != INDEX_NONE)
+						{
+							HelperItem.CraftingType 		= CraftingListSearchCache[ItemID].CraftingType;
+							HelperItem.CraftingRarity 		= CraftingListSearchCache[ItemID].CraftingRarity;
+							HelperItem.CraftingTicketType 	= CraftingListSearchCache[ItemID].CraftingTicketType;
+						}
+						else
+						{
+							HelperItem.CraftingType = 999;
+							HelperItem.CraftingRarity = 999;
+							HelperItem.CraftingTicketType = 0;
+
+							// We don't have information to stick to.. so we have to search on the Name.. we use KeyName, as it contains the unmodified language Key
+
+							// Type
+
+							SearchIndex = InStr(TempItemDetailsHolder.KeyName, ":");
+
+							KeyType	= Left(TempItemDetailsHolder.KeyName, SearchIndex);
+
+							SearchIndex = InStr(KeyType, "CosmeticMaterial");
+							if (SearchIndex != -1)
+							{
+								HelperItem.CraftingType = 0;
+							}
+							else
+							{
+								SearchIndex = InStr(KeyType, "WeaponSkinMaterial");
+								if (SearchIndex != -1)
+								{
+									HelperItem.CraftingType = 1;
+								}
+								else
+								{
+									SearchIndex = InStr(KeyType, "VaultCraftingMaterial");
+									if (SearchIndex != -1)
+									{
+										HelperItem.CraftingType = 2;
+									}
+								}
+							}
+
+							// Rarity
+
+							SearchIndex = InStr(KeyType, "Uncommon");
+							if (SearchIndex != -1)
+							{
+								HelperItem.CraftingRarity = 1;
+							}
+							else
+							{
+								SearchIndex = InStr(KeyType, "Common");
+								if (SearchIndex != -1)
+								{
+									HelperItem.CraftingRarity = 0;
+								}
+								else
+								{
+									SearchIndex = InStr(KeyType, "Rare");
+									if (SearchIndex != -1)
+									{
+										HelperItem.CraftingRarity = 2;
+									}
+									else
+									{
+										SearchIndex = InStr(KeyType, "Exceptional");
+										if (SearchIndex != -1)
+										{
+											HelperItem.CraftingRarity = 3;
+										}								
+									}
+								}
+							}
+
+							// Ticket Type
+
+							SearchIndex = InStr(KeyType, "CyberPunk");
+							if (SearchIndex != -1)
+							{
+								HelperItem.CraftingTicketType = 0;
+							}
+							else
+							{
+								SearchIndex = InStr(KeyType, "Sideshow");
+								if (SearchIndex != -1)
+								{
+									HelperItem.CraftingTicketType = 1;
+								}
+								else
+								{
+									SearchIndex = InStr(KeyType, "Hllwn");
+									if (SearchIndex != -1)
+									{
+										HelperItem.CraftingTicketType = 2;
+									}
+									else
+									{
+										SearchIndex = InStr(KeyType, "Christmas");
+										if (SearchIndex != -1)
+										{
+											HelperItem.CraftingTicketType = 3;
+										}
+									}									
+								}
+							}
+
+							CraftingListSearchCache.AddItem(HelperItem);
+						}
+					}
+					else if (TempItemDetailsHolder.Type == ITP_KeyCrate)
+					{
+						ItemId = ItemListSearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
+
+						if (ItemID != INDEX_NONE)
+						{
+							HelperItem.IsKey = ItemListSearchCache[ItemID].IsKey;
+						}
+						else
+						{
+							// We have to distinguish if the Item is a KEY or not, we use KeyName, as it contains the unmodified language Key
+
+							// KeyName is something like : "NameItem:KeyCrate", we first remove the part from the : to the right
+							SearchIndex 		= InStr(TempItemDetailsHolder.KeyName, ":");
+							KeyType			 	= Left(TempItemDetailsHolder.KeyName, SearchIndex);
+
+							// Then we search if the name of the Item contains "Key"
+							SearchIndex 		= InStr(KeyType, "Key");
+
+							if (SearchIndex != -1)
+							{
+								HelperItem.IsKey = true;
+							}
+							else
+							{
+								HelperItem.IsKey = false;
+							}
+
+							ItemListSearchCache.AddItem(HelperItem);
+						}
 					}
 
 					ByTypeItems[TempItemDetailsHolder.Type].ItemsOnType.AddItem(HelperItem);
@@ -481,30 +726,36 @@ function InitInventory()
 	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_WeaponSkins)
 	{
 		// If need to refresh... we regenerate the list, if not reuse our Cache
-		NeedToRegenerateSkinList = NeedToRegenerateSkinList || ByTypeItems[ITP_WeaponSkin].ItemsOnType.Length != SkinListOrderedCache.Length;
 
-		if (NeedToRegenerateSkinList)
+		if (WeaponSkinListCache.NeedToRegenerate
+			|| WeaponSkinListCache.WeaponTypeFilter != CurrentWeaponTypeFilter
+			|| WeaponSkinListCache.PerkIndexFilter != CurrentPerkIndexFilter
+			|| WeaponSkinListCache.RarityFilter != CurrentRarityFilter
+			|| ByTypeItems[ITP_WeaponSkin].ItemsOnType.Length != WeaponSkinListCache.OrderedCache.Length)
 		{
-			NeedToRegenerateSkinList = false;
+			WeaponSkinListCache.NeedToRegenerate = false;
+
+			WeaponSkinListCache.WeaponTypeFilter = CurrentWeaponTypeFilter;
+			WeaponSkinListCache.PerkIndexFilter = CurrentPerkIndexFilter;
+			WeaponSkinListCache.RarityFilter = CurrentRarityFilter;
 
 			// We want to order by Price - Weapon Def - Rarity - Quality
-			// So we order inverse that way we keep the final list with the design intention
 
-			ByTypeItems[ITP_WeaponSkin].ItemsOnType.Sort(SortSkinList);
+			ByTypeItems[ITP_WeaponSkin].ItemsOnType.Sort(SortWeaponSkinList);
 
-			SkinListOrderedCache = ByTypeItems[ITP_WeaponSkin].ItemsOnType;
+			WeaponSkinListCache.OrderedCache = ByTypeItems[ITP_WeaponSkin].ItemsOnType;
 
-			/*`Log("----------");*/
+			/*`Log("----------");
 
-			/*for (i = 0 ; i < SkinListOrderedCache.Length; i++)
+			for (i = 0 ; i < ByTypeItems[ITP_WeaponSkin].ItemsOnType.Length; i++)
 			{
-				`Log("ID : " $SkinListOrderedCache[i].ItemDefinition);
-				`Log("Weapon Def : " $SkinListOrderedCache[i].WeaponDef);
-				`Log("Price : " $SkinListOrderedCache[i].Price);
-				`Log("Full Name : " $SkinListOrderedCache[i].FullName);
-				`Log("Skin : " $SkinListOrderedCache[i].SkinType);
-				`Log("Rarity : " $SkinListOrderedCache[i].Rarity);
-				`Log("Quality : " $SkinListOrderedCache[i].Quality);
+				`Log("ID : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].ItemDefinition);
+				`Log("Weapon Def : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].WeaponDef);
+				`Log("Price : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].Price);
+				`Log("Full Name : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].FullName);
+				`Log("Skin : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].SkinType);
+				`Log("Rarity : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].Rarity);
+				`Log("Quality : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].Quality);
 				`Log("----------");
 			}
 
@@ -514,35 +765,58 @@ function InitInventory()
 		{
 			//`Log("USING SKIN LIST CACHE!!!");
 
-			ByTypeItems[ITP_WeaponSkin].ItemsOnType = SkinListOrderedCache;
+			ByTypeItems[ITP_WeaponSkin].ItemsOnType = WeaponSkinListCache.OrderedCache;
 		}
+	}
+
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_Cosmetics)
+	{
+		ByTypeItems[ITP_CharacterSkin].ItemsOnType.Sort(SortCosmeticsList);
+
+		/*`Log("----------");
+
+		for (i = 0 ; i < ByTypeItems[ITP_CharacterSkin].ItemsOnType.Length; i++)
+		{
+			`Log("Cosmetic Name : " $ByTypeItems[ITP_CharacterSkin].ItemsOnType[i].CosmeticType);
+			`Log("Skin : " $ByTypeItems[ITP_CharacterSkin].ItemsOnType[i].SkinType);
+			`Log("Rarity : " $ByTypeItems[ITP_CharacterSkin].ItemsOnType[i].Rarity);			
+			`Log("----------");
+		}
+
+		`Log("----------");*/
+	}
+
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_CraftingMats)
+	{
+		ByTypeItems[ITP_CraftingComponent].ItemsOnType.Sort(SortCraftingList);
+
+		/*`Log("----------");
+
+		for (i = 0 ; i < ByTypeItems[ITP_CraftingComponent].ItemsOnType.Length; i++)
+		{
+			`Log("Crafting Type : " $ByTypeItems[ITP_CraftingComponent].ItemsOnType[i].CraftingType);
+			`Log("Rarity : " $ByTypeItems[ITP_CraftingComponent].ItemsOnType[i].CraftingRarity);
+			`Log("Ticket Type : " $ByTypeItems[ITP_CraftingComponent].ItemsOnType[i].CraftingTicketType);			
+			`Log("----------");
+		}
+
+		`Log("----------");*/
 	}
 
 	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_Consumables)
 	{
 		// Consumables is the type for the "Items" category on the UI
+		ByTypeItems[ITP_KeyCrate].ItemsOnType.Sort(SortItemList);
 
-		// First we have to distinguish if the Item is a KEY or not
-		for (i = 0; i < ByTypeItems[ITP_KeyCrate].ItemsOnType.Length; i++)
+		/*`Log("----------");
+
+		for (i = 0 ; i < ByTypeItems[ITP_KeyCrate].ItemsOnType.Length; i++)
 		{
-			// KeyName is something like : "NameItem:KeyCrate", we first remove the part from the : to the right
-			SearchKeyKeywordIndex = InStr(ByTypeItems[ITP_KeyCrate].ItemsOnType[i].KeyName, ":");
-			ByTypeItems[ITP_KeyCrate].ItemsOnType[i].KeyName = Left(ByTypeItems[ITP_KeyCrate].ItemsOnType[i].KeyName, SearchKeyKeywordIndex);
-
-			// Then we search if the name of the Item contains "Key"
-			SearchKeyKeywordIndex = InStr(ByTypeItems[ITP_KeyCrate].ItemsOnType[i].KeyName, "Key");
-
-			if (SearchKeyKeywordIndex != -1)
-			{
-				ByTypeItems[ITP_KeyCrate].ItemsOnType[i].IsKey = true;
-			}
-			else
-			{
-				ByTypeItems[ITP_KeyCrate].ItemsOnType[i].IsKey = false;
-			}
+			`Log("Is Key : " $ByTypeItems[ITP_KeyCrate].ItemsOnType[i].IsKey);
+			`Log("----------");
 		}
 
-		ByTypeItems[ITP_KeyCrate].ItemsOnType.Sort(SortItemList);
+		`Log("----------");*/
 	}
 
 	//`Log("--------------------------------");
@@ -617,8 +891,7 @@ function FinishCraft()
 {
 	SetVisible(true);
 
-	`Log("FinishCraft");
-	NeedToRegenerateSkinList = true;
+	WeaponSkinListCache.NeedToRegenerate = true;
 }
 
 function SetMatineeColor(int ItemRarity)
@@ -1198,7 +1471,8 @@ function Callback_Equip( int ItemDefinition )
 	}
 
 	//refresh inventory
-	NeedToRegenerateSkinList = true; // need to regenerate as the equipped state changed
+	WeaponSkinListCache.NeedToRegenerate = true; // need to regenerate as the equipped state changed
+
 	InitInventory();
 }
 
@@ -1495,8 +1769,6 @@ function Callback_PreviewItem( int ItemDefinition )
 
 defaultproperties
 {
-	NeedToRegenerateSkinList=false
-
 	CurrentWeaponTypeFilter = EInvWT_None;
 	CurrentRarityFilter = ITR_NONE;
 

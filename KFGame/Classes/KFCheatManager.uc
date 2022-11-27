@@ -6455,6 +6455,7 @@ simulated function ClearFakeDramaEvent()
 exec function DBJump()
 {
     local vector UsedKickMomentum;
+	local KFPlayerController KFPC;
 
 	// Push the player back when they fire both barrels
     if (Pawn != none )
@@ -6473,6 +6474,12 @@ exec function DBJump()
 		}
 
         Pawn.AddVelocity(UsedKickMomentum,Pawn.Location,none);
+
+		KFPC = KFPlayerController(Pawn.Controller);
+		if (KFPC != none)
+		{
+			KFPC.SetShotgunJump(true);
+		}
 	}
 }
 

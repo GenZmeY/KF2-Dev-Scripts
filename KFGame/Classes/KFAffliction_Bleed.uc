@@ -115,9 +115,9 @@ function float GetAttackSpeedModifier()
 	return 1.f;
 }
 
-function Accrue(float InPower, optional class<KFDamageType> DamageType = none)
+function Accrue(float InPower, KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
-    super.Accrue(InPower);
+    super.Accrue(InPower, InstigatorPerk);
     if (PawnOwner != none)
     {
         PawnOwner.SetAfflictionSpeedModifier();

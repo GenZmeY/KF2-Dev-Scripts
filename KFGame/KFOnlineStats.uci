@@ -158,4 +158,5 @@ const STATID_ACHIEVE_NetherholdCollectibles         = 4060;
 const STATID_ACHIEVE_CarillonHamletCollectibles     = 4061;
 const STATID_ACHIEVE_RigCollectibles     			= 4062;
 const STATID_ACHIEVE_BarmwichCollectibles  			= 4063;
+const STATID_ACHIEVE_CrashCollectibles              = 4064;
 /** `endif */

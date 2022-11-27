@@ -211,6 +211,8 @@ var protected const array< class<KFPawn_Monster> >  AITestBossClassList; //List 
 
 var protected int									BossIndex; //Index into boss array, only preload content for the boss we want - PC builds can handle DLO cost much better
 
+var int AllowSeasonalSkinsIndex;
+
 /** Class replacements for each zed type */
 struct native SpawnReplacement
 {
@@ -677,6 +679,7 @@ event InitGame( string Options, out string ErrorMessage )
 		GameLength = Clamp(GetIntOption(Options, "GameLength", GameLength), 0, SpawnManagerClasses.Length - 1);
 	}
 
+	AllowSeasonalSkinsIndex = GetIntOption(Options, "AllowSeasonalSkins", AllowSeasonalSkinsIndex);
 
 	if( OnlineSub != none && OnlineSub.GetLobbyInterface() != none )
 	{
@@ -711,6 +714,36 @@ event InitGame( string Options, out string ErrorMessage )
 	CreateOutbreakEvent();
 	CheckForCustomSettings();
 	CreateDifficultyInfo(Options);
+}
+
+function UpdateGameSettings()
+{
+	local name SessionName;
+	local KFOnlineGameSettings KFGameSettings;
+
+	super.UpdateGameSettings();
+
+	if (WorldInfo.NetMode == NM_DedicatedServer || WorldInfo.NetMode == NM_ListenServer)
+	{
+		if (GameInterface != None)
+		{
+			SessionName = PlayerReplicationInfoClass.default.SessionName;
+
+			if (PlayfabInter != none && PlayfabInter.GetGameSettings() != none)
+			{
+				KFGameSettings = KFOnlineGameSettings(PlayfabInter.GetGameSettings());
+			}
+			else
+			{
+				KFGameSettings = KFOnlineGameSettings(GameInterface.GetGameSettings(SessionName));				
+			}
+
+			if (KFGameSettings != none)
+			{
+				KFGameSettings.bNoSeasonalSkins = AllowSeasonalSkinsIndex == 1;
+			}
+		}
+	}
 }
 
 //for difficulty override
@@ -1095,6 +1128,8 @@ function InitGRIVariables()
 	MyKFGRI.ReceivedGameLength();
 	MyKFGRI.bVersusGame = bIsVersusGame;
 	MyKFGRI.MaxHumanCount = MaxPlayers;
+	MyKFGRI.NotifyAllowSeasonalSkins(AllowSeasonalSkinsIndex);
+
 	SetBossIndex();
 }
 
@@ -2071,25 +2106,28 @@ function Killed(Controller Killer, Controller KilledPlayer, Pawn KilledPawn, cla
 				{
 					LastHitByDamageType = GetLastHitByDamageType( DT, MonsterPawn, Killer );
 
-					//Chris: We have to do it earlier here because we need a damage type
-					KFPC.AddZedKill( MonsterPawn.class, GameDifficulty, LastHitByDamageType, true );
-
-					KFPCP = KFPC.GetPerk();
-					if( KFPCP != none )
+					if (LastHitByDamageType != none)
 					{
-						if( KFPCP.CanEarnSmallRadiusKillXP( LastHitByDamageType ) )
-						{
-							if(KFPCP.GetPerkClass() == class'KFPerk_Berserker'.static.GetPerkClass())
-							{
-								CheckForSmallRadiusKill( MonsterPawn, KFPC, class'KFPerk_Berserker' );
-							}
-							else if(KFPCP.GetPerkClass() == class'KFPerk_Survivalist'.static.GetPerkClass())
-							{
-								CheckForSmallRadiusKill( MonsterPawn, KFPC, class'KFPerk_Survivalist' );
-							}
-						}
+						//Chris: We have to do it earlier here because we need a damage type
+						KFPC.AddZedKill( MonsterPawn.class, GameDifficulty, LastHitByDamageType, true );
 
-						KFPCP.AddVampireHealth( KFPC, LastHitByDamageType );
+						KFPCP = KFPC.GetPerk();
+						if( KFPCP != none )
+						{
+							if( KFPCP.CanEarnSmallRadiusKillXP( LastHitByDamageType ) )
+							{
+								if(KFPCP.GetPerkClass() == class'KFPerk_Berserker'.static.GetPerkClass())
+								{
+									CheckForSmallRadiusKill( MonsterPawn, KFPC, class'KFPerk_Berserker' );
+								}
+								else if(KFPCP.GetPerkClass() == class'KFPerk_Survivalist'.static.GetPerkClass())
+								{
+									CheckForSmallRadiusKill( MonsterPawn, KFPC, class'KFPerk_Survivalist' );
+								}
+							}
+
+							KFPCP.AddVampireHealth( KFPC, LastHitByDamageType );
+						}
 					}
 				}
 			}
@@ -2900,6 +2938,11 @@ simulated function ForceWWLMusicTrack()
 	MyKFGRI.ForceNewMusicTrack( default.ForcedMusicTracks[EFM_WWL] );
 }
 
+function bool IsWeekly()
+{
+	return MyKFGRI.IsA('KFGameReplicationInfo_WeeklySurvival');
+}
+
 /*********************************************************************************************
  * @name		Map rotation
  *********************************************************************************************/
@@ -2933,7 +2976,7 @@ function string GetNextMap()
 			/**
 				This could be changed to read replicated values instead of engine ones.
 			 */
-			if (MyKFGRI.IsA('KFGameReplicationInfo_WeeklySurvival'))
+			if (IsWeekly())
 			{
 				if ((class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 11 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[11]) || // Scavenger
 					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[14]) || // Boss Rush
@@ -3912,6 +3955,11 @@ function ClearActorFromBonfire(Actor Other);
  **********************************************/
 simulated function ModifyDamageGiven(out int InDamage, optional Actor DamageCauser, optional KFPawn_Monster MyKFPM, optional KFPlayerController DamageInstigator, optional class<KFDamageType> DamageType, optional int HitZoneIdx );
 
+/***********************************************
+ * @name        Notify a player is initialized
+ **********************************************/
+simulated function NotifyPlayerStatsInitialized(KFPlayerController_WeeklySurvival KFPC){}
+
 defaultproperties
 {
 	/** Scoring */
@@ -3957,6 +4005,7 @@ defaultproperties
 	bRestartLevel=false
 	bWaitingToStartMatch=true
 	bDelayedStart=true
+	AllowSeasonalSkinsIndex=0
 
 	ActionMusicDelay=5.0
     ForcedMusicTracks(0)=KFMusicTrackInfo'WW_MMNU_Login.TrackInfo' // menu

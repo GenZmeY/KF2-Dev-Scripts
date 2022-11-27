@@ -32,6 +32,7 @@ var localized array<string> ServerTypeStrings;
 var localized array<string> PermissionStrings;
 var localized array<string> ConsolePermissionStrings;
 var localized array<string> ModeStrings;
+var localized array<string> AllowSeasonalSkinsStrings;
 
 var localized string TeamSwappedString;
 var localized string NoPreferenceString;
@@ -187,7 +188,21 @@ static function array<string> GetPermissionStringsArray(bool bConsoleBuild)
 	{
 		return default.PermissionStrings;
 	}
+}
 
+static function string GetAllowSeasonalSkinsString( float Index )
+{
+	if( 0 < default.AllowSeasonalSkinsStrings.length && Index < default.AllowSeasonalSkinsStrings.length )
+	{
+		return default.AllowSeasonalSkinsStrings[Index];
+	}
+
+ 	return default.NoPreferenceString;
+}
+
+static function array<string> GetAllowSeasonalSkinsStringsArray()
+{
+	return default.AllowSeasonalSkinsStrings;
 }
 
 static function array<string> GetGameModeStringsArray()

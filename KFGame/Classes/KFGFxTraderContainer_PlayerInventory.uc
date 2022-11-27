@@ -66,9 +66,11 @@ function LocalizeContainer()
 //Updates the ablility to change the perk
 function UpdateLock()
 {
+	local bool bLocked;
 	if (KFPC != none)
 	{
-		SetBool("perkChangeLocked", !KFPC.CanUpdatePerkInfo());
+		bLocked = !KFPC.CanUpdatePerkInfo() || KFGameReplicationInfo(KFPC.WorldInfo.GRI).IsRandomPerkMode();
+		SetBool("perkChangeLocked", bLocked);
 	}
 }
 

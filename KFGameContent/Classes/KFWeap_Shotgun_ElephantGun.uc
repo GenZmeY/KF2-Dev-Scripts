@@ -87,7 +87,6 @@ simulated state WeaponQuadBarrelFiring extends WeaponSingleFiring
 
 	simulated function BeginState(name PreviousStateName)
 	{
-		local vector UsedKickMomentum;
 		local KFMapInfo KFMI; 
 		Super.BeginState(PreviousStateName);
 
@@ -96,51 +95,17 @@ simulated state WeaponQuadBarrelFiring extends WeaponSingleFiring
 		{
 			return;
 		}
-
 		// Push the player back when they fire both barrels
-		if (Instigator != none)
-		{
-			UsedKickMomentum.X = -DoubleBarrelKickMomentum;
-
-			if (Instigator.Physics == PHYS_Falling)
-			{
-				UsedKickMomentum = UsedKickMomentum >> Instigator.GetViewRotation();
-				UsedKickMomentum *= FallingMomentumReduction;
-			}
-			else
-			{
-				UsedKickMomentum = UsedKickMomentum >> Instigator.Rotation;
-				UsedKickMomentum.Z = 0;
-			}
-
-			Instigator.AddVelocity(UsedKickMomentum,Instigator.Location,none);
-		}
+		ApplyKickMomentum(DoubleBarrelKickMomentum, FallingMomentumReduction);
 	}
 }
 
 simulated function BeginState(name PreviousStateName)
 {
-	local vector UsedKickMomentum;
 	Super.BeginState(PreviousStateName);
 
 	// Push the player back when they fire both barrels
-	if (Instigator != none)
-	{
-		UsedKickMomentum.X = -DoubleBarrelKickMomentum;
-
-		if (Instigator.Physics == PHYS_Falling)
-		{
-			UsedKickMomentum = UsedKickMomentum >> Instigator.GetViewRotation();
-			UsedKickMomentum *= FallingMomentumReduction;
-		}
-		else
-		{
-			UsedKickMomentum = UsedKickMomentum >> Instigator.Rotation;
-			UsedKickMomentum.Z = 0;
-		}
-
-		Instigator.AddVelocity(UsedKickMomentum,Instigator.Location,none);
-	}
+	ApplyKickMomentum(DoubleBarrelKickMomentum, FallingMomentumReduction);
 }
 
 defaultproperties

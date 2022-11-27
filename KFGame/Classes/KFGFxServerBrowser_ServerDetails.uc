@@ -17,6 +17,8 @@ var localized string ServerInfoString;
 var localized string JoinGameString;
 var localized string SpectateGameString;
 var localized string UnfavoriteString;
+var localized string SeasonalSkinsString;
+var localized string NoSeasonalSkinsString;
 
 function Initialize( KFGFxObject_Menu NewParentMenu )
 {
@@ -42,6 +44,8 @@ function LocalizeText()
 	LocalizedObject.SetString("mutators", MutatorsString);
 	LocalizedObject.SetString("joinGame", JoinGameString);
 	LocalizedObject.SetString("spectateGame", SpectateGameString);
+	LocalizedObject.SetString("seasonalString", SeasonalSkinsString);
+	LocalizedObject.SetString("noseasonalString", NoSeasonalSkinsString);
 
 	SetObject("localizedText", LocalizedObject);
 }
@@ -87,6 +91,7 @@ function SetDetails(KFOnlineGameSettings ServerResult)
 		TempObj.SetBool("vacEnable",          	TempOnlingGamesSettings.bAntiCheatProtected);
 		TempObj.SetBool("mutators",          	TempOnlingGamesSettings.bMutators);
 		TempObj.SetBool("ranked",           	TempOnlingGamesSettings.bUsesStats);
+		TempObj.SetBool("seasonalSkins",       	TempOnlingGamesSettings.bNoSeasonalSkins == false);
 
 		Ping = 									TempOnlingGamesSettings.PingInMs;
 		TempObj.SetString("ping",          		(Ping < 0) ? ("-") : (String(Ping)) );

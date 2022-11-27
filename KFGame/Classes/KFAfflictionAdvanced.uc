@@ -15,7 +15,7 @@ var float Duration;
 var bool bIsActive;
 
 /** Default Effect Socket */
-var protected name EffectSocketName;
+var name EffectSocketName;
 
 /** Copy incap settings we're going to need */
 function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
@@ -25,11 +25,11 @@ function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
 }
 
 /** */
-function Activate(optional class<KFDamageType> DamageType = none)
+function Activate(KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
 	if ( !bIsActive )
 	{
-		super.Activate();
+		super.Activate(InstigatorPerk, DamageType);
 		PawnOwner.SetTimer(Duration, false, nameof(DeActivate), self);
 		bIsActive = true;		
 	}

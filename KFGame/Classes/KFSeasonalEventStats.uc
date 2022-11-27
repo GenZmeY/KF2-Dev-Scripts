@@ -20,6 +20,7 @@ var protected int bObjectiveIsValidForMap[5];
 // whether this seasonal stats object is the stats object that is being tracked right now
 final native function bool IsValid();
 final protected native function IncrementSeasonalEventStat(int StatIdx, int Inc);
+final protected native function ResetSeasonalEventStat(int StatIdx);
 final protected native function SetSeasonalEventStatsMax(int StatMax1, int StatMax2, int StatMax3, int StatMax4, int StatMax5);
 final protected native function GrantEventItem(int ItemId);
 
@@ -30,6 +31,10 @@ final protected native function GrantEventItem(int ItemId);
 private event Initialize(string MapName);
 static private event bool AllowEventBossOverrideForMap(string MapName);
 private event GrantEventItems();
+
+simulated event OnStatsInitialized()
+{
+}
 
 final protected simulated function FinishedObjective(int EventIndex, int ObjectiveIndex)
 {
@@ -75,3 +80,4 @@ simulated event OnTryCompleteObjective(int ObjectiveIndex, int EventIndex);
 simulated function OnHitTaken();
 simulated function OnHitGiven(class<DamageType> DT);
 simulated function OnWeaponPurchased(class<KFWeaponDefinition> WeaponDef, int Price);
+simulated function OnAfflictionCaused(EAfflictionType Type);

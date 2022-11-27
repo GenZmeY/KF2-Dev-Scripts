@@ -80,3 +80,4 @@ const KFID_MouseLookUpScale=181; // Halloweeen 2022 QoL: added mouse options to 
 const KFID_MouseLookRightScale=182; // Halloweeen 2022 QoL: added mouse options to menu
 const KFID_ViewSmoothingEnabled=183; // Halloweeen 2022 QoL: added mouse options to menu
 const KFID_ViewAccelerationEnabled=184; // Halloweeen 2022 QoL: added mouse options to menu
+const KFID_SavedAllowSeasonalSkinsIndex=185;

@@ -44,11 +44,11 @@ function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
     CurrentMaxStack = bIsBobbleHeadMode ? MaxStackBobbleHead : MaxStack;
 }
 
-function Activate(optional class<KFDamageType> DamageType = none)
+function Activate(KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
     if (CurrentStack < CurrentMaxStack)
     {
-        Super.Activate();
+        Super.Activate(InstigatorPerk, DamageType);
 
         if (!bIsBobbleHeadMode && !bIsShrunkenHeads)
         {

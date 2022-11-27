@@ -21,13 +21,13 @@ var protected ParticleSystemComponent		EMPDisruptEffect;
 var protected name                        	EMPDisruptSocketName;
 
 /** Sound to play when this pawn has been EMP'd */
-var protected AkEvent OnEMPSound;
+var AkEvent OnEMPSound;
 /** Sound to play when this pawn stops being EMP'd */
-var protected AkEvent OnEMPEndSound;
+var AkEvent OnEMPEndSound;
 
-function Activate(optional class<KFDamageType> DamageType = none)
+function Activate(KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
-	Super.Activate();
+	Super.Activate(InstigatorPerk, DamageType);
 	SetEMPPanicked(true);
 }
 

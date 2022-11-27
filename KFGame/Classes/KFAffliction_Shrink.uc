@@ -53,7 +53,7 @@ function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
     }
 }
 
-function Activate(optional class<KFDamageType> DamageType = none)
+function Activate(KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
     local float StackModifier;
 
@@ -64,7 +64,7 @@ function Activate(optional class<KFDamageType> DamageType = none)
     
     if (CurrentEffect < MaxEffect)
     {
-        Super.Activate();
+        Super.Activate(InstigatorPerk, DamageType);
 
         StackModifier = 1.0f;
 

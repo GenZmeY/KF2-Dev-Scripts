@@ -279,8 +279,7 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 	if( KFW != none )
 	{
 		// KFDT_Bludgeon_Doshinegun_Shot is a special case of Bludgeon damage that doesn't apply this mod.
-		if( IsBackupActive() && (IsBackupWeapon( KFW ) || IsDual9mm( KFW ) ||
-			((!IsDoshinegun(KFW) && ClassIsChildOf(DamageType, class'KFDT_Bludgeon') ) || (IsDoshinegun(KFW) && DamageType.Name != 'KFDT_Bludgeon_Doshinegun_Shot' ))))
+		if( IsBackupActive() && (IsBackupWeapon( KFW ) || IsDual9mm( KFW ) || ShouldAffectBackupToDamage(KFW, DamageType)))
 		{
 			`QALog( "Backup Damage" @ KFW @ GetPercentage( InDamage, InDamage * GetSkillValue(PerkSkills[ESWAT_Backup])), bLogPerk );
 			TempDamage += InDamage * GetSkillValue( PerkSkills[ESWAT_Backup] );
@@ -294,6 +293,29 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 
 	`QALog( "Total Damage Given" @ DamageType @ KFW @ GetPercentage( InDamage, Round(TempDamage) ), bLogPerk );
 	InDamage = Round(TempDamage);
+}
+
+/**
+	Check whether the damage and weapon are valid for the Backup skill:
+	Doshinegun and HRGBallisticBouncer have bludgeon projectiles that shouldn't get their damage modified 
+ */
+simulated function bool ShouldAffectBackupToDamage(KFWeapon KFW, class<KFDamageType> DamageType)
+{
+	if (!ClassIsChildOf(DamageType, class'KFDT_Bludgeon'))
+	{
+		return false;
+	}
+
+	if (IsDoshinegun(KFW))
+	{
+		return DamageType.Name != 'KFDT_Bludgeon_Doshinegun_Shot';
+	}
+	else if (IsHRGBallisticBouncer(KFW))
+	{
+		return DamageType.Name != 'KFDT_Bludgeon_HRG_BallisticBouncer_Shot';
+	}
+
+	return true;
 }
 
 /**

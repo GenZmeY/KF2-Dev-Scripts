@@ -14,7 +14,7 @@ DefaultProperties
 {
 	WeaponClassPath="KFGameContent.KFWeap_AssaultRifle_Doshinegun"
 
-	BuyPrice=600 //750
+	BuyPrice=400 //600 //750
 	ImagePath="WEP_UI_Doshinegun_TEX.UI_Weapon_Select_Doshinegun"
 
 	EffectiveRange=68

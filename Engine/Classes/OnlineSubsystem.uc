@@ -2314,6 +2314,7 @@ static function DumpGameSettings(const OnlineGameSettings GameSettings)
 	`Log("      bAllowJoinViaPresence: "$GameSettings.bAllowJoinViaPresence);
 	`Log("      bAllowJoinViaPresenceFriendsOnly: "$GameSettings.bAllowJoinViaPresenceFriendsOnly);
 	`Log("      GameState: "$GameSettings.GameState);
+	`Log("      bNoSeasonalSkins: "$GameSettings.bNoSeasonalSkins);
 }
 
 /**

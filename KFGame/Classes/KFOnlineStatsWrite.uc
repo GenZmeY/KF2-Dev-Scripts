@@ -449,6 +449,10 @@ const KFACHID_BarmwichHard						=   295;
 const KFACHID_BarmwichHellOnEarth      			=   296;
 const KFACHID_BarmwichCollectibles				=   297;
 
+const KFACHID_CrashHard							=   298;
+const KFACHID_CrashHellOnEarth      			=   299;
+const KFACHID_CrashCollectibles					=   300;
+
 /* __TW_ANALYTICS_ */
 var int PerRoundWeldXP;
 var int PerRoundHealXP;
@@ -1182,6 +1186,11 @@ private event AddToWeaponPurchased( class<KFWeaponDefinition> WeaponDef, int Pri
 	SeasonalEventStats_OnWeaponPurchased(WeaponDef, Price);
 }
 
+private event AddAfflictionCaused(EAfflictionType Type)
+{
+	SeasonalEventStats_OnAfflictionCaused(Type);
+}
+
 private native function AddToKillObjectives(class<KFPawn_Monster> ZedClass);
 private native function AddToVersusKillObjectives(class<Pawn> KillerClass);
 
@@ -1810,6 +1819,14 @@ native final function MapObjectiveCompleted();
 * @name Seasonal Events
 ********************************************************************************************* */
 
+final simulated function SeasonalEventStats_OnStatsInitialized()
+{
+	if (SeasonalEventIsValid())
+	{
+		SeasonalEvent.OnStatsInitialized();
+	}
+}
+
 final native simulated function bool SeasonalEventIsValid();
 
 final simulated function SeasonalEventStats_OnMapObjectiveDeactivated(Actor ObjectiveInterfaceActor)
@@ -1893,6 +1910,14 @@ final simulated function SeasonalEventStats_OnWeaponPurchased(class<KFWeaponDefi
 	if (SeasonalEventIsValid())
 	{
 		SeasonalEvent.OnWeaponPurchased(WeaponDef, Price);
+	}
+}
+
+final simulated function SeasonalEventStats_OnAfflictionCaused(EAfflictionType Type)
+{
+	if (SeasonalEventIsValid())
+	{
+		SeasonalEvent.OnAfflictionCaused(Type);
 	}
 }
 
@@ -2069,6 +2094,7 @@ defaultproperties
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_AA12, KFDT_Ballistic_AA12Shotgun,KFDT_Bludgeon_AA12Shotgun),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_ElephantGun, KFDT_Ballistic_ElephantGun,KFDT_Bludgeon_ElephantGun),CompletionAmount=10000))
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_BlastBrawlers, KFDT_Ballistic_BlastBrawlersShotgun,KFDT_Bludgeon_BlastBrawlers,KFDT_Bludgeon_BlastBrawlersHeavy,KFDT_Bludgeon_BlastBrawlersBash),CompletionAmount=10000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_BallisticBouncer, KFDT_Bludgeon_HRG_BallisticBouncer_Shot,KFDT_Bludgeon_HRG_BallisticBouncer),CompletionAmount=10000))
 
     //Medic Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Pistol_Medic, KFDT_Ballistic_Pistol_Medic,KFDT_Bludgeon_Pistol_Medic),CompletionAmount=5000)) //3000
@@ -2080,6 +2106,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Rifle_HRGIncision, KFDT_Ballistic_HRGIncisionHurt, KFDT_Ballistic_HRGIncisionHeal,KFDT_Bludgeon_HRGIncision),CompletionAmount=5000))
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Vampire, KFDT_Bleeding_HRG_Vampire_BloodSuck, KFDT_Ballistic_HRG_Vampire_BloodBallImpact, KFDT_Ballistic_HRG_Vampire_BloodBallHeavyImpact, KFDT_Toxic_HRG_Vampire_BloodBall, KFDT_Piercing_HRG_Vampire_CrystalSpike, KFDT_Bludgeon_HRG_Vampire),CompletionAmount=9000))
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_MedicRifleGrenadeLauncher, KFDT_Ballistic_MedicRifleGrenadeLauncher, KFDT_Bludgeon_MedicRifleGrenadeLauncher, KFDT_Toxic_MedicGrenadeLauncher, KFDT_Ballistic_MedicRifleGrenadeLauncherImpact),CompletionAmount=10000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_MedicMissile, KFDT_Explosive_HRG_MedicMissile, KFDT_Bludgeon_HRG_MedicMissile, KFDT_Toxic_HRG_MedicMissile, KFDT_Ballistic_HRG_MedicMissile),CompletionAmount=9000))
 
     //Demo Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_GrenadeLauncher_HX25, KFDT_ExplosiveSubmunition_HX25,KFDT_Ballistic_HX25Impact,KFDT_Ballistic_HX25SubmunitionImpact,KFDT_Bludgeon_HX25),CompletionAmount=5000)) //3000
@@ -2295,7 +2322,10 @@ defaultproperties
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-BARMWICHTOWN),CompletionAmount=1))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-BARMWICHTOWN),CompletionAmount=2))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-BARMWICHTOWN),CompletionAmount=3))
-	
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CRASH),CompletionAmount=1))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CRASH),CompletionAmount=2))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CRASH),CompletionAmount=3))
+
     //Versus Damage
     //    Per design doc that I have right now, these are x class damage y players, not damage y amount
     /*DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_VersusDamage,ObjectiveClasses=(KFPawn_ZedClot_Alpha, KFPawn_ZedClot_Alpha_Versus),CompletionAmount=1))

@@ -214,7 +214,7 @@ simulated function ModifyMagSizeAndNumber( KFWeapon KFW, out int MagazineCapacit
 	TempCapacity = MagazineCapacity;
 
 	// Fix this function on the trader because KFW is None and the check cannot look for bNoMagazine = true
-	if(WeaponClassname != 'KFWeap_Rifle_HRGIncision')
+	if(WeaponClassname != 'KFWeap_Rifle_HRGIncision' && WeaponClassName != 'KFWeap_HRG_MedicMissile')
 	{
 		if( IsWeaponOnPerk( KFW, WeaponPerkClass, self.class ) && (KFW == none || !KFW.bNoMagazine) && !bSecondary )
 		{

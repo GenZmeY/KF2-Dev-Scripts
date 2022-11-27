@@ -20,9 +20,9 @@ function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
 	DisruptCooldown = P.IncapSettings[Type].ChildAfflictionCooldown;
 }
 
-function Accrue(float InPower, optional class<KFDamageType> DamageType = none)
+function Accrue(float InPower, KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
-	Super.Accrue(InPower);
+	Super.Accrue(InPower, InstigatorPerk, DamageType);
 
 	if (!PawnOwner.IsTimerActive(nameof(Timer_DisruptCooldown), self))
 	{

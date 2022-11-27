@@ -560,6 +560,16 @@ static function bool IsAutoTurret( KFWeapon KFW )
 	return KFW != none && KFW.Class.Name == 'KFWeap_AutoTurret';
 }
 
+/**
+ * @brief Return if a weapon is HRG Ballistic Bouncer
+ *
+ * @param KFW Weapon to check
+ * @return true if backup weapon
+ */
+static function bool IsHRGBallisticBouncer( KFWeapon KFW )
+{
+	return KFW != none && KFW.Class.Name == 'KFWeap_HRG_BallisticBouncer';
+}
 
 /*********************************************************************************************
 * @name	 Build / Level Management - Apply and save the updated build and level

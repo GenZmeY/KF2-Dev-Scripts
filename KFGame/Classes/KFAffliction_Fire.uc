@@ -44,12 +44,12 @@ function Init(KFPawn P, EAfflictionType Type, KFPerk InstigatorPerk)
     }
 }
 
-function Activate(optional class<KFDamageType> DamageType = none)
+function Activate(KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
     // fire can accrue after death, but cannot trigger panic
     if ( !PawnOwner.bPlayedDeath )
     {
-        Super.Activate();
+        Super.Activate(InstigatorPerk, DamageType);
         SetFirePanicked(true);
     }
 }

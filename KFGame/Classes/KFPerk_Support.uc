@@ -562,10 +562,12 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 
 	// Blast Brawlers use a different state for shooting (combining melee + firing). Needs a special case for this
 	// FAMAS uses alt fire as common firing. Another special case added 
+	// HRG Ballistic Bouncer uses a special state of charging when shooting
 	if( IsWeaponOnPerk( W,, self.class ) && CouldBarrageActive() && 
 		(ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE ||
 			(StateName == 'MeleeChainAttacking' && IsBlastBrawlers(W)) ||
-			(IsFAMAS(W) && StateName == 'FiringSecondaryState')))
+			(IsFAMAS(W) && StateName == 'FiringSecondaryState')) || 
+			(IsHRGBallisticBouncer(W) && StateName == 'MineReconstructorCharge'))
 	{
 		return BarrageFiringRate;
 	}

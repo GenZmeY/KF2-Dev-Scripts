@@ -2248,17 +2248,24 @@ function UpdateActiveSkillsPath(string IconPath, int Multiplier, bool Active, fl
 
 event Landed(vector HitNormal, actor FloorActor)
 {
-	local KFPlayerController_WeeklySurvival KFPC;
+	local KFPlayerController KFPC;
+	local KFPlayerController_WeeklySurvival KFPC_WS;
 
 	super.Landed(HitNormal, FloorActor);
 
 	if (KFPawn_Monster(FloorActor) == none)
 	{
-		KFPC = KFPlayerController_WeeklySurvival(Controller);
-		if (KFPC != none)
+		KFPC_WS = KFPlayerController_WeeklySurvival(Controller);
+		if (KFPC_WS != none)
 		{
-			KFPC.ResetGoompaStreak();
+			KFPC_WS.ResetGoompaStreak();
 		}
+	}
+
+	KFPC = KFPlayerController(Controller);
+	if (KFPC != none)
+	{
+		KFPC.ResetShotgunJump();
 	}
 }
 

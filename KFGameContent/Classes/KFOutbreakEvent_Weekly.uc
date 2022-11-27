@@ -1220,6 +1220,21 @@ defaultproperties
                 , class'KFGameContent.KFPawn_ZedHans'),
     )}
 
+    // Random Perks
+    SetEvents[18]={(
+                EventDifficulty=2,
+                GameLength=GL_Normal,
+                DoshOnKillGlobalModifier=1.3,
+                SpawnReplacementList={(
+                                            (SpawnEntry=AT_Clot,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.3),
+                                            (SpawnEntry=AT_AlphaClot,NewClass=(class'KFGameContent.KFPawn_ZedCrawler'),PercentChance=0.3),
+                                            (SpawnEntry=AT_SlasherClot,NewClass=(class'KFGameContent.KFPawn_ZedStalker'),PercentChance=0.3),
+                                            (SpawnEntry=AT_Bloat,NewClass=(class'KFGameContent.KFPawn_ZedSiren'),PercentChance=0.3),
+                                            (SpawnEntry=AT_Scrake,NewClass=(class'KFGameContent.KFPawn_ZedFleshpound'),PercentChance=0.3)
+                                            
+                    )}
+    )}
+
     //Test events from here down.  These don't end up in the regular rotation.
     //      The override ID starts from one higher than the last SetEvents entry above.
     //      Ex: Big head = 7, Horde = 8

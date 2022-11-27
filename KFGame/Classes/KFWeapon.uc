@@ -4387,7 +4387,10 @@ event RecieveClientImpact(byte FiringMode, const out ImpactInfo Impact, optional
 event RecieveClientProjectileExplosion(vector ExplosionLocation, KFProjectile ExplodingProjectile)
 {
     // TODO: maybe validate the explosion normal on the client?
-    ExplodingProjectile.CallExplode( ExplosionLocation, vect(0,0,1) );
+	if (ExplodingProjectile != none)
+	{
+		ExplodingProjectile.CallExplode( ExplosionLocation, vect(0,0,1) );
+	}
 }
 
 /**

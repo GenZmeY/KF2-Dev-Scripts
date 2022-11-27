@@ -272,6 +272,7 @@ function BuildServerFilters(KFGFxServerBrowser_Filters Filters, OnlineGameSearch
 	local string GametagSearch;
 	local string MapName;
 	local int Mode, Difficulty, Length;
+	local bool DisableSeasonalSkins;
 
 	Search.ClearServerFilters();
 
@@ -279,6 +280,15 @@ function BuildServerFilters(KFGFxServerBrowser_Filters Filters, OnlineGameSearch
 	Search.TestAddServerFilter( Filters.bNotFull, "notfull");
 	Search.TestAddServerFilter( Filters.bNotEmpty, "hasplayers");
 	Search.TestAddBoolGametagFilter(GametagSearch, Filters.bNoLocalAdmin, 'bServerExiled', 0);
+
+	DisableSeasonalSkins = Filters.bNoSeasonalSkins;
+
+	if (class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None)
+	{
+		DisableSeasonalSkins = false;
+	}
+
+	Search.TestAddBoolGametagFilter(GametagSearch, DisableSeasonalSkins, 'bNoSeasonalSkins', 1);
 
 	if( !class'WorldInfo'.static.IsConsoleBuild() )
 	{

@@ -550,14 +550,16 @@ function byte PickTeam(byte Current, Controller C, const out UniqueNetId PlayerI
 /** Return whether a team change is allowed. */
 function bool ChangeTeam(Controller Other, int N, bool bNewTeam)
 {
-    if( Other.PlayerReplicationInfo == none
-        || Other.PlayerReplicationInfo.bBot
-        || (!Other.PlayerReplicationInfo.bOnlySpectator
-        && ArrayCount(Teams) > N
-        && Other.PlayerReplicationInfo.Team != Teams[N]) )
+    if (ArrayCount(Teams) > N)
     {
-        SetTeam( Other, Teams[N] );
-        return true;
+        if( Other.PlayerReplicationInfo == none
+            || Other.PlayerReplicationInfo.bBot
+            || ( !Other.PlayerReplicationInfo.bOnlySpectator
+                && Other.PlayerReplicationInfo.Team != Teams[N] ) )
+        {
+            SetTeam( Other, Teams[N] );
+            return true;
+        }
     }
 
     return false;

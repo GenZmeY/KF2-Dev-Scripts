@@ -33,6 +33,7 @@ var localized string 			NextRoundBeginString;
 var localized string 			PlayerCanChangePerksString;
 var localized string 			ZedWaitingForNextRoundString;
 var localized string 			LastPlayerStandingString;
+var localized string 			NewPerkAssignedMessage;
 
 struct SDelayedPriorityMessage
 {
@@ -75,13 +76,18 @@ static function ClientReceive(
 	optional Object OptionalObject
 	)
 {
-	local string MessageString,SecondaryMessageString;
+	local string MessageString,SecondaryMessageString, SpecialIconPath;
 	local KFGFxMoviePlayer_HUD myGfxHUD;
 	local KFGameReplicationInfo KFGRI;
 	local TeamInfo TeamInfo;
 	local byte TeamIndex;
 	local KFPlayerController KFPC;
+	local class<KFPerk> ReceivedPerkClass;
+	local bool bIsRandomPerkMode;
+
 	KFPC = KFPlayerController(class'WorldInfo'.static.GetWorldInfo().GetALocalPlayerController());
+
+	bIsRandomPerkMode = KFGameReplicationInfo(class'WorldInfo'.static.GetWorldInfo().GRI).IsRandomPerkMode();
 
 	TeamIndex = P.PlayerReplicationInfo.GetTeamNum();
 	if( OptionalObject != none )
@@ -92,14 +98,25 @@ static function ClientReceive(
 			TeamIndex = TeamInfo.TeamIndex;
 		}
 	}
-
+	
 	MessageString = static.GetMessageString( Switch, SecondaryMessageString, TeamIndex );
+
+	if (bIsRandomPerkMode)
+	{
+		ReceivedPerkClass = class<KFPerk>(OptionalObject);
+		if (ReceivedPerkClass != none)
+		{
+			MessageString = ReceivedPerkClass.default.PerkName;
+			SpecialIconPath = ReceivedPerkClass.static.GetPerkIconPath();
+		}
+	}
+
 	if ( MessageString != "" && KFGFxHudWrapper(p.myHUD) != none && ShouldShowPriortyMessage(P, Switch))
 	{
 	    myGfxHUD = KFGFxHudWrapper(p.myHUD).HudMovie;
 		if ( myGfxHUD != None  )
 		{
-            myGfxHUD.DisplayPriorityMessage(MessageString,SecondaryMessageString,static.GetMessageLifeTime(Switch), EGameMessageType(Switch));
+            myGfxHUD.DisplayPriorityMessage(MessageString,SecondaryMessageString,static.GetMessageLifeTime(Switch), EGameMessageType(Switch), SpecialIconPath);
 		}
 		else if(KFPC.MyGFxManager != none) //store it off so we can queue it
 		{
@@ -271,7 +288,15 @@ static function string GetMessageString(int Switch, optional out String Secondar
 			}
 			else
 			{
-				SecondaryString = KFGameReplicationInfo(class'WorldInfo'.static.GetWorldInfo().GRI).bTradersEnabled ? default.GetToTraderMessage : default.ScavengeMessage;
+				if ( KFGameReplicationInfo(class'WorldInfo'.static.GetWorldInfo().GRI).IsRandomPerkMode() )
+				{
+					SecondaryString = default.NewPerkAssignedMessage;
+				}
+				else
+				{
+					SecondaryString = KFGameReplicationInfo(class'WorldInfo'.static.GetWorldInfo().GRI).bTradersEnabled ? default.GetToTraderMessage : default.ScavengeMessage;
+				}
+
 				return default.WaveEndMessage;
 			}
 		case GMT_MatchWon:

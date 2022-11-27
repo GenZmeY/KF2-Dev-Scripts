@@ -28,6 +28,42 @@ simulated function KFProjectile SpawnAllProjectiles(class<KFProjectile> KFProjCl
 	return super.SpawnAllProjectiles(KFProjClass, RealStartLoc, AimDir);
 }
 
+simulated function ApplyKickMomentum(float Momentum, float FallingMomentumReduction)
+{
+	local vector UsedKickMomentum;
+
+	if (Instigator != none )
+	{
+		UsedKickMomentum.X = -Momentum;
+
+		if( Instigator.Physics == PHYS_Falling  )
+		{
+			UsedKickMomentum = UsedKickMomentum >> Instigator.GetViewRotation();
+			UsedKickMomentum *= FallingMomentumReduction;
+
+			NotifyShotgunJump();
+		}
+		else
+		{
+			UsedKickMomentum = UsedKickMomentum >> Instigator.Rotation;
+			UsedKickMomentum.Z = 0;
+		}
+
+		Instigator.AddVelocity(UsedKickMomentum,Instigator.Location,none);
+	}
+}
+
+simulated function NotifyShotgunJump()
+{
+	local KFPlayerController KFPC;
+
+	KFPC = KFPlayerController(Instigator.Controller);
+	if (KFPC != none)
+	{
+		KFPC.SetShotgunJump(true);
+	}
+}
+
 /*********************************************************************************************
  * @name	Trader
  *********************************************************************************************/

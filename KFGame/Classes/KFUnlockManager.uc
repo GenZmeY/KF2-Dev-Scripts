@@ -36,7 +36,9 @@ enum ESharedContentUnlock
 	SCU_AutoTurret,
 	SCU_ShrinkRayGun,
 	SCU_Scythe,
-	SCU_G36C
+	SCU_G36C,
+	SCU_HVStormCannon,
+	SCU_ZedMKIII
 };
 
 
@@ -383,4 +385,12 @@ defaultproperties
 		Name=KFWeap_AssaultRifle_G36C,
 		IconPath="WEP_UI_G36C_TEX.UI_WeaponSelect_G36C",
 		ID=9484)}
+	SharedContentList(SCU_HVStormCannon)={(
+		Name=KFWeap_HVStormCannon,
+		IconPath="wep_ui_hvstormcannon_tex.UI_WeaponSelect_HVStormCannon",
+		ID=9569)}
+	SharedContentList(SCU_ZedMKIII)={(
+		Name=KFWeap_ZedMKIII,
+		IconPath="wep_ui_zedmkiii_tex.UI_WeaponSelect_ZEDMKIII",
+		ID=9575)}
 }

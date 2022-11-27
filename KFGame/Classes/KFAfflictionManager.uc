@@ -469,7 +469,7 @@ function AccrueAffliction(EAfflictionType Type, float InPower, optional EHitZone
 
 	if ( InPower > 0 )
 	{
-		Afflictions[Type].Accrue(InPower, DamageType);
+		Afflictions[Type].Accrue(InPower, InstigatorPerk, DamageType);
 	}
 }
 
@@ -510,7 +510,7 @@ function AccrueAfflictionMicrowave(EAfflictionType Type, float InPower, bool bHa
 	if ( InPower > 0 )
 	{
 		KFAffliction_Microwave(Afflictions[Type]).bHasToSpawnFire = bHasToSpawnFire;
-		Afflictions[Type].Accrue(InPower);
+		Afflictions[Type].Accrue(InPower, InstigatorPerk);
 	}
 }
 

@@ -13,13 +13,13 @@ class KFGFxServerBrowser_Filters extends KFGFxObject_Container
 	config(UI);
 
 var KFGFxMenu_ServerBrowser ServerMenu;
-var localized string NoPasswordString, NoMutatorsString, NotFullString, NotEmptyString, NoRankedStandardString, NoRankedCustomString, NoUnrankedString, DedicatedString, VACSecureString, InLobbyString, InProgressString, OnlyStockMapsString, OnlyCustomMapsString, LimitServerResultsString, NotServerExiledString;
+var localized string NoPasswordString, NoMutatorsString, NotFullString, NotEmptyString, NoRankedStandardString, NoRankedCustomString, NoUnrankedString, DedicatedString, VACSecureString, InLobbyString, InProgressString, OnlyStockMapsString, OnlyCustomMapsString, LimitServerResultsString, NotServerExiledString, NoSeasonalSkinsString;
 var array<string> FilterStrings;
 
-var config Bool bNoPassword, bNoMutators, bNotFull, bNotEmpty, bUsesStats, bCustom, bDedicated, bVAC_Secure, bInLobby, bInProgress, bOnlyStockMaps, bOnlyCustomMaps, bLimitServerResults, bNoLocalAdmin;
+var config Bool bNoPassword, bNoMutators, bNotFull, bNotEmpty, bUsesStats, bCustom, bDedicated, bVAC_Secure, bInLobby, bInProgress, bOnlyStockMaps, bOnlyCustomMaps, bLimitServerResults, bNoLocalAdmin, bNoSeasonalSkins;
 var config byte SavedGameModeIndex, SavedMapIndex, SavedDifficultyIndex, SavedLengthIndex, SavedPingIndex;
 
-var  Bool bNoPasswordPending, bNoMutatorsPending, bNotFullPending, bNotEmptyPending, bUsesStatsPending, bCustomPending, bDedicatedPending, bVAC_SecurePending, bInLobbyPending, bInProgressPending, bOnlyStockMapsPending, bOnlyCustomMapsPending, bLimitServerResultsPending, bNoLocalAdminPending;
+var  Bool bNoPasswordPending, bNoMutatorsPending, bNotFullPending, bNotEmptyPending, bUsesStatsPending, bCustomPending, bDedicatedPending, bVAC_SecurePending, bInLobbyPending, bInProgressPending, bOnlyStockMapsPending, bOnlyCustomMapsPending, bLimitServerResultsPending, bNoLocalAdminPending, bNoSeasonalSkinsPending;
 var  byte SavedGameModeIndexPending, SavedMapIndexPending, SavedDifficultyIndexPending, SavedLengthIndexPending, SavedPingIndexPending;
 
 var transient string CachedMapName, CachedModeName;
@@ -28,6 +28,8 @@ var transient int CachedDifficulty, CachedLength;
 var transient array<string> MapList;
 
 var int NumDifficultyStrings;
+
+// if you change this also update ServerBrowserFilterContainer.as -> NUM_OF_FILTERS
 
 enum EFilter_Key
 {
@@ -46,6 +48,7 @@ enum EFilter_Key
 	/*ONLY_STOCK_MAPS,		//Not using for EA
 	ONLY_CUSTOM_MAPS,*/		//Not using for EA
 	NO_LOCAL_ADMIN,
+	NO_SEASONAL_SKINS,
 	FILTERS_MAX,
 };
 
@@ -119,6 +122,7 @@ function InitFiltersArray()
 	FilterStrings[NO_LOCAL_ADMIN]			= NotServerExiledString;
 	/*FilterStrings[ONLY_STOCK_MAPS] 		= OnlyStockMapsString;
 	FilterStrings[ONLY_CUSTOM_MAPS] 	= OnlyCustomMapsString;*/
+	FilterStrings[NO_SEASONAL_SKINS]		= NoSeasonalSkinsString;
 }
 
 function LocalizeText()
@@ -155,8 +159,21 @@ function LocalizeCheckBoxes()
 	local byte i;
 	local GFxObject FiltersArray;
 	local GFxObject TempObject;
+	local bool bShowAllowSeasonalSkins;
+
+	bShowAllowSeasonalSkins = true;
+
+	if (ServerMenu.Manager.StartMenu.GetStartMenuState() == EMatchmaking
+		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None)
+	{
+		bShowAllowSeasonalSkins = false; // Default if we don't have a season or it's find a match menu
+	}
+
+	SetBool("SetAllowSkinsVisibility", bShowAllowSeasonalSkins);
 
 	FiltersArray = CreateArray();
+
+	// If you plan to disable a filter don't do it here, do it on ServerBrowserFilterContainer.as
 
 	for ( i = 0; i < FILTERS_MAX; i++ )
 	{
@@ -319,6 +336,7 @@ function ApplyFilters()
 	bOnlyCustomMaps = bOnlyCustomMapsPending;
 	bLimitServerResults = bLimitServerResultsPending;
 	bNoLocalAdmin 	= bNoLocalAdminPending;
+	bNoSeasonalSkins = bNoSeasonalSkinsPending;
 
 	SavedGameModeIndex 		= SavedGameModeIndexPending;
 	SavedMapIndex 			= SavedMapIndexPending;
@@ -345,6 +363,7 @@ function ClearPendingValues()
 	bOnlyCustomMapsPending 			= bOnlyCustomMaps;
 	bLimitServerResultsPending 		= bLimitServerResults;
 	bNoLocalAdminPending			= bNoLocalAdmin;
+	bNoSeasonalSkinsPending			= bNoSeasonalSkins;
  	SavedGameModeIndexPending 		= SavedGameModeIndex;
 	SavedMapIndexPending 			= SavedMapIndex;
 	SavedDifficultyIndexPending 	= SavedDifficultyIndex;
@@ -369,6 +388,7 @@ function ResetFilters()
 	bOnlyCustomMaps 	= false;
 	bLimitServerResults = true;
 	bNoLocalAdmin 		= true;
+	bNoSeasonalSkins	= false;
 
 	SavedGameModeIndex = 255;
 	SavedMapIndex = 255;
@@ -428,6 +448,9 @@ function SetBoolByEFilter_Key(EFilter_Key Filter, bool FilterValue)
 		case NO_LOCAL_ADMIN:
 			bNoLocalAdminPending = FilterValue;
 			break;
+		case NO_SEASONAL_SKINS:
+			bNoSeasonalSkinsPending = FilterValue;
+			break;
 		/*case ONLY_STOCK_MAPS:
 			bOnlyStockMapsPending 	= FilterValue;
 			break;
@@ -478,6 +501,9 @@ function bool GetBoolByEFilter_Key(EFilter_Key Filter)
 		
 		case NO_LOCAL_ADMIN:
 			return bNoLocalAdmin;
+
+		case NO_SEASONAL_SKINS:
+			return bNoSeasonalSkins;
 
 		/*case ONLY_STOCK_MAPS:
 			return bOnlyStockMaps;

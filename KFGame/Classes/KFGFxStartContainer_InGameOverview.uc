@@ -13,7 +13,7 @@ dependson(KFUnlockManager);
 
 
 var KFGFxMenu_StartGame StartMenu;
-var byte LastDifficultyIndex, LastLengthIndex, LastPrivacyIndex;
+var byte LastDifficultyIndex, LastLengthIndex, LastPrivacyIndex, LastAllowSeasonalSkinsIndex;
 
 var localized string OverviewString;
 var localized string ChangeString;
@@ -90,7 +90,6 @@ function LocalizeContainer()
 	LocalizedObject.SetString("infoTitle", StartMenu.InfoTitle);
 	LocalizedObject.SetString("permissionsTitle", StartMenu.PermissionsTitle);
 
-
 	WI = class'WorldInfo'.static.GetWorldInfo();
 	if( WI != none && WI.NetMode != NM_Standalone && !GetPC().WorldInfo.IsConsoleBuild() )
 	{
@@ -114,6 +113,17 @@ function LocalizeContainer()
 	}
 
 	LocalizedObject.SetObject("permissionOptions", DataProvider);
+
+	DataProvider = CreateArray();
+
+	for (i = 0; i < class'KFCommon_LocalizedStrings'.static.GetAllowSeasonalSkinsStringsArray().length; i++)
+	{
+		TempObj = CreateObject("Object");
+		TempObj.SetString("label", class'KFCommon_LocalizedStrings'.static.GetAllowSeasonalSkinsString(i));
+		DataProvider.SetElementObject(i, TempObj);
+	}
+
+	LocalizedObject.SetObject("allowSeasonalSkinsOptions", DataProvider);
 
 	if( !class'WorldInfo'.static.IsMenuLevel() )
 	{
@@ -335,12 +345,17 @@ function UpdatePrivacy( string Privacy )
 	SetString("permissionsText", Privacy);
 }
 
+function UpdateAllowSeasonalSkins(string AllowSeasonalStrings)
+{
+	SetString("allowSeasonalSkinsText", AllowSeasonalStrings);
+}
+
 function UpdateOverviewInGame()
 {
 	local KFGameReplicationInfo KFGRI;
 	local string GameDifficultyString;
 	local Float CurrentGameDifficulty;
-	local int CurrentLengthIndex, CurrentPrivacyIndex;
+	local int CurrentLengthIndex, CurrentPrivacyIndex, CurrentAllowSeasonalSkinsIndex;
 	local bool bCustomDifficulty;
 	local bool bCustomLength;
 
@@ -405,6 +420,13 @@ function UpdateOverviewInGame()
 				UpdatePrivacy( class'KFCommon_LocalizedStrings'.static.GetPermissionString(CurrentPrivacyIndex) );
 				LastPrivacyIndex = CurrentPrivacyIndex;
 			}
+
+			CurrentAllowSeasonalSkinsIndex = StartMenu.OptionsComponent.GetAllowSeasonalSkinsIndex();
+			if (LastAllowSeasonalSkinsIndex != CurrentAllowSeasonalSkinsIndex)
+			{
+				UpdateAllowSeasonalSkins( class'KFCommon_LocalizedStrings'.static.GetAllowSeasonalSkinsString(CurrentAllowSeasonalSkinsIndex) );
+				LastAllowSeasonalSkinsIndex = CurrentAllowSeasonalSkinsIndex;
+			}
 		}
     }
 }
@@ -425,6 +447,7 @@ DefaultProperties
 	LastPrivacyIndex=255
 	LastLengthIndex=255
 	LastDifficultyIndex=255
+	LastAllowSeasonalSkinsIndex=255
 
 	ObjectiveClassName=KFGameInfo_Objective
 }

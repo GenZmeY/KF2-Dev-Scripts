@@ -142,7 +142,7 @@ defaultproperties
 	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Grenade_GravityImploder'
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_GravityImploderImpact'
 	InstantHitDamage(DEFAULT_FIREMODE)=150
-	FireInterval(DEFAULT_FIREMODE)=1.33 //45 RPM
+	FireInterval(DEFAULT_FIREMODE)=1 // 60 RPM //1.33 //45 RPM
 	Spread(DEFAULT_FIREMODE)=0.02 //0
 	PenetrationPower(DEFAULT_FIREMODE)=0
 	FireOffset=(X=25,Y=3.0,Z=-2.5)
@@ -152,7 +152,7 @@ defaultproperties
 	FiringStatesArray(ALTFIRE_FIREMODE)=WeaponSingleFiring
 	WeaponFireTypes(ALTFIRE_FIREMODE)=EWFT_Projectile
 	WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_Grenade_GravityImploderAlt'
-	FireInterval(ALTFIRE_FIREMODE)=1.33 //45 RPM
+	FireInterval(ALTFIRE_FIREMODE)=1 // 60 RPM //1.33 //45 RPM
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Ballistic_GravityImploderImpactAlt'
 	InstantHitDamage(ALTFIRE_FIREMODE)=200
 	Spread(ALTFIRE_FIREMODE)=0.02 //0.0085

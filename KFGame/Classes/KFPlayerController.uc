@@ -728,6 +728,33 @@ var transient byte StoredLocalUserNum;
 **********************************************************************************************/
 var transient array<Actor> DeployedTurrets;
 
+/*********************************************************************************************
+ * @name HV Storm Cannon
+
+	Keep track of the electricity VFX Chain (Client Only)
+********************************************************************************************* */
+struct native KFStormCannonBeamData
+{
+	var KFPawn_Monster SourcePawn;
+	var ParticleSystemComponent ParticleSystemPawn;
+	var ParticleSystemComponent ParticleSystemBeam;
+	var int ID;
+
+	structdefaultproperties
+	{	
+		SourcePawn = none
+		ParticleSystemPawn = none
+		ParticleSystemBeam = none
+		ID = 255
+	}
+};
+
+var array<KFStormCannonBeamData> StormCannonBeamData;
+
+var byte StormCannonIDCounter;
+
+var transient bool bShotgunJumping;
+
 cpptext
 {
 	virtual UBOOL Tick( FLOAT DeltaSeconds, ELevelTick TickType );
@@ -7045,8 +7072,15 @@ function SetUIScale(float fScale)
 
 function GetSeasonalEventStatInfo(int StatIdx, out int CurrentValue, out int MaxValue)
 {
-	CurrentValue = StatsWrite.GetSeasonalEventStatValue(StatIdx);
-	MaxValue = StatsWrite.GetSeasonalEventStatMaxValue(StatIdx);
+	if (StatsWrite != none)
+	{
+		CurrentValue = StatsWrite.GetSeasonalEventStatValue(StatIdx);
+		MaxValue = StatsWrite.GetSeasonalEventStatMaxValue(StatIdx);
+	}
+	else
+	{
+		`warn( "GetSeasonalEventStatInfo() No StatsWrite ??");
+	}
 }
 
  simulated event CompletedDaily(int Index)
@@ -7297,6 +7331,8 @@ simulated function OnStatsInitialized( bool bWasSuccessful )
 	{
 		`RecordAARPerkXPGain(self, PerkList[i].PerkClass, 0, 0);
 	}
+
+	StatsWrite.SeasonalEventStats_OnStatsInitialized();
 }
 
 
@@ -7555,6 +7591,12 @@ function AddWeaponPurchased( class<KFWeaponDefinition> WeaponDef, int Price )
 	ClientAddWeaponPurchased( WeaponDef, Price );
 }
 native reliable client private function ClientAddWeaponPurchased( class<KFWeaponDefinition> WeaponDef, int Price );
+
+function AddAfflictionCaused(EAfflictionType Type)
+{
+	ClientAddAfflictionCaused(Type);
+}
+native reliable client private function ClientAddAfflictionCaused(EAfflictionType Type);
 
 function AddZedAssist(class<KFPawn_Monster> MonsterClass)
 {
@@ -11944,6 +11986,137 @@ simulated function InitPerkLoadout()
 	}
 }
 
+/**
+ *  HV Storm Cannon RPCs
+ */
+
+client reliable function AddStormCannonVFX(KFPawn_Monster Target, int ID)
+{	
+	local int i, DataIndex;
+	local KFStormCannonBeamData BeamData;
+	local ParticleSystemComponent PawnParticleSystem, BeamParticleSystem;
+	local KFPawn_Monster Origin;
+
+	if (Target == none)
+	{
+		return;
+	}
+
+	DataIndex = INDEX_NONE;
+	BeamParticleSystem = none;
+
+	for (i = 0; i < StormCannonBeamData.Length; ++i)
+	{
+		if (StormCannonBeamData[i].ID == ID)
+		{
+			DataIndex = i;
+			break;
+		}
+	}
+
+	if (DataIndex == INDEX_NONE)
+	{
+		BeamData.SourcePawn = Target;
+		BeamData.ID = ID;
+
+		// Simulated EMP affliction Effects
+		Target.PlaySoundBase(class'KFAffliction_EMP'.default.OnEMPSound, true, true, true);
+		BeamData.ParticleSystemPawn = WorldInfo.MyEmitterPool.SpawnEmitterMeshAttachment(ParticleSystem'FX_Gameplay_EMIT.FX_Char_Emp_clot'
+																							, Target.Mesh
+																							, class'KFAffliction_EMP'.default.EffectSocketName
+																							, false);
+
+		StormCannonBeamData.AddItem(BeamData);
+	}
+	else if (StormCannonBeamData[DataIndex].SourcePawn != none && StormCannonBeamData[DataIndex].SourcePawn != Target)
+	{
+		Origin = StormCannonBeamData[DataIndex].SourcePawn;
+		StormCannonBeamData[DataIndex].SourcePawn = Target;
+
+		// Deactivate old VFX on SourcePawn
+		if (StormCannonBeamData[DataIndex].ParticleSystemPawn != none)
+		{
+			Origin.PlaySoundBase(class'KFAffliction_EMP'.default.OnEMPEndSound, true, true);
+
+			PawnParticleSystem = StormCannonBeamData[DataIndex].ParticleSystemPawn; // Need to do this as UE doesn't allow passing an index into an array as out parameter
+			Origin.DetachEmitter(PawnParticleSystem);
+		}
+
+		// Activate new VFX on Target Pawn
+		Target.PlaySoundBase(class'KFAffliction_EMP'.default.OnEMPSound, true, true, true);		
+		StormCannonBeamData[DataIndex].ParticleSystemPawn = WorldInfo.MyEmitterPool.SpawnEmitterMeshAttachment(ParticleSystem'FX_Gameplay_EMIT.FX_Char_Emp_clot'
+																												, Target.Mesh
+																												, class'KFAffliction_EMP'.default.EffectSocketName
+																												, false);
+
+		if (StormCannonBeamData[DataIndex].ParticleSystemBeam == none)
+		{
+			StormCannonBeamData[DataIndex].ParticleSystemBeam = WorldInfo.MyEmitterPool.SpawnEmitter(ParticleSystem'WEP_HVStormCannon_EMIT.FX_HVStormCannon_Beam'
+																									, Origin.Mesh.GetBoneLocation('head'));
+		}
+
+		// Reuse Particle System
+		BeamParticleSystem = StormCannonBeamData[DataIndex].ParticleSystemBeam;
+	}
+
+	if (BeamParticleSystem == none || Origin == none)
+	{
+		return;
+	}
+
+	//`Log("SpawnBeamStormCannon with ID: " $ID $" from : " $Origin $" To: " $self);
+
+	BeamParticleSystem.SetBeamSourcePoint(0, Origin.Mesh.GetBoneLocation('head'), 0);
+	BeamParticleSystem.SetBeamTargetPoint(0, Target.Mesh.GetBoneLocation('head'), 0);
+	BeamParticleSystem.SetAbsolute(false, false, false);
+}
+
+client reliable function RemoveStormCannonVFX(int ID)
+{
+	local int i;
+	local ParticleSystemComponent PawnParticleSystem;
+
+	for (i = 0; i < StormCannonBeamData.Length; ++i)
+	{
+		if (StormCannonBeamData[i].ID == ID)
+		{
+			if (StormCannonBeamData[i].ParticleSystemPawn != none)
+			{
+				PawnParticleSystem = StormCannonBeamData[i].ParticleSystemPawn; // Need to do this as UE doesn't allow passing an index into an array as out parameter
+				StormCannonBeamData[i].SourcePawn.DetachEmitter(PawnParticleSystem);
+
+				StormCannonBeamData[i].ParticleSystemPawn.SetActive(false);
+				StormCannonBeamData[i].ParticleSystemPawn = none;
+			}		
+			
+			if (StormCannonBeamData[i].ParticleSystemBeam != none)
+			{
+				StormCannonBeamData[i].ParticleSystemBeam.DeactivateSystem();
+				StormCannonBeamData[i].ParticleSystemBeam.KillParticlesForced();
+				StormCannonBeamData[i].ParticleSystemBeam = none;
+			}
+
+			StormCannonBeamData.Remove(i, 1);
+			return;
+		}
+	}
+}
+
+simulated function SetShotgunJump(bool bJumping)
+{
+	bShotgunJumping = bJumping;
+}
+
+simulated function ResetShotgunJump()
+{
+	SetTimer(0.1, false, nameof(ClearShotgunJumpFlag));
+}
+
+simulated function ClearShotgunJumpFlag()
+{
+	bShotgunJumping = false;
+}
+
 defaultproperties
 {
 	EarnedDosh=0
@@ -12144,8 +12317,11 @@ defaultproperties
 
 	BeginningRoundVaultAmount=INDEX_NONE
 
-	RotationSpeedLimit=-1.f;
+	RotationSpeedLimit=-1.f
 
-	RotationAdjustmentInterval = 0.1f;
-	CurrentRotationAdjustmentTime = 0.0f;
+	RotationAdjustmentInterval = 0.1f
+	CurrentRotationAdjustmentTime = 0.0f
+
+	StormCannonIDCounter = 0
+	bShotgunJumping=false
 }

@@ -74,6 +74,7 @@ var GFxObject LengthButton;
 var GFxObject DifficultyButton;
 var GfxObject MapButton;
 var GFxObject RegionButton;
+var GFxObject AllowSeasonalSkinsButton;
 
 //==============================================================
 // Initialization
@@ -94,6 +95,7 @@ function GetButtons()
 	DifficultyButton = GetObject("difficultyButton");
 	MapButton = GetObject("mapButton");
 	RegionButton = GetObject("regionButton");
+	AllowSeasonalSkinsButton = GetObject("allowSeasonalSkinsButton");
 }
 
 function UpdateButtonsEnabled()
@@ -241,6 +243,18 @@ function InitializeGameOptions()
 	TextObject.SetString("length",StartMenu.LengthTitle);
 	TextObject.SetString("privacy",StartMenu.PermissionsTitle);
 	TextObject.SetString("inProgress", InProgressString);
+
+	if (class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None)
+	{
+		TextObject.SetBool("bShowAllowSeasonalSkins", false);
+	}
+	else
+	{
+		TextObject.SetBool("bShowAllowSeasonalSkins", true);
+	}
+
+	TextObject.SetString("allowSeasonalSkins", StartMenu.AllowSeasonalSkinsTitle);	
+
 	// Since the Mode list can include "ANY" we need to just accept that the selected index could be the length of the supported modes.  Otherwise when "ANY" is selected we push the index to 1.
 	// Also don't include the "ANY" option on Console since PlayGo doesn't support searching multiple game types.  HSL_BB
 	TextObject.SetObject("modeList", 		CreateList(SupportedGameModeStrings, Min(ParentMenu.Manager.GetModeIndex() , SupportedGameModeStrings.Length), false));
@@ -249,6 +263,7 @@ function InitializeGameOptions()
 	TextObject.SetObject("mapList",			CreateList(StartMenu.MapStringList, bIsSoloGame ? InitialMapIndex : InitialMapIndex+1, true, true));
 	TextObject.SetObject("difficultyList",	CreateList(class'KFCommon_LocalizedStrings'.static.GetDifficultyStringsArray(), GetDifficultyIndex(), false));
 	TextObject.SetObject("privacyList",		CreateList(class'KFCommon_LocalizedStrings'.static.GetPermissionStringsArray(class'WorldInfo'.static.IsConsoleBuild()), Profile.GetProfileInt(KFID_SavedPrivacyIndex), false));
+	TextObject.SetObject("allowSeasonalSkinsList",	CreateList(class'KFCommon_LocalizedStrings'.static.GetAllowSeasonalSkinsStringsArray(), Profile.GetProfileInt(KFID_SavedAllowSeasonalSkinsIndex), false));
 
 	if (class'WorldInfo'.static.IsConsoleBuild())
 	{
@@ -292,9 +307,7 @@ function FilterWeeklyMaps(out array<string> List)
 	if (WeeklyIndex == 14)
 	{
 		List.RemoveItem("KF-SteamFortress");
-	}
-	/**/
-	
+	}	
 }
 
 function GFxObject CreateList( array<string> TextArray, byte SelectedIndex, bool bAddNoPrefString, optional bool bIsMapList, optional byte MaxLength)
@@ -465,6 +478,20 @@ function PrivacyChanged( int Index, optional bool bSetText )
 	}
 }
 
+function AllowSeasonalSkinsChanged( int Index, optional bool bSetText )
+{
+	if(Index != GetCachedProfile().GetProfileInt(KFID_SavedAllowSeasonalSkinsIndex))
+	{
+		SaveConfig();
+		if(bSetText)
+		{
+			AllowSeasonalSkinsButton.SetString("infoString", class'KFCommon_LocalizedStrings'.static.GetAllowSeasonalSkinsStringsArray()[Index]);
+		}
+
+		GetCachedProfile().SetProfileSettingValueInt(KFID_SavedAllowSeasonalSkinsIndex, Index);
+	}
+}
+
 function SetRegionIndex(int InRegionIndex, optional bool bSetText)
 {
 	local array<String> PlayfabRegionList;
@@ -577,6 +604,11 @@ function int GetDifficulty()
 function int GetPrivacyIndex()
 {
 	return GetCachedProfile().GetProfileInt(KFID_SavedPrivacyIndex);
+}
+
+function int GetAllowSeasonalSkinsIndex()
+{
+	return GetCachedProfile().GetProfileInt(KFID_SavedAllowSeasonalSkinsIndex);
 }
 
 function string GetMapName()
