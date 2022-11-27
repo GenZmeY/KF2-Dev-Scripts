@@ -23,7 +23,7 @@ defaultproperties
 	DoT_Type=DOT_Bleeding
 	DoT_Duration=3.0
 	DoT_Interval=0.5
-	DoT_DamageScale=1.0
+	DoT_DamageScale=0.5
 
 	BleedPower = 20
 	PoisonPower = 25
@@ -32,5 +32,5 @@ defaultproperties
 
 	WeaponDef=class'KFWeapDef_HRG_Locust'
 
-	SpreadOnTouchDamage=40
+	SpreadOnTouchDamage=30
 }

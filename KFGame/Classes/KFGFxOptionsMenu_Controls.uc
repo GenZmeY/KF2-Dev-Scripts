@@ -342,11 +342,9 @@ function Callback_MouseLookUpScale(float NewValue)
 
 	KFPI = KFPlayerInput(GetPC().PlayerInput);
 	KFPI.MouseLookUpScale = NewValue;
-	KFPI.LookUpScale = NewValue;
-	class'PlayerInput'.default.LookUpScale = KFPI.MouseLookUpScale;
-	class'PlayerInput'.static.StaticSaveConfig();
+	KFPI.SaveConfig();
 
-	Manager.CachedProfile.SetProfileSettingValueFloat(KFID_MouseLookUpScale, NewValue);
+	//Manager.CachedProfile.SetProfileSettingValueFloat(KFID_MouseLookUpScale, NewValue);
 }
 
 function Callback_MouseLookRightScale(float NewValue)
@@ -355,12 +353,9 @@ function Callback_MouseLookRightScale(float NewValue)
 
 	KFPI = KFPlayerInput(GetPC().PlayerInput);
 	KFPI.MouseLookRightScale = NewValue;
-	KFPI.LookRightScale = NewValue;
-	class'PlayerInput'.default.LookRightScale = KFPI.MouseLookRightScale;
-	class'PlayerInput'.static.StaticSaveConfig();
+	KFPI.SaveConfig();
 
-	Manager.CachedProfile.SetProfileSettingValueFloat(KFID_MouseLookRightScale, NewValue);
-
+	// Manager.CachedProfile.SetProfileSettingValueFloat(KFID_MouseLookRightScale, NewValue);
 }
 
 function Callback_ViewSmoothingChanged(bool bActive)

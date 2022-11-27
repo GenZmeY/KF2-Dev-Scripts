@@ -156,7 +156,7 @@ defaultproperties
 	// Inventory
 	InventorySize=7
 	GroupPriority=110
-	WeaponSelectTexture=Texture2D'WEP_UI_Quad_Barrel_TEX.UI_WeaponSelect_QuadBarrel'
+	WeaponSelectTexture=Texture2D'WEP_UI_HRG_MegaDragonsbreath_TEX.UI_WeaponSelect_HRG_MegaDragonsbreath'
 
     // FOV
     MeshFOV=60
@@ -232,7 +232,7 @@ defaultproperties
 
 	// Ammo
 	MagazineCapacity[0]=4
-	SpareAmmoCapacity[0]=48 //72
+	SpareAmmoCapacity[0]=60 //48 //72
 	InitialSpareMags[0]=3 //8
 	AmmoPickupScale[0]=2.0 //3.0
 	bCanBeReloaded=true

@@ -157,6 +157,10 @@ simulated function ChangeMode(bool IsFolded, bool bApplyBlend = true)
         InstantHitDamageTypes[HEAVY_ATK_FIREMODE] = FoldedDTAlt;
 
         PlayerViewOffset = OriginalPlayerViewOffset;
+
+        InstantHitDamageTypes[BASH_FIREMODE]=class'KFDT_Piercing_ScytheStabFolded';
+	    InstantHitMomentum[BASH_FIREMODE]=100000.f;
+        InstantHitDamage[BASH_FIREMODE]=40;
     }
     else 
     {
@@ -170,6 +174,10 @@ simulated function ChangeMode(bool IsFolded, bool bApplyBlend = true)
         InstantHitDamageTypes[HEAVY_ATK_FIREMODE] = UnfoldedDTAlt;
     
         PlayerViewOffset = PlayerViewOffsetUnfolded;
+
+        InstantHitDamageTypes[BASH_FIREMODE]=class'KFDT_Piercing_ScytheStab';
+	    InstantHitMomentum[BASH_FIREMODE]=100000.f;
+        InstantHitDamage[BASH_FIREMODE]=60;
     }
 
     NotifyServerMode(bIsFolded);
@@ -325,8 +333,8 @@ defaultproperties
 
     // Short Range Mode Params
     MaxHitRangeFolded=220
-    FoldedDamage = 60
-    FoldedDamageAlt = 87
+    FoldedDamage = 70
+    FoldedDamageAlt = 120
     FoldedDT=class'KFDT_Slashing_ScytheShort'
     FoldedDTAlt=class'KFDT_Slashing_ScytheShortAlt'
     HitboxChainFolded = {(
@@ -344,8 +352,8 @@ defaultproperties
 
     // Long Range Mode Params
     MaxHitRangeUnfolded=300
-    UnfoldedDamage=90
-    UnfoldedDamageAlt=150
+    UnfoldedDamage=140
+    UnfoldedDamageAlt=190
     UnfoldedDT=class'KFDT_Slashing_ScytheLong'
     UnfoldedDTAlt=class'KFDT_Slashing_ScytheLongAlt'
     HitboxChainUnfolded = {(
@@ -383,9 +391,10 @@ defaultproperties
     FiringStatesArray(HEAVY_ATK_FIREMODE)=MeleeHeavyAttacking
 	InstantHitMomentum(HEAVY_ATK_FIREMODE)=30000.f
 
-	InstantHitDamageTypes(BASH_FIREMODE)=class'KFDT_Piercing_ScytheStab'
-	InstantHitMomentum(BASH_FIREMODE)=100000.f
-    InstantHitDamage(BASH_FIREMODE)=50
+    // Defined in ChangeMode function
+	//InstantHitDamageTypes(BASH_FIREMODE)=class'KFDT_Piercing_ScytheStab'
+	//InstantHitMomentum(BASH_FIREMODE)=100000.f
+    //InstantHitDamage(BASH_FIREMODE)=50
 
 	// Inventory
     GroupPriority=50

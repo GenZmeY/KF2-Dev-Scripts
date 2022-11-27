@@ -1633,8 +1633,8 @@ function OnReadProfileSettingsComplete(byte LocalUserNum,bool bWasSuccessful)
 			KFInput.bAllowSwapTo9mm = Profile.GetProfileBool(KFID_AllowSwapTo9mm);
 			
 			// Console?? PC?? 
-			KFInput.MouseLookUpScale = Profile.GetProfileFloat(KFID_MouseLookUpScale);
-			KFInput.MouseLookRightScale = Profile.GetProfileFloat(KFID_MouseLookRightScale);
+			//KFInput.MouseLookUpScale = Profile.GetProfileFloat(KFID_MouseLookUpScale);
+			//KFInput.MouseLookRightScale = Profile.GetProfileFloat(KFID_MouseLookRightScale);
 			KFInput.bViewSmoothingEnabled = Profile.GetProfileBool(KFID_ViewSmoothingEnabled);
 			KFInput.bViewAccelerationEnabled = Profile.GetProfileBool(KFID_ViewAccelerationEnabled);
 			

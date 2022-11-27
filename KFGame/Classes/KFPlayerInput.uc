@@ -244,8 +244,12 @@ var bool    bUsingVersusGamepadScheme;
 /*********************************************************************************************
  * @name QoL: Mouse input options
 ********************************************************************************************* */
-var float MouseLookUpScale;
-var float MouseLookRightScale;
+var config float MouseLookUpScale;
+var config float MouseLookRightScale;
+var config bool bUseDefaultLookScales;
+
+var const float DefaultLookRightScale;
+var const float DefaultLookUpScale;
 
 cpptext
 {
@@ -341,6 +345,17 @@ function ClientInitInputSystem()
 	}
 }
 
+simulated function ResetLookScales()
+{
+	LookRightScale = DefaultLookRightScale;
+	LookUpScale = DefaultLookUpScale;
+	SaveConfig();
+
+	class'PlayerInput'.default.LookRightScale = DefaultLookRightScale;
+	class'PlayerInput'.default.LookUpScale = DefaultLookUpScale;
+	class'PlayerInput'.static.StaticSaveConfig();
+}
+
 function UpdatePushToTalk(bool bValue)
 {
 	if(bValue != bRequiresPushToTalk)
@@ -411,8 +426,15 @@ function EDoubleClickDir CheckForDoubleClickMove(float DeltaTime)
 event PlayerInput( float DeltaTime )
 {
 	local float FOVScale, TimeScale;
-	local float MouseYScale, MouseXScale;
 	local vector RawJoyVector;
+
+	/** For checking if init values needs to be reset */
+	if (bUseDefaultLookScales)
+	{
+		bUseDefaultLookScales = false;
+		ResetLookScales();
+	}
+	/** */
 
 	// Save Raw values
 	RawJoyUp		= aBaseY;
@@ -444,12 +466,8 @@ event PlayerInput( float DeltaTime )
 	aBaseY		*= TimeScale * MoveForwardSpeed;
 	aStrafe		*= TimeScale * MoveStrafeSpeed;
 	aUp			*= TimeScale * MoveStrafeSpeed;
-
-	if (class'WorldInfo'.static.IsConsoleBuild() || bUsingGamepad)
-	{
-		aTurn		*= TimeScale * LookRightScale;
-		aLookUp		*= TimeScale * LookUpScale;
-	}
+	aTurn		*= TimeScale * LookRightScale;
+	aLookUp		*= TimeScale * LookUpScale;
 
 	PostProcessInput( DeltaTime );
 
@@ -473,16 +491,14 @@ event PlayerInput( float DeltaTime )
 	aLookUp			*= FOVScale;
 	aTurn			*= FOVScale;
 
-	MouseXScale = (TimeScale * -MouseLookUpScale / 100.0f);
 	// Turning and strafing share the same axis.
 	if( bStrafe > 0 )
-		aStrafe		+= aBaseX + aMouseX * ( MouseXScale > 0.0f ? MouseXScale : 1.0f);
+		aStrafe		+= aBaseX + aMouseX;
 	else
-		aTurn		+= aBaseX + aMouseX * ( MouseXScale > 0.0f ? MouseXScale : 1.0f);
-		
+		aTurn		+= aBaseX + aMouseX;
+
 	// Look up/down.
-	MouseYScale = (TimeScale * -MouseLookUpScale / 100.0f);
-	aLookup += aMouseY * ( MouseYScale > 0.0f ? MouseYScale : 1.0f);
+	aLookup += aMouseY;
 	if ( (!bUsingGamepad && bInvertMouse) || (bInvertController && bUsingGamepad) )
 	{
 		aLookup *= -1.f;
@@ -587,6 +603,8 @@ function AdjustMouseSensitivity(float FOVScale)
 	}
 
 	Super.AdjustMouseSensitivity(FOVScale);
+	aMouseX			*= MouseLookRightScale / 100.0f;
+	aMouseY			*= MouseLookUpScale / -100.0f;
 }
 
 
@@ -3002,5 +3020,8 @@ defaultproperties
 	ForceLookAtPawnRotationRate=22
 	ForceLookAtPawnDampenedRotationRate=8
 
-	WeakBoneDistance = 0.02; //0.01;
+	WeakBoneDistance = 0.02 //0.01;
+
+	DefaultLookRightScale=300
+	DefaultLookUpScale=-250
 }

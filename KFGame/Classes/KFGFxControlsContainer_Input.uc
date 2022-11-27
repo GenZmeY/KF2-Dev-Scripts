@@ -38,7 +38,6 @@ var localized string ViewAccelerationString;
 
 var KFGFxOptionsMenu_Controls ControlsMenu;
 
-
 function Initialize( KFGFxObject_Menu NewParentMenu )
 {
 	super.Initialize( NewParentMenu );
@@ -178,15 +177,12 @@ function ResetInputOptions()
 
 		KFPI.MouseLookUpScale = ControlsMenu.Manager.CachedProfile.GetDefaultFloat(KFID_MouseLookUpScale);
 		ControlsMenu.Manager.CachedProfile.SetProfileSettingValueFloat(KFID_MouseLookUpScale, KFPI.MouseLookUpScale);
-		KFPI.LookUpScale = KFPI.MouseLookUpScale;
-		class'PlayerInput'.default.LookUpScale = KFPI.MouseLookUpScale;
-
+	
 		KFPI.MouseLookRightScale = ControlsMenu.Manager.CachedProfile.GetDefaultFloat(KFID_MouseLookRightScale);
 		ControlsMenu.Manager.CachedProfile.SetProfileSettingValueFloat(KFID_MouseLookRightScale, KFPI.MouseLookRightScale);
-		KFPI.LookRightScale = KFPI.MouseLookRightScale;
-		class'PlayerInput'.default.LookRightScale = KFPI.MouseLookRightScale;
-		class'PlayerInput'.static.StaticSaveConfig();
-		
+
+		KFPI.ResetLookScales();
+
 		KFPI.bViewSmoothingEnabled = ControlsMenu.Manager.CachedProfile.GetDefaultBool(KFID_ViewSmoothingEnabled);
 		ControlsMenu.Manager.CachedProfile.SetProfileSettingValueBool(KFID_ViewSmoothingEnabled, KFPI.bViewSmoothingEnabled);
 
@@ -227,4 +223,3 @@ function ResetInputOptions()
 	
 	InitializeOptions();
 }
-

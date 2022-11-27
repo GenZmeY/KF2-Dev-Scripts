@@ -29,6 +29,21 @@ simulated function ZoomOut( bool bAnimateTransition, float ZoomTimeToGo )
 	}
 }
 
+simulated function AttachLaserSight()
+{
+	if( WorldInfo.NetMode == NM_DedicatedServer )
+	{
+        return;
+	}
+
+	super.AttachLaserSight();
+
+	if (LaserSight != none)
+	{
+		LaserSight.bForceDotToMatch = true;
+	}
+}
+
 defaultproperties
 {
 	bHasFireLastAnims=true
@@ -70,10 +85,10 @@ defaultproperties
 	bReloadFromMagazine=true
 
 	// Recoil
-	maxRecoilPitch=90
-	minRecoilPitch=80
-	maxRecoilYaw=80
-	minRecoilYaw=-80
+	maxRecoilPitch=50
+	minRecoilPitch=40
+	maxRecoilYaw=70
+	minRecoilYaw=-70
 	RecoilRate=0.085
 	RecoilMaxYawLimit=500
 	RecoilMinYawLimit=65035
@@ -83,7 +98,7 @@ defaultproperties
 	RecoilISMinYawLimit=65460
 	RecoilISMaxPitchLimit=350
 	RecoilISMinPitchLimit=65460
-	IronSightMeshFOVCompensationScale=4.0
+	IronSightMeshFOVCompensationScale=6.0
 
 	// Old Recoil Data
 	// maxRecoilPitch=80
