@@ -53,6 +53,29 @@ event PostBeginPlay()
 	}
 }
 
+simulated function KFProjectile SpawnAllProjectiles(class<KFProjectile> KFProjClass, vector RealStartLoc, vector AimDir)
+{
+	local Vector X, Y, Z, POVLoc;
+	local Quat R;
+	local rotator POVRot;
+
+	if (bUsingSights)
+	{
+		if (Instigator != None && Instigator.Controller != none)
+		{
+			Instigator.Controller.GetPlayerViewPoint(POVLoc, POVRot);
+
+			GetAxes(POVRot, X, Y, Z);
+
+			// 0.32 is a value the artists found that was needed to balance the aim in order to match the iron sight with the bullet impact position
+			R = QuatFromAxisAndAngle(Y, -0.32f * DegToRad);
+			AimDir = QuatRotateVector(R, AimDir);
+		}
+	}
+
+	return SpawnProjectile(KFProjClass, RealStartLoc, AimDir);
+}
+
 simulated function ProcessInstantHitEx(byte FiringMode, ImpactInfo Impact, optional int NumHits, optional out float out_PenetrationVal, optional int ImpactNum )
 {
 	local int HitZoneIdx;
@@ -85,12 +108,13 @@ simulated function ProcessInstantHitEx(byte FiringMode, ImpactInfo Impact, optio
 					KFPC.StormCannonIDCounter = 0;
 				}
 
+				// DISABLED PER DESIGN REQUEST, WE DO USE NOW DAMAGE TYPE EMP POWER
 				// We simulate EMP affliction on Server, we can't use the affliction itself because it's duration is super hard to control
 				// To completely sync with the logic of TrackingInstanceTimeDelaySeconds
 
 				// Simulate start EMP affliction
-				Target.bEmpPanicked = true;
-        		Target.OnStackingAfflictionChanged(AF_EMP);
+				//Target.bEmpPanicked = true;
+        		//Target.OnStackingAfflictionChanged(AF_EMP);
 
 				HVStormCannon_ProjectileTracking.AddItem(NewTrackingInstance);
 
@@ -124,7 +148,7 @@ function KFPawn_Monster SearchClosestTarget(HVStormCannon_ProjectileTrackingInst
 								, ReferenceLocation
 								, true,, HitInfo)
     {
-	    if (!CurrentTarget.IsAliveAndWell() || CurrentTarget.bIsCloaking)
+	    if (!CurrentTarget.IsAliveAndWell())
         {
             continue;
         }
@@ -176,9 +200,10 @@ function UpdateTracking()
 
 		if (WorldInfo.TimeSeconds >= HVStormCannon_ProjectileTracking[i].TimeNextJump)
 		{
+			// DISABLED PER DESIGN REQUEST, WE DO USE NOW DAMAGE TYPE EMP POWER
 			// Simulate stop EMP affliction
-			HVStormCannon_ProjectileTracking[i].LastTarget.bEmpPanicked = false;
-        	HVStormCannon_ProjectileTracking[i].LastTarget.OnStackingAfflictionChanged(AF_EMP);
+			//HVStormCannon_ProjectileTracking[i].LastTarget.bEmpPanicked = false;
+        	//HVStormCannon_ProjectileTracking[i].LastTarget.OnStackingAfflictionChanged(AF_EMP);
 
 			if (HVStormCannon_ProjectileTracking[i].NumberHits < TrackingDamage.length)
 			{
@@ -187,9 +212,10 @@ function UpdateTracking()
 				{
 					HVStormCannon_ProjectileTracking[i].TimeNextJump = WorldInfo.TimeSeconds + TrackingInstanceTimeDelaySeconds;
 
+					// DISABLED PER DESIGN REQUEST, WE DO USE NOW DAMAGE TYPE EMP POWER
 					// Simulate start EMP affliction
-					NextTarget.bEmpPanicked = true;
-        			NextTarget.OnStackingAfflictionChanged(AF_EMP);
+					//NextTarget.bEmpPanicked = true;
+        			//NextTarget.OnStackingAfflictionChanged(AF_EMP);
 
 					StartBeamVFX(NextTarget, HVStormCannon_ProjectileTracking[i].IDCounter);
 
@@ -274,27 +300,6 @@ function int GetID(byte ID)
 	return WeaponID + ID;
 }
 
-simulated function KFProjectile SpawnProjectile( class<KFProjectile> KFProjClass, vector RealStartLoc, vector AimDir )
-{
-	local vector SocketLocation;
-	local rotator SocketRotation;
-	local vector SpawnLocation;
-	local vector SpawnDirection;
-
-	if(bUsingSights && MySkelMesh.GetSocketWorldLocationAndRotation('MuzzleFlash_Scope', SocketLocation, SocketRotation, 0))
-	{
-		SpawnLocation = SocketLocation;
-		SpawnDirection = vector(SocketRotation);
-	}
-	else
-	{
-		SpawnLocation = RealStartLoc;
-		SpawnDirection = AimDir; 
-	}
-
-	return super.SpawnProjectile(KFProjClass, SpawnLocation, SpawnDirection);
-}
-
 simulated function UpdateAmmoCounter()
 {
 	local float PercentageAmmo;
@@ -339,21 +344,22 @@ defaultproperties
 	AimWarningDelay=(X=0.4f, Y=0.8f)
 	AimWarningCooldown=0.0f
 
-	// Recoil
-	maxRecoilPitch=300
-	minRecoilPitch=200
-	maxRecoilYaw=150
-	minRecoilYaw=-150
-	RecoilRate=0.08
+// Recoil
+	maxRecoilPitch=200 //185
+	minRecoilPitch=165 //150
+	maxRecoilYaw=190 //175
+	minRecoilYaw=-165 //-150
+	RecoilRate=0.09
 	RecoilMaxYawLimit=500
-	RecoilMinYawLimit=1000
-	RecoilMaxPitchLimit=1250
-	RecoilMinPitchLimit=1500
-	RecoilISMaxYawLimit=50
-	RecoilISMinYawLimit=1000
-	RecoilISMaxPitchLimit=500
-	RecoilISMinPitchLimit=1000
+	RecoilMinYawLimit=65035
+	RecoilMaxPitchLimit=900
+	RecoilMinPitchLimit=65035
+	RecoilISMaxYawLimit=150
+	RecoilISMinYawLimit=65385
+	RecoilISMaxPitchLimit=375
+	RecoilISMinPitchLimit=65460
 	RecoilViewRotationScale=0.6
+	HippedRecoilModifier=1.5 //1.25
 	IronSightMeshFOVCompensationScale=1.5
 
 	// Inventory
@@ -409,7 +415,7 @@ defaultproperties
 
     ScopedSensitivityMod=8.0 //16.0
 	ScopeLenseMICTemplate=MaterialInstanceConstant'WEP_1P_HVStormCannon_MAT.Wep_1stP_HVStormCannon_Lens_MIC'
-	ScopeMICIndex = 1
+	ScopeMICIndex = 2
 
 	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.15f), (Stat=EWUS_Damage1, Scale=1.15f), (Stat=EWUS_Weight, Add=1)))
 

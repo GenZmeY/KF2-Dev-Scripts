@@ -73,7 +73,7 @@ simulated function PrintLog(string text)
 
 defaultproperties
 {
-	RenderTexture=TextureRenderTarget2D'WEP_1P_Optics_TEX.Wep_1stP_Optics_R2T'
+	RenderTexture=TextureRenderTarget2D'WEP_1P_Optics_TEX.Wep_1stP_Radar_R2T'
 	MovieInfo=SwfMovie'UI_World.RadarWorld_SWF'
 	bAutoPlay=false
 }

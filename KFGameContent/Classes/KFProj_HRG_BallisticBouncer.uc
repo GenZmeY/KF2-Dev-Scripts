@@ -39,8 +39,8 @@ var AkEvent BurstAkEvent;
 
 /** Decal settings */
 var MaterialInterface ImpactDecalMaterial;
-var float ImpactDecalWidth;
-var float ImpactDecalHeight;
+var float ImpactDecalMinSize;
+var float ImpactDecalMaxSize;
 var float ImpactDecalThickness;
 
 var int MaxBounces;
@@ -184,6 +184,8 @@ simulated function BounceNoCheckRepeatingTouch(vector HitNormal, Actor BouncedOf
   * Returns true if projectile actually bounced / was allowed to bounce */
 simulated function bool Bounce( vector HitNormal, Actor BouncedOff )
 {
+	local vector StartTrace, EndTrace, TraceLocation, TraceNormal;
+
 	// Avoid crazy bouncing
 	if (CheckRepeatingTouch(BouncedOff))
 	{
@@ -193,6 +195,18 @@ simulated function bool Bounce( vector HitNormal, Actor BouncedOff )
 	}
 
 	BounceNoCheckRepeatingTouch(HitNormal, BouncedOff);
+
+	if (WorldInfo.NetMode == NM_DedicatedServer || WorldInfo.NetMode == NM_Standalone)	
+	{
+		StartTrace = Location;
+		EndTrace = Location - HitNormal * 200.f;
+
+		Trace(TraceLocation, TraceNormal, EndTrace, StartTrace,,,,TRACEFLAG_Bullet);
+
+		//DrawDebugLine(StartTrace, EndTrace, 0, 0, 255, true);
+
+		SpawnImpactDecal(TraceLocation, HitNormal, fChargePercentage);
+	}
 
 	return true;
 }
@@ -252,8 +266,8 @@ simulated function ProcessBulletTouch(Actor Other, Vector HitLocation, Vector Hi
 {
 	local Pawn Victim;
 	local array<ImpactInfo> HitZoneImpactList;
-	//local ImpactInfo ImpactInfoFallBack;
-	local vector StartTrace, EndTrace, Direction; //, DirectionFallBack;
+	local ImpactInfo ImpactInfoFallBack;
+	local vector StartTrace, EndTrace, Direction, DirectionFallBack;
 	local TraceHitInfo HitInfo;
     local KFWeapon KFW;
 
@@ -293,6 +307,37 @@ simulated function ProcessBulletTouch(Actor Other, Vector HitLocation, Vector Hi
 
 		//`Log("HitZoneImpactList: " $HitZoneImpactList.Length);
 
+		if (HitZoneImpactList.length == 0)
+		{
+			// This projectile needs this special case, the projectile bounces with everything constantly while changing cylinder size
+			// Making it's direction kind of unpredictable when trying to find the hit zones
+			// If we fail to find one with the default method, trace from Hit Location to Victim Location plus some distance that makes the trace end outside of the Victim
+			// That will succeed in any case start - end points are inside or outside the collider
+
+			DirectionFallBack = Normal(Victim.Location - StartTrace);
+
+			EndTrace = Victim.Location + DirectionFallBack * (Victim.CylinderComponent.CollisionRadius * 6.0);
+
+			//Victim.DrawDebugSphere(StartTrace, 12, 6, 255, 0, 0, true);
+			//Victim.DrawDebugSphere(EndTrace, 12, 6, 0, 255, 0, true);
+			//Victim.DrawDebugLine(StartTrace, EndTrace, 0, 0, 255, true);
+
+			TraceProjHitZones(Victim, EndTrace, StartTrace, HitZoneImpactList);
+
+			// For some reason with the bouncing hitting certain parts doesn't detect hit, we force a fallback
+			if (HitZoneImpactList.length == 0)
+			{
+				//`Log("HitZoneImpactList: USING FALLBACK!");
+				
+				ImpactInfoFallBack.HitActor = Victim;
+				ImpactInfoFallBack.HitLocation = HitLocation;
+				ImpactInfoFallBack.HitNormal = Direction;
+				ImpactInfoFallBack.StartTrace = StartTrace;
+
+				HitZoneImpactList.AddItem(ImpactInfoFallBack);
+			}
+		}
+
 		if ( HitZoneImpactList.length > 0 )
 		{
             HitZoneImpactList[0].RayDir	= Direction;
@@ -319,6 +364,11 @@ simulated function IncrementNumImpacts(Pawn Victim)
 	local KFPlayerController KFPC;
 
 	if (WorldInfo.NetMode == NM_Client)
+	{
+		return;
+	}
+
+	if (Victim.bCanBeDamaged == false || Victim.IsAliveAndWell() == false)
 	{
 		return;
 	}
@@ -446,6 +496,20 @@ simulated function SyncOriginalLocation()
     Super.SyncOriginalLocation();
 }
 
+reliable client function SpawnImpactDecal(Vector HitLocation, vector HitNormal, float ChargePercentage )
+{
+	local float DecalSize;
+
+	if( WorldInfo.MyDecalManager != none)
+	{
+		DecalSize = Lerp(ImpactDecalMinSize, ImpactDecalMaxSize, ChargePercentage);
+
+		//DrawDebugSphere(ProjEffects.GetPosition(), 12, 6, 0, 255, 0, true);
+
+		WorldInfo.MyDecalManager.SpawnDecal( ImpactDecalMaterial, HitLocation, rotator(-HitNormal)
+											, DecalSize, DecalSize, ImpactDecalThickness, true );
+	}
+}
 
 defaultproperties
 {
@@ -483,9 +547,9 @@ defaultproperties
     AmbientComponent=AmbientAkSoundComponent
     Components.Add(AmbientAkSoundComponent)
 
-    //ImpactDecalMaterial=DecalMaterial'FX_Mat_Lib.FX_Puke_Mine_Splatter_DM'
-    ImpactDecalWidth=178.f
-    ImpactDecalHeight=178.f
+    ImpactDecalMaterial=DecalMaterial'WEP_HRG_BallisticBouncer_EMIT.FX_Ball_Impact_DM'
+    ImpactDecalMinSize=20.f
+    ImpactDecalMaxSize=80.f
     ImpactDecalThickness=28.f
 
 	Begin Object Name=CollisionCylinder

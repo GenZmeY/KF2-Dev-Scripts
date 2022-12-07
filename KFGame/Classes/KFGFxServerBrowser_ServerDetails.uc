@@ -65,6 +65,7 @@ function SetDetails(KFOnlineGameSettings ServerResult)
 	local GFxObject TempObj;
 	local int Ping, PlayerCount;
 	local KFOnlineGameSettings TempOnlingGamesSettings;
+	local bool bShowSeasonalSkins;
 
 	if(ServerResult != none)
 	{
@@ -92,6 +93,11 @@ function SetDetails(KFOnlineGameSettings ServerResult)
 		TempObj.SetBool("mutators",          	TempOnlingGamesSettings.bMutators);
 		TempObj.SetBool("ranked",           	TempOnlingGamesSettings.bUsesStats);
 		TempObj.SetBool("seasonalSkins",       	TempOnlingGamesSettings.bNoSeasonalSkins == false);
+
+		bShowSeasonalSkins = class'KFGameEngine'.static.GetSeasonalEventID() != SEI_None
+							&& class'KFGameEngine'.static.GetSeasonalEventID() != SEI_Spring;
+
+		TempObj.SetBool("showSeasonalSkins",    bShowSeasonalSkins);
 
 		Ping = 									TempOnlingGamesSettings.PingInMs;
 		TempObj.SetString("ping",          		(Ping < 0) ? ("-") : (String(Ping)) );

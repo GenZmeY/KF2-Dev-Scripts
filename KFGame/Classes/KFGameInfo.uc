@@ -658,6 +658,8 @@ static native final function bool GameModeSupportsMap(int GameMode, string MapNa
 */
 event InitGame( string Options, out string ErrorMessage )
 {
+	local string OptionRead;
+
  	Super.InitGame( Options, ErrorMessage );
 
 	if (UsesModifiedDifficulty())
@@ -679,7 +681,22 @@ event InitGame( string Options, out string ErrorMessage )
 		GameLength = Clamp(GetIntOption(Options, "GameLength", GameLength), 0, SpawnManagerClasses.Length - 1);
 	}
 
-	AllowSeasonalSkinsIndex = GetIntOption(Options, "AllowSeasonalSkins", AllowSeasonalSkinsIndex);
+	OptionRead = ParseOption(Options, "AllowSeasonalSkins");
+	if (OptionRead != "")
+	{
+		if (int(OptionRead) == 0)
+		{
+			AllowSeasonalSkinsIndex = 1; // disable..
+		}
+		else
+		{
+			AllowSeasonalSkinsIndex = 0; // enable..
+		}
+	}
+	else // If doesn't exist on the Options we default it..
+	{
+		AllowSeasonalSkinsIndex = 0;
+	}
 
 	if( OnlineSub != none && OnlineSub.GetLobbyInterface() != none )
 	{

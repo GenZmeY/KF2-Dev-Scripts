@@ -54,7 +54,7 @@ defaultproperties
 	KDeathVel=200
 
 	StumblePower=18
-	StunPower=15
+	StunPower=5
 	GunHitPower=15
 
 	WeaponDef=class'KFWeapDef_ZedMKIII'

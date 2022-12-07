@@ -35,11 +35,14 @@ defaultproperties
 	KDeathVel=250
 
     KnockdownPower=20
-	StunPower=50
-	StumblePower=200
-	GunHitPower=150
-	MeleeHitPower=100
-	EMPPower=0 // Don't use the affliction here, we manage this on KFWeap_HVStormCannon to completely synchronize it with the logic of the weapon
+	StunPower=25
+	StumblePower=85
+	GunHitPower=80
+
+	// DISABLED PER DESIGN REQUEST, WE DO USE NOW DAMAGE TYPE EMP POWER
+	// Don't use the affliction here, we manage this on KFWeap_HVStormCannon to completely synchronize it with the logic of the weapon
+	//EMPPower=0
+	EMPPower=25
 
 	GoreDamageGroup=DGT_EMP
 	EffectGroup=FXG_Electricity

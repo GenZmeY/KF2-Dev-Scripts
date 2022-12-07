@@ -16,6 +16,21 @@ var int CurrentFrameBooms;
 /** Index of event to use as the default block */
 var int ActiveEventIdx;
 
+/** List with perks in random order */
+var array<byte> PerkRouletteRandomList;  
+
+var int PerkRouletteRandomInitialIndex;
+var int PerkRouletteRandomWaveNum;
+
+struct PerkRoulette_PlayerMessageDelegate
+{
+    var() KFPlayerController_WeeklySurvival KFPC_WS;
+    var() class<LocalMessage> InMessageClass;
+    var() int SwitchValue;
+};
+
+var array<PerkRoulette_PlayerMessageDelegate> PerkRoulette_PlayersDelegateData;
+
 //-----------------------------------------------------------------------------
 // Statics
 static event class<GameInfo> SetGameType(string MapName, string Options, string Portal)
@@ -513,7 +528,14 @@ function SetBossIndex()
 function Tick(float DeltaTime)
 {
     CurrentFrameBooms = 0;
+    
     super.Tick(DeltaTime);
+
+    if (MyKFGRI.IsRandomPerkMode())
+    {
+        // This deals with players joining at any time (lobby, or in wave)
+        ChooseRandomPerks(false);
+    }
 }
 
 function TickZedTime( float DeltaTime )
@@ -548,7 +570,8 @@ function WaveEnded(EWaveEndCondition WinCondition)
     // Choose new perk before the end of wave message triggers in supper. 
     if (MyKFGRI.IsRandomPerkMode() && WinCondition == WEC_WaveWon)
     {
-        ChooseRandomPerks();
+        PerkRouletteRandomWaveNum++;
+        ChooseRandomPerks(true);
     }
 
     super.WaveEnded(WinCondition);
@@ -1320,6 +1343,11 @@ function WaveStarted()
             ChooseVIP(true);
         }
     }
+
+    if (MyKFGRI.IsRandomPerkMode())
+    {
+        RandomPerkWaveStarted();
+    }
 }
 
 /**
@@ -1523,137 +1551,86 @@ simulated function NotifyPlayerStatsInitialized(KFPlayerController_WeeklySurviva
     }
 }
 
-function ChooseInitialRandomPerk(KFPlayerController_WeeklySurvival KFPC_WS)
+simulated function RandomPerkWaveStarted()
 {
-    local KFPlayerController_WeeklySurvival OtherKFPC;
-    local array<class<KFPerk> > AvailablePerks;
-    local int i;
-    local byte NewPerkIndex;
-    local bool bPerkFound;
+    local KFPlayerController_WeeklySurvival KFPC_WS;
 
-    `Log("CHOOSING INITIAL PERKS");
-
-    for (i = 0; i < KFPC_WS.PerkList.Length; ++i)
+    foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
     {
-        bPerkFound = false;
-
-        foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', OtherKFPC)
+        if (KFPC_WS.InitialRandomPerk == 255)
         {
-            if (OtherKFPC == KFPC_WS)
-            {
-                continue;
-            }
+            `Log("PLAYER - RandomPerkWaveStart : " $KFPC_WS);       
 
-            if (KFPC_WS.Perklist[i].PerkClass == OtherKFPC.CurrentPerk.Class)
-            {
-                bPerkFound = true;
-                break;
-            }
-        }   
-
-        if (!bPerkFound)
-        {
-            AvailablePerks.AddItem(KFPC_WS.PerkList[i].PerkClass);
+            ChooseInitialRandomPerk(KFPC_WS);
         }
     }
-
-    if (AvailablePerks.Length == 0)
-    {
-        for (i = 0; i < KFPC_WS.Perklist.Length; ++i)
-        {
-            AvailablePerks.AddItem(KFPC_WS.Perklist[i].PerkClass);
-        }
-        KFPC_WS.LockedPerks.Length = 0;
-    }
-
-    NewPerkIndex = Rand(AvailablePerks.Length);
-    
-    KFPC_WS.LockedPerks.AddItem(AvailablePerks[NewPerkIndex]);
-    KFPC_WS.ForceNewPerk(AvailablePerks[NewPerkIndex]);
 }
 
-function ChooseRandomPerks()
+function InitializeRandomPerkList(array<PerkInfo> PerkList)
 {
-    local KFPlayerController_WeeklySurvival KFPC;
-    local array<class<KFPerk> > AvailablePerks;
-    local array<class<KFPerk> > PickedPerks;
-    local int i, j;
-    local byte NewPerkIndex;
-    local bool bPerkFound;
+    local array<byte> AvailablePerks;
+    local int i;
+    local byte NewRandomIndex;
 
-    foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC)
+    for (i = 0; i < PerkList.Length; ++i)
     {
-        AvailablePerks.Length = 0;
+        AvailablePerks.Additem(i);
+    }
 
-        for (i = 0; i < KFPC.Perklist.Length; ++i)
+    while(AvailablePerks.Length > 0)
+    {
+        NewRandomIndex = Rand(AvailablePerks.Length);
+        PerkRouletteRandomList.AddItem(AvailablePerks[NewRandomIndex]);
+        AvailablePerks.Remove(NewRandomIndex, 1);
+    }
+
+    PerkRouletteRandomInitialIndex = 0;
+    PerkRouletteRandomWaveNum = 0;
+}
+
+function ChooseInitialRandomPerk(KFPlayerController_WeeklySurvival KFPC_WS)
+{
+    if (PerkRouletteRandomList.Length == 0)
+    {
+        // First case, fill random array
+        InitializeRandomPerkList(KFPC_WS.PerkList);
+    }
+
+    if (KFPC_WS.InitialRandomPerk == 255)
+    {
+        // Choose initial random perk
+
+        KFPC_WS.InitialRandomPerk = PerkRouletteRandomInitialIndex;
+        PerkRouletteRandomInitialIndex = (PerkRouletteRandomInitialIndex + 1) % PerkRouletteRandomList.Length;
+
+        `Log("PLAYER : " $KFPC_WS);
+        `Log("InitialRandomPerk : " $KFPC_WS.InitialRandomPerk);
+    }
+}
+
+function ChooseRandomPerks(bool isEndWave)
+{
+    local KFPlayerController_WeeklySurvival KFPC_WS;
+    local byte NewPerk;
+
+    foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+    {
+        if (KFPC_WS.InitialRandomPerk == 255 || KFPC_WS.PlayerReplicationInfo.bOnlySpectator || KFPC_WS.IsInState('Spectating'))
         {
-            bPerkFound = false;
-            for (j = 0; j < PickedPerks.Length; ++j)
-            {
-                if (KFPC.Perklist[i].PerkClass == PickedPerks[j])
-                {
-                    bPerkFound = true;
-                    break;
-                }
-            }
-
-            if (!bPerkFound)
-            {
-                for (j = 0; j < KFPC.LockedPerks.Length; ++j)
-                {
-                    if (KFPC.Perklist[i].PerkClass == KFPC.LockedPerks[j])
-                    {
-                        bPerkFound = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!bPerkFound)
-            {
-                AvailablePerks.AddItem(KFPC.Perklist[i].PerkClass);
-            }
+            continue;
         }
 
-        if (AvailablePerks.Length == 0)
+        // If the perk assigned to this player is different than the one it should have.. reassign
+        NewPerk = (KFPC_WS.InitialRandomPerk + PerkRouletteRandomWaveNum) % PerkRouletteRandomList.Length;
+        if (PerkRouletteRandomList[NewPerk] != KFPC_WS.SavedPerkIndex || isEndWave)
         {
-            for (i = 0; i < KFPC.Perklist.Length; ++i)
-            {
-                bPerkFound = false;
-                for (j = 0; j < PickedPerks.Length; ++j)
-                {
-                    if (KFPC.Perklist[i].PerkClass == PickedPerks[j])
-                    {
-                        bPerkFound = true;
-                        break;
-                    }
-                }
-
-                if (!bPerkFound && KFPC.Perklist[i].PerkClass != KFPC.CurrentPerk.Class)
-                {
-                    AvailablePerks.AddItem(KFPC.Perklist[i].PerkClass);
-                }
-            }
-
-            if (AvailablePerks.Length == 0)
-            {
-                for (i = 0; i < KFPC.Perklist.Length; ++i)
-                {
-                    AvailablePerks.AddItem(KFPC.Perklist[i].PerkClass);
-                    PickedPerks.Length = 0;
-                }
-            }
-            
-            KFPC.LockedPerks.Length = 0;
+            KFPC_WS.ForceNewPerk(PerkRouletteRandomList[NewPerk]);
         }
 
-        NewPerkIndex = Rand(AvailablePerks.Length);
-        PickedPerks.AddItem(AvailablePerks[NewPerkIndex]);
-        KFPC.LockedPerks.AddItem(AvailablePerks[NewPerkIndex]);
-
-        KFPC.ForceNewPerk(AvailablePerks[NewPerkIndex]);
-
-        KFPC.PlayRandomPerkChosenSound();
+        if (isEndWave)
+        {
+            KFPC_WS.PlayRandomPerkChosenSound();
+        }
     }
 }
 
@@ -1672,19 +1649,82 @@ event BroadcastLocalizedMessage( class<LocalMessage> InMessageClass, optional in
     }
     else
     {
-        BroadcastCustomWaveEndMessage(self, InMessageClass, Switch);
+        BroadcastCustomWaveEndMessage(InMessageClass, Switch);
     }
 }
 
-function BroadcastCustomWaveEndMessage( actor Sender, class<LocalMessage> InMessageClass, optional int Switch, optional PlayerReplicationInfo RelatedPRI_1, optional PlayerReplicationInfo RelatedPRI_2, optional Object OptionalObject )
+function BroadcastCustomWaveEndMessage(class<LocalMessage> InMessageClass, optional int Switch)
 {
-    local KFPlayerController KFPC;
+    local KFPlayerController_WeeklySurvival KFPC_WS;
+    local PerkRoulette_PlayerMessageDelegate PlayerMessageData;
 
-	foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+    PerkRoulette_PlayersDelegateData.Remove(0, PerkRoulette_PlayersDelegateData.Length);
+    ClearTimer(nameof(BroadcastCustomDelegate));
+
+	foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
 	{
-        KFPC.ReceiveLocalizedMessage( InMessageClass, Switch, RelatedPRI_1, RelatedPRI_2, KFPC.GetPerk().Class);
+        if (KFPC_WS.InitialRandomPerk == 255)
+        {
+            continue;
+        }
+
+        if (KFPC_WS.Pawn.IsAliveAndWell() == false || KFPC_WS.PlayerReplicationInfo.bOnlySpectator || KFPC_WS.IsInState('Spectating'))
+        {
+            PlayerMessageData.KFPC_WS = KFPC_WS;
+            PlayerMessageData.InMessageClass = InMessageClass;
+            PlayerMessageData.SwitchValue = Switch;
+
+            PerkRoulette_PlayersDelegateData.AddItem(PlayerMessageData);
+
+            continue;
+        }
+
+        KFPC_WS.ReceiveLocalizedMessage( InMessageClass, Switch, None, None, KFPC_WS.GetPerk().Class);
 	}
+
+    if (PerkRoulette_PlayersDelegateData.Length > 0)
+    {
+        SetTimer(1.f, true, nameof(BroadcastCustomDelegate));
+    }
 }
+
+function BroadcastCustomDelegate()
+{
+    local int i;
+    local PerkRoulette_PlayerMessageDelegate PlayerMessageData;
+
+    for (i = PerkRoulette_PlayersDelegateData.Length - 1 ; i >= 0 ; --i)
+    {
+        PlayerMessageData = PerkRoulette_PlayersDelegateData[i];
+
+        if (PlayerMessageData.KFPC_WS == none)
+        {
+            PerkRoulette_PlayersDelegateData.Remove(i, 1);
+            continue;
+        }
+
+        if (PlayerMessageData.KFPC_WS.Pawn.IsAliveAndWell() == false
+            || PlayerMessageData.KFPC_WS.PlayerReplicationInfo.bOnlySpectator
+            || PlayerMessageData.KFPC_WS.IsInState('Spectating'))
+        {
+            continue;
+        }
+
+        PlayerMessageData.KFPC_WS.ReceiveLocalizedMessage(PlayerMessageData.InMessageClass
+                                                            , PlayerMessageData.SwitchValue
+                                                            , None
+                                                            , None
+                                                            , PlayerMessageData.KFPC_WS.GetPerk().Class);
+
+        PerkRoulette_PlayersDelegateData.Remove(i, 1);
+    }
+
+    if (PerkRoulette_PlayersDelegateData.Length == 0)
+    {
+        ClearTimer(nameof(BroadcastCustomDelegate));
+    }
+}
+
 //
 
 defaultproperties

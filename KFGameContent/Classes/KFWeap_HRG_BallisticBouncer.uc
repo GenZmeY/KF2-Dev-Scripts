@@ -120,10 +120,17 @@ reliable client function ClientUpdateVisualAmmo(float BoneControlTranslation)
 
 simulated function StartFire(byte FiremodeNum)
 {
-	if (IsTimerActive('RefireCheckTimer') || bBlocked)
+	if (IsTimerActive('RefireCheckTimer'))
 	{
 		return;
 	}
+ 
+	if (bBlocked && AmmoCount[0] == 0 && !IsTimerActive(nameof(RefireCheckTimer)) && !IsTimerActive(nameof(UnlockClientFire)))
+	{
+
+		bBlocked = false;
+	}
+
 	if(Role != Role_Authority && FireModeNum == DEFAULT_FIREMODE && HasAmmo(DEFAULT_FIREMODE))
 	{
 		bBlocked = true;
@@ -139,8 +146,6 @@ simulated function StartFire(byte FiremodeNum)
 	{
 		bBlocked = false;
 	}
-
-
 }
 
 simulated function RefireCheckTimer()
@@ -640,8 +645,8 @@ defaultproperties
 	ValueIncreaseTime=0.1
 
 	//FOR LERPING DAMANGE
-	MaxDamageByCharge=600
-	MinDamageByCharge=60
+	MaxDamageByCharge=200
+	MinDamageByCharge=10
     // FOV
     Meshfov=80
 	MeshIronSightFOV=65 //52

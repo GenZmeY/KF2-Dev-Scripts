@@ -16,11 +16,10 @@ defaultproperties
 	bArmorStops=false
 
     KnockdownPower=20
-	StunPower=50
-	StumblePower=200
-	GunHitPower=150
-	MeleeHitPower=100
-	EMPPower=50
+	StunPower=25
+	StumblePower=85
+	GunHitPower=80
+	EMPPower=25
 
 	WeaponDef=class'KFWeapDef_HVStormCannon'
 }

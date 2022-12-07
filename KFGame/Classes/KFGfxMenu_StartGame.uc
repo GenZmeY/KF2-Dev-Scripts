@@ -1100,7 +1100,7 @@ function SetLobbyData( string KeyName, string ValueData )
 function string MakeMapURL(KFGFxStartGameContainer_Options InOptionsComponent)
 {
 	local string MapName;
-	local int LengthIndex, ModeIndex, AllowSeasonalSkinsIndex;
+	local int LengthIndex, ModeIndex, AllowSeasonalSkins;
 
 	// this is ugly, but effectively makes sure that the player isn't solo with versus selected
 	// or other error cases such as when the game isn't fully installed
@@ -1141,17 +1141,26 @@ function string MakeMapURL(KFGFxStartGameContainer_Options InOptionsComponent)
 		}
 	}
 
-	AllowSeasonalSkinsIndex = InOptionsComponent.GetAllowSeasonalSkinsIndex();
-
-	if (GetStartMenuState() == EMatchmaking || class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None)
+	if (InOptionsComponent.GetAllowSeasonalSkinsIndex() == 0)
 	{
-		AllowSeasonalSkinsIndex = 0; // Default if we don't have a season or it's find a match menu
+		AllowSeasonalSkins = 1;
+	}
+	else
+	{
+		AllowSeasonalSkins = 0;
+	}	
+
+	if (GetStartMenuState() == EMatchmaking
+		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None
+		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_Spring)
+	{
+		AllowSeasonalSkins = 1; // Default if we don't have a season or it's find a match menu
 	}
 
 	return MapName$"?Game="$class'KFGameInfo'.static.GetGameModeClassFromNum( ModeIndex )
 	       $"?Difficulty="$class'KFGameDifficultyInfo'.static.GetDifficultyValue( InOptionsComponent.GetDifficultyIndex() )
 		   $"?GameLength="$LengthIndex
-		   $"?AllowSeasonalSkins="$AllowSeasonalSkinsIndex;
+		   $"?AllowSeasonalSkins="$AllowSeasonalSkins;
 }
 
 native function bool GetSearchComplete(KFOnlineGameSearch GameSearch);
@@ -1522,7 +1531,9 @@ function BuildServerFilters(OnlineGameInterface GameInterfaceSteam, KFGFxStartGa
 
 	//bAllowSeasonal = OptionsComponent.GetAllowSeasonalSkinsIndex() == 0;
 
-	//if (GetStartMenuState() == EMatchmaking || class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None)
+	//if (GetStartMenuState() == EMatchmaking
+	//		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None
+	//		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_Spring)
 	//{
 	//	bAllowSeasonal = true; // Default if we don't have a season or it's find a match menu
 	//}

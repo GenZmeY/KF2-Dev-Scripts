@@ -755,6 +755,9 @@ var byte StormCannonIDCounter;
 
 var transient bool bShotgunJumping;
 
+var		int	iAllowSeasonalSkins;
+
+
 cpptext
 {
 	virtual UBOOL Tick( FLOAT DeltaSeconds, ELevelTick TickType );
@@ -1004,37 +1007,78 @@ reliable server event PushV()
 	ResetVStat();
 }
 
+
+simulated function int GetAllowSeasonalSkins()
+{
+	local KFGameReplicationInfo KFGRI;
+	local bool bIsWWLWeekly, bIsAllowSeasonalSkins; // Situations that shouldn't allow seasonal overrides
+
+	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+	bIsWWLWeekly = KFGRI != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 12;
+	bIsAllowSeasonalSkins = KFGRI != none && KFGRI.bAllowSeasonalSkins;
+	if(bIsWWLWeekly || bIsAllowSeasonalSkins == false)
+	{
+		return 0;
+	}
+	return 1;
+}
+
 simulated event name GetSeasonalStateName()
 {
-	local int EventId;
+	local int EventId, MapModifiedEventId;
 	local KFMapInfo KFMI;
-	local bool bIsWWLWeekly; // WWL Weekly should not allow seasonal overrides
+	local bool bIsWWLWeekly, bIsAllowSeasonalSkins ; // Situations that shouldn't allow seasonal overrides
 	local KFGameReplicationInfo KFGRI;
 	
 	EventId = class'KFGameEngine'.static.GetSeasonalEventID();
+	`Log("GetSeasonalStateName: "$EventId);
+
+	MapModifiedEventId = SEI_None;
+
 	KFMI = KFMapInfo(WorldInfo.GetMapInfo());
 	if (KFMI != none)
 	{
-		KFMI.ModifySeasonalEventId(EventId);
+		KFMI.ModifySeasonalEventId(MapModifiedEventId);
 	}
 
-	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
-	bIsWWLWeekly = KFGRI != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 12;
-	if (bIsWWLWeekly)
-		return 'No_Event'; 
+	if (MapModifiedEventId == SEI_None)
+	{
+		KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+
+		bIsWWLWeekly = KFGRI != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 12;
+		
+		bIsAllowSeasonalSkins  = KFGRI != none && KFGRI.bAllowSeasonalSkins;
+		
+		`Log("GetSeasonalStateName: AllowSeasonalSkins: "$bIsAllowSeasonalSkins$" WWLWeekly "$bIsWWLWeekly);
+		if (bIsWWLWeekly || bIsAllowSeasonalSkins == false)
+		{
+			EventId = SEI_None;
+		}
+	}
+	else
+	{
+		`Log("GetSeasonalStateName: ModifySeasonalEventId: "$MapModifiedEventId);
+		EventId = MapModifiedEventId;
+	}
 
     //Remove any year information, just get 1s digit
 	switch (EventId % 10)
 	{
 		case SEI_Summer:
+			`Log("GetSeasonalStateName: Summer");
 			return 'Summer_Sideshow';
 		case SEI_Fall:
+			`Log("GetSeasonalStateName: Fall");
 			return 'Fall';
 		case SEI_Winter:
+			`Log("GetSeasonalStateName: Winter");
 			return 'Winter';
 		case SEI_Spring:
+			`Log("GetSeasonalStateName: Spring");
 			return 'Spring';
 		default:
+			`Log("GetSeasonalStateName: No Event");
 			return 'No_Event';
 	}
 
@@ -3229,9 +3273,17 @@ function PlayRMEffect( AkEvent RhythmMethodSound, name RhytmMethodRTPCName, int 
 function RecievedNewPerkClass()
 {
 	//refresh the needed UI for online.
-	if(MyGfxManager != none && MyGfxManager.TraderMenu != none)
+	if(MyGfxManager != none )
 	{
-		MyGfxManager.TraderMenu.UpdatePlayerInfo();
+		if (MyGfxManager.TraderMenu != none)
+		{
+			MyGfxManager.TraderMenu.UpdatePlayerInfo();
+		}
+
+		if (MyGfxManager.PerksMenu != none)
+		{
+			MyGfxManager.PerksMenu.UpdateContainers(CurrentPerk.Class);
+		}
 	}
 
 	InitPerkLoadout();
@@ -5236,6 +5288,12 @@ simulated function float GetEffectPowerUpTimeRemaining( class<KFPowerUp> KFPower
 event PlayerTick( float DeltaTime )
 {
 	super.PlayerTick(DeltaTime);
+
+	if(iAllowSeasonalSkins != GetAllowSeasonalSkins())
+	{
+		iAllowSeasonalSkins = GetAllowSeasonalSkins();
+		UpdateSeasonalState();
+	}
 
 	if( WorldInfo.NetMode != NM_DedicatedServer )
 	{
@@ -12323,5 +12381,6 @@ defaultproperties
 	CurrentRotationAdjustmentTime = 0.0f
 
 	StormCannonIDCounter = 0
-	bShotgunJumping=false
+	bShotgunJumping = false
+	iAllowSeasonalSkins = -1
 }

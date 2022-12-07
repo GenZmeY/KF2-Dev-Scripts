@@ -2306,6 +2306,9 @@ simulated function NotifyWeeklyEventIndex(int EventIndex)
 simulated function NotifyAllowSeasonalSkins(int AllowSeasonalSkinsIndex)
 {
 	bAllowSeasonalSkins = (AllowSeasonalSkinsIndex == 0);
+	
+	`Log("NotifyAllowSeasonalSkins: AllowSeasonalSkins: "$bAllowSeasonalSkins);
+
 	bNetDirty = true;
 }
 

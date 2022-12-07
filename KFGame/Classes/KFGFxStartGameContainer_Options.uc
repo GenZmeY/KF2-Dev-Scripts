@@ -244,7 +244,8 @@ function InitializeGameOptions()
 	TextObject.SetString("privacy",StartMenu.PermissionsTitle);
 	TextObject.SetString("inProgress", InProgressString);
 
-	if (class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None)
+	if (class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None
+		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_Spring)
 	{
 		TextObject.SetBool("bShowAllowSeasonalSkins", false);
 	}

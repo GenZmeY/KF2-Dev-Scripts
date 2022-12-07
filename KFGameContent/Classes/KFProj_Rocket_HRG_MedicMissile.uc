@@ -23,6 +23,12 @@ simulated function bool AllowDemolitionistExplosionChangeRadius()
 	return false;
 }
 
+// Used by Demolitionist Nuke and Mad Bomber skills
+simulated function bool CanDud()
+{
+    return false;
+}
+
 simulated protected function PrepareExplosionTemplate()
 {
 	local Weapon OwnerWeapon;
@@ -60,7 +66,7 @@ defaultproperties
 	TossZ=0
 	GravityScale=1.0
     MomentumTransfer=50000.0
-	ArmDistSquared=150000 // 4 meters
+	ArmDistSquared=75000 // 2m
 
 	bCollideWithTeammates=true
 
@@ -97,9 +103,9 @@ defaultproperties
 
 	// explosion
 	Begin Object Class=KFGameExplosion Name=ExploTemplate0
-		Damage=400
+		Damage=700
 		DamageRadius=300
-		DamageFalloffExponent=2
+		DamageFalloffExponent=1
 		DamageDelay=0.f
 
 		// Damage Effects

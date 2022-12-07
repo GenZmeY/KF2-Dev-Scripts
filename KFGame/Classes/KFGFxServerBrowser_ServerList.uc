@@ -283,7 +283,8 @@ function BuildServerFilters(KFGFxServerBrowser_Filters Filters, OnlineGameSearch
 
 	DisableSeasonalSkins = Filters.bNoSeasonalSkins;
 
-	if (class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None)
+	if (class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None
+		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_Spring)
 	{
 		DisableSeasonalSkins = false;
 	}

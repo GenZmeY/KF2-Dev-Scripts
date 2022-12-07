@@ -286,7 +286,7 @@ function PerkChanged( byte NewPerkIndex, bool bClickedIndex)
 	  		bModifiedPerk = true;
 
 	  		// Only update perk immediately if we don't have a valid pawn
-	  		if( KFPC.Pawn == none || !KFPC.Pawn.IsAliveAndWell() )
+	  		if( KFPC.Pawn == none || !KFPC.Pawn.IsAliveAndWell() || KFGRI.bTraderIsOpen )
 	  		{
 				SavePerkData();
 	  			SelectionContainer.SavePerk( NewPerkIndex );

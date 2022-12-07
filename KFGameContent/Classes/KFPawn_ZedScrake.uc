@@ -326,6 +326,7 @@ defaultproperties
     DamageTypeModifiers.Add((DamageType=class'KFDT_Explosive', 				    DamageScale=(0.4)))
     DamageTypeModifiers.Add((DamageType=class'KFDT_Piercing', 	                DamageScale=(0.75)))
     DamageTypeModifiers.Add((DamageType=class'KFDT_Ballistic_RPG7Impact', 	    DamageScale=(4.f)))
+	DamageTypeModifiers.Add((DamageType=class'KFDT_Ballistic_HRG_MedicMissile', DamageScale=(3.f)))
     DamageTypeModifiers.Add((DamageType=class'KFDT_Toxic', 	                    DamageScale=(0.25)))
 
     //special cases

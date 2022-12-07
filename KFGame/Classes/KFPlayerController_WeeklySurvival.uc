@@ -109,7 +109,7 @@ struct native VIPGameInfo
 var transient VIPGameInfo VIPGameData;
 
 // RandomPerk weekly
-var array<class<KFPerk> > LockedPerks;
+var byte InitialRandomPerk;
 
 cpptext
 {
@@ -606,10 +606,8 @@ function UpdateVIPDamage()
     }
 }
 
-simulated function ForceNewPerk(class<KFPerk> NewPerk)
+simulated function ForceNewPerk(byte NewPerkIndex)
 {
-    local int NewPerkIndex;
-    NewPerkIndex = Perklist.Find('PerkClass', NewPerk);
     ServerSelectPerk(NewPerkIndex, Perklist[NewPerkIndex].PerkLevel, Perklist[NewPerkIndex].PrestigeLevel, true);
     SavedPerkIndex = NewPerkIndex;
     ForceNewSavedPerkIndex(NewPerkIndex);
@@ -681,4 +679,5 @@ defaultProperties
     RandomPerkChosenSoundEvent=AkEvent'WW_UI_Menu.Play_AAR_TOPWEAPON_SLIDEIN_B'
     VIPLowHealthSoundEvent=AkEvent'WW_GLO_Runtime.WeeklyVIPAlarm'
     VIPLowHealthLastTimePlayed = 0.f
+    InitialRandomPerk=255
 }

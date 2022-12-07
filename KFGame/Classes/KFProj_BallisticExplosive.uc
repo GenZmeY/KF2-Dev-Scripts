@@ -70,6 +70,11 @@ replication
 		bIsTimedExplosive;
 }
 
+simulated function bool CanDud()
+{
+    return true;
+}
+
 simulated function SyncOriginalLocation()
 {
 	local KFPerk InstigatorPerk;
@@ -79,10 +84,13 @@ simulated function SyncOriginalLocation()
 
     if( KFP != none )
     {
-        InstigatorPerk = KFP.GetPerk();
-        if( InstigatorPerk != none && InstigatorPerk.ShouldNeverDud() )
+        if (CanDud())
         {
-            ArmDistSquared = 0;
+            InstigatorPerk = KFP.GetPerk();
+            if( InstigatorPerk != none && InstigatorPerk.ShouldNeverDud() )
+            {
+                ArmDistSquared = 0;
+            }
         }
     }
 

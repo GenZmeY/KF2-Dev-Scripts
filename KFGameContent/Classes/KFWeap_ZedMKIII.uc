@@ -186,14 +186,14 @@ simulated function Projectile ProjectileFire()
 	{
 		if (NumShotsFired >= NumBulletsBeforeRocket)
 		{
-			WeaponFireSnd[ALTFIRE_FIREMODE]=RocketFireSound;
+			//WeaponFireSnd[ALTFIRE_FIREMODE]=RocketFireSound;
 			CurrentFireMode = ALTFIRE_FIREMODE;
 			NumShotsFired = 0;
 			LastShotIsRocket = true;
 		}
 		else
 		{
-			WeaponFireSnd[ALTFIRE_FIREMODE]=NormalFireSound;
+			//WeaponFireSnd[ALTFIRE_FIREMODE]=NormalFireSound;
 			CurrentFireMode = DEFAULT_FIREMODE;
 			++NumShotsFired;
 			LastShotIsRocket = false;
@@ -283,13 +283,13 @@ simulated state WeaponPuttingDown
 
 simulated function StartRadar()
 {
+	EnemiesInRadar.Length = 0;
 	SetTimer(RadarUpdateEntitiesTime, true, nameof(UpdateRadarEntities));
 }
 
 simulated function StopRadar()
 {
 	ClearTimer(nameof(UpdateRadarEntities));
-	EnemiesInRadar.Length = 0;
 }
 
 simulated function UpdateRadarEntities()
@@ -467,9 +467,9 @@ defaultproperties
 	MuzzleFlashTemplateName="WEP_ZEDMKIII_ARCH.Wep_ZEDMKIII_MuzzleFlash"
 
 	// Ammo
-	MagazineCapacity[0]=100
-	SpareAmmoCapacity[0]=400
-	InitialSpareMags[0]=1
+	MagazineCapacity[0]=50
+	SpareAmmoCapacity[0]=350
+	InitialSpareMags[0]=2
 	bCanBeReloaded=true
 	bReloadFromMagazine=true
 
@@ -526,16 +526,18 @@ defaultproperties
 	NormalFireSound=(DefaultCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Single_3P', FirstPersonCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Single_1P')
 	RocketFireSound=(DefaultCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Rocket_3P', FirstPersonCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Rocket_1P')
 
-	WeaponFireSnd(DEFAULT_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_LP_3P', FirstPersonCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_LP_1P')
-	WeaponFireSnd(ALTFIRE_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Single_3P', FirstPersonCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Single_1P')
+	//WeaponFireSnd(DEFAULT_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_LP_3P', FirstPersonCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_LP_1P')
+	WeaponFireSnd(DEFAULT_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Single_3P', FirstPersonCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Single_1P')
+	//WeaponFireSnd(ALTFIRE_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Single_3P', FirstPersonCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Single_1P')
+	WeaponFireSnd(ALTFIRE_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Rocket_3P', FirstPersonCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_Rocket_1P')
 	WeaponDryFireSnd(DEFAULT_FIREMODE)=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Handling_DryFire'
 	WeaponDryFireSnd(ALTFIRE_FIREMODE)=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Handling_DryFire'
 
 	// Advanced (High RPM) Fire Effects
 	bLoopingFireAnim(DEFAULT_FIREMODE)=true
-	bLoopingFireSnd(DEFAULT_FIREMODE)=true
-	WeaponFireLoopEndSnd(DEFAULT_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_LP_End_3P', FirstPersonCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_LP_End_1P')
-	SingleFireSoundIndex=ALTFIRE_FIREMODE
+	bLoopingFireSnd(DEFAULT_FIREMODE)=false
+	//WeaponFireLoopEndSnd(DEFAULT_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_LP_End_3P', FirstPersonCue=AkEvent'WW_WEP_ZEDMKIII.Play_WEP_ZEDMKIII_Shoot_LP_End_1P')
+	//SingleFireSoundIndex=ALTFIRE_FIREMODE
 
 	// Attachments
 	bHasIronSights=true

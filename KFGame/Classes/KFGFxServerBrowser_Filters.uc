@@ -164,7 +164,8 @@ function LocalizeCheckBoxes()
 	bShowAllowSeasonalSkins = true;
 
 	if (ServerMenu.Manager.StartMenu.GetStartMenuState() == EMatchmaking
-		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None)
+		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None
+		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_Spring)
 	{
 		bShowAllowSeasonalSkins = false; // Default if we don't have a season or it's find a match menu
 	}

@@ -3712,22 +3712,22 @@ defaultproperties
     Skins.Add((Id=9479, Weapondef=class'KFWeapDef_G36C', MIC_1P=("wep_skinset64_mat.Wep_1P_Sahara_G36C_MIC","wep_skinset64_mat.Wep_1P_Sahara_Scope_G36C_MIC"), MIC_3P="wep_skinset64_mat.Wep_3P_Sahara_G36C_MIC", MIC_Pickup="wep_skinset64_mat.Wep_3P_Sahara_G36C_Pickup_MIC")) 
 
 //HVStormCannon Standard
-    Skins.Add((Id=9569, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("WEP_1P_HVStormCannon_MAT.Wep_1P_HVStormCannon_Scope_MIC","WEP_1P_HVStormCannon_MAT.Wep_1stP_HVStormCannon_Lens_MIC","WEP_1P_HVStormCannon_MAT.Wep_1P_HVStormCannon_MIC"), MIC_3P="wep_3p_hvstormcannon_mat.WEP_3P_HVStormCannon_MIC", MIC_Pickup="wep_3p_hvstormcannon_mat.3P_Pickup_HVStormCannon_MIC"))
+    Skins.Add((Id=9569, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("WEP_1P_HVStormCannon_MAT.Wep_1P_HVStormCannon_MIC","WEP_1P_HVStormCannon_MAT.Wep_1P_HVStormCannon_Scope_MIC"), MIC_3P="wep_3p_hvstormcannon_mat.WEP_3P_HVStormCannon_MIC", MIC_Pickup="wep_3p_hvstormcannon_mat.3P_Pickup_HVStormCannon_MIC"))
 
 //HVStormCannon Lost Planet
-    Skins.Add((Id=9570, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("wep_skinset70_mat.Wep_1P_StormCannon_LostPlanet_Scope_MIC","WEP_1P_HVStormCannon_MAT.Wep_1stP_HVStormCannon_Lens_MIC","wep_skinset70_mat.Wep_1P_StormCannon_LostPlanet_MIC"), MIC_3P="wep_skinset70_mat.Wep_3P_StormCannon_LostPlanet_MIC", MIC_Pickup="wep_skinset70_mat.Wep_3P_StormCannon_LostPlanet_Pickup_MIC"))
+    Skins.Add((Id=9570, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("wep_skinset70_mat.Wep_1P_StormCannon_LostPlanet_MIC","wep_skinset70_mat.Wep_1P_StormCannon_LostPlanet_Scope_MIC"), MIC_3P="wep_skinset70_mat.Wep_3P_StormCannon_LostPlanet_MIC", MIC_Pickup="wep_skinset70_mat.Wep_3P_StormCannon_LostPlanet_Pickup_MIC"))
 
 //HVStormCannon Morph
-    Skins.Add((Id=9571, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("wep_skinset70_mat.Wep_1P_StormCannon_Xeno_Scope_MIC","WEP_1P_HVStormCannon_MAT.Wep_1stP_HVStormCannon_Lens_MIC","wep_skinset70_mat.Wep_1P_StormCannon_Xeno_MIC"), MIC_3P="wep_skinset70_mat.Wep_3P_StormCannon_Xeno_MIC", MIC_Pickup="wep_skinset70_mat.Wep_3P_StormCannon_Xeno_Pickup_MIC"))
+    Skins.Add((Id=9571, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("wep_skinset70_mat.Wep_1P_StormCannon_Xeno_MIC","wep_skinset70_mat.Wep_1P_StormCannon_Xeno_Scope_MIC"), MIC_3P="wep_skinset70_mat.Wep_3P_StormCannon_Xeno_MIC", MIC_Pickup="wep_skinset70_mat.Wep_3P_StormCannon_Xeno_Pickup_MIC"))
 
 //HVStormCannon Rebel
-    Skins.Add((Id=9572, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("wep_skinset70_mat.Wep_1P_StormCannon_Rebel_Scope_MIC","WEP_1P_HVStormCannon_MAT.Wep_1stP_HVStormCannon_Lens_MIC","wep_skinset70_mat.Wep_1P_StormCannon_Rebel_MIC"), MIC_3P="wep_skinset70_mat.Wep_3P_StormCannon_Rebel_MIC", MIC_Pickup="wep_skinset70_mat.Wep_3P_StormCannon_Rebel_Pickup_MIC"))
+    Skins.Add((Id=9572, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("wep_skinset70_mat.Wep_1P_StormCannon_Rebel_MIC","wep_skinset70_mat.Wep_1P_StormCannon_Rebel_Scope_MIC"), MIC_3P="wep_skinset70_mat.Wep_3P_StormCannon_Rebel_MIC", MIC_Pickup="wep_skinset70_mat.Wep_3P_StormCannon_Rebel_Pickup_MIC"))
 
 //HVStormCannon Space Man
-    Skins.Add((Id=9573, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("wep_skinset70_mat.Wep_1P_StormCannon_SpaceMan_Scope_MIC","WEP_1P_HVStormCannon_MAT.Wep_1stP_HVStormCannon_Lens_MIC","wep_skinset70_mat.Wep_1P_StormCannon_SpaceMan_MIC"), MIC_3P="wep_skinset70_mat.Wep_3P_StormCannon_SpaceMan_MIC", MIC_Pickup="wep_skinset70_mat.Wep_3P_StormCannon_SpaceMan_Pickup_MIC"))
+    Skins.Add((Id=9573, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("wep_skinset70_mat.Wep_1P_StormCannon_SpaceMan_MIC","wep_skinset70_mat.Wep_1P_StormCannon_SpaceMan_Scope_MIC"), MIC_3P="wep_skinset70_mat.Wep_3P_StormCannon_SpaceMan_MIC", MIC_Pickup="wep_skinset70_mat.Wep_3P_StormCannon_SpaceMan_Pickup_MIC"))
 
 //HVStormCannon Tycho
-    Skins.Add((Id=9574, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("wep_skinset70_mat.Wep_1P_StormCannon_Tycho_Scope_MIC","WEP_1P_HVStormCannon_MAT.Wep_1stP_HVStormCannon_Lens_MIC","wep_skinset70_mat.Wep_1P_StormCannon_Tycho_MIC"), MIC_3P="wep_skinset70_mat.Wep_3P_StormCannon_Tycho_MIC", MIC_Pickup="wep_skinset70_mat.Wep_3P_StormCannon_Tycho_Pickup_MIC"))
+    Skins.Add((Id=9574, Weapondef=class'KFWeapDef_HVStormCannon', MIC_1P=("wep_skinset70_mat.Wep_1P_StormCannon_Tycho_MIC","wep_skinset70_mat.Wep_1P_StormCannon_Tycho_Scope_MIC"), MIC_3P="wep_skinset70_mat.Wep_3P_StormCannon_Tycho_MIC", MIC_Pickup="wep_skinset70_mat.Wep_3P_StormCannon_Tycho_Pickup_MIC"))
 
 //ZEDMKIII Standard
     Skins.Add((Id=9575, Weapondef=class'KFWeapDef_ZedMKIII', MIC_1P=("WEP_1P_ZEDMKIII_MAT.Wep_1stP_ZEDMKIII_MIC"), MIC_3P="Wep_3P_ZEDMKIII_MAT.Wep_3rdP_ZEDMKIII_MIC", MIC_Pickup="wep_3p_zedmkiii_mat.Wep_3rdP_ZEDMKIII_Pickup_MIC")) 
