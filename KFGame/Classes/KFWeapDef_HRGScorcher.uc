@@ -19,6 +19,8 @@ DefaultProperties
 	AmmoPricePerMag= 12 //14
 	ImagePath="WEP_UI_HRGScorcher_Pistol_TEX.UI_WeaponSelect_HRGScorcher"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=100 // Based on comment Slightly less than  M79 Grenade Launcher
 
 	UpgradePrice[0]=700

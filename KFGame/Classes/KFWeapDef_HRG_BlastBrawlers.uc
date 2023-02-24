@@ -18,6 +18,8 @@ DefaultProperties
 
     ImagePath="WEP_UI_HRG_BlastBrawlers_TEX.UI_WeaponSelect_HRG_BlastBrawlers" 
 
+	IsPlayGoHidden=true;
+
     EffectiveRange=15
 
     UpgradePrice[0]=1500

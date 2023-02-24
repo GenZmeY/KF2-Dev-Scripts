@@ -15,6 +15,8 @@ DefaultProperties
 	AmmoPricePerMag=13 //12
 	ImagePath="WEP_UI_HRG_Winterbite_Item_TEX.UI_WeaponSelect_HRG_Winterbite"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=50
 
 	UpgradePrice[0]=600

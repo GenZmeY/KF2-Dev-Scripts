@@ -26,7 +26,7 @@ private event Initialize(string MapName)
 	bObjectiveIsValidForMap[0] = 1; // Freeze 500 Zeds using ice arsenal
 	bObjectiveIsValidForMap[1] = 0; // Complete the Weekly on Crash
 	bObjectiveIsValidForMap[2] = 0; // Use 4 Boomstick Jumps in a same match on Crash
-	bObjectiveIsValidForMap[3] = 1; // Hit 3 Zeds with a shot of HRG Ballistic Bouncer (15 times)
+	bObjectiveIsValidForMap[3] = 1; // Hit 2 Zeds with a shot of HRG Ballistic Bouncer (30 times)
 	bObjectiveIsValidForMap[4] = 0; // Complete wave 15 on Endless Hard or higher difficulty on Crash
 	
 	if (CapsMapName == "KF-CRASH")

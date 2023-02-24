@@ -21,6 +21,8 @@ DefaultProperties
 
 	ImagePath="WEP_UI_G18C_TEX.UI_WeaponSelect_G18C"
 
+	IsPlayGoHidden=true;
+
 	UpgradePrice[0]=1500
 	UpgradeSellPrice[0]=1125
 

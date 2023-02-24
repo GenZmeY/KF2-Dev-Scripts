@@ -15,6 +15,8 @@ DefaultProperties
 	AmmoPricePerMag=65 //75
 	ImagePath="WEP_UI_HRG_SonicGun_TEX.UI_WeaponSelect_HRG_SonicGun"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=70
 
 	UpgradePrice[0]=700

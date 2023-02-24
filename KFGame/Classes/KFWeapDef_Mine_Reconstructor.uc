@@ -17,6 +17,8 @@ DefaultProperties
     AmmoPricePerMag =36 //42
     ImagePath = "WEP_UI_Mine_Reconstructor_TEX.UI_WeaponSelect_HMTechMineReconstructor"
 
+	IsPlayGoHidden=true;
+
     EffectiveRange = 50
 
 	UpgradePrice[0]=700

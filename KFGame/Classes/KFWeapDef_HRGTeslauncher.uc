@@ -19,6 +19,8 @@ DefaultProperties
 	AmmoPricePerMag=62 //30
 	ImagePath="WEP_UI_HRG_Teslauncher_TEX.UI_WeaponSelect_HRG_Teslauncher"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=68
 
 	SecondaryAmmoMagSize=1

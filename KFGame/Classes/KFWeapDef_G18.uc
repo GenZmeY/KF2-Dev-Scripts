@@ -17,6 +17,8 @@ DefaultProperties
 	AmmoPricePerMag=24
 	ImagePath="WEP_UI_RiotShield_TEX.UI_WeaponSelect_RiotShield"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=70
 
 	UpgradePrice[0]=1500

@@ -17,6 +17,8 @@ DefaultProperties
 	AmmoPricePerMag=36 
     ImagePath="ui_weaponselect_tex.UI_WeaponSelect_AA12"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=70
 
 	UpgradePrice[0]=1500

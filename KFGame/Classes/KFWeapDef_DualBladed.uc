@@ -16,6 +16,8 @@ DefaultProperties
 	AmmoPricePerMag=76 //64
 	ImagePath="WEP_UI_Dual_BladedPistol_TEX.UI_WeaponSelect_Dual_BladedPistol"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=50
 
 	UpgradePrice[0]=700

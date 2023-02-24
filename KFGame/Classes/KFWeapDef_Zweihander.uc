@@ -17,6 +17,8 @@ DefaultProperties
 	BuyPrice=1300	
 	ImagePath="WEP_UI_Zweihander_TEX.UI_WeaponSelect_Zweihander"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=3
 
 	SharedUnlockId=SCU_Zweihander

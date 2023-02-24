@@ -15,6 +15,8 @@ DefaultProperties
 	AmmoPricePerMag=60 //70
 	ImagePath="WEP_UI_HRG_Vampire_TEX.UI_WeaponSelect_HRG_Vampire"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=70
 
 	UpgradePrice[0]=1500

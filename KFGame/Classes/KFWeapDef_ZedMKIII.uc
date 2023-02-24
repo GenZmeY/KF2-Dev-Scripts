@@ -16,6 +16,8 @@ DefaultProperties
 	AmmoPricePerMag=75
 	ImagePath="wep_ui_zedmkiii_tex.UI_WeaponSelect_ZEDMKIII"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=100
 
 	SharedUnlockId=SCU_ZedMKIII

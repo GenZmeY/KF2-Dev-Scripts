@@ -1619,6 +1619,12 @@ function StartBots()
 		}
 	}
 }
+
+function bool CanAssignDefaultWeaponsToPlayer(Controller NewPlayer)
+{
+	return true;
+}
+
 //
 // Restart a player.
 //
@@ -1687,7 +1693,10 @@ function RestartPlayer(Controller NewPlayer)
 
 		if (!WorldInfo.bNoDefaultInventoryForPlayer)
 		{
-			AddDefaultInventory(NewPlayer.Pawn);
+			if (CanAssignDefaultWeaponsToPlayer(NewPlayer))
+			{
+				AddDefaultInventory(NewPlayer.Pawn);
+			}
 		}
 		SetPlayerDefaults(NewPlayer.Pawn);
 

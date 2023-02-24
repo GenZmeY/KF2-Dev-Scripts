@@ -340,6 +340,8 @@ simulated function ProcessBulletTouch(Actor Other, Vector HitLocation, Vector Hi
 
 		if ( HitZoneImpactList.length > 0 )
 		{
+			IncrementNumImpacts(Victim);
+
             HitZoneImpactList[0].RayDir	= Direction;
 
 			if( Owner != none )
@@ -351,8 +353,6 @@ simulated function ProcessBulletTouch(Actor Other, Vector HitLocation, Vector Hi
                 }
 			}
 
-			IncrementNumImpacts(Victim);
-
 			BounceNoCheckRepeatingTouch(HitNormal, Other);
 		}
 	}
@@ -363,7 +363,15 @@ simulated function IncrementNumImpacts(Pawn Victim)
 	local int i;
 	local KFPlayerController KFPC;
 
-	if (WorldInfo.NetMode == NM_Client)
+	if (WorldInfo.NetMode != NM_Standalone)
+	{
+		if (WorldInfo.NetMode == NM_Client)
+		{
+			return;
+		}
+	}
+
+	if (Victim == none)
 	{
 		return;
 	}

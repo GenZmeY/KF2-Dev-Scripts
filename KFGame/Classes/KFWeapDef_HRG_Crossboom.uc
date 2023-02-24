@@ -17,6 +17,8 @@ DefaultProperties
 	AmmoPricePerMag=14
 	ImagePath="WEP_UI_HRG_Crossboom_TEX.UI_WeaponSelect_Crossboom"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=80
 
 	UpgradePrice[0]=700

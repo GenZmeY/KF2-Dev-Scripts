@@ -290,6 +290,15 @@ function SetItemInfo(out GFxObject ItemDataArray, STraderItem TraderItem, int Sl
 /** returns true if this item should not be displayed */
 function bool IsItemFiltered(STraderItem Item, optional bool bDebug)
 {
+	if(!class'GameEngine'.Static.IsGameFullyInstalled() && Item.WeaponDef.default.IsPlayGoHidden)
+	{
+		if (bDebug)
+		{
+			`log("is not fully installed this weapon is not available");
+		}
+		return true;
+	}
+
 	if (KFPC.GetPurchaseHelper().IsInOwnedItemList(Item.ClassName))
 	{
 		if (bDebug)

@@ -16,6 +16,8 @@ DefaultProperties
 	AmmoPricePerMag=25
 	ImagePath="WEP_UI_HRG_MedicMissile_TEX.UI_WeaponSelect_HRG_MedicMissile"  
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=100
 
 	UpgradePrice[0]=1500

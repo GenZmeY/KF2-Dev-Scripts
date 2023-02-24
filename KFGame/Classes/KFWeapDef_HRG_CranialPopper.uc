@@ -17,6 +17,8 @@ DefaultProperties
     ImagePath="wep_ui_hrg_cranialpopper_tex.UI_WeaponSelect_HRG_CranialPopper"
     EffectiveRange=90
 
+	IsPlayGoHidden=true;
+
     UpgradePrice[0]=700
 	UpgradePrice[1]=1500
 

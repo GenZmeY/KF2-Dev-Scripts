@@ -16,6 +16,8 @@ DefaultProperties
 	AmmoPricePerMag=14
 	ImagePath="WEP_UI_HRG_Incision_Item_TEX.UI_WeaponSelect_HRG_Incision"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=100
 
 	UpgradePrice[0]=1500

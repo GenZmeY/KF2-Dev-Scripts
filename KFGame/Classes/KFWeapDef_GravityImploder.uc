@@ -21,6 +21,8 @@ defaultproperties
 
 	ImagePath="WEP_UI_Gravity_Imploder_TEX.UI_WeaponSelect_Gravity_Imploder"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=95 // Based on comment Slightly less than  M79 Grenade Launcher
 
 	SharedUnlockId=SCU_GravityImploder

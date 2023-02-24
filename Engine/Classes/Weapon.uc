@@ -1457,6 +1457,11 @@ simulated event vector GetMuzzleLoc()
 simulated native event vector GetPhysicalFireStartLoc(optional vector AimDir);
 
 /**
+ * This function returns the world location for spawning the projectile.
+ */
+simulated native event vector GetFixedPhysicalFireStartLoc();
+
+/**
  * Put Down current weapon
  * Once the weapon is put down, the InventoryManager will switch to InvManager.PendingWeapon.
  *

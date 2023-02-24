@@ -15,6 +15,8 @@ DefaultProperties
 	AmmoPricePerMag=110 //66
 	ImagePath="WEP_UI_HRG_ArcGenerator_TEX.UI_WeaponSelect_HRG_ArcGenerator"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=70
 
 	UpgradePrice[0]=1500

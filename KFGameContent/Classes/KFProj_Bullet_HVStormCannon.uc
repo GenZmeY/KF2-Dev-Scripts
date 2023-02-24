@@ -14,6 +14,8 @@ defaultproperties
 	MaxSpeed=22500.0
 	Speed=22500.0
 
+	ProjEffectsFadeOutDuration=0
+
 	DamageRadius=0
 
 	ProjFlightTemplate = ParticleSystem'WEP_HVStormCannon_EMIT.FX_HVStormCannon_Projectile'  

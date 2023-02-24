@@ -31,6 +31,8 @@ struct PerkRoulette_PlayerMessageDelegate
 
 var array<PerkRoulette_PlayerMessageDelegate> PerkRoulette_PlayersDelegateData;
 
+var array<KFPlayerController_WeeklySurvival> PerkRoulette_PlayersDelegateInventory;
+
 //-----------------------------------------------------------------------------
 // Statics
 static event class<GameInfo> SetGameType(string MapName, string Options, string Portal)
@@ -1177,6 +1179,14 @@ function NotifyKilled(Controller Killer, Controller Killed, Pawn KilledPawn, cla
             SetTimer(1.5f, false, 'OnVIPDiesEndMatch');
         }
     }
+
+    if (MyKFGRI.IsRandomPerkMode())
+    {
+        if (KFPC_WS_Killed != none)
+        {
+            PerkRoulette_PlayersDelegateInventory.AddItem(KFPC_WS_Killed);
+        }
+    }
 }
 
 function GunGameLevelGrantWeapon(KFPlayerController_WeeklySurvival KFPC_WS, class<KFWeaponDefinition> ToGrantWeaponDefinition)
@@ -1603,8 +1613,79 @@ function ChooseInitialRandomPerk(KFPlayerController_WeeklySurvival KFPC_WS)
         KFPC_WS.InitialRandomPerk = PerkRouletteRandomInitialIndex;
         PerkRouletteRandomInitialIndex = (PerkRouletteRandomInitialIndex + 1) % PerkRouletteRandomList.Length;
 
-        `Log("PLAYER : " $KFPC_WS);
-        `Log("InitialRandomPerk : " $KFPC_WS.InitialRandomPerk);
+        //`Log("PLAYER : " $KFPC_WS);
+        //`Log("InitialRandomPerk : " $KFPC_WS.InitialRandomPerk);
+    }
+}
+
+function bool CanAssignDefaultWeaponsToPlayer(Controller NewPlayer)
+{
+    local KFPlayerController_WeeklySurvival KFPC_WS;
+    local int i;
+
+    // We can't assign default weapons if we have to wait to assign the New Perk
+
+    KFPC_WS = KFPlayerController_WeeklySurvival(NewPlayer);
+    if (KFPC_WS != none)
+    {
+        for (i = 0; i < PerkRoulette_PlayersDelegateInventory.Length ; ++i)
+        {
+            if (KFPC_WS == PerkRoulette_PlayersDelegateInventory[i])
+            {
+                return false;
+            }
+        }
+    }
+
+	return true;
+}
+
+function PerkRoulette_InventoryCustomDelegate()
+{
+    local KFPlayerController_WeeklySurvival KFPC_WS;
+    local KFPerk Perk;
+    local int i;
+    local byte NewPerk;
+
+    for (i = PerkRoulette_PlayersDelegateInventory.Length - 1 ; i >= 0 ; --i)
+    {
+        KFPC_WS = PerkRoulette_PlayersDelegateInventory[i];
+
+        if (KFPC_WS == none)
+        {
+            PerkRoulette_PlayersDelegateInventory.Remove(i, 1);
+            continue;
+        }
+
+        Perk = KFPC_WS.GetPerk();
+
+        // While the new Perk is not valid, or is not the one we expect continue
+
+        if (Perk == none)
+        {
+            continue;
+        }
+        else
+        {
+            NewPerk = (KFPC_WS.InitialRandomPerk + PerkRouletteRandomWaveNum) % PerkRouletteRandomList.Length;
+            
+            if (KFPC_WS.Perklist[PerkRouletteRandomList[NewPerk]].PerkClass != Perk.Class)
+            {
+                continue;
+            }
+        }
+
+        if (KFPC_WS.Pawn != none)
+        {
+            AddDefaultInventory(KFPC_WS.Pawn);
+
+            PerkRoulette_PlayersDelegateInventory.Remove(i, 1);
+        }
+    }
+
+    if (PerkRoulette_PlayersDelegateInventory.Length == 0)
+    {
+        ClearTimer(nameof(PerkRoulette_InventoryCustomDelegate));
     }
 }
 
@@ -1612,7 +1693,17 @@ function ChooseRandomPerks(bool isEndWave)
 {
     local KFPlayerController_WeeklySurvival KFPC_WS;
     local byte NewPerk;
+    
+    if (isEndWave)
+    {            
+        ClearTimer(nameof(PerkRoulette_InventoryCustomDelegate));
 
+        if (PerkRoulette_PlayersDelegateInventory.Length > 0)
+        {
+            SetTimer(0.5f, true, nameof(PerkRoulette_InventoryCustomDelegate));
+        }
+    }
+    
     foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
     {
         if (KFPC_WS.InitialRandomPerk == 255 || KFPC_WS.PlayerReplicationInfo.bOnlySpectator || KFPC_WS.IsInState('Spectating'))

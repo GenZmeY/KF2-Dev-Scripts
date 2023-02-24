@@ -47,7 +47,7 @@ defaultproperties
 	GoreDamageGroup=DGT_EMP
 	EffectGroup=FXG_Electricity
 
-	ForceImpactEffect=ParticleSystem'WEP_HVStormCannon_EMIT.FX_HVStormCannon_Impact'
+	ForceImpactEffect=ParticleSystem'WEP_HVStormCannon_EMIT.FX_HVStormCannon_Impact_Zed'
 	ForceImpactSound=AkEvent'WW_WEP_HVStormCannon.Play_WEP_HVStormCannon_Impact'
 
 	WeaponDef=class'KFWeapDef_HVStormCannon'

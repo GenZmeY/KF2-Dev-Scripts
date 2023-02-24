@@ -42,6 +42,8 @@ simulated function ProcessTouch(Actor Other, Vector HitLocation, Vector HitNorma
 	local InterpCurveFloat PenetrationCurve;
 	local KFWeapon KFW;
 
+	bPassThrough = false;
+
 	if (Other != Instigator)
 	{
 		if(IgnoreTouchActor == Other)

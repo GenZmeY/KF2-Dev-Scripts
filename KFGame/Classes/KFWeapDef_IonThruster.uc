@@ -14,6 +14,9 @@ DefaultProperties
 	BuyPrice=2000
 	ImagePath="WEP_UI_Ion_Sword_TEX.UI_WeaponSelect_IonSword"
 
+	IsPlayGoHidden=true;
+
+
 	EffectiveRange=5
 
 	SharedUnlockId=SCU_IonThruster

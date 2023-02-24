@@ -18,6 +18,8 @@ DefaultProperties
 	AmmoPricePerMag=42
 	ImagePath="WEP_UI_Dual_HRG_SW_500_TEX.UI_WeaponSelect_HRG_DualSW500"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=15
 
 	UpgradePrice[0]=700

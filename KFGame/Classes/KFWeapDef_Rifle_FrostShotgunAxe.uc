@@ -17,6 +17,8 @@ DefaultProperties
 	AmmoPricePerMag=39 //36
 	ImagePath="WEP_UI_Frost_Shotgun_Axe_TEX.UI_WeaponSelect_FrostGun"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=35
 
 	UpgradePrice[0]=700

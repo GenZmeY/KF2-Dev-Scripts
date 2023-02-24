@@ -17,6 +17,8 @@ DefaultProperties
 	AmmoPricePerMag= 90//125 //175 //250
 	ImagePath="WEP_UI_Minigun_TEX.UI_WeaponSelect_Minigun"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=68 // Stoner63A Range
 
 	SharedUnlockId=SCU_Minigun

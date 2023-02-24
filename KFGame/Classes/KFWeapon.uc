@@ -858,6 +858,8 @@ var config bool	bLogAmmo;
 /** Log weapon upgrade system. */
 var const bool bLogWeaponUpgrade;
 
+var const bool UseFixedPhysicalFireLocation;
+
 /*********************************************************************************************
  * @name Weapon Upgrade System
  *********************************************************************************************/
@@ -3938,7 +3940,14 @@ static simulated function class<KFProjectile> GetKFProjectileClassByFiringMode(i
 		AimDir = Vector(GetAdjustedAim( StartTrace ));
 
 		// this is the location where the projectile is spawned.
-		RealStartLoc = GetPhysicalFireStartLoc(AimDir);
+		if (UseFixedPhysicalFireLocation)
+		{
+			RealStartLoc = GetFixedPhysicalFireStartLoc();
+		}
+		else
+		{
+			RealStartLoc = GetPhysicalFireStartLoc(AimDir);
+		}
 
 		if( StartTrace != RealStartLoc )
 		{
@@ -8047,5 +8056,7 @@ defaultproperties
 
 	bUsesSecondaryAmmoAltHUD=false
 	bForceHandleImpacts=false
+
+	UseFixedPhysicalFireLocation=false
 }
 

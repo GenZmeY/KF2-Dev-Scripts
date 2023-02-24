@@ -20,6 +20,8 @@ DefaultProperties
 	AmmoPricePerMag=15
 	ImagePath="WEP_UI_HRG_Kaboomstick_TEX.UI_WeaponSelect_HRG_Kaboomstick"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=40 //15
 
 	UpgradePrice[0]=700

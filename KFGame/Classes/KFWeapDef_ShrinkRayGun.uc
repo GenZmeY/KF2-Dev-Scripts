@@ -16,6 +16,8 @@ DefaultProperties
 	AmmoPricePerMag=50
 	ImagePath="WEP_UI_ShrinkRay_Gun_TEX.UI_Weapon_Select_Shrink_Ray_Gun"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=12
 
 	UpgradePrice[0]=700

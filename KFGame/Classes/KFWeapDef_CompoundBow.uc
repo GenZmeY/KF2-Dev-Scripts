@@ -22,6 +22,8 @@ defaultproperties
 
 	ImagePath="WEP_UI_CompoundBow_TEX.UI_WeaponSelect_Compound_Bow"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=80
 
 	SharedUnlockId=SCU_CompoundBow

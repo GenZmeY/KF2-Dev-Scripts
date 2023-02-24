@@ -18,6 +18,8 @@ DefaultProperties
 	AmmoPricePerMag=70
 	ImagePath="Wep_UI_HRG_Healthrower_TEX.UI_WeaponSelect_HRG_Healthrower"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=17
 
 	UpgradePrice[0]=700

@@ -22,6 +22,8 @@ defaultproperties
 
 	ImagePath="WEP_UI_Blunderbuss_TEX.UI_WeaponSelect_BlunderBluss"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=95 // Based on comment Slightly less than  M79 Grenade Launcher
 
 	UpgradePrice[0]=1500

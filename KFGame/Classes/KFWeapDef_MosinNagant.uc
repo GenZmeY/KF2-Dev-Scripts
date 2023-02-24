@@ -18,6 +18,8 @@ DefaultProperties
 	AmmoPricePerMag=42
 	ImagePath="wep_ui_mosin_tex.UI_WeaponSelect_MosinNagant"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=90
 
 	UpgradePrice[0]=700

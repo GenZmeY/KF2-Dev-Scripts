@@ -15,6 +15,8 @@ DefaultProperties
 	BuyPrice=1500
 	ImagePath="WEP_UI_Scythe_TEX.UI_WeaponSelect_Scythe"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=5
 	
 	UpgradePrice[0]=1500

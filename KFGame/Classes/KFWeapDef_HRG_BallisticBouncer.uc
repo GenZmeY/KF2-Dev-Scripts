@@ -16,6 +16,8 @@ DefaultProperties
 	AmmoPricePerMag=40
 	ImagePath="WEP_UI_HRG_BallisticBouncer_TEX.UI_WeaponSelect_HRG_BallisticBouncer"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=70
 
 	UpgradePrice[0]=700

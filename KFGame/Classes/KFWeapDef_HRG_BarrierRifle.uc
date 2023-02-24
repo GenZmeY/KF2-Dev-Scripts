@@ -17,6 +17,8 @@ DefaultProperties
 	AmmoPricePerMag=55
 	ImagePath="wep_ui_hrg_barrierrifle_tex.UI_WeaponSelect_HRG_BarrierRifle"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=68
 
 	//UpgradePrice[0]=1500

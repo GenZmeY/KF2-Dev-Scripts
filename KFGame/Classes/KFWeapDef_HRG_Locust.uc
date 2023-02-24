@@ -18,6 +18,8 @@ DefaultProperties
 	AmmoPricePerMag=40
 	ImagePath="wep_ui_hrg_locust_tex.UI_WeaponSelect_HRG_Locust"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=100
 
 	UpgradePrice[0]=700

@@ -16,6 +16,8 @@ DefaultProperties
 	AmmoPricePerMag=78
 	ImagePath="WEP_UI_Thermite_TEX.UI_WeaponSelect_Thermite"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=78
 
 	UpgradePrice[0]=1500

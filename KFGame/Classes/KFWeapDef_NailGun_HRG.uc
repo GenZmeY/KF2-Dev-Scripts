@@ -19,6 +19,8 @@ DefaultProperties
 	AmmoPricePerMag=45
 	ImagePath="WEP_UI_HRG_Nailgun_PDW_TEX.UI_WeaponSelect_HRG_Nailgun_PDW"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=55
 
 	UpgradePrice[0]=700

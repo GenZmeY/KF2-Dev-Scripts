@@ -18,6 +18,8 @@ DefaultProperties
     AmmoPricePerMag=34
     ImagePath="wep_ui_chiapparhino_tex.UI_WeaponSelect_DualChiappaRhinos"
 
+	IsPlayGoHidden=true;
+
     EffectiveRange=50
 
     UpgradePrice[0]=700

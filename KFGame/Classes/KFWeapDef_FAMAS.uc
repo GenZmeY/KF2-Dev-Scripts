@@ -23,6 +23,8 @@ defaultproperties
 
 	ImagePath="WEP_UI_Famas_TEX.UI_WeaponSelect_Famas"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=67 // @TODO: ¿?¿?¿?
 
 	UpgradePrice[0]=700

@@ -16,6 +16,8 @@ DefaultProperties
 	AmmoPricePerMag=38 //32
 	ImagePath="WEP_UI_BladedPistol_TEX.UI_WeaponSelect_BladedPistol"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=25
 
 	UpgradePrice[0]=700

@@ -483,7 +483,6 @@ simulated state MineReconstructorCharge extends WeaponFiring
 		NotifyWeaponFinishedFiring(CurrentFireMode);
 
 		super.HandleFinishedFiring();
-		//`Log("ChargePercentage"@ChargePercentage);
 	}
 
 	simulated function PutDownWeapon()
@@ -577,6 +576,7 @@ simulated function KFProjectile SpawnProjectile(class<KFProjectile> KFProjClass,
 		BouncingProj.SetInheritedScale(FXScalingFactorByCharge, ChargePercentage);
         return BouncingProj;
     }
+	
     return none;
 }
 
@@ -645,8 +645,8 @@ defaultproperties
 	ValueIncreaseTime=0.1
 
 	//FOR LERPING DAMANGE
-	MaxDamageByCharge=200
-	MinDamageByCharge=10
+	MaxDamageByCharge=300
+	MinDamageByCharge=15
     // FOV
     Meshfov=80
 	MeshIronSightFOV=65 //52
@@ -768,4 +768,6 @@ defaultproperties
 	ChargeStaticMesh = StaticMesh'WEP_HRG_BallisticBouncer_EMIT.HRG_BallisticBouncer_ball_MESH'
 	MinProjPlaceholderScale = 2.0f;
 	MaxProjPlaceholderScale = 3.0f;
+
+	UseFixedPhysicalFireLocation=true
 }

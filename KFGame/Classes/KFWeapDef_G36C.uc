@@ -18,6 +18,8 @@ DefaultProperties
 	AmmoPricePerMag=36
 	ImagePath="wep_ui_g36c_tex.UI_WeaponSelect_G36C" 
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=70
 
 	UpgradePrice[0]=1500

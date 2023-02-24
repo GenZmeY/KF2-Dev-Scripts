@@ -16,6 +16,8 @@ DefaultProperties
 	BuyPrice=850
 	ImagePath="Wep_UI_ChainBat_TEX.UI_WeaponSelect_RRChainbat"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=2
 
 	UpgradePrice[0]=600

@@ -755,7 +755,7 @@ var byte StormCannonIDCounter;
 
 var transient bool bShotgunJumping;
 
-var		int	iAllowSeasonalSkins;
+var	bool bAllowSeasonalSkins;
 
 
 cpptext
@@ -1008,7 +1008,7 @@ reliable server event PushV()
 }
 
 
-simulated function int GetAllowSeasonalSkins()
+simulated function bool GetAllowSeasonalSkins()
 {
 	local KFGameReplicationInfo KFGRI;
 	local bool bIsWWLWeekly, bIsAllowSeasonalSkins; // Situations that shouldn't allow seasonal overrides
@@ -1017,22 +1017,20 @@ simulated function int GetAllowSeasonalSkins()
 
 	bIsWWLWeekly = KFGRI != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 12;
 	bIsAllowSeasonalSkins = KFGRI != none && KFGRI.bAllowSeasonalSkins;
+	//`Log("GetAllowSeasonalSkins: AllowSeasonalSkins: "$bIsAllowSeasonalSkins$" WWLWeekly "$bIsWWLWeekly);
 	if(bIsWWLWeekly || bIsAllowSeasonalSkins == false)
 	{
-		return 0;
+		return false;
 	}
-	return 1;
+	return true;
 }
 
 simulated event name GetSeasonalStateName()
 {
 	local int EventId, MapModifiedEventId;
 	local KFMapInfo KFMI;
-	local bool bIsWWLWeekly, bIsAllowSeasonalSkins ; // Situations that shouldn't allow seasonal overrides
-	local KFGameReplicationInfo KFGRI;
 	
 	EventId = class'KFGameEngine'.static.GetSeasonalEventID();
-	`Log("GetSeasonalStateName: "$EventId);
 
 	MapModifiedEventId = SEI_None;
 
@@ -1042,16 +1040,13 @@ simulated event name GetSeasonalStateName()
 		KFMI.ModifySeasonalEventId(MapModifiedEventId);
 	}
 
+	bAllowSeasonalSkins = GetAllowSeasonalSkins();
+
+	`Log("GetSeasonalStateName: "$EventId$" AllowSeasonalSkins: "$bAllowSeasonalSkins);
+
 	if (MapModifiedEventId == SEI_None)
 	{
-		KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
-
-		bIsWWLWeekly = KFGRI != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 12;
-		
-		bIsAllowSeasonalSkins  = KFGRI != none && KFGRI.bAllowSeasonalSkins;
-		
-		`Log("GetSeasonalStateName: AllowSeasonalSkins: "$bIsAllowSeasonalSkins$" WWLWeekly "$bIsWWLWeekly);
-		if (bIsWWLWeekly || bIsAllowSeasonalSkins == false)
+		if (bAllowSeasonalSkins == false)
 		{
 			EventId = SEI_None;
 		}
@@ -5289,9 +5284,8 @@ event PlayerTick( float DeltaTime )
 {
 	super.PlayerTick(DeltaTime);
 
-	if(iAllowSeasonalSkins != GetAllowSeasonalSkins())
+	if(bAllowSeasonalSkins != GetAllowSeasonalSkins())
 	{
-		iAllowSeasonalSkins = GetAllowSeasonalSkins();
 		UpdateSeasonalState();
 	}
 
@@ -12382,5 +12376,5 @@ defaultproperties
 
 	StormCannonIDCounter = 0
 	bShotgunJumping = false
-	iAllowSeasonalSkins = -1
+	bAllowSeasonalSkins = false
 }

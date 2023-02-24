@@ -457,31 +457,32 @@ function int GetChunkArmorCost()
 
 function int FillArmor( )
 {
-	local float ArmorPricePerPercent, FillCost;
-	local float PercentBoughtUnit, PercentArmorBought;
+	local float FillCost, PercentBoughtUnit, PercentArmorBought;
 	local int ActualArmorPointsAvailable;
 
 	FillCost = GetFillArmorCost();
-	ActualArmorPointsAvailable = ArmorItem.MaxSpareAmmo - ArmorItem.SpareAmmoCount;
-
-	PercentBoughtUnit = float(ActualArmorPointsAvailable) / float(ArmorItem.MaxSpareAmmo);
-	PercentArmorBought = PercentBoughtUnit * 100.f;
 
 	// Buy as much armor as we possibly can
     if (FillCost > TotalDosh)
     {
-   		ArmorPricePerPercent = ArmorItem.AmmoPricePerMagazine;
-
         // Because we are using ints this will round down and we can get how much we actually spent
-    	PercentArmorBought = TotalDosh / ArmorPricePerPercent;
-    	PercentBoughtUnit = PercentArmorBought / 100.f;
-		FillCost = ArmorPricePerPercent * PercentArmorBought;
-    }
 
-    PercentArmorBought = (PercentArmorBought > 0.f && PercentArmorBought < 1.f) ? 1.f : PercentArmorBought;
+		ActualArmorPointsAvailable = FFloor(float(TotalDosh) / float(ArmorItem.AmmoPricePerMagazine));
+
+		FillCost = ArmorItem.AmmoPricePerMagazine * ActualArmorPointsAvailable;
+    }
+	else
+	{
+		ActualArmorPointsAvailable = ArmorItem.MaxSpareAmmo - ArmorItem.SpareAmmoCount;
+	}
+
+	PercentBoughtUnit = float(ActualArmorPointsAvailable) / float(ArmorItem.MaxSpareAmmo);
+	PercentArmorBought = PercentBoughtUnit * 100.f;
+
     ArmorItem.SpareAmmoCount = FMin( float(ArmorItem.SpareAmmoCount) + (PercentBoughtUnit * float(ArmorItem.MaxSpareAmmo)), float(ArmorItem.MaxSpareAmmo) );
 
 	BoughtAmmo(PercentArmorBought, FillCost, EIT_Armor);
+
 	return FillCost;
 }
 

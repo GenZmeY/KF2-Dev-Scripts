@@ -16,6 +16,8 @@ DefaultProperties
 	AmmoPricePerMag=60 // 27
 	ImagePath="WEP_UI_AutoTurret_TEX.UI_WeaponSelect_AutoTurret"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=18
 
 	UpgradePrice[0]=700

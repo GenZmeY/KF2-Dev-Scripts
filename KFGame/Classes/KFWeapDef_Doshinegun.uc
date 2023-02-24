@@ -17,6 +17,8 @@ DefaultProperties
 	BuyPrice=400 //600 //750
 	ImagePath="WEP_UI_Doshinegun_TEX.UI_Weapon_Select_Doshinegun"
 
+	IsPlayGoHidden=true;
+
 	EffectiveRange=68
 
 	UpgradePrice[0]=600

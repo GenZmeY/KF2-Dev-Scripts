@@ -37,6 +37,8 @@ simulated function StartFire()
 
 		if (WeapMesh != none)
 		{
+			ChargeMIC = ChargeAttachment.CreateAndSetMaterialInstanceConstant(0);
+
 			WeapMesh.AttachComponentToSocket(ChargeAttachment, 'MuzzleFlash');
 		}
 		else
@@ -57,7 +59,7 @@ simulated event Tick(float DeltaTime)
 {
     local float ChargeValue;
 
-	if(bIsCharging && !bIsFullyCharged)
+	if (bIsCharging && !bIsFullyCharged)
 	{
 		ChargeValue = FMin(class'KFWeap_HRG_BallisticBouncer'.default.MaxChargeTime, WorldInfo.TimeSeconds - StartFireTime) / class'KFWeap_HRG_BallisticBouncer'.default.MaxChargeTime;
 
@@ -66,6 +68,12 @@ simulated event Tick(float DeltaTime)
             bIsFullyCharged = true;
             ChargeValue = 1.0f;
         }
+
+		if (ChargeMIC != none)
+		{	
+			// Change Color
+			ChargeMIC.SetScalarParameterValue('Charge', ChargeValue);
+		}
 
 		if( ChargeAttachment != none)
 		{

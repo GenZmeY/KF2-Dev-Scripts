@@ -18,6 +18,8 @@ DefaultProperties
 	AmmoPricePerMag=70 //65
 	ImagePath="WEP_UI_HRG_Energy_TEX.UI_WeaponSelect_HRG_Energy"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=50
 
 	UpgradePrice[0]=1500

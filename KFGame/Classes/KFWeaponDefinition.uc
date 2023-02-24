@@ -20,6 +20,9 @@ var string AttachmentArchtypePath;
 /** Path to the UI thumbnail texture */
 var protected string ImagePath;
 
+/** Is Weapong Hidden in PS4 Initial Chunk PlayGO PS4 */
+var bool IsPlayGoHidden;
+
 /** The cost of this weapon ( Sold for .75 this amount ) */
 var(Trader) int BuyPrice;
 /** Price per magazine */

@@ -20,6 +20,8 @@ DefaultProperties
 
 	ImagePath="WEP_UI_HRG_IncendiaryRifle_TEX.UI_WeaponSelect_HRG_IncendiaryRifle"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=68
 
 	SecondaryAmmoMagSize=1

@@ -15,6 +15,9 @@ DefaultProperties
 	BuyPrice=1400
 	AmmoPricePerMag=40
 	ImagePath="wep_ui_hvstormcannon_tex.UI_WeaponSelect_HVStormCannon"
+
+	IsPlayGoHidden=true;
+
 	EffectiveRange=100
 
 	UpgradePrice[0]=1500

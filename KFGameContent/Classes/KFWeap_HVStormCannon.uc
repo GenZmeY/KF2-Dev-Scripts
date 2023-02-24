@@ -70,10 +70,11 @@ simulated function KFProjectile SpawnAllProjectiles(class<KFProjectile> KFProjCl
 			// 0.32 is a value the artists found that was needed to balance the aim in order to match the iron sight with the bullet impact position
 			R = QuatFromAxisAndAngle(Y, -0.32f * DegToRad);
 			AimDir = QuatRotateVector(R, AimDir);
+			return SpawnProjectile(KFProjClass, RealStartLoc, AimDir);
 		}
 	}
 
-	return SpawnProjectile(KFProjClass, RealStartLoc, AimDir);
+	return super.SpawnAllProjectiles(KFProjClass, RealStartLoc, AimDir);
 }
 
 simulated function ProcessInstantHitEx(byte FiringMode, ImpactInfo Impact, optional int NumHits, optional out float out_PenetrationVal, optional int ImpactNum )
@@ -382,7 +383,7 @@ defaultproperties
     FireInterval(DEFAULT_FIREMODE)=0.4 // 150 RPM // 0.8 // 75 RPM
 	Spread(DEFAULT_FIREMODE)=0.005
 	PenetrationPower(DEFAULT_FIREMODE)=0
-	FireOffset=(X=30,Y=16,Z=-8)
+	//FireOffset=(X=30,Y=16,Z=-8)
 
 	// BASH_FIREMODE
 	InstantHitDamageTypes(BASH_FIREMODE)=class'KFDT_Bludgeon_HVStormCannon'

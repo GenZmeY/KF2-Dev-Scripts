@@ -14,6 +14,8 @@ defaultproperties
 	WeaponClassPath="KFGameContent.KFWeap_Rifle_ParasiteImplanter"
 	ImagePath="wep_ui_parasiteimplanter_tex.UI_WeaponSelect_ParasiteImplanter"
 
+	IsPlayGoHidden=true;
+
 	BuyPrice=1500
 	AmmoPricePerMag=42
 	EffectiveRange=90 

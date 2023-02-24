@@ -16,6 +16,8 @@ DefaultProperties
 	AmmoPricePerMag=25
 	ImagePath="WEP_UI_HRG_MegaDragonsbreath_TEX.UI_WeaponSelect_HRG_MegaDragonsbreath"
 
+	IsPlayGoHidden=true;
+	
 	EffectiveRange=25
 
 	UpgradePrice[0]=1500
