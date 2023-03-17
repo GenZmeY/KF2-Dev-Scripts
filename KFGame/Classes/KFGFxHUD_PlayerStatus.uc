@@ -108,10 +108,18 @@ function UpdateHealer(optional bool bForce)
 	// Update the Healer charge amount
 	if( LastHealerAmmoPct != CurrentHealerAmmoPct || bForce)
 	{
-		
         SetInt("playerHealerCharge" , int(CurrentHealerAmmoPct * 100.f));
         LastHealerAmmoPct = CurrentHealerAmmoPct;
 	}
+}
+
+function ResetSyringe(float Ammo, float MaxAmmo)
+{
+	local float CurrentHealerAmmoPct;
+
+    CurrentHealerAmmoPct = Ammo;
+    SetInt("playerHealerCharge" , int(CurrentHealerAmmoPct * 100.f));
+    LastHealerAmmoPct = MaxAmmo;
 }
 
 function UpdatePerk()

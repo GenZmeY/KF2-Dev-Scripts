@@ -6087,7 +6087,10 @@ simulated state WeaponEquipping
 		CurrentPerk = GetPerk();
 		if( CurrentPerk != none )
 		{
-			CurrentPerk.ModifyWeaponSwitchTime( ScaledRate );
+			if( CurrentPerk.IsWeaponOnPerk( self,, CurrentPerk.class ) )
+			{
+				CurrentPerk.ModifyWeaponSwitchTime( ScaledRate );
+			}
 		}
 
 		return 1.f / ScaledRate;
@@ -6113,7 +6116,10 @@ simulated function TimeWeaponEquipping()
 	InstigatorPerk = GetPerk();
 	if( InstigatorPerk != none )
 	{
-		InstigatorPerk.ModifyWeaponSwitchTime( ModifiedEquipTime );
+		if( InstigatorPerk.IsWeaponOnPerk( self,, InstigatorPerk.class ) )
+		{
+			InstigatorPerk.ModifyWeaponSwitchTime( ModifiedEquipTime );
+		}
 	}
 
 	// Play the animation
@@ -6190,7 +6196,10 @@ simulated state WeaponPuttingDown
 		CurrentPerk = GetPerk();
 		if( CurrentPerk != none )
 		{
-			CurrentPerk.ModifyWeaponSwitchTime( ScaledRate );
+			if( CurrentPerk.IsWeaponOnPerk( self,, CurrentPerk.class ) )
+			{
+				CurrentPerk.ModifyWeaponSwitchTime( ScaledRate );
+			}
 		}
 
 		return 1.f / ScaledRate;
@@ -6366,7 +6375,10 @@ simulated function TimeWeaponPutDown()
 	InstigatorPerk = GetPerk();
 	if( InstigatorPerk != none )
 	{
-		InstigatorPerk.ModifyWeaponSwitchTime( ModifiedPutDownTime );
+		if( InstigatorPerk.IsWeaponOnPerk( self,, InstigatorPerk.class ) )
+		{
+			InstigatorPerk.ModifyWeaponSwitchTime( ModifiedPutDownTime );
+		}
 	}
 
 	SetTimer( ModifiedPutDownTime > 0 ? ModifiedPutDownTime : 0.01, false, nameof(WeaponIsDown) );

@@ -1646,6 +1646,7 @@ function PerkRoulette_InventoryCustomDelegate()
     local KFPerk Perk;
     local int i;
     local byte NewPerk;
+    local KFInventoryManager InventoryManager;
 
     for (i = PerkRoulette_PlayersDelegateInventory.Length - 1 ; i >= 0 ; --i)
     {
@@ -1680,6 +1681,16 @@ function PerkRoulette_InventoryCustomDelegate()
             AddDefaultInventory(KFPC_WS.Pawn);
 
             PerkRoulette_PlayersDelegateInventory.Remove(i, 1);
+
+            // Force fill syringe
+            InventoryManager = KFInventoryManager(KFPC_WS.Pawn.InvManager);
+
+            if (InventoryManager.HealerWeapon != none)
+            {
+                InventoryManager.HealerWeapon.AmmoCount[0] = InventoryManager.HealerWeapon.MagazineCapacity[0];
+            }
+
+            KFPC_WS.ResetSyringe();
         }
     }
 

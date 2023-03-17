@@ -747,7 +747,7 @@ function float FillAmmo( out SItemInformation ItemInfo, optional bool bIsGrenade
 function int GetFillAmmoCost( out SItemInformation ItemInfo )
 {
 	local int AmmoCount, MaxAmmoCount;
-    local float MissingAmmo, PricePerMag, MagSize, PricePerRound;
+    local float MissingAmmo, PricePerMag, MagSize, PricePerRound, TotalFill, Fractional;
     local float AmmoCostScale;
     local KFGameReplicationInfo KFGRI;
 
@@ -784,8 +784,20 @@ function int GetFillAmmoCost( out SItemInformation ItemInfo )
 	MissingAmmo = MaxAmmoCount - AmmoCount;
     PricePerRound = PricePerMag / MagSize;
 
+	TotalFill = MissingAmmo * PricePerRound;
+
 	// Use FCeil so you can never buy ammo for 0 Do$h on an int conversion
-    return FCeil(MissingAmmo * PricePerRound);
+
+	// Unreal does a strange thing with a float number that doesn't have decimals, if you ceiling on it it will add 1.0 to it..
+
+	Fractional = TotalFill - FFloor(TotalFill);
+
+	if (FFloor(TotalFill) != 0 && Fractional < 0.0001f)
+	{
+		return FFloor(TotalFill);
+	}
+
+    return FCeil(TotalFill);
 }
 
 // auto fill

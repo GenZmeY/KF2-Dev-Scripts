@@ -208,6 +208,35 @@ simulated function UpdateVIPWidget(ReplicatedVIPGameInfo VIPInfo)
 	}
 }
 
+reliable client function ResetSyringe()
+{
+    local KFInventoryManager InventoryManager;
+    local KFWeapon CurrentWeapon;
+
+    InventoryManager = KFInventoryManager(Pawn.InvManager);
+
+    if (InventoryManager.HealerWeapon == none)
+    {
+        foreach InventoryManager.InventoryActors ( class'KFWeapon', CurrentWeapon )
+        {
+            if (KFWeap_HealerBase(CurrentWeapon) != none)
+            {
+                InventoryManager.HealerWeapon = KFWeap_HealerBase(CurrentWeapon);
+            }
+        }   
+    }
+
+    if (InventoryManager.HealerWeapon != none)
+    {
+        InventoryManager.HealerWeapon.AmmoCount[0] = InventoryManager.HealerWeapon.MagazineCapacity[0];
+
+        if (MyGFxHUD != none)
+        {
+            MyGFxHUD.ResetSyringe(InventoryManager.HealerWeapon.AmmoCount[0], InventoryManager.HealerWeapon.MagazineCapacity[0]);
+        }   
+    }
+}
+
 function bool CanUseHealObject()
 {
     local KFGameReplicationInfo KFGRI;

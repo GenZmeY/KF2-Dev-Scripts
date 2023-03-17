@@ -77,6 +77,8 @@ simulated protected function PrepareExplosionTemplate()
 	
 	super(KFProjectile).PrepareExplosionTemplate();
 
+	ExplosionTemplate.bIgnoreInstigator = true;
+
 	OwnerWeapon = Weapon(Owner);
 	if (OwnerWeapon != none)
 	{

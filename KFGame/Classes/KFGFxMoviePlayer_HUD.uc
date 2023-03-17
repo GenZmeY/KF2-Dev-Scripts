@@ -1190,6 +1190,14 @@ function UpdateVIP(ReplicatedVIPGameInfo VIPInfo, bool bIsVIP)
     }
 }
 
+function ResetSyringe(float Ammo, float MaxAmmo)
+{
+    if (PlayerStatusContainer != none)
+    {
+        PlayerStatusContainer.ResetSyringe(Ammo, MaxAmmo);
+    }
+}
+
 //==============================================================
 // Input
 //==============================================================

@@ -24,10 +24,20 @@ var transient bool Dirty;
 
 event FavoriteWeapon(name WeaponName)
 {
-	if(FavoriteWeapons.Find(string(WeaponName)) == INDEX_NONE)
+	if (FavoriteWeapons.Find(string(WeaponName)) == INDEX_NONE)
 	{
 		// Only add if unique
 		FavoriteWeapons.AddItem(string(WeaponName));
+
+		while (FavoriteWeapons.Length > 12)
+		{
+			// There's a crash on the save system because the string this generates is huge
+			// It usually happens when you start having more than 12 weapons as Favorite
+			// We are going to cap it then, we remove from the beginning
+
+			FavoriteWeapons.Remove(0, 1);
+		}
+
 		Dirty = true;
 	}
 }

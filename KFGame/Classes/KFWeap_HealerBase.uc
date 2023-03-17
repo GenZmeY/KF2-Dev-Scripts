@@ -117,6 +117,8 @@ function GivenTo(Pawn NewOwner, optional bool bDoNotActivate)
 	KFInvManger = KFInventoryManager(InvManager);
 	if( InvManager != none && KFInvManger != none )
 	{
+		`Log("GivenToGivenToGivenToGivenToGivenToGivenToGivenToGivenToGivenToGivenToGivenToGivenTo");
+
 		KFInvManger.HealerWeapon = self;
 	}
 }
