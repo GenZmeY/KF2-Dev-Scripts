@@ -241,7 +241,7 @@ defaultproperties
 	End Object
 	StickHelper=StickHelper0
 
-    SecondsBeforeDetonation=0.5f
+    SecondsBeforeDetonation=0.2f
     bIsProjActive=true
 	bCanDisintegrate=true
 	bAlwaysReplicateExplosion=true

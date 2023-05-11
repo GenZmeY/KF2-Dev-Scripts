@@ -62,6 +62,25 @@ simulated function NotifyWaveStart()
 	super.NotifyWaveStart();
 }
 
+function ChooseNextObjective(int NextWaveNum)
+{
+	local KFMapInfo KFMI;
+
+	if (IsContaminationMode() == false)
+	{
+		super.ChooseNextObjective(NextWaveNum);		
+	}
+
+    KFMI = KFMapInfo(WorldInfo.GetMapInfo());
+
+	if (KFMI != none && NextWaveNum != WaveMax)
+    {
+		bForceNextObjective = true; // this overrides the objective chance, so it just chooses randomnly between all them
+
+		ChooseNextRandomObjective(KFMI, NextWaveNum, false);
+    }
+}
+
 DefaultProperties
 {
 	bIsWeeklyMode=True

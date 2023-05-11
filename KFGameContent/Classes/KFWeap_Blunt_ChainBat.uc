@@ -45,13 +45,13 @@ defaultproperties
 	End Object
 	
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Bludgeon_ChainBat'
-	InstantHitDamage(DEFAULT_FIREMODE)=68// 34
+	InstantHitDamage(DEFAULT_FIREMODE)=75// 34
 	
 	InstantHitDamageTypes(HEAVY_ATK_FIREMODE)=class'KFDT_Bludgeon_ChainBatHeavy'
-	InstantHitDamage(HEAVY_ATK_FIREMODE)=90 //68
+	InstantHitDamage(HEAVY_ATK_FIREMODE)=100 //68
 
 	InstantHitDamageTypes(BASH_FIREMODE)=class'KFDT_Bludgeon_ChainBatBash'
-	InstantHitDamage(BASH_FIREMODE)=68
+	InstantHitDamage(BASH_FIREMODE)=75
 
 	// Inventory
 	GroupPriority=50

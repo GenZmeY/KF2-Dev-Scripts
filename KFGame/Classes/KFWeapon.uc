@@ -985,6 +985,9 @@ var class<KFTargetingWeaponComponent> TargetingCompClass;
 var KFTargetingWeaponComponent TargetingComp;
 var repnotify Actor TargetingCompRepActor;
 
+// To force the crosshair for showing up even if there's no spread
+var bool bForceCrosshair;
+
 cpptext
 {
 	// Actor
@@ -1842,6 +1845,11 @@ simulated function bool DenyPerkResupply()
 		}
 
 		if (Class.Name == 'KFWeap_AutoTurret')
+		{
+			return false;
+		}
+
+		if (Class.Name == 'KFWeap_HRG_Warthog')
 		{
 			return false;
 		}
@@ -3930,6 +3938,11 @@ static simulated function class<KFProjectile> GetKFProjectileClassByFiringMode(i
 	}
 
     MyProjectileClass = GetKFProjectileClass();
+
+	if (MyProjectileClass == none)
+	{
+		return none;
+	}
 
 	if( Role == ROLE_Authority || (MyProjectileClass.default.bUseClientSideHitDetection
         && MyProjectileClass.default.bNoReplicationToInstigator && Instigator != none
@@ -6087,7 +6100,8 @@ simulated state WeaponEquipping
 		CurrentPerk = GetPerk();
 		if( CurrentPerk != none )
 		{
-			if( CurrentPerk.IsWeaponOnPerk( self,, CurrentPerk.class ) )
+			// Ignore weapon on perk for survivalist
+			if( CurrentPerk.IsWeaponOnPerk( self,, CurrentPerk.class ) || CurrentPerk.GetPerkClass() == class'KFPerk_Survivalist'.static.GetPerkClass() )
 			{
 				CurrentPerk.ModifyWeaponSwitchTime( ScaledRate );
 			}
@@ -6116,7 +6130,8 @@ simulated function TimeWeaponEquipping()
 	InstigatorPerk = GetPerk();
 	if( InstigatorPerk != none )
 	{
-		if( InstigatorPerk.IsWeaponOnPerk( self,, InstigatorPerk.class ) )
+		// Ignore weapon on perk for survivalist
+		if( InstigatorPerk.IsWeaponOnPerk( self,, InstigatorPerk.class ) || InstigatorPerk.GetPerkClass() == class'KFPerk_Survivalist'.static.GetPerkClass() )
 		{
 			InstigatorPerk.ModifyWeaponSwitchTime( ModifiedEquipTime );
 		}
@@ -6196,7 +6211,8 @@ simulated state WeaponPuttingDown
 		CurrentPerk = GetPerk();
 		if( CurrentPerk != none )
 		{
-			if( CurrentPerk.IsWeaponOnPerk( self,, CurrentPerk.class ) )
+			// Ignore weapon on perk for survivalist
+			if( CurrentPerk.IsWeaponOnPerk( self,, CurrentPerk.class ) || CurrentPerk.GetPerkClass() == class'KFPerk_Survivalist'.static.GetPerkClass() )
 			{
 				CurrentPerk.ModifyWeaponSwitchTime( ScaledRate );
 			}
@@ -6375,7 +6391,8 @@ simulated function TimeWeaponPutDown()
 	InstigatorPerk = GetPerk();
 	if( InstigatorPerk != none )
 	{
-		if( InstigatorPerk.IsWeaponOnPerk( self,, InstigatorPerk.class ) )
+		// Ignore weapon on perk for survivalist
+		if( InstigatorPerk.IsWeaponOnPerk( self,, InstigatorPerk.class ) || InstigatorPerk.GetPerkClass() == class'KFPerk_Survivalist'.static.GetPerkClass() )
 		{
 			InstigatorPerk.ModifyWeaponSwitchTime( ModifiedPutDownTime );
 		}
@@ -8070,5 +8087,7 @@ defaultproperties
 	bForceHandleImpacts=false
 
 	UseFixedPhysicalFireLocation=false
+
+	bForceCrosshair=false
 }
 

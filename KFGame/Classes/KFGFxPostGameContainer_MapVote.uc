@@ -20,7 +20,9 @@ const MapNightmare = 'KF-Nightmare';
 const MapPowerCore = 'KF-PowerCore_Holdout';
 const MapDescent = 'KF-TheDescent';
 const MapKrampus = 'KF-KrampusLair';
+const MapSantas = 'KF-SantasWorkshop';
 const MapSteam = 'KF-SteamFortress';
+const MapElysium = 'KF-Elysium';
 
 //==============================================================
 // Initialization
@@ -56,6 +58,7 @@ function SetMapOptions()
 	local bool IsBrokenTrader;
 	local bool IsBossRush;
 	local bool IsGunGame;
+	local bool IsContaminationMode;
 	local bool bShouldSkipMaps;
 	local name MapName;
 
@@ -71,6 +74,7 @@ function SetMapOptions()
 		IsBrokenTrader = KFGRI.CurrentWeeklyIndex == 11;
 		IsBossRush     = KFGRI.CurrentWeeklyIndex == 14;
 		IsGunGame      = KFGRI.CurrentWeeklyIndex == 16;
+		IsContaminationMode = KFGRI.CurrentWeeklyIndex == 19;
 
 		bShouldSkipMaps = IsWeeklyMode && (IsBrokenTrader || IsBossRush || IsGunGame);
 
@@ -80,6 +84,7 @@ function SetMapOptions()
 		for (i = 0; i < ServerMapList.length; i++)
 		{
 			MapName = name(ServerMapList[i]);
+
 			if ( bShouldSkipMaps && ( MapName == MapBiolapse || 
 									  MapName == MapNightmare ||
 									  MapName == MapPowerCore ||
@@ -87,6 +92,20 @@ function SetMapOptions()
 									  MapName == MapKrampus))
 			{
 				continue;
+			}
+
+			if (IsWeeklyMode && IsContaminationMode)
+			{
+				if (MapName == MapBiolapse || 
+					MapName == MapNightmare ||
+					MapName == MapPowerCore ||
+					MapName == MapDescent ||
+					MapName == MapKrampus ||
+					MapName == MapElysium ||
+					MapName == MapSantas)
+				{
+					continue;
+				}				
 			}
 
 			/* Temporary removal of SteamFrotress for BossRush */

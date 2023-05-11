@@ -242,6 +242,11 @@ function UpdateGlobalDamage()
     }
 }
 
+function UpdateContaminationModeIconVisible(bool bisVisible)
+{
+    SetBool("ContaminationModeIconVisible", bisVisible);
+}
+
 DefaultProperties
 {
     LastUpdateTime = 0.f;

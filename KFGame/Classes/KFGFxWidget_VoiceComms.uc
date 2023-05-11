@@ -48,6 +48,12 @@ function SetLocalizedText()
 	}
 
 	SetObject("textOptions", DataProvider);
+
+	TempObj = CreateObject("Object");
+	TempObj.SetString("text", class'KFLocalMessage_VoiceComms'.default.ToggleFriendlyHUDString);
+	SetObject("toggleFriendlyText", TempObj);
+
+	SetBool("toggleFriendlyVisibility", GetPC().WorldInfo.NetMode != NM_StandAlone);
 }
 
 function SaveVoiceCommSelection( int CommsIndex )

@@ -214,6 +214,12 @@ function Pawn FindPlayerGrabTarget()
 function bool CanInteractWithPawn(KFPawn OtherPawn)
 {
 	// Prevent interaction if potentiail victim is dead, not on our team, in Phys_Falling, or busy with another special move
+	
+	if (OtherPawn.CanInteractWithPawnGrapple() == false)
+	{
+		return false;
+	}
+
 	return( (OtherPawn.IsAliveAndWell() && !KFPOwner.IsSameTeam(OtherPawn) && OtherPawn.Physics != PHYS_Falling && !OtherPawn.IsDoingSpecialMove())
 		&& Super.CanInteractWithPawn(OtherPawn) );
 }

@@ -39,6 +39,7 @@ var private const KFCharacterInfo_Monster CharacterMonsterArch;
 var transient bool bArchLoaded;
 
 /** List of variants that this pawn can be spawned as */
+var const array<int> EliteAIType; // can't use EAIType enumerator, use integer instead
 var const array<class<KFPawn_Monster> > ElitePawnClass;
 
 /** Custom third person camera offsets */
@@ -718,15 +719,50 @@ simulated static function float GetXPValue(byte Difficulty)
 	return default.XPValues[Difficulty];
 }
 
+// This is used to precalculate Elite Zed replacement at the Spawn Manager level decision, so Weeklies can infer a change via the SpawnReplacementList
+static function int IndexOverrideReplaceSpawnWithElite()
+{
+	local WorldInfo WI;
+	local KFGameReplicationInfo KFGRI;
+
+	WI = class'WorldInfo'.static.GetWorldInfo();
+	KFGRI = KFGameReplicationInfo(WI.GRI);
+
+	// We only use this feature in this weekly for now, we pregenerate the Random so we can replace the Zed with Elite version
+	// And use the Weekly SpawnReplacementList to replace correctly
+
+	if (KFGRI.IsContaminationMode())
+	{
+		if (default.ElitePawnClass.length > 0
+			&& default.DifficultySettings != none
+			&& fRand() < default.DifficultySettings.static.GetSpecialSpawnChance(KFGRI))
+		{
+			return Rand(default.ElitePawnClass.length);
+		}
+	}
+
+	return -1;
+}
+
 /** Gets the actual classes used for spawning. Can be overridden to replace this monster with another */
 static event class<KFPawn_Monster> GetAIPawnClassToSpawn()
 {
 	local WorldInfo WI;
+	local KFGameReplicationInfo KFGRI;
 
 	WI = class'WorldInfo'.static.GetWorldInfo();
-	if (default.ElitePawnClass.length > 0 && default.DifficultySettings != none && fRand() < default.DifficultySettings.static.GetSpecialSpawnChance(KFGameReplicationInfo(WI.GRI)))
+	KFGRI = KFGameReplicationInfo(WI.GRI);
+
+	// We already generated the random for this mode when calling IndexOverrideReplaceSpawnWithElite, so no need to roll the dice again
+
+	if (KFGRI.IsContaminationMode() == false)
 	{
-		return default.ElitePawnClass[Rand(default.ElitePawnClass.length)];
+		if (default.ElitePawnClass.length > 0
+			&& default.DifficultySettings != none
+			&& fRand() < default.DifficultySettings.static.GetSpecialSpawnChance(KFGRI))
+		{
+			return default.ElitePawnClass[Rand(default.ElitePawnClass.length)];
+		}
 	}
 
 	return default.class;

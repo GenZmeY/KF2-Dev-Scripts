@@ -1970,6 +1970,7 @@ function ChooseNextObjective(int NextWaveNum)
 		return;
 
     KFMI = KFMapInfo(WorldInfo.GetMapInfo());
+
 	if (KFMI != none && NextWaveNum != WaveMax)
     {
 		if (KFMI.bUsePresetObjectives && NextWaveNum <= GetPresetObjectiveLength(KFMI))
@@ -2047,12 +2048,13 @@ function int GetPresetObjectiveLength(KFMapInfo KFMI)
 	}
 }
 
-function bool ChooseNextRandomObjective(KFMapInfo KFMI, int NextWaveNum)
+function bool ChooseNextRandomObjective(KFMapInfo KFMI, int NextWaveNum, optional bool bWaveCanDisable = true)
 {
     local int Idx;
 	Idx = INDEX_NONE;
     //Start a random objective if we have any set
-	if (KFMI.RandomWaveObjectives.Length > 0 && KFMI.RandomObjectiveWavesToDisable.Find(NextWaveNum) == INDEX_NONE)
+
+	if (KFMI.RandomWaveObjectives.Length > 0 && (bWaveCanDisable == false || KFMI.RandomObjectiveWavesToDisable.Find(NextWaveNum) == INDEX_NONE))
     {
         //Attempt to reset if we've run out
         if (KFMI.CurrentAvailableRandomWaveObjectives.Length == 0)
@@ -2084,7 +2086,10 @@ function int SetNextObjective(array<KFInterface_MapObjective> PossibleObjectives
 		if (PossibleObjectives[RandID].CanActivateObjectiveByWeekly())
 		{
 			PctChanceToActivate = PossibleObjectives[RandID].GetActivationPctChance();
-			if (bForceNextObjective || (PossibleObjectives[RandID].CanActivateObjective() && PreviousObjective != PossibleObjectives[RandID] && (PctChanceToActivate >= 1.f || DieRoll <= PctChanceToActivate)))
+
+			if (bForceNextObjective || (PossibleObjectives[RandID].CanActivateObjective()
+				&& PreviousObjective != PossibleObjectives[RandID]
+				&& (PctChanceToActivate >= 1.f || DieRoll <= PctChanceToActivate)))
 			{
 				if (bActivateImmediately)
 				{
@@ -2096,6 +2101,7 @@ function int SetNextObjective(array<KFInterface_MapObjective> PossibleObjectives
 					NextObjectiveIsEndless = bUseEndlessSpawning;
 					KFInterface_MapObjective(NextObjective).NotifyObjectiveSelected();
 				}
+
 				return RandID;
 			}
 		}
@@ -2404,6 +2410,43 @@ simulated function bool IsVIPMode()
 simulated function bool IsRandomPerkMode()
 {
 	return bIsWeeklyMode && CurrentWeeklyIndex == 18;
+}
+
+simulated function bool IsContaminationMode()
+{
+	return bIsWeeklyMode && CurrentWeeklyIndex == 19;
+}
+
+simulated function int ContaminationModeZedsToFinish()
+{
+	local KFGameInfo KFGI;
+
+	if (IsContaminationMode())
+	{
+		KFGI = KFGameInfo(WorldInfo.Game);
+		if (KFGI != none && KFGI.OutbreakEvent != none)
+		{
+			return KFGI.OutbreakEvent.ActiveEvent.ContaminationModeZedsToFinish;
+		}
+	}
+
+	return 0;
+}
+
+simulated function int ContaminationModeExtraDosh()
+{
+	local KFGameInfo KFGI;
+
+	if (IsContaminationMode())
+	{
+		KFGI = KFGameInfo(WorldInfo.Game);
+		if (KFGI != none && KFGI.OutbreakEvent != none)
+		{
+			return KFGI.OutbreakEvent.ActiveEvent.ContaminationModeExtraDosh;
+		}
+	}
+
+	return 0;
 }
 
 defaultproperties

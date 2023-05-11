@@ -882,12 +882,33 @@ function StartWave()
 	WaveNum++;
 	MyKFGRI.WaveNum = WaveNum;
 
-	if (IsMapObjectiveEnabled())
+	if (MyKFGRI.IsContaminationMode())
 	{
-		MyKFGRI.ClearPreviousObjective();
-		if (MyKFGRI.StartNextObjective())
+		if (WaveNum == 1) // Only on first wave..
 		{
-			WaveBuffer = ObjectiveSpawnDelay;
+			MyKFGRI.ChooseNextObjective(WaveNum);
+		}
+
+		MyKFGRI.ClearPreviousObjective();
+		
+		if (WaveNum != WaveMax)
+		{
+			if (MyKFGRI.StartNextObjective())
+			{
+				WaveBuffer = ObjectiveSpawnDelay;
+			}
+		}
+	}
+	else
+	{
+		if (IsMapObjectiveEnabled())
+		{
+			MyKFGRI.ClearPreviousObjective();
+
+			if (MyKFGRI.StartNextObjective())
+			{
+				WaveBuffer = ObjectiveSpawnDelay;
+			}
 		}
 	}
 

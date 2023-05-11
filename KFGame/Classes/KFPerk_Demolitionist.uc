@@ -48,9 +48,6 @@ var 	private const   float 						ProfessionalAoEModifier;
 var 	private			bool 						bUsedSacrifice;
 var 	private const 	class<KFDamagetype>			LingeringNukeDamageType;
 
-/** The last time an HX25 projectile spawned by our owner caused a nuke */
-var 	private transient float LastHX25NukeTime;
-
 enum EDemoSkills
 {
 	EDemoDamage,
@@ -406,15 +403,6 @@ static function PrepareExplosive( Pawn ProjOwner, KFProjectile Proj, optional fl
 	}
 }
 
-simulated function SetLastHX25NukeTime( float NewTime )
-{
-	LastHX25NukeTime = NewTime;
-}
-simulated function float GetLastHX25NukeTime()
-{
-	return LastHX25NukeTime;
-}
-
 simulated function float GetAoERadiusModifier()
 {
 	local float RadiusModifier;
@@ -722,7 +710,7 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 	local name StateName;
 
 	StateName = W.GetStateName();
-	if( IsProfessionalActive() && IsWeaponOnPerk( W,, self.class ) )
+	if( IsProfessionalActive() && IsWeaponOnPerk( W,, self.class ))
 	{
 		if( ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE || W.HasAlwaysOnZedTimeResist() )
 		{
@@ -1171,9 +1159,13 @@ DefaultProperties
 	ZedTimeModifyingStates(9)="BlunderbussDeployAndDetonate"
 
    	PassiveExtraAmmoIgnoredClassNames(0)="KFProj_DynamiteGrenade"
+	PassiveExtraAmmoIgnoredClassNames(1)="KFWeap_HRG_Warthog"
+	PassiveExtraAmmoIgnoredClassNames(2)="KFWeap_HRG_WarthogWeapon"
 
    	ExtraAmmoIgnoredClassNames(0)="KFProj_DynamiteGrenade"
    	ExtraAmmoIgnoredClassNames(1)="KFWeap_Thrown_C4"
+	ExtraAmmoIgnoredClassNames(2)="KFWeap_HRG_Warthog"
+	ExtraAmmoIgnoredClassNames(3)="KFWeap_HRG_WarthogWeapon"
 
 	TacticalReloadAsReloadRateClassNames(0)="KFWeap_GrenadeLauncher_M32"
 

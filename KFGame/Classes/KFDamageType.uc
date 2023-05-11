@@ -239,6 +239,15 @@ var bool bIsTrapDamage;
 //When doing armour piercing damage (this is a % of total damage received, the rest is considered as base if defined)
 var float DamageModifierAP;
 
+// If killing with this damage type can trigger zed time
+var bool bCanZedTime;
+
+// If damaging with this can trigger rage
+var bool bCanEnrage;
+
+// If applies radial impulse an it affect the affliction power as well?
+var bool bCanApplyRadialCalculationtoAffliction;
+
 /**
  * Take the primary HitDirection and modify it to add more spread.
  * Use the BloodSpread property to calculate the spread amount
@@ -459,4 +468,9 @@ Defaultproperties
 	DamageModifierAP=0.f
 
 	bCanPlayDeadHitEffects=true
+
+	bCanZedTime=true
+	bCanEnrage=true
+
+	bCanApplyRadialCalculationtoAffliction=true
 }

@@ -27,6 +27,8 @@ function LocalizeWidget()
 
 	LocalizedObject.SetString("cancel", CancelString);
 	LocalizedObject.SetString("confirm", ConfirmString);
+	LocalizedObject.SetString("search", Localize("KFGFxMenu_Inventory", "SearchText", "KFGame"));
+	LocalizedObject.SetString("clearsearch", Localize("KFGFxMenu_Inventory", "ClearSearchText", "KFGame"));
 	LocalizedObject.SetString("reset",Localize("KFGFxOptionsMenu_Graphics","DefaultString","KFGame"));
 	LocalizedObject.SetString("party", Localize("KFGFxWidget_BaseParty", "SquadString", "KFGame"));
 	LocalizedObject.SetString("config", Localize("KFGFxPerksContainer_SkillsSummary", "ConfigureString", "KFGame"));

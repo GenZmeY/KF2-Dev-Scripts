@@ -40,7 +40,7 @@ defaultproperties
 	End Object
 
     // Inventory
-	GroupPriority=25
+	GroupPriority=47
 	InventorySize=4
 	WeaponSelectTexture=Texture2D'ui_weaponselect_tex.UI_WeaponSelect_Crovel'
 

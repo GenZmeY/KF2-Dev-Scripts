@@ -55,6 +55,11 @@ Replication
 		ChargeTime;
 }
 
+static simulated event EFilterTypeUI GetTraderFilter()
+{
+	return FT_Projectile;
+}
+
 simulated event PostInitAnimTree( SkeletalMeshComponent SkelComp )
 {
 	local vector vec;

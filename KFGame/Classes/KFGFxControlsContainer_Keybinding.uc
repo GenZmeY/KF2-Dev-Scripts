@@ -20,6 +20,7 @@ var config array<string> CombatBindList;
 var config array<string> WeaponSelectBindList;
 var config array<string> InteractionBindList;
 var config array<string> VoiceCommBindList;
+var config array<string> OtherBindList;
 
 var KeyBind PendingKeyBind;
 var KeyBind OldKeyBind;
@@ -37,7 +38,7 @@ var bool bModAlt;
 var bool bWaitForInput;
 
 var const string SectionName;
-const MAX_SECTIONS = 5;
+const MAX_SECTIONS = 6;
 var byte TotalBindSections;
 
 var localized array<string> SectionHeaders;
@@ -70,7 +71,8 @@ function Initialize( KFGFxObject_Menu NewParentMenu )
  	InitalizeCommandList(CombatBindList);
  	InitalizeCommandList(WeaponSelectBindList);
  	InitalizeCommandList(VoiceCommBindList);
- 	
+ 	InitalizeCommandList(OtherBindList);
+
  	UpdateAllBindings();
 }
 
@@ -106,6 +108,8 @@ function UpdateAllBindings()
  	UpdateBindList( CombatBindList, 2 );
  	UpdateBindList( WeaponSelectBindList, 3 );
  	UpdateBindList( VoiceCommBindList, 4 );
+	UpdateBindList( OtherBindList, 5);
+
 	Manager.UpdateDynamicIgnoreKeys();
 }
 
@@ -156,6 +160,7 @@ function SetSectionBindings( int i, GFxObject bindData )
 /** Wait for player input to modify the current bind command */
 function ChangeBind( string ChangedCommand, byte SelectedSection )
 {
+	`Log("Change BIND Command " $ChangedCommand);
 	BindCommand = ChangedCommand;
 	CurrentlySelectedSection = SelectedSection;
 	bWaitForInput = true;
@@ -265,6 +270,8 @@ function SetKeyBind(KeyBind NewKeyBind)
 	}
 	else
 	{
+		`Log("BIND BindCommand " $BindCommand);
+
 		KFInput.BindKey( NewKeyBind, BindCommand, false );
 		UpdateAllBindings();
 	}

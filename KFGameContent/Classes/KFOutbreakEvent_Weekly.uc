@@ -1235,6 +1235,21 @@ defaultproperties
                     )}
     )}
 
+	// Contamination Mode
+    SetEvents[19]={(
+                EventDifficulty=2,
+                GameLength=GL_Normal,
+				ContaminationModeZedsToFinish=5,
+				ContaminationModeExtraDosh=200,
+                SpawnReplacementList={(
+                                            (SpawnEntry=AT_EliteCrawler,NewClass=(class'KFGameContent.KFPawn_ZedGorefast'),PercentChance=0.9),
+                                            (SpawnEntry=AT_Siren,NewClass=(class'KFGameContent.KFPawn_ZedDAR_Laser'),PercentChance=0.2),
+                                            (SpawnEntry=AT_Bloat,NewClass=(class'KFGameContent.KFPawn_ZedDAR_Rocket'),PercentChance=0.2)
+                                            
+                    )}
+
+    
+    )}
     //Test events from here down.  These don't end up in the regular rotation.
     //      The override ID starts from one higher than the last SetEvents entry above.
     //      Ex: Big head = 7, Horde = 8

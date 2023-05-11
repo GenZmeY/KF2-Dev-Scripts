@@ -188,8 +188,8 @@ protected simulated function bool DoExplosionDamage(bool bCauseDamage, bool bCau
 	local Actor		Victim, HitActor;
 	local vector	HitL, HitN, Dir, BBoxCenter;//, BBoxExtent;
 `endif
-	local bool		bDamageBlocked, bDoFullDamage, bCauseFractureEffects, bCausePawnEffects, bCauseDamageEffects, bHurtSomeone;
-	local float		ColRadius, ColHeight, CheckRadius, VictimDist;
+	local bool		bDamageBlocked, bDoFullDamage, bCauseFractureEffects, bCausePawnEffects, bCauseDamageEffects, bHurtSomeone, bAdjustRadiusDamage;
+	local float		ColRadius, ColHeight, CheckRadius, VictimDist, VictimColRadius, VictimColHeight;
 	local array<Actor> VictimsList;
 	local Box BBox;
 	local Controller ModInstigator;
@@ -199,6 +199,8 @@ protected simulated function bool DoExplosionDamage(bool bCauseDamage, bool bCau
 	local TraceHitInfo HitInfo;
 	local KActorFromStatic NewKActor;
 	local StaticMeshComponent HitStaticMesh;
+
+	bAdjustRadiusDamage = true;
 
 	// can pre-calculate this condition now
 	bCauseFractureEffects = bCauseEffects && WorldInfo.NetMode != NM_DedicatedServer && ExplosionTemplate.bCausesFracture;
@@ -256,6 +258,18 @@ protected simulated function bool DoExplosionDamage(bool bCauseDamage, bool bCau
 					VictimDist = VSize(Location - Victim.Location);
 				}
 
+				if (ExplosionTemplate.bDoCylinderCheck)
+				{
+					Victim.GetBoundingCylinder(ColRadius, ColHeight);
+					Instigator.GetBoundingCylinder(VictimColRadius, VictimColHeight);
+
+					// If the distance between them is more than the size of half the height of both cilinders, don't consider as target
+					if (Abs(Victim.Location.Z - Instigator.Location.Z) >= (ColHeight * 0.5f) + (VictimColHeight * 0.5f))
+					{
+						continue;
+					}
+				}
+
 				// Do fracturing
 				if( bCauseFractureEffects && (VictimPawn == None) )
 				{
@@ -295,6 +309,12 @@ protected simulated function bool DoExplosionDamage(bool bCauseDamage, bool bCau
 					bDoFullDamage = FALSE;
 				}
 
+				if (ExplosionTemplate.bAlwaysFullDamage)
+				{
+					bAdjustRadiusDamage = false;
+					bDoFullDamage = true;
+				}
+
 				if ( !bDamageBlocked )
 				{
 					if ( bCauseDamageEffects )
@@ -309,9 +329,9 @@ protected simulated function bool DoExplosionDamage(bool bCauseDamage, bool bCau
 						}
 
 `if(`__TW_)
-						Victim.TakeRadiusDamage(ModInstigator, GetDamageFor(Victim), ExplosionTemplate.DamageRadius, ExplosionTemplate.MyDamageType, ExplosionTemplate.MomentumTransferScale, Location, bDoFullDamage, (Owner != None) ? Owner : self, ExplosionTemplate.DamageFalloffExponent);
+						Victim.TakeRadiusDamage(ModInstigator, GetDamageFor(Victim), ExplosionTemplate.DamageRadius, ExplosionTemplate.MyDamageType, ExplosionTemplate.MomentumTransferScale, Location, bDoFullDamage, (Owner != None) ? Owner : self, ExplosionTemplate.DamageFalloffExponent, bAdjustRadiusDamage);
 `else
-						Victim.TakeRadiusDamage(ModInstigator, ExplosionTemplate.Damage, ExplosionTemplate.DamageRadius, ExplosionTemplate.MyDamageType, ExplosionTemplate.MomentumTransferScale, Location, bDoFullDamage, (Owner != None) ? Owner : self, ExplosionTemplate.DamageFalloffExponent);
+						Victim.TakeRadiusDamage(ModInstigator, ExplosionTemplate.Damage, ExplosionTemplate.DamageRadius, ExplosionTemplate.MyDamageType, ExplosionTemplate.MomentumTransferScale, Location, bDoFullDamage, (Owner != None) ? Owner : self, ExplosionTemplate.DamageFalloffExponent, bAdjustRadiusDamage);
 `endif
 
 						VictimsList[VictimsList.Length] = Victim;

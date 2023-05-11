@@ -264,19 +264,19 @@ protected function ProcessSpecialMoveAfflictions(KFPerk InstigatorPerk, vector H
 	}
 	if (StunPower > 0 && CanDoSpecialmove(SM_Stunned))
 	{
-		AccrueAffliction(AF_Stun, StunPower, BodyPart, InstigatorPerk);
+		AccrueAffliction(AF_Stun, StunPower, BodyPart, InstigatorPerk, DamageType);
 	}
 	if (StumblePower > 0 && CanDoSpecialmove(SM_Stumble))
 	{
-		AccrueAffliction(AF_Stumble, StumblePower, BodyPart, InstigatorPerk);
+		AccrueAffliction(AF_Stumble, StumblePower, BodyPart, InstigatorPerk, DamageType);
 	}
 	if (FreezePower > 0 && CanDoSpecialMove(SM_Frozen))
 	{
-		AccrueAffliction(AF_Freeze, FreezePower, BodyPart, InstigatorPerk);
+		AccrueAffliction(AF_Freeze, FreezePower, BodyPart, InstigatorPerk, DamageType);
 	}
 	if (SnarePower > 0)
 	{
-		AccrueAffliction(AF_Snare, SnarePower, BodyPart, InstigatorPerk);
+		AccrueAffliction(AF_Snare, SnarePower, BodyPart, InstigatorPerk, DamageType);
 	}
 }
 
@@ -325,17 +325,17 @@ protected function ProcessHitReactionAfflictions(KFPerk InstigatorPerk, class<KF
 		// Check hard hit reaction
 		if (MeleeHitPower > 0)
 		{
-			AccrueAffliction(AF_MeleeHit, MeleeHitPower * ReactionModifier, BodyPart, InstigatorPerk);
+			AccrueAffliction(AF_MeleeHit, MeleeHitPower * ReactionModifier, BodyPart, InstigatorPerk, DamageType);
 		}
 		// Force recovery time for the headless hit. GetTimerCount() is a dirty way to do this only on the frame of CauseHeadTrauma()
 		if (HitZoneIdx == HZI_Head && IsHeadless() && GetTimerCount('BleedOutTimer', Outer) == 0.f)
 		{
-			AccrueAffliction(AF_MeleeHit, 100.f, BodyPart, InstigatorPerk);
+			AccrueAffliction(AF_MeleeHit, 100.f, BodyPart, InstigatorPerk, DamageType);
 		}
 		// Check medium hit reaction
 		if (GunHitPower > 0)
 		{
-			AccrueAffliction(AF_GunHit, GunHitPower * ReactionModifier, BodyPart, InstigatorPerk);
+			AccrueAffliction(AF_GunHit, GunHitPower * ReactionModifier, BodyPart, InstigatorPerk, DamageType);
 		}
 	}
 }
@@ -389,18 +389,18 @@ protected function ProcessEffectBasedAfflictions(KFPerk InstigatorPerk, class<KF
 	    // so we can do the burn effects
 	    if (BurnPower > 0)
 		{
-	        AccrueAffliction(AF_FirePanic, BurnPower);
+	        AccrueAffliction(AF_FirePanic, BurnPower, , InstigatorPerk, DamageType);
 		}
 	}
 	else
 	{
 		if (EMPPower > 0)
 		{
-			AccrueAffliction(AF_EMP, EMPPower);
+			AccrueAffliction(AF_EMP, EMPPower, , InstigatorPerk, DamageType);
 		}
 		else if (InstigatorPerk != none && InstigatorPerk.ShouldGetDaZeD(DamageType))
 		{
-			AccrueAffliction(AF_EMP, InstigatorPerk.GetDaZedEMPPower());
+			AccrueAffliction(AF_EMP, InstigatorPerk.GetDaZedEMPPower(), , InstigatorPerk, DamageType);
 		}
 
 		if (BurnPower > 0)
@@ -409,7 +409,7 @@ protected function ProcessEffectBasedAfflictions(KFPerk InstigatorPerk, class<KF
 		}
 		if (PoisonPower > 0 || DamageType.static.AlwaysPoisons())
 		{
-			AccrueAffliction(AF_Poison, PoisonPower);
+			AccrueAffliction(AF_Poison, PoisonPower, , InstigatorPerk, DamageType);
 		}
 		if (MicrowavePower > 0)
 		{
@@ -417,15 +417,15 @@ protected function ProcessEffectBasedAfflictions(KFPerk InstigatorPerk, class<KF
 		}
         if (BleedPower > 0)
         {
-            AccrueAffliction(AF_Bleed, BleedPower);
+            AccrueAffliction(AF_Bleed, BleedPower, , InstigatorPerk, DamageType);
         }
 		if (BigHeadPower > 0)
 		{
-			AccrueAffliction(AF_BigHead, BigHeadPower);
+			AccrueAffliction(AF_BigHead, BigHeadPower, , InstigatorPerk, DamageType);
 		}
 		if (ShrinkPower > 0)
 		{
-			AccrueAffliction(AF_Shrink, ShrinkPower,,InstigatorPerk);
+			AccrueAffliction(AF_Shrink, ShrinkPower,,InstigatorPerk, DamageType);
 		}
 	}
 }
@@ -440,6 +440,10 @@ protected function ProcessEffectBasedAfflictions(KFPerk InstigatorPerk, class<KF
  */
 function AccrueAffliction(EAfflictionType Type, float InPower, optional EHitZoneBodyPart BodyPart, optional KFPerk InstigatorPerk, optional class<KFDamageType> DamageType = none)
 {
+	local bool bCanApplyRadial;
+
+	bCanApplyRadial = true;
+
 	if ( InPower <= 0 || Type >= IncapSettings.Length )
 	{
 		return; // immune
@@ -450,8 +454,13 @@ function AccrueAffliction(EAfflictionType Type, float InPower, optional EHitZone
 		return; // cannot create instance
 	}
 
+	if (DamageType != none && DamageType.default.bCanApplyRadialCalculationtoAffliction == false)
+	{
+		bCanApplyRadial = false;
+	}
+
 	// for radius damage apply falloff using most recent HitFxInfo
-	if ( HitFxInfo.bRadialDamage && HitFxRadialInfo.RadiusDamageScale != 255 )
+	if (bCanApplyRadial && HitFxInfo.bRadialDamage && HitFxRadialInfo.RadiusDamageScale != 255)
 	{
 		InPower *= ByteToFloat(HitFxRadialInfo.RadiusDamageScale);
 		`log(Type@"Applied damage falloff modifier of"@ByteToFloat(HitFxRadialInfo.RadiusDamageScale), bDebugLog);

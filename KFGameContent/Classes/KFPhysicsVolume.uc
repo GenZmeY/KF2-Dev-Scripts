@@ -35,6 +35,20 @@ function CausePainTo(Actor Other)
     }
 }
 
+simulated event Touch( Actor Other, PrimitiveComponent OtherComp, vector HitLocation, vector HitNormal )
+{
+    local KFPawn KFP;
+
+    KFP = KFPawn(Other);
+
+    if (KFP != none && KFP.CanInteractWithZoneVelocity() == false)
+    {
+        return;
+    }
+
+	Super.Touch(Other, OtherComp, HitLocation, HitNormal);
+}
+
 simulated event UnTouch(Actor Other)
 {
     local int RecentHitIdx;

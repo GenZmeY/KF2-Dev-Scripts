@@ -182,7 +182,7 @@ function FillWhatsNew()
     local SWhatsNew item;
     WhatsNewItems.Remove(0, WhatsNewItems.Length);
 // Latest Update
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas2022_Event", "LatestUpdate", "http://www.tripwireinteractive.com/redirect/KF2LatestUpdate/");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2023_Event", "LatestUpdate", "http://www.tripwireinteractive.com/redirect/KF2LatestUpdate/");
     WhatsNewItems.AddItem(item);
 // Featured Ultimate Edition
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2022_UltimateEdition_Upgrade", "FeaturedItemBundle", "https://store.steampowered.com/app/1914560/KF2__Ultimate_Edition_Upgrade_DLC/");
@@ -193,32 +193,29 @@ function FillWhatsNew()
 // KF2 Armory Season Pass 2021
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_Armory_Season_Pass", "ArmorySeasonPass", "https://store.steampowered.com/app/1524820/Killing_Floor_2__Armory_Season_Pass");
     WhatsNewItems.AddItem(item);
-// Featured Weapon Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas2022_WeaponsBundle", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9557");
-    WhatsNewItems.AddItem(item);
+// KF2 Armory Season Pass 2023
+     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2023_CosmeticsSeasonPass", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9661");
+     WhatsNewItems.AddItem(item);
 // Featured Weapon
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas2022_ZEDMKIII", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9555");
-    WhatsNewItems.AddItem(item);
-// Featured Weapon
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas2022_HVStormCannon","FeaturedItemBundle","https://store.steampowered.com/buyitem/232090/9556");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2023_S12Shockgun", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9655");
     WhatsNewItems.AddItem(item);
 // Featured Outfit Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas2022_TrainConductorOutfit", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9554");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2023_HorzineDiver_Uniforms", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9653");
     WhatsNewItems.AddItem(item);
 // Featured Time Limited Item
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Christmas_PremiumTicket", "FeaturedEventItem", "https://store.steampowered.com/buyitem/232090/5588");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_SS_PremiumTicket", "FeaturedEventItem", "https://store.steampowered.com/buyitem/232090/4928");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Skin Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas2022_Tacticool_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9553");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2023_Predator_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9651");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Skin Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas2022_Retro_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9552");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2023_JunkyardMKII_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9646");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Skin Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas2022_Mediaval_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9503");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2023_JaegerMKIV_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9645");
     WhatsNewItems.AddItem(item);
 // Featured Weapon Skin Bundle
-    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Xmas2022_ChamaleonIII_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9502");
+    item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2023_Stingray_Weapon_Skin", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9649");
     WhatsNewItems.AddItem(item);
 // Misc Community Links
     item=SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_CommunityHub", "Jaegorhorn", "https://steamcommunity.com/app/232090");

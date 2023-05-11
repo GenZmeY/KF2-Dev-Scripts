@@ -450,7 +450,9 @@ const MapNightmare = 'KF-Nightmare';
 const MapPowerCore = 'KF-PowerCore_Holdout';
 const MapDescent = 'KF-TheDescent';
 const MapKrampus = 'KF-KrampusLair';
+const MapSantas = 'KF-SantasWorkshop';
 const MapSteam = 'KF-SteamFortress';
+const MapElysium = 'KF-Elysium';
 
 /************************************************************************************
  * @name		Native
@@ -2795,6 +2797,12 @@ function CheckZedTimeOnKill(Controller Killer, Controller KilledPlayer, Pawn Kil
 		return;
 	}
 
+	// Skip for certain damage types we want to discard
+	if (KFDT != none && KFDT.default.bCanZedTime == false)
+	{
+		return;
+	}
+
 	// If already in zed time, check for zed time extensions
 	if ( IsZedTimeActive() )
 	{
@@ -3006,6 +3014,22 @@ function string GetNextMap()
 						MapName == MapPowerCore ||
 						MapName == MapDescent   ||
 						MapName == MapKrampus)
+					{
+						continue;
+					}
+				}
+
+				if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 19 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[19]) // Contamination
+				{
+					MapName = name(GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex]);
+
+					if (MapName == MapBiolapse  || 
+						MapName == MapNightmare ||
+						MapName == MapPowerCore ||
+						MapName == MapDescent   ||
+						MapName == MapKrampus	||
+						MapName == MapElysium	||
+						MapName == MapSantas)
 					{
 						continue;
 					}

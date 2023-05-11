@@ -136,7 +136,8 @@ simulated function TakeRadiusDamage
 	vector				HurtOrigin,
 	bool				bFullDamage,
 	Actor               DamageCauser,
-	optional float      DamageFalloffExponent=1.f
+	optional float      DamageFalloffExponent=1.f,
+	optional bool		bAdjustRadiusDamage=true
 )
 {
 	if ( bDamageAppliesImpulse && damageType.default.RadialDamageImpulse > 0 && (Role == ROLE_Authority) )

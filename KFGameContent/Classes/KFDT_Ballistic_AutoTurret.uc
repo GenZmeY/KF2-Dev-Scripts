@@ -24,4 +24,7 @@ defaultproperties
 
 	//Perk
 	ModifierPerkList(0)=class'KFPerk_Commando'
+
+	bCanZedTime=false
+	bCanEnrage=false
 }

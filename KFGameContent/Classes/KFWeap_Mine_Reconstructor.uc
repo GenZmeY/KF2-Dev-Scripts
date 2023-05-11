@@ -905,7 +905,7 @@ defaultproperties
 	FiringStatesArray(DEFAULT_FIREMODE)=MineReconstructorCharge
 	WeaponFireTypes(DEFAULT_FIREMODE)=EWFT_Projectile
     WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Mine_Reconstructor'
-	FireInterval(DEFAULT_FIREMODE)=+0.223 //+0.33 
+	FireInterval(DEFAULT_FIREMODE)=+0.2 //+0.33 
 	InstantHitDamage(DEFAULT_FIREMODE)=120
 	PenetrationPower(DEFAULT_FIREMODE)=0.0;
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Toxic_MineReconstructorImpact'
@@ -969,4 +969,6 @@ defaultproperties
 	End Object
 	//iCounterA = 0
 	bBlocked = false;
+
+	bForceCrosshair=true
 }

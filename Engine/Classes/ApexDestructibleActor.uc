@@ -84,8 +84,10 @@ simulated native function TakeRadiusDamage
 	vector				HurtOrigin,			/* The origin of the damage */
 	bool				bFullDamage,		/* Whether or not to apply full damage or attenuated damage */
 	Actor				DamageCauser,		/* The actor which caused the damage */
-	optional float      DamageFalloffExponent=1.f
+	optional float      DamageFalloffExponent=1.f,
+	optional bool		bAdjustRadiusDamage=true
 );
+
 function OnSetMaterial(SeqAct_SetMaterial Action)
 {
 	StaticDestructibleComponent.SetMaterial( Action.MaterialIndex, Action.NewMaterial );

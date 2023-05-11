@@ -111,6 +111,12 @@ var transient VIPGameInfo VIPGameData;
 // RandomPerk weekly
 var byte InitialRandomPerk;
 
+// Contamination Mode weekly
+var float ContaminationModeGraceCurrentTimer;
+var bool ContaminationModePlayerIsInside;
+var int ContaminationModeLastTimePlayerOutPulsate;
+var bool ContaminationModeLastPulsate;
+
 cpptext
 {
     virtual UBOOL TestZedTimeVisibility(APawn* P, UNetConnection* Connection, UBOOL bLocalPlayerTest) override;
@@ -206,6 +212,64 @@ simulated function UpdateVIPWidget(ReplicatedVIPGameInfo VIPInfo)
 	{
 		MyGFxHUD.UpdateVIP(VIPInfo, VIPInfo.VIPPlayer == PlayerReplicationInfo);
 	}
+}
+
+reliable client function UpdateContaminationModeWidget(bool IsPlayerIn)
+{
+    // Reset pulsate
+    if (IsPlayerIn != ContaminationModePlayerIsInside)
+    {
+        ContaminationModeLastPulsate = true;
+        ContaminationModeLastTimePlayerOutPulsate = WorldInfo.TimeSeconds;
+    }
+
+    // Pulsate ping pongs for showing text when player is out or not
+    if (IsPlayerIn == false && WorldInfo.TimeSeconds - ContaminationModeLastTimePlayerOutPulsate > 1.f)
+    {
+        ContaminationModeLastTimePlayerOutPulsate = WorldInfo.TimeSeconds;
+        ContaminationModeLastPulsate = !ContaminationModeLastPulsate;
+    }
+
+    ContaminationModePlayerIsInside = IsPlayerIn;
+
+    if (MyGFxHUD != none)
+    {
+        MyGFxHUD.UpdateContaminationMode(IsPlayerIn, ContaminationModeLastPulsate);
+        
+        if (MyGFxHUD.PlayerStatusContainer != none)
+        {
+            MyGFxHUD.PlayerStatusContainer.UpdateContaminationModeIconVisible(IsPlayerIn == false);
+        }
+    } 
+}
+
+reliable client function UpdateContaminationModeWidget_Timer(int Timer)
+{
+    if (MyGFxHUD != none)
+    {
+        MyGFxHUD.UpdateContaminationMode_Timer(Timer);
+    }
+}
+
+reliable client Function ShowContaminationMode()
+{
+    if (MyGFxHUD != none)
+    {
+        MyGFxHUD.ShowContaminationMode();
+    }  
+}
+
+reliable client function HideContaminationMode()
+{
+    if (MyGFxHUD != none)
+    {
+        MyGFxHUD.HideContaminationMode();
+
+        if (MyGFxHUD.PlayerStatusContainer != none)
+	    {
+		    MyGFxHUD.PlayerStatusContainer.UpdateContaminationModeIconVisible(false);
+	    }   
+    } 
 }
 
 reliable client function ResetSyringe()
@@ -709,4 +773,8 @@ defaultProperties
     VIPLowHealthSoundEvent=AkEvent'WW_GLO_Runtime.WeeklyVIPAlarm'
     VIPLowHealthLastTimePlayed = 0.f
     InitialRandomPerk=255
+    ContaminationModeGraceCurrentTimer=0.f
+    ContaminationModePlayerIsInside=false
+    ContaminationModeLastTimePlayerOutPulsate=0
+    ContaminationModeLastPulsate=false
 }

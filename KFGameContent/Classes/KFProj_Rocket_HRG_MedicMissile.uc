@@ -83,7 +83,7 @@ defaultproperties
 	AmbientSoundPlayEvent=AkEvent'WW_WEP_HRG_MedicMissile.Play_WEP_HRG_MedicMissile_Projectile_Loop'
   	AmbientSoundStopEvent=AkEvent'WW_WEP_HRG_MedicMissile.Stop_WEP_HRG_MedicMissile_Projectile_Loop'
 
-	AltExploEffects=KFImpactEffectInfo'WEP_HRG_MedicMissile_ARCH.HRG_MedicMissile_Explosion_Concussive_Force'
+	AltExploEffects=KFImpactEffectInfo'WEP_HRG_MedicMissile_ARCH.HRG_MedicMissile_Explosion'
 
 	ExplosionActorClass=class'KFExplosion_HRG_MedicMissile'
 

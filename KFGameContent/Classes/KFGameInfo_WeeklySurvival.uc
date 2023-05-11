@@ -33,6 +33,32 @@ var array<PerkRoulette_PlayerMessageDelegate> PerkRoulette_PlayersDelegateData;
 
 var array<KFPlayerController_WeeklySurvival> PerkRoulette_PlayersDelegateInventory;
 
+struct ContaminationModeData
+{
+    var() float FirstWaveInitialTimer;
+    var() float WaveInitialTimer;
+    var() float WaveCurrentTimer;
+    var() float GraceTimer; // We store on each Player the GraceCurrentTimer
+    var() float DamageTimer;
+    var() float DamageCurrentTimer;
+    var() bool ObjectiveHidden;
+    var() bool CanUpdate;
+
+    structdefaultproperties
+	{
+        FirstWaveInitialTimer = 45.f 
+        WaveInitialTimer = 30.f
+        WaveCurrentTimer = 0.f
+        GraceTimer = 5.f
+        DamageTimer = 1.f
+        DamageCurrentTimer = 0.f
+        ObjectiveHidden = false
+        CanUpdate = false
+    }
+};
+
+var ContaminationModeData ContaminationMode;
+
 //-----------------------------------------------------------------------------
 // Statics
 static event class<GameInfo> SetGameType(string MapName, string Options, string Portal)
@@ -538,6 +564,18 @@ function Tick(float DeltaTime)
         // This deals with players joining at any time (lobby, or in wave)
         ChooseRandomPerks(false);
     }
+
+    if (MyKFGRI.IsContaminationMode())
+    {
+        if (ContaminationMode.CanUpdate)
+        {
+            UpdateContaminationMode(DeltaTime);
+        }
+        else if (WaveNum < (WaveMax - 1))
+		{
+            UpdateContaminationModeTrader();
+        }
+    }
 }
 
 function TickZedTime( float DeltaTime )
@@ -576,6 +614,11 @@ function WaveEnded(EWaveEndCondition WinCondition)
         ChooseRandomPerks(true);
     }
 
+    if (MyKFGRI.IsContaminationMode())
+    {
+        ContaminationMode.CanUpdate = false;
+    }
+
     super.WaveEnded(WinCondition);
 
     if (OutbreakEvent.ActiveEvent.bPermanentZedTime && ZedTimeRemaining > ZedTimeBlendOutTime)
@@ -612,6 +655,19 @@ function GrantExtraDoshOnWaveWon()
         foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
 	    {
             KFPlayerReplicationInfo(KFPC.PlayerReplicationInfo).AddDosh(ExtraDosh, true);
+        }
+    }
+
+    if (MyKFGRI.IsContaminationMode())
+    {
+	    ExtraDosh = MyKFGRI.ContaminationModeExtraDosh();
+        foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+	    {
+            if (KFPC.IsInState('Spectating') == false
+                && KFPC.PlayerReplicationInfo.bOnlySpectator == false)
+            {
+                KFPlayerReplicationInfo(KFPC.PlayerReplicationInfo).AddDosh(ExtraDosh, true);
+            }
         }
     }
 }
@@ -686,6 +742,22 @@ function StartWave()
     if (OutbreakEvent.ActiveEvent.bUnlimitedWeaponPickups)
     {
         OverridePickupList();
+    }
+
+    if (MyKFGRI.IsContaminationMode())
+    {
+        if (WaveNum == 1)
+        {
+            ContaminationMode.WaveCurrentTimer = ContaminationMode.FirstWaveInitialTimer;
+        }
+        else
+        {
+            ContaminationMode.WaveCurrentTimer = ContaminationMode.WaveInitialTimer;
+        }
+
+        ContaminationMode.DamageCurrentTimer = ContaminationMode.DamageTimer;
+        ContaminationMode.ObjectiveHidden = false;
+        ContaminationMode.CanUpdate = true;
     }
 }
 
@@ -1185,6 +1257,14 @@ function NotifyKilled(Controller Killer, Controller Killed, Pawn KilledPawn, cla
         if (KFPC_WS_Killed != none)
         {
             PerkRoulette_PlayersDelegateInventory.AddItem(KFPC_WS_Killed);
+        }
+    }
+
+    if (MyKFGRI.IsContaminationMode())
+    {
+        if (KFPC_WS_Killed != none)
+        {
+            KFPC_WS_Killed.HideContaminationMode();
         }
     }
 }
@@ -1824,6 +1904,189 @@ function BroadcastCustomDelegate()
     if (PerkRoulette_PlayersDelegateData.Length == 0)
     {
         ClearTimer(nameof(BroadcastCustomDelegate));
+    }
+}
+
+/*
+ * Weekly 19: Contamination Mode
+ */
+
+function UpdatePlayersState(KFMapObjective_DoshHold Area 
+                            , out array<KFPlayerController_WeeklySurvival> ValidPlayers
+                            , out array<KFPlayerController_WeeklySurvival> PlayersInsideArea
+                            , out array<KFPlayerController_WeeklySurvival> PlayersOutsideArea)
+{
+    local KFPlayerController_WeeklySurvival KFPC_WS;
+    local int i;
+
+    // Get available players
+    foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+    {
+        if (KFPC_WS.Pawn.IsAliveAndWell() == false
+            || KFPC_WS.PlayerReplicationInfo.bOnlySpectator
+            || KFPC_WS.IsInState('Spectating'))
+        {
+            continue;
+        }
+
+        ValidPlayers.AddItem(KFPC_WS);
+    }
+
+    // Update who's in and who's out
+    for (i = 0 ; i < ValidPlayers.Length ; ++i)
+    {
+        // If is inside..
+        if (Area.TouchingHumans.Find(KFPawn_Human(ValidPlayers[i].Pawn)) != INDEX_NONE)
+        {
+            PlayersInsideArea.AddItem(ValidPlayers[i]);
+        }
+        else
+        {
+            PlayersOutsideArea.AddItem(ValidPlayers[i]);
+        }
+    }
+}
+
+ function UpdateContaminationModeTrader()
+ {
+    local KFMapObjective_DoshHold Area;
+    local array<KFPlayerController_WeeklySurvival> ValidPlayers, PlayersInsideArea, PlayersOutsideArea;
+    local int i;
+
+    Area = KFMapObjective_DoshHold(MyKFGRI.NextObjective);
+
+    if (Area != none)
+    {
+        UpdatePlayersState(Area, ValidPlayers, PlayersInsideArea, PlayersOutsideArea);
+
+        for (i = 0 ; i < PlayersInsideArea.Length ; ++i)
+        {
+            PlayersInsideArea[i].ShowContaminationMode();
+
+            PlayersInsideArea[i].UpdateContaminationModeWidget(true);
+        }
+
+        for (i = 0 ; i < PlayersOutsideArea.Length ; ++i)
+        {   
+            PlayersOutsideArea[i].ShowContaminationMode();
+
+            PlayersOutsideArea[i].ContaminationModePlayerIsInside = false;
+            PlayersOutsideArea[i].UpdateContaminationModeWidget_Timer(ContaminationMode.WaveInitialTimer);
+        } 
+    }   
+ }
+
+function UpdateContaminationMode(float DeltaTime)
+{
+    local KFMapObjective_DoshHold Area;
+    local array<KFPlayerController_WeeklySurvival> ValidPlayers, PlayersInsideArea, PlayersOutsideArea;
+    local KFPlayerController_WeeklySurvival KFPC_WS;
+    local int i;
+    local bool CheckPlayersInArea, CanApplyDamage;
+
+    CheckPlayersInArea = false;
+
+    // Update wave timer..
+    if (ContaminationMode.WaveCurrentTimer > 0.f)
+    {
+        ContaminationMode.WaveCurrentTimer -= DeltaTime;
+    }    
+
+    if (MyKFGRI.CurrentObjective != none)
+    {
+        foreach WorldInfo.AllActors(class'KFMapObjective_DoshHold', Area)
+        {
+            if (Area.IsActive())
+            {
+                CheckPlayersInArea = true;
+
+                UpdatePlayersState(Area, ValidPlayers, PlayersInsideArea, PlayersOutsideArea);
+
+                break;
+            }
+        }
+    }
+
+    // If there's a valid area an objective..
+    if (CheckPlayersInArea && WaveNum != WaveMax)
+    {
+        // Trigger logic depending on state of game
+
+        if (ContaminationMode.WaveCurrentTimer > 0.f)
+        {
+            // If we are still on safe time to reach area, we can only notify Player if you are inside or outside, no Grace Timer, and No Damage applied
+
+            for (i = 0 ; i < PlayersInsideArea.Length ; ++i)
+            {
+                PlayersInsideArea[i].UpdateContaminationModeWidget(true);
+            }
+
+            for (i = 0 ; i < PlayersOutsideArea.Length ; ++i)
+            {
+                PlayersOutsideArea[i].ContaminationModePlayerIsInside = false;
+                PlayersOutsideArea[i].UpdateContaminationModeWidget_Timer(ContaminationMode.WaveCurrentTimer);
+            }
+        }
+        else
+        {
+            // If Time finished, we must Damage Players that are outside (use Grace Timer)
+
+            if (ContaminationMode.DamageCurrentTimer > 0.f)
+            {
+                ContaminationMode.DamageCurrentTimer -= DeltaTime;
+            }
+
+            CanApplyDamage = ContaminationMode.DamageCurrentTimer <= 0.f;
+
+            // Reset damage tick
+            if (CanApplyDamage)
+            {
+                ContaminationMode.DamageCurrentTimer = ContaminationMode.DamageTimer;
+            }
+
+            for (i = 0 ; i < PlayersInsideArea.Length ; ++i)
+            {
+                PlayersInsideArea[i].ContaminationModeGraceCurrentTimer = ContaminationMode.GraceTimer;
+
+                PlayersInsideArea[i].UpdateContaminationModeWidget(true);
+            }
+
+            for (i = 0 ; i < PlayersOutsideArea.Length ; ++i)
+            {
+                if (PlayersOutsideArea[i].ContaminationModeGraceCurrentTimer > 0.f)
+                {
+                    PlayersOutsideArea[i].ContaminationModeGraceCurrentTimer -= DeltaTime;
+                }
+
+                PlayersOutsideArea[i].UpdateContaminationModeWidget(false);
+
+                if (CanApplyDamage && PlayersOutsideArea[i].ContaminationModeGraceCurrentTimer <= 0.f)
+                {
+                    PlayersOutsideArea[i].Pawn.TakeDamage(class'KFDT_WeeklyContamination'.static.GetDamage(), none, vect(0,0,0), vect(0,0,0), class'KFDT_WeeklyContamination');                 
+                }
+            }         
+        }        
+    }
+    else
+    {
+        // Hide UIs if no more objective
+
+        if (ContaminationMode.ObjectiveHidden == false)
+        {
+            ContaminationMode.ObjectiveHidden = true;
+
+            foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+            {
+                if (KFPC_WS.Pawn.IsAliveAndWell() == false
+                    || KFPC_WS.PlayerReplicationInfo.bOnlySpectator
+                    || KFPC_WS.IsInState('Spectating'))
+                {
+                    continue;
+                }
+
+                KFPC_WS.HideContaminationMode();
+            }
+        }
     }
 }
 

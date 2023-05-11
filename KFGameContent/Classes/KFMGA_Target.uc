@@ -95,7 +95,7 @@ simulated function AddToOwnerArray()
     }
 }
 
-simulated function TakeRadiusDamage(Controller InstigatedBy, float BaseDamage, float DamageRadius, class<DamageType> DamageType, float Momentum, vector HurtOrigin, bool bFullDamage, Actor DamageCauser, optional float DamageFalloffExponent = 1.f)
+simulated function TakeRadiusDamage(Controller InstigatedBy, float BaseDamage, float DamageRadius, class<DamageType> DamageType, float Momentum, vector HurtOrigin, bool bFullDamage, Actor DamageCauser, optional float DamageFalloffExponent = 1.f, optional bool bAdjustRadiusDamage=true)
 {
     if (!bIgnoreRadiusDamage || AcceptedDamageTypes.Find(DamageType) != INDEX_NONE)
     {

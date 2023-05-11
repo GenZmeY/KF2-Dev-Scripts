@@ -22,6 +22,11 @@ var bool bLastFireWasAlt;
 
 var const bool bDebugDrawVortex;
 
+static simulated event EFilterTypeUI GetTraderFilter()
+{
+	return FT_Explosive;
+}
+
 simulated function Activate()
 {
 	super.Activate();

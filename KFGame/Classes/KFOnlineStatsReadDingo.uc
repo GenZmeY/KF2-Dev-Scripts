@@ -73,6 +73,7 @@ defaultproperties
 	ColumnIds.Add(STATID_ACHIEVE_RigCollectibles)
 	ColumnIds.Add(STATID_ACHIEVE_BarmwichCollectibles)
 	ColumnIds.Add(STATID_ACHIEVE_CrashCollectibles);
+	ColumnIds.Add(STATID_ACHIEVE_SubductionCollectibles);
 
 	ColumnMappings.Add((Id=STATID_ACHIEVE_MrPerky5, Name="AchievementMrPerky5"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_MrPerky10, Name = "AchievementMrPerky10"))
@@ -134,5 +135,6 @@ defaultproperties
 	ColumnMappings.Add((Id=STATID_ACHIEVE_RigCollectibles,Name="AchievementCollectRig"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_BarmwichCollectibles,Name="AchievementCollectBarmwichTown"))
 	ColumnMappings.Add((Id=STATID_ACHIEVE_CrashCollectibles,Name="AchievementCollectCrash"))
+	ColumnMappings.Add((Id=STATID_ACHIEVE_SubductionCollectibles,Name="AchievementCollectSubduction"))
 
 }

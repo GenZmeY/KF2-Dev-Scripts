@@ -58,6 +58,10 @@ var localized string RarityFilterString;
 var localized string WeaponTypeFilterString;
 var localized string PerkFilterString;
 
+var localized string SearchText;
+var localized string ClearSearchText;
+
+var int SearchMaxChars;
 
 var GFxObject CraftingSubMenu;
 var GFxObject ItemListContainer;
@@ -133,7 +137,7 @@ struct InventoryHelper
 	var int ItemCount;
 	var ItemType Type;
 	var GFxObject GfxItemObject;
-	
+	var string FullName;
 	// For ordering in weapon skins
 	var int WeaponDef;
 	var int Price;
@@ -188,6 +192,8 @@ struct ByTypeItemsHelper
   var() array<InventoryHelper> ItemsOnType;
 };
 
+var ByTypeItemsHelper ByTypeItems[7];
+
 var EInventoryWeaponType_Filter CurrentWeaponTypeFilter;
 var int CurrentPerkIndexFilter;
 var ItemRarity CurrentRarityFilter;
@@ -197,6 +203,8 @@ var EINventory_Filter CurrentInventoryFilter;
 var ExchangeRuleSets RuleToExchange;
 
 var private int CrcTable[256];
+
+var transient string SearchKeyword;
 
 function InitializeMenu( KFGFxMoviePlayer_Manager InManager )
 {
@@ -383,13 +391,17 @@ function InitInventory()
 	local ItemProperties TempItemDetailsHolder;
 	local GFxObject ItemArray, ItemObject;
 	local bool bActiveItem;
-	local ByTypeItemsHelper ByTypeItems[7];
 	local InventoryHelper HelperItem;
 	local array<ExchangeRuleSets> ExchangeRules;
 	local class<KFWeaponDefinition> WeaponDef;
 	local string SkinType, CosmeticType, KeyType;
 
 	local GFxObject PendingItem;
+
+	for (i = 0; i < ArrayCount(ByTypeItems); ++i)
+	{
+		ByTypeItems[i].ItemsOnType.Length = 0;
+	}
 
 	ItemArray = CreateArray();
 
@@ -424,7 +436,7 @@ function InitInventory()
 				if (HelperIndex == INDEX_NONE)
 				{
 					HelperItem.Type				= TempItemDetailsHolder.Type;
-					//HelperItem.FullName			= TempItemDetailsHolder.Name;
+					HelperItem.FullName			= TempItemDetailsHolder.Name;
 					HelperItem.ItemDefinition 	= onlineSub.CurrentInventory[i].Definition;
 					HelperItem.ItemCount 		= onlineSub.CurrentInventory[i].Quantity;
 
@@ -823,17 +835,24 @@ function InitInventory()
 
 	z = 0;
 
-	for (i = 0; i < ArrayCount(ByTypeItems); i++)
+	if (SearchKeyword != "")
 	{
-		for (j = 0 ; j < ByTypeItems[i].ItemsOnType.Length; j++)
-		{
-			ItemArray.SetElementObject(z, ByTypeItems[i].ItemsOnType[j].GfxItemObject);
-
-			++z;
-		}
+		InventorySearch(SearchKeyword);
 	}
+	else
+	{
+		for (i = 0; i < ArrayCount(ByTypeItems); i++)
+		{
+			for (j = 0 ; j < ByTypeItems[i].ItemsOnType.Length; j++)
+			{
+				ItemArray.SetElementObject(z, ByTypeItems[i].ItemsOnType[j].GfxItemObject);
 
-	SetObject("inventoryList", ItemArray);
+				++z;
+			}
+		}
+		
+		SetObject("inventoryList", ItemArray);
+	}
 
 	if(Manager.SelectIDOnOpen != INDEX_NONE )
 	{
@@ -1071,6 +1090,11 @@ function LocalizeText()
 	LocalizedObject.SetString("filterName_1", 				PerkFilterString);
 	LocalizedObject.SetString("filterName_2", 				WeaponTypeFilterString);
 
+	LocalizedObject.SetString("searchTitle",                SearchText);
+	LocalizedObject.SetString("searchText",                 SearchText$"...");
+
+	LocalizedObject.SetBool("bIsConsoleBuild", 				class'WorldInfo'.static.IsConsoleBuild());
+	LocalizedObject.SetInt("searchMaxChars",                SearchMaxChars);
 
 	RarityList = CreateArray();
 	for (i = 0; i <= ITR_NONE; i++)
@@ -1128,6 +1152,7 @@ function LocalizeText()
 	LocalizedObject.SetObject("filterData_0", RarityList);
 	LocalizedObject.SetObject("filterData_1", PerkList);
 	LocalizedObject.SetObject("filterData_2", WeaponTypeList);
+
 
 	SetObject("localizedText", LocalizedObject);
 }
@@ -1396,6 +1421,119 @@ function Callback_CrateOpenComplete(int Rarity)
 function Callback_RequestInitialnventory()
 {
 	InitInventory();
+}
+
+function Callback_InventorySearch(string searchStr)
+{
+	InventorySearch(searchStr, true);
+}
+
+function Callback_Log(string str)
+{
+	`Log("From AS: " $str);
+}
+
+function Callback_OpenKeyboard()
+{
+	OnlineSub = Class'GameEngine'.static.GetOnlineSubsystem();
+	OnlineSub.PlayerInterface.AddKeyboardInputDoneDelegate(KeyboardInputComplete);
+	OnlineSub.PlayerInterface.ShowKeyboardUI(0, "Search", "Search");
+}
+
+function KeyboardInputComplete(bool bWasSuccessful)
+{
+	local byte bWasCancelled;
+	local string UserInput;
+
+	OnlineSub = Class'GameEngine'.static.GetOnlineSubsystem();
+	UserInput = OnlineSub.PlayerInterface.GetKeyboardInputResults(bWasCancelled);
+
+	Callback_InventorySearch(UserInput);
+
+	OnlineSub.PlayerInterface.ClearKeyboardInputDoneDelegate(KeyboardInputComplete);
+}
+
+function InventorySearch(string searchStr, bool bForceInitIfClear = false)
+{
+	local array<ItemType> ItemTypes;
+	local int i, j, k, ItemCounter;
+	local array<InventoryHelper> ItemsOnType;
+	local GFxObject ItemArray;
+	local array<string> SearchKeywords;
+	local bool Accepted;
+
+	SearchKeyword = searchStr;
+
+	if (searchStr == "")
+	{
+		if (bForceInitIfClear)
+		{
+			InitInventory();
+		}
+
+		return;
+	}
+
+	SearchKeywords = SplitString( searchStr, " ", true);
+
+	ItemCounter = 0;
+
+	ItemArray = CreateArray();
+
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_WeaponSkins)
+	{
+		ItemTypes.AddItem(ITP_WeaponSkin);
+	}
+
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_Cosmetics)
+	{
+		ItemTypes.AddItem(ITP_CharacterSkin);
+	}
+
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_Consumables)
+	{
+		ItemTypes.AddItem(ITP_KeyCrate);
+	}
+
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_CraftingMats)
+	{
+		ItemTypes.AddItem(ITP_CraftingComponent);
+	}
+
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_Emotes)
+	{
+		ItemTypes.AddItem(ITP_Emote);
+	}
+
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_SFX)
+	{
+		ItemTypes.AddItem(ITP_SFX);
+	}
+
+	for (i = 0; i < ItemTypes.Length; ++i)
+	{
+		ItemsOnType = ByTypeItems[ItemTypes[i]].ItemsOnType;
+		for (j = 0; j < ItemsOnType.Length; ++j)
+		{
+			Accepted = true;
+			for (k = 0; k < SearchKeywords.Length; ++k)
+			{
+				if (InStr(Locs(ItemsOnType[j].FullName), Locs(SearchKeywords[k])) == -1)
+				{
+					Accepted = false;
+					break;
+				}
+			}
+
+			if (Accepted)
+			{
+				ItemArray.SetElementObject(ItemCounter, ItemsOnType[j].GfxItemObject);
+				++ItemCounter;
+			}
+		}
+	}
+
+	SetObject("inventoryList", ItemArray);
 }
 
 function Callback_InventoryFilter( int FilterIndex )
@@ -1809,4 +1947,6 @@ defaultproperties
 	KeylessCrateIDs(0)=5313
 
 	KillThatDangSoundEvent=AkEvent'WW_UI_Menu.Play_UI_Trader_Build_Stop_No_Sound'
+
+	SearchMaxChars=128
 }

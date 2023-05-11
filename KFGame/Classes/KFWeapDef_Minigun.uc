@@ -14,7 +14,7 @@ DefaultProperties
 	WeaponClassPath="KFGameContent.KFWeap_Minigun"
 
 	BuyPrice=2000 //2500
-	AmmoPricePerMag= 90//125 //175 //250
+	AmmoPricePerMag= 120//125 //175 //250
 	ImagePath="WEP_UI_Minigun_TEX.UI_WeaponSelect_Minigun"
 
 	IsPlayGoHidden=true;

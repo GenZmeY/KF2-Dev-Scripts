@@ -12,7 +12,7 @@ DefaultProperties
 {
 	WeaponClassPath="KFGameContent.KFWeap_ShrinkRayGun"
 
-	BuyPrice=1200
+	BuyPrice=900
 	AmmoPricePerMag=50
 	ImagePath="WEP_UI_ShrinkRay_Gun_TEX.UI_Weapon_Select_Shrink_Ray_Gun"
 

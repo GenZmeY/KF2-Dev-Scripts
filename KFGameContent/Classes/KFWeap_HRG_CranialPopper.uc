@@ -343,7 +343,7 @@ defaultproperties
     InstantHitDamage(ALTFIRE_FIREMODE)=0.0 //override by AfflictionHandler.GetBigHeadAfflictionDamageModifier()
     InstantHitDamageTypes(ALTFIRE_FIREMODE)=Class'KFDT_Blast_HRG_CranialPopper'
 	FireInterval(ALTFIRE_FIREMODE)=+0.25
-	AmmoCost(ALTFIRE_FIREMODE)=100
+	AmmoCost(ALTFIRE_FIREMODE)=25
 
     // BASH_FIREMODE
     InstantHitDamageTypes(BASH_FIREMODE)=class'KFDT_Bludgeon_HRG_CranialPopper'

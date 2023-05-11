@@ -94,6 +94,7 @@ var() float RemindPlayersTime;
 var transient float PrevWaveProgress;
 var transient bool bRemindPlayers;
 
+var Texture2D ContaminationIcon;
 
 simulated event ReplicatedEvent(name VarName)
 {
@@ -125,11 +126,95 @@ event Touch(Actor Other, PrimitiveComponent OtherComp, vector HitLocation, vecto
     }
 }
 
+simulated function bool ShouldDrawIcon()
+{
+	local KFGameReplicationInfo KFGRI;
+
+	if (WorldInfo != None && WorldInfo.Game != none && WorldInfo.Game.GameReplicationInfo != none)
+	{
+		KFGRI = KFGameReplicationInfo(WorldInfo.Game.GameReplicationInfo);
+
+		if (KFGRI != none && KFGRI.IsContaminationMode())
+		{
+			return KFGRI.AIRemaining > KFGRI.ContaminationModeZedsToFinish();
+		}
+	}
+
+	return Super.ShouldDrawIcon();
+}
+
+simulated function GrantReward(KFPlayerReplicationInfo KFPRI, KFPlayerController KFPC)
+{
+	local KFGameReplicationInfo KFGRI;
+
+	Super.GrantReward(KFPRI, KFPC);
+
+	KFGRI = KFGameReplicationInfo(WorldInfo.Game.GameReplicationInfo);
+
+	if (KFGRI == none)
+	{
+		return;
+	}
+	
+	if (KFGRI.IsContaminationMode() == false)
+	{
+		if (KFPRI == none)
+		{
+			return;
+		}
+
+		if (KFPRI.bOnlySpectator)
+		{
+			return;
+		}
+
+		if (KFPC != none)
+		{
+			// Summer 2023 objective
+			KFPC.ClientOnTryCompleteObjective(3, SEI_Summer);
+		}
+	}
+}
+
 function NotifyZedKilled(Controller Killer, Pawn KilledPawn, bool bIsBoss)
 {
 	local int i;
 	local KFGameInfo KFGI;
 	local KFGameReplicationInfo KFGRI;
+	local KFPlayerController KFPC;
+	local KFPlayerReplicationInfo KFPRI;
+
+	KFGRI = KFGameReplicationInfo(WorldInfo.Game.GameReplicationInfo);
+
+	if (KFGRI != none && KFGRI.IsContaminationMode())
+	{
+		if (ROLE == Role_Authority)
+		{
+			if (bActive)
+			{
+				if (KFGRI.AIRemaining <= KFGRI.ContaminationModeZedsToFinish())
+				{
+					DeactivateObjective();
+
+					foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+					{
+						if (KFPC != none)
+						{
+							KFPRI = KFPlayerReplicationInfo(KFPC.PlayerReplicationInfo);
+
+							if (KFPRI != none && KFPRI.bOnlySpectator == false)
+							{
+								// Summer 2023 objective
+								KFPC.ClientOnTryCompleteObjective(3, SEI_Summer);
+							}	
+						}
+					}
+				}
+			}
+		}
+
+		return;
+	}
 
 	if (ROLE == Role_Authority)
 	{
@@ -144,7 +229,6 @@ function NotifyZedKilled(Controller Killer, Pawn KilledPawn, bool bIsBoss)
 					{
 						if (RewardPerZed == 0)
 						{
-							KFGRI = KFGameReplicationInfo(WorldInfo.Game.GameReplicationInfo);
 							RewardPerZed = GetMaxDoshReward() / (PctOfWaveZedsKilledForMaxReward * KFGRI.WaveTotalAICount);
 						}
 						CurrentRewardAmount = FMin(CurrentRewardAmount + RewardPerZed, float(GetMaxDoshReward()));
@@ -237,6 +321,16 @@ function StartPenaltyCheck()
 
 function ActivationVO()
 {
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI = KFGameReplicationInfo(WorldInfo.Game.GameReplicationInfo);
+
+	if (KFGRI != none && KFGRI.IsContaminationMode())
+	{
+		PlaySoundBase(AkEvent'WW_VOX_NPC_Trader.Play_Trader_DEFA_Area', false, WorldInfo.NetMode == NM_DedicatedServer);
+		return;	
+	}
+
 	if (ActivationSoundEventOverride != none)
 	{
 		PlaySoundBase(ActivationSoundEventOverride, false, WorldInfo.NetMode == NM_DedicatedServer);
@@ -373,6 +467,15 @@ simulated function DeactivateObjective()
 
 function PlayDeactivationDialog()
 {
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI = KFGameReplicationInfo(WorldInfo.Game.GameReplicationInfo);
+
+	if (KFGRI != none && KFGRI.IsContaminationMode())
+	{
+		return;
+	}
+
 	if (CurrentRewardAmount <= 0)
 	{
 		if (FailureSoundEventOverride != none)
@@ -499,6 +602,23 @@ simulated function bool ShouldShowObjectiveHUD()
 	return !IsComplete();
 }
 
+simulated function Texture2D GetIcon()
+{
+	local KFGameReplicationInfo KFGRI;
+
+	if (WorldInfo != None && WorldInfo.Game != none && WorldInfo.Game.GameReplicationInfo != none)
+	{
+		KFGRI = KFGameReplicationInfo(WorldInfo.Game.GameReplicationInfo);
+
+		if (KFGRI != none && KFGRI.IsContaminationMode())
+		{
+			return ContaminationIcon;
+		}
+	}
+
+	return ObjectiveIcon;
+}
+
 defaultproperties
 {
 	DescriptionLocKey="DescriptionDoshHold"
@@ -561,7 +681,7 @@ defaultproperties
 	ZedThresholds[5]=0
 
 	ObjectiveIcon=Texture2D'Objectives_UI.UI_Objectives_ObjectiveMode'
-
+	ContaminationIcon=Texture2D'Objectives_UI.UI_Objectives_Xmas_DefendObj'
     RemindPlayersTime=30.f
 	bUseEarlyTrail=false
 

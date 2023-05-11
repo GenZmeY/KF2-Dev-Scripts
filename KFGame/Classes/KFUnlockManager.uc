@@ -38,7 +38,8 @@ enum ESharedContentUnlock
 	SCU_Scythe,
 	SCU_G36C,
 	SCU_HVStormCannon,
-	SCU_ZedMKIII
+	SCU_ZedMKIII,
+	SCU_Saiga12
 };
 
 
@@ -393,4 +394,8 @@ defaultproperties
 		Name=KFWeap_ZedMKIII,
 		IconPath="wep_ui_zedmkiii_tex.UI_WeaponSelect_ZEDMKIII",
 		ID=9575)}
+	SharedContentList(SCU_Saiga12)={(
+		Name=KFWeap_Shotgun_S12,
+		IconPath="WEP_UI_Saiga12_TEX.UI_WeaponSelect_Saiga12",
+		ID=9666)}
 }

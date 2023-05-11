@@ -757,6 +757,7 @@ var transient bool bShotgunJumping;
 
 var	bool bAllowSeasonalSkins;
 
+var bool bFriendlyUIEnabled;
 
 cpptext
 {
@@ -2853,6 +2854,12 @@ public function bool CanUseVIP()
 	}
 
 	return false;	
+}
+
+public function bool CanUseContaminationMode()
+{
+	return KFGameReplicationInfo(WorldInfo.GRI) != none
+			&& KFGameReplicationInfo(WorldInfo.GRI).IsContaminationMode();		
 }
 
 /*********************************************************************************************
@@ -12169,6 +12176,12 @@ simulated function ClearShotgunJumpFlag()
 	bShotgunJumping = false;
 }
 
+exec function ToggleFriendlyUI()
+{
+	bFriendlyUIEnabled = !bFriendlyUIEnabled;
+	`Log("Toggle Friendly UI " $bFriendlyUIEnabled);
+}
+
 defaultproperties
 {
 	EarnedDosh=0
@@ -12377,4 +12390,6 @@ defaultproperties
 	StormCannonIDCounter = 0
 	bShotgunJumping = false
 	bAllowSeasonalSkins = false
+
+	bFriendlyUIEnabled = true
 }

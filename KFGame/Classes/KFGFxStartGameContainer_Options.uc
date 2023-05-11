@@ -304,6 +304,17 @@ function FilterWeeklyMaps(out array<string> List)
 		List.RemoveItem("KF-KrampusLair");
 	}
 
+	if (WeeklyIndex == 19)
+	{
+		List.RemoveItem("KF-Biolapse");
+		List.RemoveItem("KF-Nightmare");
+		List.RemoveItem("KF-PowerCore_Holdout");
+		List.RemoveItem("KF-TheDescent");
+		List.RemoveItem("KF-KrampusLair");
+		List.RemoveItem("KF-SantasWorkshop");
+		List.RemoveItem("KF-Elysium");
+	}
+
 	/* Temporary removal of SteamFrotress for BossRush */
 	if (WeeklyIndex == 14)
 	{

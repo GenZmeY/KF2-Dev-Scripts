@@ -14,7 +14,7 @@ DefaultProperties
 {
 	WeaponClassPath="KFGameContent.KFWeap_HRG_Locust"
 
-	BuyPrice=900
+	BuyPrice=1400
 	AmmoPricePerMag=40
 	ImagePath="wep_ui_hrg_locust_tex.UI_WeaponSelect_HRG_Locust"
 
@@ -22,9 +22,7 @@ DefaultProperties
 	
 	EffectiveRange=100
 
-	UpgradePrice[0]=700
-	UpgradePrice[1]=1500
+	UpgradePrice[0]=1500
 
-	UpgradeSellPrice[0]=525
-	UpgradeSellPrice[1]=1650
+	UpgradeSellPrice[0]=1125
 }

@@ -217,8 +217,8 @@ defaultproperties
 	IronSightPosition=(X=3.0,Y=15,Z=15)
 
 	// Ammo
-	MagazineCapacity[0]=90 //125 //175 //250
-	SpareAmmoCapacity[0]=540 //500 //750
+	MagazineCapacity[0]=120 //125 //175 //250
+	SpareAmmoCapacity[0]=600 //500 //750
 	InitialSpareMags[0]=1
 	AmmoPickupScale[0]=1 //0.67
 	bCanBeReloaded=true

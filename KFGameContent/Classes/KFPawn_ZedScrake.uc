@@ -124,10 +124,19 @@ simulated function CreateExhaustFx()
 
 event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector Momentum, class<DamageType> DamageType, optional TraceHitInfo HitInfo, optional Actor DamageCauser)
 {
+	local class<KFDamageType> KFDT;
+
 	super.TakeDamage( Damage, InstigatedBy, HitLocation, Momentum, DamageType, HitInfo, DamageCauser );
 
 	if( bCanRage && !bPlayedDeath && (GetHealthPercentage() < RageHealthThreshold || GetHeadHealthPercent() < RageHealthThreshold) )
 	{
+		KFDT = class<KFDamageType>(DamageType);
+
+		if (KFDT != none && KFDT.default.bCanEnrage == false)
+		{
+			return;
+		}
+
 		SetEnraged( true );
 	}
 }

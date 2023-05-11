@@ -2694,11 +2694,12 @@ simulated function TakeRadiusDamage
 	vector				HurtOrigin,
 	bool				bFullDamage,
 	Actor				DamageCauser,
-	optional float      DamageFalloffExponent=1.f
+	optional float      DamageFalloffExponent=1.f,
+	optional bool		bAdjustRadiusDamage=true
 )
 {
 	bTakingRadiusDamage = true;
-	Super.TakeRadiusDamage(InstigatedBy, BaseDamage, DamageRadius, DamageType, Momentum, HurtOrigin, bFullDamage, DamageCauser, DamageFalloffExponent);
+	Super.TakeRadiusDamage(InstigatedBy, BaseDamage, DamageRadius, DamageType, Momentum, HurtOrigin, bFullDamage, DamageCauser, DamageFalloffExponent, bAdjustRadiusDamage);
 	bTakingRadiusDamage = false;
 }
 
@@ -5548,6 +5549,16 @@ simulated function StopLocustVFX()
 	{
 		Toxic_HRG_Locust_LoopingPSC.SetStopSpawning(-1, true);
 	}
+}
+
+simulated function bool CanInteractWithPawnGrapple()
+{
+	return true;
+}
+
+simulated function bool CanInteractWithZoneVelocity()
+{
+	return true;
 }
 
 defaultproperties

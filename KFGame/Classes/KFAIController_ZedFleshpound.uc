@@ -160,10 +160,19 @@ function NotifyMeleeDamageDealt()
 
 function NotifyTakeHit( Controller InstigatedBy, vector HitLocation, int Damage, class<DamageType> damageType, vector Momentum )
 {
+	local class<KFDamageType> KFDT;
+
 	super.NotifyTakeHit( InstigatedBy, HitLocation, Damage, damageType, Momentum );
 
 	if( RagePlugin != none && InstigatedBy != self )
 	{
+		KFDT = class<KFDamageType>(DamageType);
+
+		if (KFDT != none && KFDT.default.bCanEnrage == false)
+		{
+			return;
+		}
+
 		RagePlugin.AccumulatedDOT += Damage;
 	}
 }

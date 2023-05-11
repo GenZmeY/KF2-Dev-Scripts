@@ -650,8 +650,8 @@ DefaultProperties
 	ProgressStatID=STATID_Medic_Progress
    	PerkBuildStatID=STATID_Medic_Build
 
-  	SelfHealingSurgePct=0.06f //0.1f
-	MaxSurvivalistResistance=0.60f //0.70f //0.5f //0.8
+  	SelfHealingSurgePct=0.03f //0.1f
+	MaxSurvivalistResistance=0.30f //0.70f //0.5f //0.8
 	CombatantSpeedModifier=0.1f
 
 	MaxHealingSpeedBoost=30 //15 //50
@@ -730,7 +730,7 @@ DefaultProperties
    	HealerRecharge=(Name="Healer Recharge",Increment=0.08f,Rank=0,StartingValue=1.f,MaxValue=3.f)
    	HealPotency=(Name="Healer Potency",Increment=0.02f,Rank=0,StartingValue=1.0f,MaxValue=1.5f)
 	BloatBileResistance=(Name="Bloat Bile Resistance",Increment=0.02,Rank=0,StartingValue=0.f,MaxValue=0.5f)
-	MovementSpeed=(Name="Movement Speed",Increment=0.004f,Rank=0,StartingValue=0.f,MaxValue=0.1f)
+	MovementSpeed=(Name="Movement Speed",Increment=0.002f,Rank=0,StartingValue=0.f,MaxValue=0.1f)
 	Armor=(Name="Armor",Increment=0.02f,Rank=0,StartingValue=1.f,MaxValue=1.5f) //0.03f, 0f, 1f, 1.75f
 
 	PerkSkills(EMedicHealingSurge)=(Name="HealingSurge",IconPath="UI_PerkTalent_TEX.Medic.UI_Talents_Medic_HealingSurge", Increment=0.f,Rank=0,StartingValue=0.25,MaxValue=0.25)

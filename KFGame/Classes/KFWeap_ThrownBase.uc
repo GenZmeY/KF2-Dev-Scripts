@@ -354,6 +354,15 @@ static simulated function float CalculateTraderWeaponStatDamage()
 	return BaseDamage + DoTDamage;
 }
 
+simulated state WeaponPuttingDown
+{
+	simulated function BeginState( Name PreviousStateName )
+	{
+		super.BeginState(PreviousStateName);
+		ClearTimer(nameOf(PerformArtificialReload) );
+	}
+}
+
 defaultproperties
 {
 	// Anim

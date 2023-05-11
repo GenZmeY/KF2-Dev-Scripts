@@ -56,6 +56,7 @@ var float PrestigeIconScale;
 ********************************************************************************************* */
 
 var config float FriendlyHudScale;
+var config bool bFriendlyHUDVisible;
 
 /*********************************************************************************************
  DrawGlowText()
@@ -240,7 +241,7 @@ function DrawCrosshair()
 			}
 
 			// Skip if weapon is missing spread settings
-			if ( KFWP.Spread.Length == 0 && !bForceDrawCrosshair )
+			if ( KFWP.Spread.Length == 0 && !bForceDrawCrosshair && !KFWP.bForceCrosshair)
 			{
 				return;
 			}
@@ -280,7 +281,7 @@ function DrawCrosshair()
 
         if( KFWP != none )
         {
-	        if( !bForceDrawCrosshair )
+	        if( !bForceDrawCrosshair && !KFWP.bForceCrosshair)
 	        {
 	            WeaponAccuracyAdjust = EvalInterpCurveFloat(CrosshairAccuracyScale, KFWP.GetUpgradedSpread());
 	            // Scale spread based on weapon accuracy
@@ -587,8 +588,6 @@ function DrawHUD()
 	local rotator ViewRotation;
     local array<PlayerReplicationInfo> VisibleHumanPlayers;
     local array<sHiddenHumanPawnInfo> HiddenHumanPlayers;
-	local float ThisDot;
-	local vector TargetLocation;
 	local Actor LocActor;
 
     // Draw weapon HUD underneath everything else
@@ -621,75 +620,128 @@ function DrawHUD()
     // Friendly player status
     if( PlayerOwner.GetTeamNum() == 0 )
     {
-		if( KFPlayerOwner != none )
+		if (KFPlayerOwner.bFriendlyUIEnabled)
 		{
-		    KFPlayerOwner.GetPlayerViewPoint( ViewLocation, ViewRotation );
-		}
-		ViewVector = vector(ViewRotation);
-
-	    Canvas.EnableStencilTest(true);
-		foreach WorldInfo.AllPawns( class'KFPawn_Human', KFPH )
-		{
-			if( KFPH.IsAliveAndWell() && KFPH != KFPlayerOwner.Pawn && KFPH.Mesh.SkeletalMesh != none && KFPH.Mesh.bAnimTreeInitialised )
+			if( KFPlayerOwner != none )
 			{
-				PlayerPartyInfoLocation = KFPH.Mesh.GetPosition() + ( KFPH.CylinderComponent.CollisionHeight * vect(0,0,1) );
-				if(`TimeSince(KFPH.Mesh.LastRenderTime) < 0.2f && Normal(PlayerPartyInfoLocation - ViewLocation) dot ViewVector > 0.f )
+				KFPlayerOwner.GetPlayerViewPoint( ViewLocation, ViewRotation );
+			}
+			ViewVector = vector(ViewRotation);
+
+			Canvas.EnableStencilTest(true);
+			foreach WorldInfo.AllPawns( class'KFPawn_Human', KFPH )
+			{
+				if( KFPH.IsAliveAndWell() && KFPH != KFPlayerOwner.Pawn && KFPH.Mesh.SkeletalMesh != none && KFPH.Mesh.bAnimTreeInitialised )
 				{
-					if( DrawFriendlyHumanPlayerInfo(KFPH) )
+					PlayerPartyInfoLocation = KFPH.Mesh.GetPosition() + ( KFPH.CylinderComponent.CollisionHeight * vect(0,0,1) );
+					if(`TimeSince(KFPH.Mesh.LastRenderTime) < 0.2f && Normal(PlayerPartyInfoLocation - ViewLocation) dot ViewVector > 0.f )
 					{
-						VisibleHumanPlayers.AddItem( KFPH.PlayerReplicationInfo );
+						if( DrawFriendlyHumanPlayerInfo(KFPH) )
+						{
+							VisibleHumanPlayers.AddItem( KFPH.PlayerReplicationInfo );
+						}
+						else
+						{
+							HiddenHumanPlayers.Insert( 0, 1 );
+							HiddenHumanPlayers[0].HumanPawn = KFPH;
+							HiddenHumanPlayers[0].HumanPRI = KFPH.PlayerReplicationInfo;
+						}
 					}
 					else
 					{
 						HiddenHumanPlayers.Insert( 0, 1 );
-                    	HiddenHumanPlayers[0].HumanPawn = KFPH;
-                    	HiddenHumanPlayers[0].HumanPRI = KFPH.PlayerReplicationInfo;
+						HiddenHumanPlayers[0].HumanPawn = KFPH;
+						HiddenHumanPlayers[0].HumanPRI = KFPH.PlayerReplicationInfo;
+					}
+				}
+			}
+
+			foreach WorldInfo.AllPawns(class'KFPawn_Scripted', KFPS)
+			{
+				if (KFPS.ShouldShowOnHUD())
+				{
+					PlayerPartyInfoLocation = KFPS.Mesh.GetPosition() + (KFPS.CylinderComponent.CollisionHeight * vect(0,0,1));
+					DrawScriptedPawnInfo(KFPS, Normal(PlayerPartyInfoLocation - ViewLocation) dot ViewVector, `TimeSince(KFPS.Mesh.LastRenderTime) < 0.2f);
+				}
+			}
+
+			if( !KFGRI.bHidePawnIcons )
+			{
+				// Draw hidden players
+				CheckAndDrawHiddenPlayerIcons( VisibleHumanPlayers, HiddenHumanPlayers );
+
+				// Draw last remaining zeds
+				CheckAndDrawRemainingZedIcons();
+
+				if (KFGRI.IsContaminationMode())
+				{
+					// While on trader time we let previsualize the next objective icon, so players can get ready
+					if (KFGRI.bWaveIsActive == false)
+					{
+						if (KFGRI.WaveNum != (KFGRI.WaveMax - 1))
+						{
+							CheckDrawContaminationModeObjectiveHUD(ViewLocation, ViewVector);
+						}
+					}
+					else if (KFGRI.ObjectiveInterface != none && KFGRI.ObjectiveInterface.IsActive())
+					{
+						//Draw our current objective location
+						CheckDrawObjectiveHUD(ViewLocation, ViewVector, LocActor);
 					}
 				}
 				else
-                {
-                    HiddenHumanPlayers.Insert( 0, 1 );
-                    HiddenHumanPlayers[0].HumanPawn = KFPH;
-                    HiddenHumanPlayers[0].HumanPRI = KFPH.PlayerReplicationInfo;
-                }
-			}
-		}
-
-		foreach WorldInfo.AllPawns(class'KFPawn_Scripted', KFPS)
-		{
-			if (KFPS.ShouldShowOnHUD())
-			{
-				PlayerPartyInfoLocation = KFPS.Mesh.GetPosition() + (KFPS.CylinderComponent.CollisionHeight * vect(0,0,1));
-				DrawScriptedPawnInfo(KFPS, Normal(PlayerPartyInfoLocation - ViewLocation) dot ViewVector, `TimeSince(KFPS.Mesh.LastRenderTime) < 0.2f);
-			}
-		}
-
-		if( !KFGRI.bHidePawnIcons )
-		{
-			// Draw hidden players
-			CheckAndDrawHiddenPlayerIcons( VisibleHumanPlayers, HiddenHumanPlayers );
-
-			// Draw last remaining zeds
-			CheckAndDrawRemainingZedIcons();
-
-			//Draw our current objective location
-			if(KFGRI.CurrentObjective != none && KFGRI.ObjectiveInterface != none)
-			{
-				KFGRI.ObjectiveInterface.DrawHUD(self, Canvas);
-
-				TargetLocation = KFGRI.ObjectiveInterface.GetIconLocation();
-				ThisDot = Normal((TargetLocation + (class'KFPawn_Human'.default.CylinderComponent.CollisionHeight * vect(0, 0, 1))) - ViewLocation) dot ViewVector;
-
-				if (ThisDot > 0 &&
-					KFGRI.ObjectiveInterface.ShouldShowObjectiveHUD() &&
-					(!KFGRI.ObjectiveInterFace.HasObjectiveDrawDistance() || VSizeSq(TargetLocation - LocActor.Location) < MaxDrawDistanceObjective))
 				{
-					DrawObjectiveHUD();
+					//Draw our current objective location
+					CheckDrawObjectiveHUD(ViewLocation, ViewVector, LocActor);
 				}
 			}
-		}
 
-		Canvas.EnableStencilTest(false);
+			Canvas.EnableStencilTest(false);
+		}
+		
+	}
+}
+
+function CheckDrawContaminationModeObjectiveHUD(vector ViewLocation, vector ViewVector)
+{
+	local float ThisDot;
+	local vector TargetLocation;
+	local KFInterface_MapObjective Objective;
+
+	Objective = KFInterface_MapObjective(KFGRI.NextObjective);
+
+	if (Objective != none)
+	{
+		TargetLocation = Objective.GetIconLocation();
+
+		ThisDot = Normal((TargetLocation + (class'KFPawn_Human'.default.CylinderComponent.CollisionHeight * vect(0, 0, 1))) - ViewLocation) dot ViewVector;
+
+		if (ThisDot > 0)
+		{
+			DrawContaminationModeObjectiveHUD();
+		}
+	}
+}
+
+function CheckDrawObjectiveHUD(vector ViewLocation, vector ViewVector, Actor LocActor)
+{
+	local float ThisDot;
+	local vector TargetLocation;
+
+	if (KFGRI.CurrentObjective != none && KFGRI.ObjectiveInterface != none)
+	{
+		KFGRI.ObjectiveInterface.DrawHUD(self, Canvas);
+
+		TargetLocation = KFGRI.ObjectiveInterface.GetIconLocation();
+
+		ThisDot = Normal((TargetLocation + (class'KFPawn_Human'.default.CylinderComponent.CollisionHeight * vect(0, 0, 1))) - ViewLocation) dot ViewVector;
+
+		if (ThisDot > 0 &&
+			KFGRI.ObjectiveInterface.ShouldShowObjectiveHUD() &&
+			(!KFGRI.ObjectiveInterFace.HasObjectiveDrawDistance() || VSizeSq(TargetLocation - LocActor.Location) < MaxDrawDistanceObjective))
+		{
+			DrawObjectiveHUD();
+		}
 	}
 }
 
@@ -955,6 +1007,37 @@ simulated function color GetHealthStateColor(const out KFPawn_Scripted KFPS)
 	}
 }
 
+simulated function bool DrawContaminationModeObjectiveHUD()
+{
+	local float IconCenteringLength;
+	local vector ScreenPos, TargetLocation;
+	local float ResModifier;
+	local KFInterface_MapObjective Objective;
+
+	Objective = KFInterface_MapObjective(KFGRI.NextObjective);
+
+	ResModifier = WorldInfo.static.GetResolutionBasedHUDScale() * FriendlyHudScale;
+
+	TargetLocation = Objective.GetIconLocation();
+	ScreenPos = Canvas.Project( TargetLocation );
+
+	// if not using the progress bar, center the remaining icon
+	IconCenteringLength = PlayerStatusIconSize * ResModifier * 0.5;
+	
+	if (Objective.GetIcon() != none)
+	{
+		Canvas.SetDrawColorStruct(PlayerBarShadowColor);
+		Canvas.SetPos((ScreenPos.X - IconCenteringLength) + 1, ScreenPos.Y + 1);
+		Canvas.DrawTile(Objective.GetIcon(), PlayerStatusIconSize * ResModifier, PlayerStatusIconSize * ResModifier, 0, 0, 256, 256);
+
+		Canvas.SetDrawColorStruct(Objective.GetIconColor());
+		Canvas.SetPos(ScreenPos.X - IconCenteringLength, ScreenPos.Y);
+		Canvas.DrawTile(Objective.GetIcon(), PlayerStatusIconSize * ResModifier, PlayerStatusIconSize * ResModifier, 0, 0, 256, 256);
+	}
+
+	return true;
+}
+
 simulated function bool DrawObjectiveHUD()
 {
 	local float Percentage;
@@ -1008,6 +1091,7 @@ simulated function bool DrawObjectiveHUD()
 		Canvas.SetPos(ScreenPos.X - (BarLength * 0.75) - IconCenteringLength, ScreenPos.Y - BarHeight * 2.0);
 		Canvas.DrawTile(KFGRI.ObjectiveInterface.GetIcon(), PlayerStatusIconSize * ResModifier, PlayerStatusIconSize * ResModifier, 0, 0, 256, 256);
 	}
+
 	return true;
 }
 

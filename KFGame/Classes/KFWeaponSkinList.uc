@@ -4532,4 +4532,208 @@ defaultproperties
 
 //Retro Precious Railgun
     Skins.Add((Id=9539, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Railgun', MIC_1P=("WEP_SkinSet69_MAT.retro_railgun.RetroPrecious_Railgun_1P_Mint_MIC", "WEP_SkinSet69_MAT.retro_railgun.RetroPrecious_Railgun_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet69_MAT.retro_railgun.RetroPrecious_Railgun_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet69_MAT.retro_railgun.RetroPrecious_Railgun_3P_Pickup_MIC")) 
+
+//Jaeger Dynamic M14EBR
+    Skins.Add((Id=9582, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M14EBR', MIC_1P=("WEP_SkinSet72_MAT.dynamic_m14ebr.Dynamic_M14EBR_1P_Mint_MIC", "WEP_SkinSet72_MAT.dynamic_m14ebr.Dynamic_M14EBR_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet72_MAT.dynamic_m14ebr.Dynamic_M14EBR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet72_MAT.dynamic_m14ebr.Dynamic_M14EBR_3P_Pickup_MIC")) 
+
+//Jaeger Dynamic Seeker Six
+    Skins.Add((Id=9583, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Seeker6', MIC_1P=("WEP_SkinSet72_MAT.dynamic_seekersix.Dynamic_SeekerSix_1P_Mint_MIC", "WEP_SkinSet72_MAT.dynamic_seekersix.Dynamic_SeekerSix_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet72_MAT.dynamic_seekersix.Dynamic_SeekerSix_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet72_MAT.dynamic_seekersix.Dynamic_SeekerSix_3P_Pickup_MIC")) 
+
+//Jaeger Dynamic Railgun
+    Skins.Add((Id=9584, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Railgun', MIC_1P=("WEP_SkinSet72_MAT.dynamic_railgun.Dynamic_Railgun_1P_Mint_MIC", "WEP_SkinSet72_MAT.dynamic_railgun.Dynamic_Railgun_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet72_MAT.dynamic_railgun.Dynamic_Railgun_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet72_MAT.dynamic_railgun.Dynamic_Railgun_3P_Pickup_MIC")) 
+
+//Jaeger Dynamic MP5RAS
+    Skins.Add((Id=9585, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_MP5RAS', MIC_1P=("WEP_SkinSet72_MAT.dynamic_mp5ras.Dynamic_MP5RAS_1P_Mint_MIC"), MIC_3P="WEP_SkinSet72_MAT.dynamic_mp5ras.Dynamic_MP5RAS_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet72_MAT.dynamic_mp5ras.Dynamic_MP5RAS_3P_Pickup_MIC")) 
+
+//Jaeger Dynamic RGB M14EBR
+    Skins.Add((Id=9586, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M14EBR', MIC_1P=("WEP_SkinSet72_MAT.dynamicrgb_m14ebr.DynamicRGB_M14EBR_1P_Mint_MIC", "WEP_SkinSet72_MAT.dynamicrgb_m14ebr.DynamicRGB_M14EBR_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet72_MAT.dynamicrgb_m14ebr.DynamicRGB_M14EBR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet72_MAT.dynamicrgb_m14ebr.DynamicRGB_M14EBR_3P_Pickup_MIC")) 
+
+//Jaeger Dynamic RGB Seeker Six
+    Skins.Add((Id=9587, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Seeker6', MIC_1P=("WEP_SkinSet72_MAT.dynamicrgb_seekersix.DynamicRGB_SeekerSix_1P_Mint_MIC", "WEP_SkinSet72_MAT.dynamicrgb_seekersix.DynamicRGB_SeekerSix_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet72_MAT.dynamicrgb_seekersix.DynamicRGB_SeekerSix_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet72_MAT.dynamicrgb_seekersix.DynamicRGB_SeekerSix_3P_Pickup_MIC")) 
+
+//Jaeger Dynamic RGB Railgun
+    Skins.Add((Id=9588, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Railgun', MIC_1P=("WEP_SkinSet72_MAT.dynamicrgb_railgun.DynamicRGB_Railgun_1P_Mint_MIC", "WEP_SkinSet72_MAT.dynamicrgb_railgun.DynamicRGB_Railgun_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet72_MAT.dynamicrgb_railgun.DynamicRGB_Railgun_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet72_MAT.dynamicrgb_railgun.DynamicRGB_Railgun_3P_Pickup_MIC")) 
+
+//Jaeger Dynamic RGB MP5RAS
+    Skins.Add((Id=9589, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_MP5RAS', MIC_1P=("WEP_SkinSet72_MAT.dynamicrgb_mp5ras.DynamicRGB_MP5RAS_1P_Mint_MIC"), MIC_3P="WEP_SkinSet72_MAT.dynamicrgb_mp5ras.DynamicRGB_MP5RAS_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet72_MAT.dynamicrgb_mp5ras.DynamicRGB_MP5RAS_3P_Pickup_MIC")) 
+
+//Junkyard Mint RPG-7
+    Skins.Add((Id=9590, Weapondef=class'KFWeapDef_RPG7', MIC_1P=("WEP_SkinSet73_MAT.junkyard_rpg7.Junkyard_RPG7_1P_Mint_MIC"), MIC_3P="WEP_SkinSet73_MAT.junkyard_rpg7.Junkyard_RPG7_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet73_MAT.junkyard_rpg7.Junkyard_RPG7_3P_Pickup_MIC")) 
+
+//Junkyard Mint M99
+    Skins.Add((Id=9591, Weapondef=class'KFWeapDef_M99', MIC_1P=("WEP_SkinSet73_MAT.junkyard_m99.Junkyard_M99_1P_Mint_MIC", "WEP_SkinSet73_MAT.junkyard_m99.Junkyard_M99_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet73_MAT.junkyard_m99.Junkyard_M99_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet73_MAT.junkyard_m99.Junkyard_M99_3P_Pickup_MIC")) 
+
+//Junkyard Mint Heckler & Koch UMP
+    Skins.Add((Id=9592, Weapondef=class'KFWeapDef_HK_UMP', MIC_1P=("WEP_SkinSet73_MAT.junkyard_hk_ump.Junkyard_HK_UMP_1P_Mint_MIC", "WEP_SkinSet73_MAT.junkyard_hk_ump.Junkyard_HK_UMP_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet73_MAT.junkyard_hk_ump.Junkyard_HK_UMP_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet73_MAT.junkyard_hk_ump.Junkyard_HK_UMP_3P_Pickup_MIC")) 
+
+//Junkyard Mint FN FAL
+    Skins.Add((Id=9593, Weapondef=class'KFWeapDef_FNFAL', MIC_1P=("WEP_SkinSet73_MAT.junkyard_fnfal.Junkyard_FNFAL_1P_Mint_MIC", "WEP_SkinSet73_MAT.junkyard_fnfal.Junkyard_FNFAL_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet73_MAT.junkyard_fnfal.Junkyard_FNFAL_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet73_MAT.junkyard_fnfal.Junkyard_FNFAL_3P_Pickup_MIC")) 
+
+//Junkyard Precious RPG-7
+    Skins.Add((Id=9594, Weapondef=class'KFWeapDef_RPG7', MIC_1P=("WEP_SkinSet73_MAT.junkyardprecious_rpg7.JunkyardPrecious_RPG7_1P_Mint_MIC"), MIC_3P="WEP_SkinSet73_MAT.junkyardprecious_rpg7.JunkyardPrecious_RPG7_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet73_MAT.junkyardprecious_rpg7.JunkyardPrecious_RPG7_3P_Pickup_MIC")) 
+
+//Junkyard Precious M99
+    Skins.Add((Id=9595, Weapondef=class'KFWeapDef_M99', MIC_1P=("WEP_SkinSet73_MAT.junkyardprecious_m99.JunkyardPrecious_M99_1P_Mint_MIC", "WEP_SkinSet73_MAT.junkyardprecious_m99.JunkyardPrecious_M99_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet73_MAT.junkyardprecious_m99.JunkyardPrecious_M99_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet73_MAT.junkyardprecious_m99.JunkyardPrecious_M99_3P_Pickup_MIC")) 
+
+//Junkyard Precious Heckler & Koch UMP
+    Skins.Add((Id=9596, Weapondef=class'KFWeapDef_HK_UMP', MIC_1P=("WEP_SkinSet73_MAT.junkyardprecious_hk_ump.JunkyardPrecious_HK_UMP_1P_Mint_MIC", "WEP_SkinSet73_MAT.junkyardprecious_hk_ump.JunkyardPrecious_HK_UMP_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet73_MAT.junkyardprecious_hk_ump.JunkyardPrecious_HK_UMP_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet73_MAT.junkyardprecious_hk_ump.JunkyardPrecious_HK_UMP_3P_Pickup_MIC")) 
+
+//Junkyard Precious FN FAL
+    Skins.Add((Id=9597, Weapondef=class'KFWeapDef_FNFAL', MIC_1P=("WEP_SkinSet73_MAT.junkyardprecious_fnfal.JunkyardPrecious_FNFAL_1P_Mint_MIC", "WEP_SkinSet73_MAT.junkyardprecious_fnfal.JunkyardPrecious_FNFAL_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet73_MAT.junkyardprecious_fnfal.JunkyardPrecious_FNFAL_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet73_MAT.junkyardprecious_fnfal.JunkyardPrecious_FNFAL_3P_Pickup_MIC")) 
+
+//Predator Forest M16 M203
+    Skins.Add((Id=9637, Weapondef=class'KFWeapDef_M16M203', MIC_1P=("WEP_SkinSet74_MAT.camo_m16m203.Camo_M16_1P_Mint_MIC", "WEP_SkinSet74_MAT.camo_m16m203.Camo_M203_1P_Mint_MIC"), MIC_3P="WEP_SkinSet74_MAT.camo_m16m203.Camo_M16M203_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet74_MAT.camo_m16m203.Camo_M16M203_3P_Pickup_MIC")) 
+
+//Predator Forest M79
+    Skins.Add((Id=9638, Weapondef=class'KFWeapDef_M79', MIC_1P=("WEP_SkinSet74_MAT.camo_m79.Camo_M79_1P_Mint_MIC"), MIC_3P="WEP_SkinSet74_MAT.camo_m79.Camo_M79_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet74_MAT.camo_m79.Camo_M79_3P_Pickup_MIC")) 
+
+//Predator Forest Kriss SMG
+    Skins.Add((Id=9639, Weapondef=class'KFWeapDef_Kriss', MIC_1P=("WEP_SkinSet74_MAT.camo_kriss.Camo_Kriss_1P_Mint_MIC", "WEP_SkinSet74_MAT.camo_kriss.Camo_Kriss_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet74_MAT.camo_kriss.Camo_Kriss_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet74_MAT.camo_kriss.Camo_Kriss_3P_Pickup_MIC")) 
+
+//Predator Forest 9MM
+    Skins.Add((Id=9640, Weapondef=class'KFWeapDef_9mm', MIC_1P=("WEP_SkinSet74_MAT.camo_9mm.Camo_9MM_1P_Mint_MIC"), MIC_3P="WEP_SkinSet74_MAT.camo_9mm.Camo_9MM_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet74_MAT.camo_9mm.Camo_9MM_3P_Pickup_MIC")) 
+
+//Predator Desert M16 M203
+    Skins.Add((Id=9641, Weapondef=class'KFWeapDef_M16M203', MIC_1P=("WEP_SkinSet74_MAT.camodesert_m16m203.CamoDesert_M16_1P_Mint_MIC", "WEP_SkinSet74_MAT.camodesert_m16m203.CamoDesert_M203_1P_Mint_MIC"), MIC_3P="WEP_SkinSet74_MAT.camodesert_m16m203.CamoDesert_M16M203_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet74_MAT.camo_m16m203.CamoDesert_M16M203_3P_Pickup_MIC")) 
+
+//Predator Desert M79
+    Skins.Add((Id=9642, Weapondef=class'KFWeapDef_M79', MIC_1P=("WEP_SkinSet74_MAT.camodesert_m79.CamoDesert_M79_1P_Mint_MIC"), MIC_3P="WEP_SkinSet74_MAT.camodesert_m79.CamoDesert_M79_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet74_MAT.camo_m79.CamoDesert_M79_3P_Pickup_MIC")) 
+
+//Predator Desert Kriss SMG
+    Skins.Add((Id=9643, Weapondef=class'KFWeapDef_Kriss', MIC_1P=("WEP_SkinSet74_MAT.camodesert_kriss.CamoDesert_Kriss_1P_Mint_MIC", "WEP_SkinSet74_MAT.camodesert_kriss.CamoDesert_Kriss_Sight_1P_Mint_MIC"), MIC_3P="WEP_SkinSet74_MAT.camodesert_kriss.CamoDesert_Kriss_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet74_MAT.camo_kriss.CamoDesert_Kriss_3P_Pickup_MIC")) 
+
+//Predator Desert 9MM
+    Skins.Add((Id=9644, Weapondef=class'KFWeapDef_9mm', MIC_1P=("WEP_SkinSet74_MAT.camodesert_9mm.CamoDesert_9MM_1P_Mint_MIC"), MIC_3P="WEP_SkinSet74_MAT.camodesert_9mm.CamoDesert_9MM_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet74_MAT.camo_9mm.CamoDesert_9MM_3P_Pickup_MIC")) 
+
+//Stingray Infantry Heckler & Koch UMP
+    Skins.Add((Id=9601, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_HK_UMP', MIC_1P=("WEP_SkinSet75_MAT.diver_hk_ump.DiverVar1_HK_UMP_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_hk_ump.DiverVar1_HK_UMP_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_hk_ump.DiverVar1_HK_UMP_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_hk_ump.DiverVar1_HK_UMP_3P_Pickup_MIC")) 
+
+//Stingray Navy Heckler & Koch UMP
+    Skins.Add((Id=9602, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_HK_UMP', MIC_1P=("WEP_SkinSet75_MAT.diver_hk_ump.DiverVar2_HK_UMP_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_hk_ump.DiverVar2_HK_UMP_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_hk_ump.DiverVar2_HK_UMP_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_hk_ump.DiverVar2_HK_UMP_3P_Pickup_MIC")) 
+
+//Stingray Engineer Heckler & Koch UMP
+    Skins.Add((Id=9603, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_HK_UMP', MIC_1P=("WEP_SkinSet75_MAT.diver_hk_ump.DiverVar3_HK_UMP_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_hk_ump.DiverVar3_HK_UMP_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_hk_ump.DiverVar3_HK_UMP_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_hk_ump.DiverVar3_HK_UMP_3P_Pickup_MIC")) 
+
+//Stingray Artillery Heckler & Koch UMP
+    Skins.Add((Id=9604, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_HK_UMP', MIC_1P=("WEP_SkinSet75_MAT.diver_hk_ump.DiverVar4_HK_UMP_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_hk_ump.DiverVar4_HK_UMP_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_hk_ump.DiverVar4_HK_UMP_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_hk_ump.DiverVar4_HK_UMP_3P_Pickup_MIC")) 
+
+//Stingray Engineer Heckler & Koch UMP
+    Skins.Add((Id=9605, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_HK_UMP', MIC_1P=("WEP_SkinSet75_MAT.diver_hk_ump.DiverVar3_HK_UMP_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_hk_ump.DiverVar3_HK_UMP_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_hk_ump.DiverVar3_HK_UMP_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_hk_ump.DiverVar3_HK_UMP_3P_Pickup_MIC")) 
+
+//Stingray Precious Heckler & Koch UMP
+    Skins.Add((Id=9606, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_HK_UMP', MIC_1P=("WEP_SkinSet75_MAT.diver_hk_ump.DiverPrecious_HK_UMP_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_hk_ump.DiverPrecious_HK_UMP_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_hk_ump.DiverPrecious_HK_UMP_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_hk_ump.DiverPrecious_HK_UMP_3P_Pickup_MIC")) 
+
+//Stingray Infantry Hemoclobber
+    Skins.Add((Id=9607, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_MedicBat', MIC_1P=("WEP_SkinSet75_MAT.diver_medicbat.DiverVar1_MedicBat_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_medicbat.DiverVar1_MedicBat_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_medicbat.DiverVar1_MedicBat_3P_Pickup_MIC")) 
+
+//Stingray Navy Hemoclobber
+    Skins.Add((Id=9608, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_MedicBat', MIC_1P=("WEP_SkinSet75_MAT.diver_medicbat.DiverVar2_MedicBat_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_medicbat.DiverVar2_MedicBat_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_medicbat.DiverVar2_MedicBat_3P_Pickup_MIC")) 
+
+//Stingray Engineer Hemoclobber
+    Skins.Add((Id=9609, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_MedicBat', MIC_1P=("WEP_SkinSet75_MAT.diver_medicbat.DiverVar3_MedicBat_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_medicbat.DiverVar3_MedicBat_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_medicbat.DiverVar3_MedicBat_3P_Pickup_MIC")) 
+
+//Stingray Artillery Hemoclobber
+    Skins.Add((Id=9610, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_MedicBat', MIC_1P=("WEP_SkinSet75_MAT.diver_medicbat.DiverVar4_MedicBat_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_medicbat.DiverVar4_MedicBat_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_medicbat.DiverVar4_MedicBat_3P_Pickup_MIC")) 
+
+//Stingray Logistic Hemoclobber
+    Skins.Add((Id=9611, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_MedicBat', MIC_1P=("WEP_SkinSet75_MAT.diver_medicbat.DiverVar5_MedicBat_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_medicbat.DiverVar5_MedicBat_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_medicbat.DiverVar5_MedicBat_3P_Pickup_MIC")) 
+
+//Stingray Precious Hemoclobber
+    Skins.Add((Id=9612, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_MedicBat', MIC_1P=("WEP_SkinSet75_MAT.diver_medicbat.DiverPrecious_MedicBat_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_medicbat.DiverPrecious_MedicBat_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_medicbat.DiverPrecious_MedicBat_3P_Pickup_MIC")) 
+
+//Stingray Infantry SCAR
+    Skins.Add((Id=9613, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_SCAR', MIC_1P=("WEP_SkinSet75_MAT.diver_scar.DiverVar1_SCAR_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_scar.DiverVar1_SCAR_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_scar.DiverVar1_SCAR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_scar.DiverVar1_SCAR_3P_Pickup_MIC")) 
+
+//Stingray Navy SCAR
+    Skins.Add((Id=9614, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_SCAR', MIC_1P=("WEP_SkinSet75_MAT.diver_scar.DiverVar2_SCAR_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_scar.DiverVar2_SCAR_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_scar.DiverVar2_SCAR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_scar.DiverVar2_SCAR_3P_Pickup_MIC")) 
+
+//Stingray Engineer SCAR
+    Skins.Add((Id=9615, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_SCAR', MIC_1P=("WEP_SkinSet75_MAT.diver_scar.DiverVar3_SCAR_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_scar.DiverVar3_SCAR_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_scar.DiverVar3_SCAR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_scar.DiverVar3_SCAR_3P_Pickup_MIC")) 
+
+//Stingray Artillery SCAR
+    Skins.Add((Id=9616, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_SCAR', MIC_1P=("WEP_SkinSet75_MAT.diver_scar.DiverVar4_SCAR_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_scar.DiverVar4_SCAR_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_scar.DiverVar4_SCAR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_scar.DiverVar4_SCAR_3P_Pickup_MIC")) 
+
+//Stingray Logistic SCAR
+    Skins.Add((Id=9617, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_SCAR', MIC_1P=("WEP_SkinSet75_MAT.diver_scar.DiverVar5_SCAR_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_scar.DiverVar5_SCAR_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_scar.DiverVar5_SCAR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_scar.DiverVar5_SCAR_3P_Pickup_MIC")) 
+
+//Stingray Precious SCAR
+    Skins.Add((Id=9618, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_SCAR', MIC_1P=("WEP_SkinSet75_MAT.diver_scar.DiverPrecious_SCAR_1P_Mint_MIC", "WEP_SkinSet75_MAT.diver_scar.DiverPrecious_SCAR_Scope_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_scar.DiverPrecious_SCAR_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_scar.DiverPrecious_SCAR_3P_Pickup_MIC")) 
+
+//Stingray Infantry M4
+    Skins.Add((Id=9619, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M4', MIC_1P=("WEP_SkinSet75_MAT.diver_m4.DiverVar1_M4_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_m4.DiverVar1_M4_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_m4.DiverVar1_M4_3P_Pickup_MIC")) 
+
+//Stingray Navy M4
+    Skins.Add((Id=9620, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M4', MIC_1P=("WEP_SkinSet75_MAT.diver_m4.DiverVar2_M4_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_m4.DiverVar2_M4_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_m4.DiverVar2_M4_3P_Pickup_MIC")) 
+
+//Stingray Engineer M4
+    Skins.Add((Id=9621, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M4', MIC_1P=("WEP_SkinSet75_MAT.diver_m4.DiverVar3_M4_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_m4.DiverVar3_M4_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_m4.DiverVar3_M4_3P_Pickup_MIC")) 
+
+//Stingray Artillery M4
+    Skins.Add((Id=9622, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M4', MIC_1P=("WEP_SkinSet75_MAT.diver_m4.DiverVar4_M4_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_m4.DiverVar4_M4_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_m4.DiverVar4_M4_3P_Pickup_MIC")) 
+
+//Stingray Logistic M4
+    Skins.Add((Id=9623, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M4', MIC_1P=("WEP_SkinSet75_MAT.diver_m4.DiverVar5_M4_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_m4.DiverVar5_M4_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_m4.DiverVar5_M4_3P_Pickup_MIC")) 
+
+//Stingray Precious M4
+    Skins.Add((Id=9624, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_M4', MIC_1P=("WEP_SkinSet75_MAT.diver_m4.DiverPrecious_M4_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_m4.DiverPrecious_M4_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_m4.DiverPrecious_M4_3P_Pickup_MIC")) 
+
+//Stingray Infantry Desert Eagle
+    Skins.Add((Id=9625, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet75_MAT.diver_deagle.DiverVar1_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_deagle.DiverVar1_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_deagle.DiverVar1_Deagle_3P_Pickup_MIC")) 
+
+//Stingray Navy Desert Eagle
+    Skins.Add((Id=9626, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet75_MAT.diver_deagle.DiverVar2_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_deagle.DiverVar2_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_deagle.DiverVar2_Deagle_3P_Pickup_MIC")) 
+
+//Stingray Engineer Desert Eagle
+    Skins.Add((Id=9627, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet75_MAT.diver_deagle.DiverVar3_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_deagle.DiverVar3_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_deagle.DiverVar3_Deagle_3P_Pickup_MIC")) 
+
+//Stingray Artillery Desert Eagle
+    Skins.Add((Id=9628, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet75_MAT.diver_deagle.DiverVar4_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_deagle.DiverVar4_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_deagle.DiverVar4_Deagle_3P_Pickup_MIC")) 
+
+//Stingray Logistic Desert Eagle
+    Skins.Add((Id=9629, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet75_MAT.diver_deagle.DiverVar5_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_deagle.DiverVar5_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_deagle.DiverVar5_Deagle_3P_Pickup_MIC")) 
+
+//Stingray Precious Desert Eagle
+    Skins.Add((Id=9630, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Deagle', MIC_1P=("WEP_SkinSet75_MAT.diver_deagle.DiverPrecious_Deagle_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_deagle.DiverPrecious_Deagle_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_deagle.DiverPrecious_Deagle_3P_Pickup_MIC")) 
+
+//Stingray Infantry Pulverizer
+    Skins.Add((Id=9631, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Pulverizer', MIC_1P=("WEP_SkinSet75_MAT.diver_pulverizer.DiverVar1_Pulverizer_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_pulverizer.DiverVar1_Pulverizer_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_pulverizer.DiverVar1_Pulverizer_3P_Pickup_MIC")) 
+
+//Stingray Navy Pulverizer
+    Skins.Add((Id=9632, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Pulverizer', MIC_1P=("WEP_SkinSet75_MAT.diver_pulverizer.DiverVar2_Pulverizer_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_pulverizer.DiverVar2_Pulverizer_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_pulverizer.DiverVar2_Pulverizer_3P_Pickup_MIC")) 
+
+//Stingray Engineer Pulverizer
+    Skins.Add((Id=9633, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Pulverizer', MIC_1P=("WEP_SkinSet75_MAT.diver_pulverizer.DiverVar3_Pulverizer_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_pulverizer.DiverVar3_Pulverizer_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_pulverizer.DiverVar3_Pulverizer_3P_Pickup_MIC")) 
+
+//Stingray Artillery Pulverizer
+    Skins.Add((Id=9634, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Pulverizer', MIC_1P=("WEP_SkinSet75_MAT.diver_pulverizer.DiverVar4_Pulverizer_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_pulverizer.DiverVar4_Pulverizer_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_pulverizer.DiverVar4_Pulverizer_3P_Pickup_MIC")) 
+
+//Stingray Logistic Pulverizer
+    Skins.Add((Id=9635, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Pulverizer', MIC_1P=("WEP_SkinSet75_MAT.diver_pulverizer.DiverVar5_Pulverizer_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_pulverizer.DiverVar5_Pulverizer_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_pulverizer.DiverVar5_Pulverizer_3P_Pickup_MIC")) 
+
+//Stingray Precious Pulverizer
+    Skins.Add((Id=9636, bNeedsCodeUpdates = true, Weapondef=class'KFWeapDef_Pulverizer', MIC_1P=("WEP_SkinSet75_MAT.diver_pulverizer.DiverPrecious_Pulverizer_1P_Mint_MIC"), MIC_3P="WEP_SkinSet75_MAT.diver_pulverizer.DiverPrecious_Pulverizer_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet75_MAT.diver_pulverizer.DiverPrecious_Pulverizer_3P_Pickup_MIC")) 
+
+//Contamination Zone Precious Healer
+    Skins.Add((Id=9659, Weapondef=class'KFWeapDef_Healer', MIC_1P=("WEP_SkinSet77_MAT.contamination_healer.Contamination_Healer_1P_Mint_MIC"), MIC_3P="WEP_SkinSet77_MAT.contamination_healer.Contamination_Healer_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet77_MAT.contamination_healer.Contamination_Healer_3P_Pickup_MIC")) 
+	
+//Contamination Zone Precious Welder
+    Skins.Add((Id=9658, Weapondef=class'KFWeapDef_Welder', MIC_1P=("WEP_SkinSet77_MAT.contamination_welder.Contamination_Welder_1P_Mint_MIC"), MIC_3P="WEP_SkinSet77_MAT.contamination_welder.Contamination_Welder_3P_Mint_MIC", MIC_Pickup="WEP_SkinSet77_MAT.contamination_welder.Contamination_Welder_3P_Pickup_MIC")) 
+
+//S12 Shockgun Standard
+    Skins.Add((Id=9666, Weapondef=class'KFWeapDef_Shotgun_S12', MIC_1P=("WEP_1P_Saiga12_MAT.Wep_1stP_Saiga12_MIC"), MIC_3P="WEP_3P_Saiga12_MAT.WEP_3P_Saiga12_MIC", MIC_Pickup="WEP_3P_Saiga12_MAT.3P_Pickup_Saiga12_MIC"))
+
+//S12 Shockgun Guppy
+    Skins.Add((Id=9667, Weapondef=class'KFWeapDef_Shotgun_S12', MIC_1P=("WEP_SkinSet76_MAT.Wep_1stP_Saiga12_Guppy_MIC"), MIC_3P="WEP_SkinSet76_MAT.WEP_3P_Saiga12_Guppy_MIC", MIC_Pickup="WEP_SkinSet76_MAT.Weo_3P_Pickup_Saiga12_Guppy_MIC")) 
+
+//S12 Shockgun Lux
+    Skins.Add((Id=9668, Weapondef=class'KFWeapDef_Shotgun_S12', MIC_1P=("WEP_SkinSet76_MAT.Wep_1stP_Saiga12_Lux_MIC"), MIC_3P="WEP_SkinSet76_MAT.WEP_3P_Saiga12_Lux_MIC", MIC_Pickup="WEP_SkinSet76_MAT.Wep_3P_Pickup_Saiga12_Lux_MIC")) 
+
+//S12 Shockgun Navy Camo
+    Skins.Add((Id=9669, Weapondef=class'KFWeapDef_Shotgun_S12', MIC_1P=("WEP_SkinSet76_MAT.Wep_1stP_Saiga12_Ocean_MIC"), MIC_3P="WEP_SkinSet76_MAT.WEP_3P_Saiga12_Ocean_MIC", MIC_Pickup="WEP_SkinSet76_MAT.Wep_3P_Pickup_Saiga12_Ocean_MIC")) 
+
+//S12 Shockgun Showstopper
+    Skins.Add((Id=9670, Weapondef=class'KFWeapDef_Shotgun_S12', MIC_1P=("WEP_SkinSet76_MAT.Wep_1stP_Saiga12_Racing_MIC"), MIC_3P="WEP_SkinSet76_MAT.WEP_3P_Saiga12_Racing_MIC", MIC_Pickup="WEP_SkinSet76_MAT.Wep_3P_Pickup_Saiga12_Racing_MIC")) 
+
+//S12 Shockgun Tiger
+    Skins.Add((Id=9671, Weapondef=class'KFWeapDef_Shotgun_S12', MIC_1P=("WEP_SkinSet76_MAT.Wep_1stP_Saiga12_Tiger_MIC"), MIC_3P="WEP_SkinSet76_MAT.WEP_3P_Saiga12_Tiger_MIC", MIC_Pickup="WEP_SkinSet76_MAT.Wep_3P_Pickup_Saiga12_Tiger_MIC")) 
 }

@@ -24,7 +24,9 @@ defaultproperties
 	KnockdownPower = 100
 	StumblePower = 300
 
-
 	WeaponDef=class'KFWeapDef_AutoTurret'
 	ModifierPerkList(0)=class'KFPerk_Commando'
+
+	bCanZedTime=false
+	bCanEnrage=false
 }

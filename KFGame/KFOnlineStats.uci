@@ -159,4 +159,5 @@ const STATID_ACHIEVE_CarillonHamletCollectibles     = 4061;
 const STATID_ACHIEVE_RigCollectibles     			= 4062;
 const STATID_ACHIEVE_BarmwichCollectibles  			= 4063;
 const STATID_ACHIEVE_CrashCollectibles              = 4064;
+const STATID_ACHIEVE_SubductionCollectibles         = 4065;
 /** `endif */

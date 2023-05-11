@@ -1287,7 +1287,7 @@ simulated function bool IsCallOutActive(){ return false; }
 simulated function bool IsShootAndMoveActive(){ return false; }
 simulated function bool HasNightVision(){ return false; }
 simulated protected function bool IsRapidFireActive(){ return false; }
-simulated function float GetZedTimeModifier( KFWeapon W ){ return 0.f; }
+simulated event float GetZedTimeModifier( KFWeapon W ){ return 0.f; }
 simulated function float GetZedTimeModifierForWindUp(){ return 0.f; }
 simulated function ModifySpread( out float InSpread );
 
@@ -1349,8 +1349,6 @@ simulated function bool DoorShouldNuke(){ return false; }
 simulated function bool ShouldGetDaZeD( class<KFDamageType> DamageType ){ return false; }
 simulated function float GetDaZedEMPPower(){ return 0; }
 simulated function bool ShouldNeverDud(){ return false; }
-simulated function SetLastHX25NukeTime( float NewTime );
-simulated function float GetLastHX25NukeTime() { return 0.f; }
 
 /** "Rack 'em Up" perk skill functions (Gunslinger, Sharpshooter) */
 simulated function bool GetIsUberAmmoActive( KFWeapon KFW ){ return false; }

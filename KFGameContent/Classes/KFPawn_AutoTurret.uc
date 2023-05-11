@@ -105,6 +105,9 @@ const NoAmmoSocketName = 'malfunction';
 const NoAmmoFXTemplate = ParticleSystem'WEP_AutoTurret_EMIT.FX_NoAmmo_Sparks';
 var transient ParticleSystemComponent NoAmmoFX;
 
+var transient vector DeployLastLocation;
+var transient float LastMoveExpectedSize;
+
 replication
 {
     if( bNetDirty )
@@ -374,7 +377,7 @@ simulated state Deploy
             SetTimer(AnimDuration, false, nameof(StartIdleAnim));
         }
 
-        SetPhysics(PHYS_FLYING);
+        SetPhysics(PHYS_NONE);
  
         if (Role == ROLE_Authority)
         {
@@ -390,22 +393,33 @@ simulated state Deploy
 
         super.Tick(DeltaTime);
 
+        // If we didn't move..
+        if (VSize(Location - DeployLastLocation) < (LastMoveExpectedSize * 0.8f))
+        {
+            SetTurretState(ETS_TargetSearch);
+            return;          
+        }
+
         LocationNext = Location;
         LocationNext.z += Velocity.z * DeltaTime;
 
-        // If there's little to no movement or we are going to collide
-        if (Velocity.z <= 0.01f || !FastTrace(LocationNext, Location, vect(25,25,25)))
+        // If we are going to collide stop
+        if (!FastTrace(LocationNext, Location, vect(25,25,25)))
         {
             SetTurretState(ETS_TargetSearch);
+            return;
         }
-        else
+
+        DeployLastLocation = Location;
+        LastMoveExpectedSize = VSize(LocationNext - Location);
+
+        SetLocation(LocationNext);
+            
+        // Check height to change state
+        CurrentHeight = Location.Z - GroundLocation.Z;
+        if (CurrentHeight >= DeployHeight)
         {
-            // Check height to change state
-            CurrentHeight = Location.Z - GroundLocation.Z;
-            if (CurrentHeight >= DeployHeight)
-            {
-                SetTurretState(ETS_TargetSearch);
-            }
+            SetTurretState(ETS_TargetSearch);
         }
     }
 
@@ -425,6 +439,8 @@ simulated state Deploy
                 SetTimer(0.25f, true, nameof(CheckEnemiesWithinExplosionRadius));
             }
         }
+
+        SetPhysics(PHYS_NONE);
     }
 }
 
@@ -533,6 +549,8 @@ simulated state Combat
 
         local float NewAmmoPercentage;
 
+	    local bool bIsSpotted;
+
         if (Role == ROLE_Authority)
         {
             TurretWeapon.GetMuzzleLocAndRot(MuzzleLoc, MuzzleRot);
@@ -565,11 +583,14 @@ simulated state Combat
                 // Trace from the Target reference to MuzzleLoc, because MuzzleLoc could be already inside physics, as it's outside the collider of the Drone!
                 HitActor = Trace(HitLocation, HitNormal, EnemyTarget.Mesh.GetBoneLocation('Spine1'), MuzzleLoc,,,,TRACEFLAG_Bullet);
 
-                /** Search for new enemies if current is dead, cloaked or too far, or something between the drone and the target except a player */
+                // Visible by local player or team
+		        bIsSpotted = (EnemyTarget.bIsCloakingSpottedByLP || EnemyTarget.bIsCloakingSpottedByTeam);
+
+                /** Search for new enemies if current is dead, cloaked or too far, or something between the drone that's world geometry */
                 if (!EnemyTarget.IsAliveAndWell()
-                    || EnemyTarget.bIsCloaking
+                    || (EnemyTarget.bIsCloaking && bIsSpotted == false)
                     || VSizeSq(EnemyTarget.Location - Location) > EffectiveRadius * EffectiveRadius
-                    || (HitActor != none && KFPawn_Monster(HitActor) == none && KFPawn_Human(HitActor) == none))
+                    || (HitActor != none && HitActor.bWorldGeometry && KFFracturedMeshGlass(HitActor) == None))
                 {
                     EnemyTarget = none;
                     CheckForTargets();
@@ -590,13 +611,13 @@ simulated state Combat
 
             RotateBySpeed(DesiredRotationRot);
 
-            if (Role == ROLE_Authority)
+            if (Role == ROLE_Authority && ReachedRotation())
             {
                 HitActor = Trace(HitLocation, HitNormal, MuzzleLoc + vector(Rotation) * EffectiveRadius, MuzzleLoc, , , HitInfo, TRACEFLAG_Bullet);
                 
                 if (TurretWeapon != none)
                 {
-                    if (KFPawn_Monster(HitActor) != none)
+                    if (HitActor != none && HitActor.bWorldGeometry == false)
                     {
                         TurretWeapon.Fire();
                         
@@ -641,6 +662,7 @@ simulated state Detonate
         {
             ExploActor.InstigatorController = Instigator.Controller;
             ExploActor.Instigator = Instigator;
+            ExploActor.bIgnoreInstigator = true;
 
             ExploActor.Explode(ExplosionTemplate);
         }
@@ -732,6 +754,8 @@ function CheckForTargets()
 	local vector HitLocation, HitNormal;
     local Actor HitActor;
 
+    local bool bIsSpotted;
+
     if (EnemyTarget != none)
     {
         CurrentDistance = VSizeSq(Location - EnemyTarget.Location);
@@ -745,10 +769,19 @@ function CheckForTargets()
     
     foreach CollidingActors(class'KFPawn_Monster', CurrentTarget, EffectiveRadius, Location, true,, HitInfo)
     {
+        // Visible by local player or team
+	    bIsSpotted = (CurrentTarget.bIsCloakingSpottedByLP || CurrentTarget.bIsCloakingSpottedByTeam);
+
+        if (!CurrentTarget.IsAliveAndWell()
+            || (CurrentTarget.bIsCloaking && bIsSpotted == false))
+        {
+            continue;
+        }
+
         // Trace from the Target reference to MuzzleLoc, because MuzzleLoc could be already inside physics, as it's outside the collider of the Drone!
         HitActor = Trace(HitLocation, HitNormal, CurrentTarget.Mesh.GetBoneLocation('Spine1'), MuzzleLoc,,,,TRACEFLAG_Bullet);
 
-        if (!CurrentTarget.IsAliveAndWell() || CurrentTarget.bIsCloaking || HitActor == none || KFPawn_Monster(HitActor) == none)
+        if (HitActor == none || (HitActor.bWorldGeometry && KFFracturedMeshGlass(HitActor) == None))
         {
             continue;
         }
@@ -992,13 +1025,24 @@ simulated function TakeRadiusDamage(
 	vector				HurtOrigin,
 	bool				bFullDamage,
 	Actor               DamageCauser,
-	optional float      DamageFalloffExponent=1.f
+	optional float      DamageFalloffExponent=1.f,
+	optional bool		bAdjustRadiusDamage=true
 )
 {}
 
 function bool CanAITargetThisPawn(Controller TargetingController)
 {
     return false;
+}
+
+simulated function bool CanInteractWithPawnGrapple()
+{
+	return false;
+}
+
+simulated function bool CanInteractWithZoneVelocity()
+{
+	return false;
 }
 
 simulated function UpdateTurretMeshMaterialColor(float Value)
@@ -1104,6 +1148,9 @@ defaultproperties
 		CamShakeOuterRadius=900
 		CamShakeFalloff=1.5f
 		bOrientCameraShakeTowardsEpicenter=true
+
+		bIgnoreInstigator=true
+        	ActorClassToIgnoreForDamage = class'KFPawn_Human'
 	End Object
 	ExplosionTemplate=ExploTemplate0
 
@@ -1163,4 +1210,7 @@ defaultproperties
     bAlwaysRelevant=true
 
     AutoTurretFlashCount=0
+
+    DeployLastLocation=(X=-9999.f, Y=-9999.f, Z=-9999.f)
+    LastMoveExpectedSize= 0.f
 }

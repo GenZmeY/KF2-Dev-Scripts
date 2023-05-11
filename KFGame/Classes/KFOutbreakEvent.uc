@@ -464,6 +464,12 @@ struct WeeklyOverrides
 	/** Time between waves override. */
 	var() float TimeBetweenWaves;
 
+	/** Contamination mode Zeds to finish */
+	var() int ContaminationModeZedsToFinish;
+
+	/** Contamination mode Extra Dosh */
+	var() int ContaminationModeExtraDosh;
+
 	structdefaultproperties
 	{
 		GameLength = GL_Short
@@ -529,6 +535,8 @@ struct WeeklyOverrides
 		TraderTimeModifier = 1.f;
 		TimeBetweenWaves = -1.f;
 		bForceShowSkipTrader = false;
+		ContaminationModeZedsToFinish = 0;
+		ContaminationModeExtraDosh = 0;
 	}
 };
 
@@ -1101,8 +1109,23 @@ function class<KFPawn_Monster> GetAISpawnOverrideInner(array <SpawnReplacement> 
 {
 	local SpawnReplacement Replacement;
 	local float RandF;
+	local int IndexReplace;
 
-	//Check if our current weekly event has any overrides available
+	// Check if our current weekly event has any overrides available
+
+	// We generate random number with the Elite Zed replacement we need
+	// If that replacement has a new EAIType we need to use it for the comparison
+
+	IndexReplace = AIClassList[AIType].static.IndexOverrideReplaceSpawnWithElite();
+
+	if (IndexReplace >= 0)
+	{
+		if (AIClassList[AIType].default.EliteAIType.length > IndexReplace)
+		{
+			AIType = EAIType(AIClassList[AIType].default.EliteAIType[IndexReplace]);
+		}
+	}
+
 	foreach SpawnReplacementList(Replacement)
 	{
 		if (Replacement.SpawnEntry == AIType)

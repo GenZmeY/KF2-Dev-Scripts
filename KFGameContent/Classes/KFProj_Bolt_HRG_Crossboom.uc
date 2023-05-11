@@ -205,7 +205,7 @@ defaultproperties
 	// explosion
 	Begin Object Class=KFGameExplosion Name=ExploTemplate0
 		Damage=350
-	    DamageRadius=200
+	    DamageRadius=250
 		DamageFalloffExponent=1.f
 		DamageDelay=0.f
 
@@ -240,7 +240,7 @@ defaultproperties
 	End Object
 	StickHelper=StickHelper0
 
-    SecondsBeforeDetonation=0.5f
+    SecondsBeforeDetonation=0.2f
     bIsProjActive=true
 	bCanDisintegrate=true
 	bAlwaysReplicateExplosion=true

@@ -30,6 +30,11 @@ var transient Actor ActorToIgnoreForDamage;
 /** If set, ignore instigator when doing damage/effects. Can be set in addition to above */
 var transient bool bIgnoreInstigator;
 
+var bool bAlwaysFullDamage;
+
+// If we refine the search so we don't include Victim's that are outside the "height" of instigator
+var bool bDoCylinderCheck;
+
 `if(`__TW_)
 /** The actor class to ignore for damage from this explosion **/
 var() class<Actor> ActorClassToIgnoreForDamage<AllowAbstract>;
@@ -195,4 +200,7 @@ defaultproperties
 
 	CamShakeFalloff=2.f
 	bAutoControllerVibration=true
+
+	bAlwaysFullDamage = false
+	bDoCylinderCheck = false
 }

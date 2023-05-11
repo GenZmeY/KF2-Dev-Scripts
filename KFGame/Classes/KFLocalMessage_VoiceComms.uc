@@ -27,6 +27,8 @@ enum EVoiceCommsType
 };
 
 var localized array<string> VoiceCommsOptionStrings;
+var localized string ToggleFriendlyHUDString;
+
 var array<Texture2D> VoiceCommsIcons;
 
 static function string GetString(

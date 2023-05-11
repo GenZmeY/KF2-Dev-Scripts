@@ -1016,13 +1016,28 @@ simulated function DisplayNewObjective()
 		ObjectiveObject=CreateObject("Object");
 
 		ObjectiveObject.SetString("titleString", class'KFLocalMessage_Priority'.default.ObjectiveStartMessage);
-		ObjectiveObject.SetString("nameString", ObjectiveInterface.GetLocalizedName());
-		ObjectiveObject.SetString("descString", ObjectiveInterface.GetLocalizedDescription());
-		ObjectiveObject.SetString("requireString", ObjectiveInterface.GetLocalizedRequirements());
-		ObjectiveObject.SetString("rewardNum", string(ObjectiveInterface.GetMaxDoshReward()));
-		ObjectiveObject.SetString("xpBonus", string(ObjectiveInterface.GetMaxXPReward()));
-		ObjectiveObject.SetString("voshBonus", string(ObjectiveInterface.GetMaxVoshReward()));
-		ObjectiveObject.SetString("iconPath", "img://"$PathName(ObjectiveInterface.GetIcon()));
+
+	    if (KFGRI.IsContaminationMode())
+	    {
+            ObjectiveObject.SetString("nameString", Localize("Objectives", "ContaminationModeObjective", "KFGame"));
+            ObjectiveObject.SetString("descString", Localize("Objectives", "ContaminationModeDescription", "KFGame"));
+
+            // TODO :: CHANGE ICON
+		    ObjectiveObject.SetString("iconPath", "img://"$PathName(ObjectiveInterface.GetIcon()));
+	    }
+        else
+        {
+            ObjectiveObject.SetString("nameString", ObjectiveInterface.GetLocalizedName());
+            ObjectiveObject.SetString("descString", ObjectiveInterface.GetLocalizedDescription());
+
+            ObjectiveObject.SetString("requireString", ObjectiveInterface.GetLocalizedRequirements());
+            ObjectiveObject.SetString("rewardNum", string(ObjectiveInterface.GetMaxDoshReward()));
+            ObjectiveObject.SetString("xpBonus", string(ObjectiveInterface.GetMaxXPReward()));
+            ObjectiveObject.SetString("voshBonus", string(ObjectiveInterface.GetMaxVoshReward()));
+
+            ObjectiveObject.SetString("iconPath", "img://"$PathName(ObjectiveInterface.GetIcon()));
+        }
+
 		ObjectiveObject.SetBool("isBonus", false);
 
 		KFGRI.PreviousObjectiveResult=INDEX_NONE;
@@ -1187,6 +1202,50 @@ function UpdateVIP(ReplicatedVIPGameInfo VIPInfo, bool bIsVIP)
     else if (VipInfo.VIPPlayer != none)
     {
         VIPWidget.SetNOVIP(VIPInfo.VIPPlayer.PlayerName, VIPInfo.CurrentHealth, VIPInfo.MaxHealth);
+    }
+}
+
+function UpdateContaminationMode(bool IsPlayerIn, bool Pulsate)
+{
+    if (KFPC.CanUseContaminationMode())
+    {
+        if (WaveInfoWidget.ObjectiveContainer != none)
+        {
+            WaveInfoWidget.ObjectiveContainer.ContaminationModeSetPlayerIn(IsPlayerIn, Pulsate);
+        }
+    }
+}
+
+function UpdateContaminationMode_Timer(int Timer)
+{
+    if (KFPC.CanUseContaminationMode())
+    {
+        if (WaveInfoWidget.ObjectiveContainer != none)
+        {
+            WaveInfoWidget.ObjectiveContainer.ContaminationModeTimer(Timer);
+        }
+    }
+}
+
+function ShowContaminationMode()
+{
+    if (KFPC.CanUseContaminationMode())
+    {
+        if (WaveInfoWidget.ObjectiveContainer != none)
+        {
+            WaveInfoWidget.ObjectiveContainer.ShowObjectiveUI();
+        }
+    }  
+}
+
+function HideContaminationMode()
+{
+    if (KFPC.CanUseContaminationMode())
+    {
+        if (WaveInfoWidget.ObjectiveContainer != none)
+        {
+            WaveInfoWidget.ObjectiveContainer.ClearObjectiveUI();
+        }
     }
 }
 

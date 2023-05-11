@@ -2968,6 +2968,19 @@ exec function LogPerkInfo()
 }
 `endif
 
+exec function ToggleFriendlyUI()
+{
+	Outer.ToggleFriendlyUI();
+}
+
+exec function ToggleFriendlyUIFromHUD()
+{
+	if( MyGFxHUD != none && MyGFxHUD.VoiceCommsWidget != none && MyGFxHUD.VoiceCommsWidget.bActive )
+	{
+		Outer.ToggleFriendlyUI();
+	}
+}
+
 defaultproperties
 {
     bEnableFOVScaling=true

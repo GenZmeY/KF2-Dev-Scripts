@@ -391,6 +391,7 @@ defaultproperties
 
 	// ---------------------------------------------
 	// AI / Navigation
+	EliteAIType.Add(14); // AT_EliteCrawler
 	ElitePawnClass.Add(class'KFPawn_ZedCrawlerKing')
 	ControllerClass=class'KFAIController_ZedCrawler'
 	bDebugCrawlerPhysics=false

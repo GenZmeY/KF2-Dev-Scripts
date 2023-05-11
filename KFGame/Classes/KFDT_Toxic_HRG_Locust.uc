@@ -25,12 +25,12 @@ defaultproperties
 	DoT_Interval=0.5
 	DoT_DamageScale=0.5
 
-	BleedPower = 20
-	PoisonPower = 25
+	BleedPower = 15
+	PoisonPower = 20
 	
 	ModifierPerkList(0)=class'KFPerk_Survivalist'
 
 	WeaponDef=class'KFWeapDef_HRG_Locust'
 
-	SpreadOnTouchDamage=30
+	SpreadOnTouchDamage=25
 }

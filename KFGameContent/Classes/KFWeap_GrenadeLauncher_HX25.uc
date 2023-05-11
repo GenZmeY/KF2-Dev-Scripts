@@ -15,6 +15,8 @@ var protected const array<vector2D> PelletSpread;
 /** Last time a submunition projectile was fired from this weapon */
 var float LastSubmunitionFireTime;
 
+var transient bool AlreadyIssuedCanNuke;
+
 /*********************************************************************************************
  Firing / Projectile
 ********************************************************************************************* */
@@ -77,6 +79,38 @@ static simulated function float CalculateTraderWeaponStatDamage()
 static simulated event EFilterTypeUI GetAltTraderFilter()
 {
 	return FT_Pistol;
+}
+
+simulated function KFProjectile SpawnAllProjectiles(class<KFProjectile> KFProjClass, vector RealStartLoc, vector AimDir)
+{
+	local KFProjectile Proj;
+
+	AlreadyIssuedCanNuke = false;
+
+	Proj = Super.SpawnAllProjectiles(KFProjClass, RealStartLoc, AimDir);
+
+	AlreadyIssuedCanNuke = false;
+
+	return Proj;
+}
+
+simulated function KFProjectile SpawnProjectile( class<KFProjectile> KFProjClass, vector RealStartLoc, vector AimDir )
+{
+	local KFProj_ExplosiveSubMunition_HX25 Proj;
+
+	Proj = KFProj_ExplosiveSubMunition_HX25(Super.SpawnProjectile(KFProjClass, RealStartLoc, AimDir));
+
+	if (AlreadyIssuedCanNuke == false)
+	{
+		Proj.bCanNuke = true;
+		AlreadyIssuedCanNuke = true;
+	}
+	else
+	{
+		Proj.bCanNuke = false;
+	}
+
+	return Proj;
 }
 
 defaultproperties
@@ -200,4 +234,6 @@ defaultproperties
 	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.4f), (Stat=EWUS_Weight, Add=2)))
 	WeaponUpgrades[3]=(Stats=((Stat=EWUS_Damage0, Scale=1.6f), (Stat=EWUS_Weight, Add=3)))
 	WeaponUpgrades[4]=(Stats=((Stat=EWUS_Damage0, Scale=1.9f), (Stat=EWUS_Weight, Add=4)))
+
+	AlreadyIssuedCanNuke = false
 }

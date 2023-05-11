@@ -53,6 +53,11 @@ replication
 
 }
 
+static simulated event EFilterTypeUI GetTraderFilter()
+{
+	return FT_Explosive;
+}
+
 simulated function AltFireMode()
 {
 	if ( !Instigator.IsLocallyControlled() )

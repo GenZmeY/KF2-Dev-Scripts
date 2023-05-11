@@ -10,6 +10,40 @@
 
 class KFWeap_Shotgun_HRG_Kaboomstick extends KFWeap_Shotgun_DoubleBarrel;
 
+var transient bool AlreadyIssuedCanNuke;
+
+simulated function KFProjectile SpawnAllProjectiles(class<KFProjectile> KFProjClass, vector RealStartLoc, vector AimDir)
+{
+	local KFProjectile Proj;
+
+	AlreadyIssuedCanNuke = false;
+
+	Proj = Super.SpawnAllProjectiles(KFProjClass, RealStartLoc, AimDir);
+
+	AlreadyIssuedCanNuke = false;
+
+	return Proj;
+}
+
+simulated function KFProjectile SpawnProjectile( class<KFProjectile> KFProjClass, vector RealStartLoc, vector AimDir )
+{
+	local KFProj_Explosive_HRG_Kaboomstick Proj;
+
+	Proj = KFProj_Explosive_HRG_Kaboomstick(Super.SpawnProjectile(KFProjClass, RealStartLoc, AimDir));
+
+	if (AlreadyIssuedCanNuke == false)
+	{
+		Proj.bCanNuke = true;
+		AlreadyIssuedCanNuke = true;
+	}
+	else
+	{
+		Proj.bCanNuke = false;
+	}
+
+	return Proj;
+}
+
 defaultproperties
 {
 	// Inventory
@@ -126,4 +160,6 @@ defaultproperties
 	WeaponUpgrades[0]=(Stats=((Stat=EWUS_Damage0, Scale=1.f, Add=0), (Stat=EWUS_Weight, Scale=1.f, Add=0)))
 	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.15f), (Stat=EWUS_Damage1, Scale=1.15f), (Stat=EWUS_Weight, Add=1)))
 	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.30f), (Stat=EWUS_Damage1, Scale=1.30f), (Stat=EWUS_Weight, Add=2)))
+
+	AlreadyIssuedCanNuke = false
 }

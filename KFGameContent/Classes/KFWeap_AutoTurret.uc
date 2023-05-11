@@ -192,7 +192,14 @@ simulated function Detonate(optional bool bKeepTurret = false)
 				continue;
 			}
 
-			KFPawn_AutoTurret(TurretsCopy[i]).SetTurretState(ETS_Detonate);
+			if (KFPawn_HRG_Warthog(TurretsCopy[i]) != none)
+			{
+				KFPawn_HRG_Warthog(TurretsCopy[i]).SetTurretState(ETS_Detonate);
+			}
+			else if (KFPawn_Autoturret(TurretsCopy[i]) != none)
+			{
+				KFPawn_Autoturret(TurretsCopy[i]).SetTurretState(ETS_Detonate);
+			}
 		}
 
 		KFPC.DeployedTurrets.Remove(bKeepTurret ? 1 : 0, KFPC.DeployedTurrets.Length);
@@ -231,6 +238,7 @@ function RemoveDeployedTurret( optional int Index = INDEX_NONE, optional Actor T
 function SetOriginalValuesFromPickup( KFWeapon PickedUpWeapon )
 {
 	local int i;
+	local Actor WeaponPawn;
 
 	super.SetOriginalValuesFromPickup( PickedUpWeapon );
 
@@ -256,13 +264,24 @@ function SetOriginalValuesFromPickup( KFWeapon PickedUpWeapon )
 
 	for( i = 0; i < NumDeployedTurrets; ++i )
 	{
-		// charge alerts (beep, light) need current instigator
-		KFPC.DeployedTurrets[i].Instigator = Instigator;
-        KFPC.DeployedTurrets[i].SetOwner(self);
+		WeaponPawn = KFPC.DeployedTurrets[i];
+		if (WeaponPawn != none)
+		{
+			// charge alerts (beep, light) need current instigator
+			WeaponPawn.Instigator = Instigator;
+			WeaponPawn.SetOwner(self);
 
-		if( Instigator.Controller != none )
-        {
-			KFPawn_AutoTurret(KFPC.DeployedTurrets[i]).InstigatorController = Instigator.Controller;
+			if (Instigator.Controller != none)
+			{
+				if (KFPawn_HRG_Warthog(KFPC.DeployedTurrets[i]) != none)
+				{
+					KFPawn_HRG_Warthog(KFPC.DeployedTurrets[i]).InstigatorController = Instigator.Controller;
+				}
+				else if (KFPawn_Autoturret(KFPC.DeployedTurrets[i]) != none)
+				{
+					KFPawn_Autoturret(KFPC.DeployedTurrets[i]).InstigatorController = Instigator.Controller;
+				}
+			}
 		}
 	}
 }
@@ -343,6 +362,8 @@ simulated function bool HasAmmo( byte FireModeNum, optional int Amount )
 
 simulated function BeginFire( byte FireModeNum )
 {
+	local bool bCanDetonate;
+
 	// Clear any pending detonate if we pressed the main fire
 	// That prevents strange holding right click behaviour and sound issues
 	if (FireModeNum == DEFAULT_FIREMODE)
@@ -359,11 +380,21 @@ simulated function BeginFire( byte FireModeNum )
 
 		if (NumDeployedTurrets > 0 && bTurretReadyToUse)
 		{
-			PrepareAndDetonate();
+			bCanDetonate = NumDeployedTurrets > 0;
+
+			if (bCanDetonate)
+			{
+				PrepareAndDetonate();
+			}
 		}
 	}
 	else
 	{
+		if (KFPC != none)
+		{
+			NumDeployedTurrets = KFPC.DeployedTurrets.Length;
+		}
+
 		if (FireModeNum == DEFAULT_FIREMODE
 			&& NumDeployedTurrets >= MaxTurretsDeployed
 			&& HasAnyAmmo())
@@ -573,7 +604,15 @@ function CheckTurretAmmo()
 
 		if (KFPC.DeployedTurrets.Length > 0)
 		{
-			Weapon = KFWeapon(KFPawn_AutoTurret(KFPC.DeployedTurrets[0]).Weapon);
+			if (KFPawn_HRG_Warthog(KFPC.DeployedTurrets[0]) != none)
+			{
+				Weapon = KFWeapon(KFPawn_HRG_Warthog(KFPC.DeployedTurrets[0]).Weapon);
+			}
+			else if (KFPawn_Autoturret(KFPC.DeployedTurrets[0]) != none)
+			{
+				Weapon = KFWeapon(KFPawn_Autoturret(KFPC.DeployedTurrets[0]).Weapon);
+			}
+
 			if (Weapon != none)
 			{
 				Percentage = float(Weapon.AmmoCount[0]) / Weapon.MagazineCapacity[0];
@@ -797,4 +836,5 @@ defaultproperties
 	NumBloodMapMaterials=3
 
 	bDetonateLocked=false
+	CurrentAmmoPercentage=-1.0f
 }

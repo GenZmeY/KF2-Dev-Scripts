@@ -25,16 +25,88 @@ function InitializeHUD()
 function LocalizeContainer()
 {
 	local GFxObject TextObject;
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI=KFGameReplicationInfo(KFPC.WorldInfo.GRI);
 
 	TextObject = CreateObject("Object");
 
 	if (CurrentObjectiveInterface != none)
 	{
 		TextObject.SetString("failedString", Localize("Objectives", "FailedString", "KFGame"));
+
 		TextObject.SetString("objectiveTitle", Localize("Objectives", "ObjectiveTitle", "KFGame"));
-		TextObject.SetString("objectiveDesc", CurrentObjectiveInterface.GetLocalizedShortDescription());
+
+		if (KFGRI.IsContaminationMode())
+		{
+			TextObject.SetBool("HideBonus", true);
+
+			TextObject.SetString("objectiveDesc", Localize("Objectives", "ContaminationModeDescriptionShort", "KFGame"));
+		}
+		else
+		{
+			TextObject.SetString("objectiveDesc", CurrentObjectiveInterface.GetLocalizedShortDescription());
+		}
 	}
 
+	SetObject("localizedText", TextObject);
+}
+
+function ContaminationModeSetPlayerIn(bool PlayerIsIn, bool Pulsate)
+{
+	local GFxObject TextObject;
+
+	TextObject = CreateObject("Object");
+
+	//if (CurrentObjectiveInterface != none)
+	//{
+		TextObject.SetString("failedString", Localize("Objectives", "FailedString", "KFGame"));
+
+		TextObject.SetString("objectiveTitle", Localize("Objectives", "ObjectiveTitle", "KFGame"));
+
+		TextObject.SetBool("HideBonus", true);
+
+		if (PlayerIsIn)
+		{
+			TextObject.SetBool("ContaminationModeIn", true);
+			TextObject.SetString("objectiveDesc", Localize("Objectives", "ContaminationModeDescriptionShortPlayerIn", "KFGame"));		
+		}
+		else
+		{
+			TextObject.SetBool("ContaminationModeOut", true);
+
+			if (Pulsate)
+			{
+				TextObject.SetString("objectiveDesc", Localize("Objectives", "ContaminationModeDescriptionShortPlayerOut", "KFGame"));
+			}
+			else
+			{
+				TextObject.SetString("objectiveDesc", "");
+			}
+		}
+	//}
+
+	SetObject("localizedText", TextObject);
+}
+
+function ContaminationModeTimer(int Timer)
+{
+	local GFxObject TextObject;
+
+	TextObject = CreateObject("Object");
+
+	//if (CurrentObjectiveInterface != none)
+	//{
+		TextObject.SetString("failedString", Localize("Objectives", "FailedString", "KFGame"));
+
+		TextObject.SetString("objectiveTitle", Localize("Objectives", "ObjectiveTitle", "KFGame"));
+
+		TextObject.SetBool("HideBonus", true);
+
+		TextObject.SetString("objectiveDesc", Localize("Objectives", "ContaminationModeDescriptionShort", "KFGame"));
+
+		TextObject.SetInt("ContaminationTimer", Timer);
+	//}
 
 	SetObject("localizedText", TextObject);
 }
@@ -42,6 +114,7 @@ function LocalizeContainer()
 simulated function SetActive(bool bActive)
 {
 	SetVisible(bActive);
+
 	if (bActive)
 	{
 		CurrentObjectiveInterface = KFGameReplicationInfo(GetPC().WorldInfo.GRI).ObjectiveInterface;
@@ -72,12 +145,18 @@ simulated function SetActive(bool bActive)
 function SetCompleted(bool bComplete)
 {
 	local GFxObject DataObject;
+	local KFGameReplicationInfo KFGRI;
 
-	DataObject = CreateObject("Object");
+	KFGRI=KFGameReplicationInfo(KFPC.WorldInfo.GRI);
 
-	DataObject.SetBool("bComplete", bComplete);
-	DataObject.SetString("completeString", bComplete ? Localize("Objectives", "SuccessString", "KFGame") : "");
-	SetObject("completeStatus", DataObject);
+	if (KFGRI.IsContaminationMode() == false)
+	{
+		DataObject = CreateObject("Object");
+
+		DataObject.SetBool("bComplete", bComplete);
+		DataObject.SetString("completeString", bComplete ? Localize("Objectives", "SuccessString", "KFGame") : "");
+		SetObject("completeStatus", DataObject);
+	}
 
 	if (!bComplete)
 	{
@@ -119,6 +198,14 @@ function TickHud(float DeltaTime)
 	local int bStatusWarning, bStatusNotification;
 	local string StatusMessage;
 	local GFxObject DataObject;
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI=KFGameReplicationInfo(KFPC.WorldInfo.GRI);
+
+	if (KFGRI.IsContaminationMode())
+	{
+		return;
+	}
 
 	if (CurrentObjectiveInterface != none)
 	{
@@ -144,6 +231,7 @@ function TickHud(float DeltaTime)
 		{
 			UpdateIcon();
 		}
+
 		SetMissionCritical(CurrentObjectiveInterface.GetIsMissionCritical());
 	}
 }
@@ -179,6 +267,11 @@ function SetFailState(bool bFailed)
 	}
 }
 
+function ShowObjectiveUI()
+{
+	SetVisible(true);
+}
+
 function ClearObjectiveUI()
 {
 	SetActive(false);
@@ -187,6 +280,15 @@ function ClearObjectiveUI()
 //pass a value from 0-1
 function SetCurrentProgress(float CurrentProgress)
 {
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI=KFGameReplicationInfo(KFPC.WorldInfo.GRI);
+
+	if (KFGRI.IsContaminationMode())
+	{
+		return;
+	}
+
 	if (LastProgress != CurrentProgress)
 	{
 		CurrentProgress = FClamp(CurrentProgress, 0, 1);

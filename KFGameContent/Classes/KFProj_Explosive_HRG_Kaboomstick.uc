@@ -14,6 +14,8 @@ class KFProj_Explosive_HRG_Kaboomstick extends KFProj_BallisticExplosive
 /** Cached reference to owner weapon */
 var protected KFWeapon OwnerWeapon;
 
+var bool bCanNuke;
+
 /** Initialize the projectile */
 function Init( vector Direction )
 {
@@ -37,25 +39,9 @@ function bool ShouldWarnAIWhenFired()
  */
 simulated protected function PrepareExplosionTemplate()
 {
-	local KFPawn KFP;
-	local KFPerk CurrentPerk;
-	
 	ExplosionTemplate.bIgnoreInstigator = true;
 
     super.PrepareExplosionTemplate();
-
-    if( ExplosionActorClass == class'KFPerk_Demolitionist'.static.GetNukeExplosionActorClass() )
-    {
-		KFP = KFPawn( Instigator );
-		if( KFP != none )
-		{
-			CurrentPerk = KFP.GetPerk();
-			if( CurrentPerk != none )
-			{
-				CurrentPerk.SetLastHX25NukeTime( WorldInfo.TimeSeconds );
-			}
-		}
-	}
 }
 
 simulated event HitWall(vector HitNormal, actor Wall, PrimitiveComponent WallComp)
@@ -76,20 +62,7 @@ simulated event HitWall(vector HitNormal, actor Wall, PrimitiveComponent WallCom
 /** Only allow this projectile to cause a nuke if there hasn't been another nuke very recently */
 simulated function bool AllowNuke()
 {
-	local KFPawn KFP;
-	local KFPerk CurrentPerk;
-
-	KFP = KFPawn( Instigator );
-	if( KFP != none )
-	{
-		CurrentPerk = KFP.GetPerk();
-		if( CurrentPerk != none && `TimeSince(CurrentPerk.GetLastHX25NukeTime()) < 0.25f )
-		{
-			return false;
-		}
-	}
-
-	return super.AllowNuke();
+	return bCanNuke;
 }
 
 defaultproperties
@@ -164,4 +137,6 @@ defaultproperties
 
 	AmbientSoundPlayEvent=none
     AmbientSoundStopEvent=none
+
+	bCanNuke = true
 }

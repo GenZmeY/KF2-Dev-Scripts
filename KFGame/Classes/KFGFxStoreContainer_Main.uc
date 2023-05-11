@@ -447,25 +447,21 @@ DefaultProperties
 
 	XboxFilterExceptions[0]="Wasteland Bundle" // Wasteland Outfit Bundle
 
-	FeaturedItemIDs[0]=7944			//Whatsnew Gold Ticket
-	FeaturedItemIDs[1]=9557
-	FeaturedItemIDs[2]=9556
-	FeaturedItemIDs[3]=9555
-	FeaturedItemIDs[4]=9554
-	FeaturedItemIDs[5]=9502
-	FeaturedItemIDs[6]=9503
-	FeaturedItemIDs[7]=9553
-	FeaturedItemIDs[8]=9552
+	FeaturedItemIDs[0]=8178			//Whatsnew Gold Ticket
+	FeaturedItemIDs[1]=9655
+	FeaturedItemIDs[2]=9646
+	FeaturedItemIDs[3]=9649
+	FeaturedItemIDs[4]=9645
+	FeaturedItemIDs[5]=9653
+	FeaturedItemIDs[6]=9651
 
-	ConsoleFeaturedItemIDs[0]=7947	//Whatsnew Gold Ticket PSN
-	ConsoleFeaturedItemIDs[1]=9557
-	ConsoleFeaturedItemIDs[2]=9556
-	ConsoleFeaturedItemIDs[3]=9555
-	ConsoleFeaturedItemIDs[4]=9554
-	ConsoleFeaturedItemIDs[5]=9502
-	ConsoleFeaturedItemIDs[6]=9503
-	ConsoleFeaturedItemIDs[7]=9553
-	ConsoleFeaturedItemIDs[8]=9552
+	ConsoleFeaturedItemIDs[0]=8181	//Whatsnew Gold Ticket PSN
+	ConsoleFeaturedItemIDs[1]=9655
+	ConsoleFeaturedItemIDs[2]=9646
+	ConsoleFeaturedItemIDs[3]=9649
+	ConsoleFeaturedItemIDs[4]=9645
+	ConsoleFeaturedItemIDs[5]=9653
+	ConsoleFeaturedItemIDs[6]=9651
 
 	MaxFeaturedItems=5
 }

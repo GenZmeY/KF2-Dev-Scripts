@@ -2609,7 +2609,8 @@ simulated function TakeRadiusDamage
 	vector				HurtOrigin,
 	bool				bFullDamage,
 	Actor               DamageCauser,
-	optional float      DamageFalloffExponent=1.f
+	optional float      DamageFalloffExponent=1.f,
+	optional bool		bAdjustRadiusDamage=true
 )
 {
 	local float		ColRadius, ColHeight;
@@ -2636,9 +2637,13 @@ simulated function TakeRadiusDamage
 	if (DamageScale > 0.f)
 	{
 `if(`__TW_)
-		AdjustRadiusDamage(BaseDamage, DamageScale, HurtOrigin);
+		if (bAdjustRadiusDamage)
+		{
+			AdjustRadiusDamage(BaseDamage, DamageScale, HurtOrigin);
+		}
 `endif
 		ScaledDamage = DamageScale * BaseDamage;
+
 		TakeDamage
 		(
 			ScaledDamage,

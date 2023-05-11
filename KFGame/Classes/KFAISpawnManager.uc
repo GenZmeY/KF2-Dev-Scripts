@@ -226,6 +226,8 @@ static function string ZedTypeToString(EAIType AiTypeToConvert)
         return "FleshpoundMini";
 	case AT_Bloat:
 		return "Bloat";
+	case AT_EliteCrawler:
+		return "CrawlerKing";
 	case AT_Siren:
 		return "Siren";
 	case AT_Husk:

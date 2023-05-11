@@ -453,6 +453,10 @@ const KFACHID_CrashHard							=   298;
 const KFACHID_CrashHellOnEarth      			=   299;
 const KFACHID_CrashCollectibles					=   300;
 
+const KFACHID_SubductionHard					=   301;
+const KFACHID_SubductionHellOnEarth      		=   302;
+const KFACHID_SubductionCollectibles			=   303;
+
 /* __TW_ANALYTICS_ */
 var int PerRoundWeldXP;
 var int PerRoundHealXP;
@@ -2095,7 +2099,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_ElephantGun, KFDT_Ballistic_ElephantGun,KFDT_Bludgeon_ElephantGun),CompletionAmount=10000))
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_BlastBrawlers, KFDT_Ballistic_BlastBrawlersShotgun,KFDT_Bludgeon_BlastBrawlers,KFDT_Bludgeon_BlastBrawlersHeavy,KFDT_Bludgeon_BlastBrawlersBash),CompletionAmount=10000))
 	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_BallisticBouncer, KFDT_Bludgeon_HRG_BallisticBouncer_Shot,KFDT_Bludgeon_HRG_BallisticBouncer),CompletionAmount=10000))
-
+	
     //Medic Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Pistol_Medic, KFDT_Ballistic_Pistol_Medic,KFDT_Bludgeon_Pistol_Medic),CompletionAmount=5000)) //3000
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_SMG_Medic, KFDT_Ballistic_SMG_Medic,KFDT_Bludgeon_SMG_Medic),CompletionAmount=7000)) //5000
@@ -2120,6 +2124,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_RocketLauncher_SealSqueal, KFDT_Bludgeon_SealSqueal, KFDT_Explosive_SealSqueal, KFDT_Ballistic_SealSquealImpact),CompletionAmount=7500))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_RocketLauncher_Seeker6, KFDT_Explosive_Seeker6, KFDT_Bludgeon_Seeker6, KFDT_Ballistic_Seeker6Impact),CompletionAmount=7500))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_GrenadeLauncher_M32, KFDT_Bludgeon_M32, KFDT_Explosive_M32, KFDT_Ballistic_M32Impact),CompletionAmount=10000))
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_Warthog, KFDT_Bludgeon_HRG_Warthog, KFDT_Explosive_HRG_Warthog, KFDT_Explosive_HRG_Warthog_HighExplosive, KFDT_Ballistic_HRG_Warthog),CompletionAmount=7000))
 
     //Firebug Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Flame_CaulkBurn, KFDT_Bludgeon_CaulkBurn,KFDT_Fire_CaulkBurn,KFDT_Fire_Ground_CaulkNBurn),CompletionAmount=5000)) //3000
@@ -2325,6 +2330,10 @@ defaultproperties
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CRASH),CompletionAmount=1))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CRASH),CompletionAmount=2))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CRASH),CompletionAmount=3))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-SUBDUCTION),CompletionAmount=1))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-SUBDUCTION),CompletionAmount=2))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-SUBDUCTION),CompletionAmount=3))
+
 
     //Versus Damage
     //    Per design doc that I have right now, these are x class damage y players, not damage y amount

@@ -646,11 +646,12 @@ simulated function TakeRadiusDamage
 	vector				HurtOrigin,
 	bool				bFullDamage,
 	Actor				DamageCauser,
-	optional float      DamageFalloffExponent=1.f
+	optional float      DamageFalloffExponent=1.f,
+	optional bool		bAdjustRadiusDamage=true
 )
 {
 	bIsRadiusDamage = true;
-	Super.TakeRadiusDamage(InstigatedBy, BaseDamage, DamageRadius, DamageType, Momentum, HurtOrigin, bFullDamage, DamageCauser, DamageFalloffExponent);
+	Super.TakeRadiusDamage(InstigatedBy, BaseDamage, DamageRadius, DamageType, Momentum, HurtOrigin, bFullDamage, DamageCauser, DamageFalloffExponent, bAdjustRadiusDamage);
 	bIsRadiusDamage = false;
 }
 
