@@ -19,7 +19,7 @@ var float CurrentDistanceProjectile;
 
 var float DistanceParabolicLaunch;
 
-var transient float LastTimeFireSeconds;
+var transient float FireLookAheadSeconds;
 
 simulated event PreBeginPlay()
 {
@@ -122,13 +122,16 @@ simulated function KFProjectile SpawnProjectile( class<KFProjectile> KFProjClass
 
 	if( SpawnedProjectile != none && !SpawnedProjectile.bDeleteMe )
 	{
-		if (CurrentTarget != none)
+		if (CurrentTarget != none) // This is used for regular shooting
 		{
 			//TargetLocation = CurrentTarget.Mesh.GetBoneLocation('Spine1');
 			TargetLocation = CurrentTarget.Location;
 			TargetLocation.Z += CurrentTarget.GetCollisionHeight() * 0.5f; // Add an offset on the location, so it matches correctly
+
+			// Apply look ahead
+			TargetLocation += CurrentTarget.Velocity * FireLookAheadSeconds;
 		}
-		else if (CurrentDistanceProjectile > 0.f)
+		else if (CurrentDistanceProjectile > 0.f) // This is used for the explosion when drone dies
 		{
 			TargetLocation = RealStartLoc + AimDir * CurrentDistanceProjectile;
 			TargetLocation.Z -= InstigatorDrone.DeployHeight; // We target more or less the ground
@@ -213,14 +216,14 @@ simulated function IncrementFlashCount()
 
 simulated function Fire()
 {
+	if (IsInState('WeaponFiring'))
+	{
+		return;
+	}
+
 	if (HasAmmo(DEFAULT_FIREMODE))
 	{
-		//if (WorldInfo.TimeSeconds - LastTimeFireSeconds > GetFireInterval(DEFAULT_FIREMODE))
-		//{
-			LastTimeFireSeconds = WorldInfo.TimeSeconds;
-
-			SendToFiringState(DEFAULT_FIREMODE);
-		//}
+		SendToFiringState(DEFAULT_FIREMODE);
 	}
 }
 
@@ -488,5 +491,5 @@ defaultproperties
 
 	DistanceParabolicLaunch=150.f //cm
 
-	LastTimeFireSeconds=0.f
+	FireLookAheadSeconds=0.2f
 }

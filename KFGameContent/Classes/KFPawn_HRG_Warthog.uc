@@ -632,10 +632,6 @@ simulated state Combat
                             SetTurretState(ETS_Empty);
                         }
                     }
-                    else
-                    {
-                        TurretWeapon.StopFire(0);
-                    }
                 }
             }
         }
@@ -752,7 +748,7 @@ simulated state Detonate
             ExploActor.Instigator = Instigator;
             ExploActor.bIgnoreInstigator = true;
 
-            ExploActor.Explode(ExplosionTemplate);
+            ExploActor.Explode(PrepareExplosionTemplate());
         }
 
         Destroy();
@@ -1189,6 +1185,34 @@ simulated function ClearFlashCount(Weapon InWeapon)
 
     AutoTurretFlashCount = FlashCount;
     bForceNetUpdate=true;
+}
+
+// Special case as this is not a projectile
+simulated function GameExplosion PrepareExplosionTemplate()
+{
+    local KFPawn PawnInstigator;
+    local KFPerk Perk;
+    local GameExplosion NewTemplate;
+
+
+    PawnInstigator = KFPawn(Instigator);
+    if (PawnInstigator != None)
+    {
+        NewTemplate = class'KFPerk_Demolitionist'.static.PrepareDroneExplosion(self);
+
+        if (NewTemplate == None)
+        {
+            NewTemplate = default.ExplosionTemplate;
+        }
+
+        Perk = PawnInstigator.GetPerk();
+        if (Perk != None)
+        {
+            NewTemplate.DamageRadius *= Perk.GetAoERadiusModifier();
+        }
+    }
+
+    return NewTemplate;
 }
 
 defaultproperties

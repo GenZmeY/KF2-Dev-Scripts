@@ -258,7 +258,7 @@ defaultproperties
 	FireInterval(DEFAULT_FIREMODE)=+0.05 // 1200 RPM
 	Spread(DEFAULT_FIREMODE)=0.0085
 	PenetrationPower(DEFAULT_FIREMODE)=2.0
-	InstantHitDamage(DEFAULT_FIREMODE)=35.0 //32.0 //25
+	InstantHitDamage(DEFAULT_FIREMODE)=38.0 //32.0 //25
 	FireOffset=(X=30,Y=4.5,Z=-5)
 
 	// ALT_FIREMODE

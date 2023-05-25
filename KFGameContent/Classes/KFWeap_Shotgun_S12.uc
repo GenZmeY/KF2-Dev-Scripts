@@ -17,6 +17,7 @@ const SecondaryFireIronAnim = 'Shoot_Secondary_Iron';
 const SecondaryReloadAnim = 'Reload_Secondary';
 const SecondaryReloadEliteAnim = 'Reload_Secondary_Elite'; 
 
+var transient KFMuzzleFlash SecondaryMuzzleFlash;
 var() KFMuzzleFlash SecondaryMuzzleFlashTemplate;
 
 // Used on the server to keep track of grenades
@@ -122,11 +123,6 @@ simulated function ConsumeAmmo( byte FireModeNum )
 	{
 		Super.ConsumeAmmo(FireModeNum);
 	}
-}
-
-simulated function bool HasAnyAmmo()
-{
-	return HasSpareAmmo() || HasAmmo(DEFAULT_FIREMODE) || SpareAmmoCount[1] > 0 || HasAmmo(ALTFIRE_FIREMODE);
 }
 
 /** Make sure user can't fire infinitely if they cheat to get infinite ammo locally. */
@@ -250,22 +246,23 @@ simulated state FiringSecondaryState extends WeaponSingleFiring
  */
 simulated function CauseMuzzleFlash(byte FireModeNum)
 {
-	local bool AutoShellEject;
-
 	if(FireModeNum == ALTFIRE_FIREMODE)
 	{
-		if (MuzzleFlash == None)
+		if (SecondaryMuzzleFlash == None)
 		{
-			AttachSecondaryMuzzleFlash();
+			AttachMuzzleFlash();
 		}
 
-		AutoShellEject = MuzzleFlash.bAutoActivateShellEject;
+		if (SecondaryMuzzleFlash != none)
+		{
+			SecondaryMuzzleFlash.CauseMuzzleFlash(FireModeNum);
+		}
 
-		MuzzleFlash.bAutoActivateShellEject = false;
-
-		Super.CauseMuzzleFlash(FireModeNum);
-
-		MuzzleFlash.bAutoActivateShellEject = AutoShellEject;
+		if (SecondaryMuzzleFlash.bAutoActivateShellEject)
+		{
+			SecondaryMuzzleFlash.CauseShellEject();
+			SetShellEjectsToForeground();
+		}
 	}
 	else
 	{
@@ -273,14 +270,16 @@ simulated function CauseMuzzleFlash(byte FireModeNum)
 	}
 }
 
-simulated function AttachSecondaryMuzzleFlash()
+simulated function AttachMuzzleFlash()
 {
+	super.AttachMuzzleFlash();
+
 	if ( MySkelMesh != none )
 	{
-		if (MuzzleFlashTemplate != None)
+		if (SecondaryMuzzleFlashTemplate != None)
 		{
-			MuzzleFlash = new(self) Class'KFMuzzleFlash'(SecondaryMuzzleFlashTemplate);
-			MuzzleFlash.AttachMuzzleFlash(MySkelMesh, 'MuzzleFlashAlt');
+			SecondaryMuzzleFlash = new(self) Class'KFMuzzleFlash'(SecondaryMuzzleFlashTemplate);
+			SecondaryMuzzleFlash.AttachMuzzleFlash(MySkelMesh, 'MuzzleFlashAlt');
 		}
 	}
 }
@@ -627,11 +626,11 @@ defaultproperties
 	FiringStatesArray(DEFAULT_FIREMODE)=WeaponSingleFiring
 	WeaponFireTypes(DEFAULT_FIREMODE)=EWFT_Projectile
 	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Bullet_Pellet'
-	InstantHitDamage(DEFAULT_FIREMODE)=24.0 //25 //20
+	InstantHitDamage(DEFAULT_FIREMODE)=28.0 //25 //20
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_Shotgun_S12'
 	PenetrationPower(DEFAULT_FIREMODE)=2.0
 	FireInterval(DEFAULT_FIREMODE)=0.2 // 300 RPM
-	Spread(DEFAULT_FIREMODE)=0.08
+	Spread(DEFAULT_FIREMODE)=0.12
 	FireOffset=(X=30,Y=5,Z=-4)
 	NumPellets(DEFAULT_FIREMODE)=7
 

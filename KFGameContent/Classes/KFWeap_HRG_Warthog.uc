@@ -448,6 +448,7 @@ simulated function PrepareAndDetonate()
 		Detonate();
 	}
 
+	CurrentFireMode = DETONATE_FIREMODE;
 	IncrementFlashCount();
 
 	if( bInSprintState )

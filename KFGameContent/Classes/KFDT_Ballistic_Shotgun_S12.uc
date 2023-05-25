@@ -44,7 +44,7 @@ defaultproperties
 	//KDeathUpKick=120
 	//KDeathVel=10
 
-    StumblePower=5
+    StumblePower=10
 	GunHitPower=0
 	
 	ModifierPerkList(0)=class'KFPerk_Support'

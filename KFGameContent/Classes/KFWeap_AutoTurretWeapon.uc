@@ -464,7 +464,7 @@ defaultproperties
 	WeaponFireSnd(DEFAULT_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_LP_3P', FirstPersonCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_LP_1P')
 	WeaponFireLoopEndSnd(DEFAULT_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_EndLP_3P', FirstPersonCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shot_EndLP_1P')
 	
-	WeaponFireSnd(ALTFIRE_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shoot_3P', FirstPersonCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shoot_3P')
+	WeaponFireSnd(ALTFIRE_FIREMODE)=(DefaultCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shoot_3P', FirstPersonCue=AkEvent'WW_WEP_Autoturret.Play_WEP_AutoTurret_Shoot_1P')
 	SingleFireSoundIndex=ALTFIRE_FIREMODE
 
 	bLoopingFireSnd(DEFAULT_FIREMODE)=true

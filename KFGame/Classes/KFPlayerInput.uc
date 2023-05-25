@@ -2978,6 +2978,16 @@ exec function ToggleFriendlyUIFromHUD()
 	if( MyGFxHUD != none && MyGFxHUD.VoiceCommsWidget != none && MyGFxHUD.VoiceCommsWidget.bActive )
 	{
 		Outer.ToggleFriendlyUI();
+
+		MyGFxHUD.VoiceCommsWidget.SetToggleFriendlyButtonActive(true);
+	}
+}
+
+exec function ReleaseToggleFriendlyUIFromHUD()
+{
+	if( MyGFxHUD != none && MyGFxHUD.VoiceCommsWidget != none && MyGFxHUD.VoiceCommsWidget.bActive )
+	{
+		MyGFxHUD.VoiceCommsWidget.SetToggleFriendlyButtonActive(false);
 	}
 }
 

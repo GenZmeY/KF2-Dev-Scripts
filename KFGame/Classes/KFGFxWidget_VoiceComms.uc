@@ -220,6 +220,11 @@ function UpdateUICursorPosition(float newX, float newY, bool bMouseInput)
 	ActionScriptVoid("setNormalizedMousePosition");
 }
 
+function SetToggleFriendlyButtonActive(bool IsActive)
+{
+	ActionScriptVoid("toggleFriendlyActive");
+}
+
 DefaultProperties
 {
 	ControllerDampening=2.5f

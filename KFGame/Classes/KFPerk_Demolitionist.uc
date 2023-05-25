@@ -403,6 +403,31 @@ static function PrepareExplosive( Pawn ProjOwner, KFProjectile Proj, optional fl
 	}
 }
 
+static function GameExplosion PrepareDroneExplosion(KFPawn Turret, optional float AuxRadiusMod = 1.0f, optional float AuxDmgMod = 1.0f )
+{
+	local KFPlayerReplicationInfo InstigatorPRI;
+	local GameExplosion ExplosionTemplate;
+
+	ExplosionTemplate = None;
+
+	if (Turret.WorldInfo.TimeDilation < 1.f)
+    {
+		InstigatorPRI = KFPlayerReplicationInfo( Turret.Instigator.PlayerReplicationInfo );
+		if( InstigatorPRI != none )
+		{
+			if( InstigatorPRI.bNukeActive )
+			{
+				ExplosionTemplate = class'KFPerk_Demolitionist'.static.GetNukeExplosionTemplate();
+				ExplosionTemplate.Damage = ExplosionTemplate.default.Damage * class'KFPerk_Demolitionist'.static.GetNukeDamageModifier() * AuxDmgMod;
+				ExplosionTemplate.DamageRadius = ExplosionTemplate.default.DamageRadius * class'KFPerk_Demolitionist'.static.GetNukeRadiusModifier() * AuxRadiusMod;
+				ExplosionTemplate.DamageFalloffExponent = ExplosionTemplate.default.DamageFalloffExponent;
+			}
+		}
+    }
+
+	return ExplosionTemplate;
+}
+
 simulated function float GetAoERadiusModifier()
 {
 	local float RadiusModifier;

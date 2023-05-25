@@ -12179,7 +12179,6 @@ simulated function ClearShotgunJumpFlag()
 exec function ToggleFriendlyUI()
 {
 	bFriendlyUIEnabled = !bFriendlyUIEnabled;
-	`Log("Toggle Friendly UI " $bFriendlyUIEnabled);
 }
 
 defaultproperties
