@@ -257,6 +257,8 @@ function UpdateCraftButtons()
 
 function OnOpen()
 {
+	class'GameEngine'.static.GetPlayfabInterface().ReadInventory();
+
 	//@SABER_EGS IsEosBuild() case added
 	if( class'WorldInfo'.static.IsConsoleBuild() || class'WorldInfo'.static.IsEosBuild() )
 	{
@@ -410,6 +412,24 @@ function InitInventory()
 		// If there is no OnlineSubsystem just send an empty array.  HSL_BB
 		SetObject("inventoryList", ItemArray);
 		return;
+	}
+
+	if (class'WorldInfo'.static.IsConsoleBuild() || class'WorldInfo'.static.IsEosBuild() )
+	{
+		if (OnlineSub.CurrentInventory.Length == 0)
+		{
+			SetObject("inventoryList", ItemArray);
+			return;		
+		}
+	}
+	else
+	{
+		if (!OnlineSub.bInventoryReady)
+		{
+			// If the inventory is not ready just send an empty array.
+			SetObject("inventoryList", ItemArray);
+			return;		
+		}
 	}
 
 	// While reading from the profile we also order by type, then we might want to order again some stuff that's inside the same item type later

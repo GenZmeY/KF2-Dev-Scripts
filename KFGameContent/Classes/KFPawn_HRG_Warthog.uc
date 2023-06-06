@@ -680,6 +680,10 @@ simulated state Detonate
         local float Angle, FuseTime;
         local KFProj_HighExplosive_HRG_Warthog Projectile;
         local array<float> FuseTimes;
+        local GameExplosion ExplosionToUse;
+        local KFPawn PawnInstigator;
+        local KFPerk Perk;
+        local float OriginalDamageRadiusDroneExplosion;
 
         // Shoot grenades around
 
@@ -748,7 +752,24 @@ simulated state Detonate
             ExploActor.Instigator = Instigator;
             ExploActor.bIgnoreInstigator = true;
 
-            ExploActor.Explode(PrepareExplosionTemplate());
+            ExplosionToUse = PrepareExplosionTemplate();
+
+            OriginalDamageRadiusDroneExplosion = ExplosionToUse.DamageRadius;
+
+            PawnInstigator = KFPawn(Instigator);
+            if (PawnInstigator != None)
+            {
+                Perk = PawnInstigator.GetPerk();
+                if (Perk != None)
+                {
+                    ExplosionToUse.DamageRadius = OriginalDamageRadiusDroneExplosion * Perk.GetAoERadiusModifier();
+                }
+            }
+
+            ExploActor.Explode(ExplosionToUse);
+
+            // Revert to original
+            ExplosionToUse.DamageRadius = OriginalDamageRadiusDroneExplosion;
         }
 
         Destroy();
@@ -1191,9 +1212,7 @@ simulated function ClearFlashCount(Weapon InWeapon)
 simulated function GameExplosion PrepareExplosionTemplate()
 {
     local KFPawn PawnInstigator;
-    local KFPerk Perk;
     local GameExplosion NewTemplate;
-
 
     PawnInstigator = KFPawn(Instigator);
     if (PawnInstigator != None)
@@ -1203,12 +1222,6 @@ simulated function GameExplosion PrepareExplosionTemplate()
         if (NewTemplate == None)
         {
             NewTemplate = default.ExplosionTemplate;
-        }
-
-        Perk = PawnInstigator.GetPerk();
-        if (Perk != None)
-        {
-            NewTemplate.DamageRadius *= Perk.GetAoERadiusModifier();
         }
     }
 
