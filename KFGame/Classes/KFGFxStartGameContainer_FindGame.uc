@@ -194,7 +194,7 @@ function FillWhatsNew()
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Spring_Armory_Season_Pass", "ArmorySeasonPass", "https://store.steampowered.com/app/1524820/Killing_Floor_2__Armory_Season_Pass");
     WhatsNewItems.AddItem(item);
 // KF2 Armory Season Pass 2023
-     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2023_CosmeticsSeasonPass", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9661");
+     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2023_CosmeticsSeasonPass", "FeaturedItemBundle", "https://store.steampowered.com/app/2363410/Killing_Floor_2__Cosmetics_Season_Pass");
      WhatsNewItems.AddItem(item);
 // Featured Weapon
     item = SetWhatsNewItem("img://UI_WhatsNew.UI_WhatsNew_Summer2023_S12Shockgun", "FeaturedItemBundle", "https://store.steampowered.com/buyitem/232090/9655");

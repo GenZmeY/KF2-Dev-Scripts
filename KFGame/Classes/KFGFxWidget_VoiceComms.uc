@@ -52,8 +52,6 @@ function SetLocalizedText()
 	TempObj = CreateObject("Object");
 	TempObj.SetString("text", class'KFLocalMessage_VoiceComms'.default.ToggleFriendlyHUDString);
 	SetObject("toggleFriendlyText", TempObj);
-
-	SetBool("toggleFriendlyVisibility", GetPC().WorldInfo.NetMode != NM_StandAlone);
 }
 
 function SaveVoiceCommSelection( int CommsIndex )
@@ -73,6 +71,8 @@ function EnableComm()
 	DeselectTime = 0.f;
 	bPlayedVoiceComm = false;
 	SavedSelectionIndex = -1;
+
+	SetBool("toggleFriendlyVisibility", GetPC().WorldInfo.NetMode != NM_StandAlone && GetUsingGamepad());
 
 	//Don't allow the user to open voice comms if they are dead. 
 	if(!PC.IsDead() && PC.Pawn != none)
@@ -223,6 +223,22 @@ function UpdateUICursorPosition(float newX, float newY, bool bMouseInput)
 function SetToggleFriendlyButtonActive(bool IsActive)
 {
 	ActionScriptVoid("toggleFriendlyActive");
+}
+
+/** Return whether the player input says we are currently using the gamepad */
+function bool GetUsingGamepad()
+{
+	if( class'WorldInfo'.static.IsConsoleBuild() )
+	{
+		return true;
+	}
+
+    if ( PC == none || PC.PlayerInput == none )
+	{
+		return false;
+	}
+	// Always using the gamepad if we are on console.
+    return PC.PlayerInput.bUsingGamepad;
 }
 
 DefaultProperties

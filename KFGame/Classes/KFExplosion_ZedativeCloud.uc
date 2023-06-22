@@ -52,8 +52,6 @@ simulated event ReplicatedEvent(name VarName)
  **/
 simulated function Explode(GameExplosion NewExplosionTemplate, optional vector Direction)
 {
-	Super.Explode( NewExplosionTemplate, Direction );
-
 	if (Role == Role_Authority)
 	{
 		ExplosionDelay = class'KFPerk_FieldMedic'.static.GetZedativeExplosionDelay();
@@ -67,6 +65,8 @@ simulated function Explode(GameExplosion NewExplosionTemplate, optional vector D
 
 		ReplicatedExploTemplate = NewExplosionTemplate;
 	}
+
+	Super.Explode( NewExplosionTemplate, Direction );
 }
 
 /**
