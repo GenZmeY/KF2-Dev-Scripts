@@ -102,4 +102,8 @@ DefaultProperties
 	// AI / Navigation
 	//DebugRange_Melee_Material=Material'ENG_EditorResources_MAT.Debug_Radius_M'
 	RotationRate=(Pitch=50000,Yaw=30000,Roll=50000)
+
+	// Only used in Volter Castle for now when the spawn volume has bForceUseMapReplacePawn set to true
+	// If we need to reuse it more we'll have to connect map to zed here
+	MapReplacePawnClass.Add(class'KFPawn_ZedHansClot')
 }

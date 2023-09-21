@@ -22,7 +22,6 @@ var private	const PerkSkill					WeaponSwitchSpeed;
 var private const float						RapidAssaultFiringRate;    			// Faster firing rate in %  NOTE:This is needed for combinations with the Skill: RapidAssault (Stumble Power and Rate)
 var private const float 					SnarePower;
 var private const float 					TacticalMovementBobDamp;
-var private const class<KFWeaponDefinition>	BackupSecondaryWeaponDef;
 var private const float 				    TacticalMovementModifier;           // QoL: Tactical movement - Added modifier to move and sprint speed.  
 
 /** Percentage of how much armor should be damaged when the heavy armor skill is active */
@@ -59,6 +58,8 @@ enum ESWATPerkSkills
 	ESWAT_SWATEnforcer,
 	ESWAT_RapidAssault
 };
+
+var private const array<class<KFWeaponDefinition> > SecondaryDualWeaponPaths;
 
 replication
 {
@@ -107,12 +108,6 @@ function ApplySkillsToPawn()
 simulated event float GetZedTimeSpeedScale()
 {
 	return IsSWATEnforcerActive() ? SWATEnforcerZedTimeSpeedScale : 1.f;
-}
-
-/* Returns the secondary weapon's class path for this perk */
-simulated function string GetSecondaryWeaponClassPath()
-{
-	return IsBackupActive() ? BackupSecondaryWeaponDef.default.WeaponClassPath : SecondaryWeaponDef.default.WeaponClassPath;
 }
 
 /*********************************************************************************************
@@ -279,7 +274,8 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 	if( KFW != none )
 	{
 		// KFDT_Bludgeon_Doshinegun_Shot is a special case of Bludgeon damage that doesn't apply this mod.
-		if( IsBackupActive() && (IsBackupWeapon( KFW ) || IsDual9mm( KFW ) || ShouldAffectBackupToDamage(KFW, DamageType)))
+		if( IsBackupActive()
+			&& (IsBackupWeapon( KFW ) || IsDual9mm( KFW ) || IsHRG93R( KFW ) || ShouldAffectBackupToDamage(KFW, DamageType)))
 		{
 			`QALog( "Backup Damage" @ KFW @ GetPercentage( InDamage, InDamage * GetSkillValue(PerkSkills[ESWAT_Backup])), bLogPerk );
 			TempDamage += InDamage * GetSkillValue( PerkSkills[ESWAT_Backup] );
@@ -700,12 +696,27 @@ simulated static function GetPassiveStrings( out array<string> PassiveValues, ou
 	Increments[4] = "";
 }
 
+simulated function string GetSecondaryWeaponClassPath()
+{
+	if (IsBackupActive())
+	{
+		return SecondaryDualWeaponPaths[StartingSecondaryWeaponClassIndex].default.WeaponClassPath;
+	}
+	else
+	{
+		return SecondaryWeaponPaths[StartingSecondaryWeaponClassIndex].default.WeaponClassPath;
+	}
+}
+
 DefaultProperties
 {
 	PerkIcon=Texture2D'UI_PerkIcons_TEX.UI_PerkIcon_SWAT'
 
 	PrimaryWeaponDef=class'KFWeapDef_MP7'
-   	BackupSecondaryWeaponDef=class'KFWeapDef_9mmDual'
+
+	SecondaryDualWeaponPaths(0)=class'KFWeapDef_9mmDual'
+   	SecondaryDualWeaponPaths(1)=class'KFWeapDef_HRG_93R_Dual'
+
 	KnifeWeaponDef=class'KFweapDef_Knife_SWAT'
 	GrenadeWeaponDef=class'KFWeapDef_Grenade_SWAT'
 

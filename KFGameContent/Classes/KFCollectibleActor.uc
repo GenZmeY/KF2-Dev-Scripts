@@ -19,6 +19,7 @@ var private bool bFound;
 protected event TriggerDestroyedEvent( Controller EventInstigator )
 {
 	local KFMapInfo KFMI;
+	local KFPlayerController KFPC;
 
 	super.TriggerDestroyedEvent( EventInstigator );
 
@@ -27,6 +28,12 @@ protected event TriggerDestroyedEvent( Controller EventInstigator )
 	{
 		bFound = true;
 		KFMI.OnCollectibleFound( self, EventInstigator );
+
+		KFPC = KFPlayerController(EventInstigator);
+		If (KFPC != none)
+		{
+			KFPC.AddCollectibleFound(KFMI.CollectiblesToFind);
+		}
 	}
 
 	// Used on network to tell clients who join late that this collectible is destroyed

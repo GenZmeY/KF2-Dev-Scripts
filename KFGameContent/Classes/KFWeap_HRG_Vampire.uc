@@ -316,7 +316,7 @@ simulated function bool ShouldAutoReload(byte FireModeNum)
 
 static simulated event EFilterTypeUI GetTraderFilter()
 {
-	return FT_Electric;
+	return FT_Projectile;
 }
 
 
@@ -1372,4 +1372,6 @@ defaultproperties
 	BloodSplashClass=KFProj_BloodSplash
 
 	NumBloodStolenParticlesForPool = 15
+
+	bForceCrosshair=true
 }

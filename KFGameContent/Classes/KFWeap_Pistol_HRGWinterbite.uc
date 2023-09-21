@@ -9,11 +9,6 @@
 
 class KFWeap_Pistol_HRGWinterbite extends KFWeap_PistolBase;
 
-static simulated event EFilterTypeUI GetAltTraderFilter()
-{
-    return FT_Flame;
-}
-
 defaultproperties
 {
 	// Content

@@ -24,6 +24,14 @@ static function bool Taunt( KFAIController AI, optional Pawn inTauntTarget, opti
 
 	if( AI != None )
 	{
+		if (AI.MyKFPawn != none)
+		{
+			if (AI.MyKFPawn.bIsBountyHuntObjective)
+			{
+				return false;
+			}
+		}
+
 		Cmd = new(AI) default.class;
 		if( Cmd != None )
 		{

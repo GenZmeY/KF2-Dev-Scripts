@@ -14,7 +14,7 @@ DefaultProperties
 	WeaponClassPath="KFGameContent.KFWeap_AssaultRifle_Thompson"
 
 	BuyPrice=650 //650
-	AmmoPricePerMag=50
+	AmmoPricePerMag=45 // 50
 	ImagePath="WEP_UI_TommyGun_TEX.UI_WeaponSelect_TommyGun"
 
 

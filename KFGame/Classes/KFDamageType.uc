@@ -363,6 +363,11 @@ static function int GetDamageeDialogID()
 	return INDEX_NONE;
 }
 
+/** Called when damage is dealt to apply additional instant damage */
+static function ModifyInstantDamage( KFPawn Victim, out int DamageTaken, optional Controller InstigatedBy )
+{
+}
+
 /** Called when damage is dealt to apply additional damage type (e.g. Damage Over Time) */
 static function ApplySecondaryDamage( KFPawn Victim, int DamageTaken, optional Controller InstigatedBy )
 {

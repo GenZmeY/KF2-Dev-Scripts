@@ -33,6 +33,7 @@ var localized array<string> PermissionStrings;
 var localized array<string> ConsolePermissionStrings;
 var localized array<string> ModeStrings;
 var localized array<string> AllowSeasonalSkinsStrings;
+var localized array<string> WeeklySelectorStrings;
 
 var localized string TeamSwappedString;
 var localized string NoPreferenceString;
@@ -200,9 +201,24 @@ static function string GetAllowSeasonalSkinsString( float Index )
  	return default.NoPreferenceString;
 }
 
+static function string GetWeeklySelectorString( float Index )
+{
+	if( 0 < default.WeeklySelectorStrings.length && Index < default.WeeklySelectorStrings.length )
+	{
+		return default.WeeklySelectorStrings[Index];
+	}
+
+ 	return default.NoPreferenceString;
+}
+
 static function array<string> GetAllowSeasonalSkinsStringsArray()
 {
 	return default.AllowSeasonalSkinsStrings;
+}
+
+static function array<string> GetWeeklySelectorStringsArray()
+{
+	return default.WeeklySelectorStrings;
 }
 
 static function array<string> GetGameModeStringsArray()

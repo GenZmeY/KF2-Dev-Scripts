@@ -414,7 +414,10 @@ function StartHealRecharge()
 	if (Role == ROLE_Authority)
 	{
 		InstigatorPerk = GetPerk();
-		UsedHealRechargeTime = HealFullRechargeSeconds * static.GetUpgradeHealRechargeMod(CurrentWeaponUpgradeIndex);
+
+		UsedHealRechargeTime = HealFullRechargeSeconds;
+		UsedHealRechargeTime *= static.GetUpgradeHealRechargeMod(CurrentWeaponUpgradeIndex);
+		UsedHealRechargeTime *= InstigatorPerk.GetHealRechargeMod();
 
 		InstigatorPerk.ModifyHealerRechargeTime(UsedHealRechargeTime);
 		// Set the healing recharge rate whenever we start charging
@@ -1071,7 +1074,7 @@ defaultproperties
 	WeaponFireTypes(ALTFIRE_FIREMODE)=EWFT_Projectile
 	WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_HealingDart_MedicBase'
 	FireInterval(ALTFIRE_FIREMODE)=+0.175
-	InstantHitDamage(ALTFIRE_FIREMODE)=0	//Acidic compound skill can adjust that
+	InstantHitDamage(ALTFIRE_FIREMODE)=5
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Dart_Toxic'
 	Spread(ALTFIRE_FIREMODE)=0.015
 	AmmoCost(ALTFIRE_FIREMODE)=40

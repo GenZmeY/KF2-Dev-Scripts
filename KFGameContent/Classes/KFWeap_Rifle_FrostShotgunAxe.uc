@@ -16,7 +16,12 @@ var int iNormalInstantHitDamage;
 /** Returns trader filter index based on weapon type */
 static simulated event EFilterTypeUI GetTraderFilter()
 {
-	return FT_Rifle;
+	return FT_Shotgun;
+}
+
+static simulated event EFilterTypeUI GetAltTraderFilter()
+{
+	return FT_Melee;
 }
 
 simulated event PreBeginPlay()

@@ -299,7 +299,7 @@ simulated function IncrementChargeAndPlayAnimation()
 /** Returns trader filter index based on weapon type */
 static simulated event EFilterTypeUI GetTraderFilter()
 {
-	return FT_Explosive;
+	return FT_Projectile;
 }
 
 simulated function float GetForceReloadDelay()

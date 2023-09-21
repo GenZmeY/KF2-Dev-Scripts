@@ -971,8 +971,8 @@ defaultproperties
 {
 	FlameSprayArchetype = SprayActor_Flame'WEP_Laser_Cutter_ARCH.WEP_Laser_Cutter_Flame'
 
-	ChargeTimePerLevel = 1.0f;
-	ChargeConsumeTime = 0.12f; //Consumes 25 on full charge
+	ChargeTimePerLevel = 0.7f;
+	ChargeConsumeTime = 0.082f; //Consumes 25 on full charge
 	OverchargeConsumeTime = 0; //Setting to 0 or below deactivates ammo consumption while holding a charge
 
 	// Shooting Animations
@@ -1002,7 +1002,7 @@ defaultproperties
 
 	// Ammo
 	MagazineCapacity[0] = 50
-	SpareAmmoCapacity[0] = 300
+	SpareAmmoCapacity[0] = 450
 	InitialSpareMags[0] = 1
 	bCanBeReloaded = true
 	bReloadFromMagazine = true
@@ -1039,7 +1039,7 @@ defaultproperties
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_LazerCutter'
 	FireInterval(DEFAULT_FIREMODE)=+0.0857 // 700 RPM
 	Spread(DEFAULT_FIREMODE)=0.015
-	InstantHitDamage(DEFAULT_FIREMODE)=50.0
+	InstantHitDamage(DEFAULT_FIREMODE)=55.0
 	FireOffset=(X=30,Y=4.5,Z=-5)
 	AmmoCost(DEFAULT_FIREMODE)=1
 
@@ -1116,11 +1116,11 @@ defaultproperties
 
 	ChargingRotationSpeedLimit = 0.f;
 	ChargingMovementSpeedModifier = 1.f;
-	FiringRotationSpeedLimit(0)=420.f;
-	FiringRotationSpeedLimit(1)=240.f;
-	FiringRotationSpeedLimit(2)=180.f;
-	FiringRotationSpeedLimit(3)=120.f;
-	FiringMovementSpeedModifier=0.75f;
+	FiringRotationSpeedLimit(0)=900.f;
+	FiringRotationSpeedLimit(1)=800.f;
+	FiringRotationSpeedLimit(2)=700.f;
+	FiringRotationSpeedLimit(3)=600.f;
+	FiringMovementSpeedModifier=1f;
 
 	MaxRotationAdjustmentTime = 0.25f;
 	RotationAdjustmentCurve = { (Points = ((InVal = 0.000000,OutVal = 120.0f),

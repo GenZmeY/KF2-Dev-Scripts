@@ -164,7 +164,7 @@ simulated function bool ShouldAutoReload(byte FireModeNum)
 
 static simulated event EFilterTypeUI GetTraderFilter()
 {
-	return FT_Electric;
+	return FT_Flame;
 }
 
 defaultproperties

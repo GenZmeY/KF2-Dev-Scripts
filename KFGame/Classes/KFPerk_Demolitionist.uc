@@ -1042,6 +1042,7 @@ DefaultProperties
 	InteractIcon=Texture2D'UI_World_TEX.Demolitionist_Supplier_HUD'
 
 	PrimaryWeaponDef=class'KFWeapDef_HX25'
+
 	KnifeWeaponDef=class'KFWeapDef_Knife_Demo'
 	GrenadeWeaponDef=class'KFWeapDef_Grenade_Demo'
 

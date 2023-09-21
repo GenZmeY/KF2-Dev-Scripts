@@ -15,7 +15,7 @@ DefaultProperties
 	WeaponClassPath="KFGameContent.KFWeap_SMG_Kriss"
 
 	BuyPrice=1500
-	AmmoPricePerMag=35 //35
+	AmmoPricePerMag=31 //35
 	ImagePath="WEP_UI_KRISS_TEX.UI_WeaponSelect_KRISS"
 
 	EffectiveRange=70

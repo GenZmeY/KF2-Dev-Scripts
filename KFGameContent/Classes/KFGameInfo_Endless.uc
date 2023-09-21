@@ -506,7 +506,7 @@ function ReduceDamage(out int Damage, Pawn Injured, Controller InstigatedBy, vec
 
 function StartOutbreakRound(int OutbreakIdx)
 {
-	OutbreakEvent.SetActiveEvent(OutbreakIdx);
+	OutbreakEvent.SetActiveEvent(OutbreakIdx, self);
 	OutbreakEvent.UpdateGRI();
 	OutbreakEvent.SetWorldInfoOverrides();
 

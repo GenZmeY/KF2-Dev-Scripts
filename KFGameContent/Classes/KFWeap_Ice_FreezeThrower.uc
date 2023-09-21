@@ -148,7 +148,7 @@ simulated function SetPilotDynamicLightEnabled( bool bLightEnabled );
 
 static simulated event EFilterTypeUI GetTraderFilter()
 {
-	return FT_Electric;
+	return FT_Flame;
 }
 
 defaultproperties

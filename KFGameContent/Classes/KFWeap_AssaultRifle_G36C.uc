@@ -44,6 +44,11 @@ simulated function AttachLaserSight()
 	}
 }
 
+static simulated event EFilterTypeUI GetTraderFilter()
+{
+	return FT_Assault;
+}
+
 defaultproperties
 {
 	bHasFireLastAnims=true

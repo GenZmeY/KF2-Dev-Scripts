@@ -149,9 +149,10 @@ var	const 	bool				bInitialized;
 * Inventory
 ********************************************************************************************* */
 
+var byte StartingSecondaryWeaponClassIndex;
+
 /** The weapon class string used to load the weapon class for this perk */
 var class<KFWeaponDefinition> PrimaryWeaponDef;
-var class<KFWeaponDefinition> SecondaryWeaponDef;
 
 /** default starting knife */
 var class<KFWeaponDefinition> KnifeWeaponDef;
@@ -172,6 +173,8 @@ var int							MaxGrenadeCount;
 var array<name>	BackupWeaponDamageTypeNames;
 
 var array<class<KFWeaponDefinition> > AutoBuyLoadOutPath;
+
+var const array<class<KFWeaponDefinition> > SecondaryWeaponPaths;
 
 /*********************************************************************************************
 * Player Skill Trakcing
@@ -502,7 +505,12 @@ static simulated public function bool IsSyringe( KFWeapon KFW )
  */
 static function bool IsDual9mm( KFWeapon KFW )
 {
-	return KFW != none && KFW.Class.Name == 'KFWeap_Pistol_Dual9mm';
+	return KFW != none && (KFW.Class.Name == 'KFWeap_Pistol_Dual9mm' || KFW.Class.Name == 'KFWeap_HRG_93R_Dual');
+}
+
+static function bool IsHRG93R(KFWeapon KFW)
+{
+	return KFW != none && (KFW.Class.Name == 'KFWeap_HRG_93R' || KFW.Class.Name == 'KFWeap_HRG_93R_Dual');
 }
 
 /**
@@ -1125,12 +1133,6 @@ simulated function string GetPrimaryWeaponClassPath()
     return PrimaryWeaponDef.default.WeaponClassPath;
 }
 
-/* Returns the secondary weapon's class path for this perk */
-simulated function string GetSecondaryWeaponClassPath()
-{
-    return SecondaryWeaponDef.default.WeaponClassPath;
-}
-
 /* Returns the knife's class path for this perk */
 simulated function string GetKnifeWeaponClassPath()
 {
@@ -1314,6 +1316,7 @@ native function bool CanRepairDoors();
 function bool RepairArmor( Pawn HealTarget );
 function bool IsToxicDmgActive() { return false; }
 static function class<KFDamageType> GetToxicDmgTypeClass(){ return default.ToxicDmgTypeClass; }
+static function float GetHealRechargeMod();
 static function ModifyToxicDmg( out int ToxicDamage );
 simulated function float GetSirenScreamStrength(){ return 1.f; }
 simulated function bool IsHealingSurgeActive(){ return false; }
@@ -1633,6 +1636,11 @@ static simulated function bool CanChoosePrimaryWeapon()
 	return false;
 }
 
+static simulated function bool CanChooseSecondaryWeapon()
+{
+	return true;
+}
+
 static simulated function bool CanChooseGrenade()
 {
 	return false;
@@ -1642,9 +1650,10 @@ simulated function byte OnPrevWeaponSelected()  { return 255; }
 simulated function byte OnNextWeaponSelected()  { return 255; }
 simulated function byte OnPrevGrenadeSelected() { return 255; }
 simulated function byte OnNextGrenadeSelected() { return 255; }
-simulated function byte SetWeaponSelectedIndex(byte idx);
-simulated function byte SetGrenadeSelectedIndex(byte idx);
-simulated function byte SetGrenadeSelectedIndexUsingSkills(byte idx, byte InSelectedSkills[`MAX_PERK_SKILLS], bool IsChoosingPrev, bool IsChoosingNext);
+simulated static function byte GetWeaponSelectedIndex(byte idx);
+simulated function SetWeaponSelectedIndex(byte idx);
+simulated function SetGrenadeSelectedIndex(byte idx);
+simulated static function byte GetGrenadeSelectedIndexUsingSkills(byte idx, byte InSelectedSkills[`MAX_PERK_SKILLS], bool IsChoosingPrev, bool IsChoosingNext);
 simulated function byte GetGrenadeSelectedIndex() { return 255;}
 simulated function InitializeGrenades();
 
@@ -1666,7 +1675,69 @@ static simulated function string GetGrenadeWeaponName(byte Idx)
 static simulated function string GetGrenadeWeaponImagePath(byte Idx)
 {
 	return default.GrenadeWeaponDef.static.GetImagePath();
-} 
+}
+
+simulated function string GetSecondaryWeaponClassPath()
+{
+	return SecondaryWeaponPaths[StartingSecondaryWeaponClassIndex].default.WeaponClassPath;
+}
+
+simulated function byte OnPrevSecondaryWeaponSelected()
+{	
+	if (StartingSecondaryWeaponClassIndex == 0)
+	{
+		StartingSecondaryWeaponClassIndex = SecondaryWeaponPaths.Length - 1;
+	}
+	else
+	{
+		--StartingSecondaryWeaponClassIndex;
+	}
+
+	SetSecondaryWeaponSelectedIndex(StartingSecondaryWeaponClassIndex);
+
+	return StartingSecondaryWeaponClassIndex;
+}
+
+simulated function byte OnNextSecondaryWeaponSelected()
+{
+	StartingSecondaryWeaponClassIndex = (StartingSecondaryWeaponClassIndex + 1) % SecondaryWeaponPaths.Length;
+	
+	SetSecondaryWeaponSelectedIndex(StartingSecondaryWeaponClassIndex);
+
+	return StartingSecondaryWeaponClassIndex;
+}
+
+static simulated function string GetSecondaryWeaponName(byte Idx)
+{
+	return Idx >= default.SecondaryWeaponPaths.Length ? default.SecondaryWeaponPaths[0].static.GetItemName() : default.SecondaryWeaponPaths[Idx].static.GetItemName();
+}
+
+static simulated function string GetSecondaryWeaponImagePath(byte Idx)
+{
+	return Idx >= default.SecondaryWeaponPaths.Length ? default.SecondaryWeaponPaths[0].static.GetImagePath() : default.SecondaryWeaponPaths[Idx].static.GetImagePath();
+}
+
+simulated static function byte GetSecondaryWeaponSelectedIndex(byte idx)
+{
+	if (idx >= default.SecondaryWeaponPaths.Length)
+	{
+		return 0;
+	}
+	
+	return idx;
+}
+
+simulated function SetSecondaryWeaponSelectedIndex(byte idx)
+{
+	StartingSecondaryWeaponClassIndex = GetSecondaryWeaponSelectedIndex(idx);
+
+	ServerUpdateCurrentSecondaryWeapon(StartingSecondaryWeaponClassIndex);
+}
+
+reliable server function ServerUpdateCurrentSecondaryWeapon(byte Value)
+{
+	StartingSecondaryWeaponClassIndex = Value;
+}
 
 DefaultProperties
 {
@@ -1692,6 +1763,7 @@ DefaultProperties
 
 	BackupWeaponDamageTypeNames(0)="KFDT_Ballistic_9mm";
 	BackupWeaponDamageTypeNames(1)="KFDT_Slashing_Knife";
+	StartingSecondaryWeaponClassIndex=0;
 
 	// network
 	RemoteRole=ROLE_SimulatedProxy
@@ -1700,9 +1772,11 @@ DefaultProperties
 	bOnlyRelevantToOwner=TRUE
 
 	// weapon content
-	SecondaryWeaponDef=class'KFWeapDef_9mm'
 	KnifeWeaponDef=class'KFWeapDef_Knife_Commando'
 	GrenadeWeaponDef=class'KFWeapDef_Grenade_Berserker'
+
+	SecondaryWeaponPaths(0)=class'KFWeapDef_9mm'
+   	SecondaryWeaponPaths(1)=class'KFWeapDef_HRG_93R'
 
 	InitialGrenadeCount=2
 	MaxGrenadeCount=5

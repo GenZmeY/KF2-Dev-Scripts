@@ -13,7 +13,7 @@ dependson(KFUnlockManager);
 
 
 var KFGFxMenu_StartGame StartMenu;
-var byte LastDifficultyIndex, LastLengthIndex, LastPrivacyIndex, LastAllowSeasonalSkinsIndex;
+var byte LastDifficultyIndex, LastLengthIndex, LastPrivacyIndex, LastAllowSeasonalSkinsIndex, LastWeeklySelectorIndex;
 
 var localized string OverviewString;
 var localized string ChangeString;
@@ -124,6 +124,15 @@ function LocalizeContainer()
 	}
 
 	LocalizedObject.SetObject("allowSeasonalSkinsOptions", DataProvider);
+
+	for (i = 0; i < class'KFCommon_LocalizedStrings'.static.GetWeeklySelectorStringsArray().length; i++)
+	{
+		TempObj = CreateObject("Object");
+		TempObj.SetString("label", class'KFCommon_LocalizedStrings'.static.GetWeeklySelectorString(i));
+		DataProvider.SetElementObject(i, TempObj);
+	}
+
+	LocalizedObject.SetObject("weeklySelectorOptions", DataProvider);
 
 	if( !class'WorldInfo'.static.IsMenuLevel() )
 	{
@@ -350,12 +359,17 @@ function UpdateAllowSeasonalSkins(string AllowSeasonalStrings)
 	SetString("allowSeasonalSkinsText", AllowSeasonalStrings);
 }
 
+function UpdateWeeklySelector(string WeeklySelectorStrings)
+{
+	SetString("weeklySelectorText", WeeklySelectorStrings);
+}
+
 function UpdateOverviewInGame()
 {
 	local KFGameReplicationInfo KFGRI;
 	local string GameDifficultyString;
 	local Float CurrentGameDifficulty;
-	local int CurrentLengthIndex, CurrentPrivacyIndex, CurrentAllowSeasonalSkinsIndex;
+	local int CurrentLengthIndex, CurrentPrivacyIndex, CurrentAllowSeasonalSkinsIndex, CurrentWeeklySelectorIndex;
 	local bool bCustomDifficulty;
 	local bool bCustomLength;
 
@@ -427,6 +441,13 @@ function UpdateOverviewInGame()
 				UpdateAllowSeasonalSkins( class'KFCommon_LocalizedStrings'.static.GetAllowSeasonalSkinsString(CurrentAllowSeasonalSkinsIndex) );
 				LastAllowSeasonalSkinsIndex = CurrentAllowSeasonalSkinsIndex;
 			}
+
+			CurrentWeeklySelectorIndex = StartMenu.OptionsComponent.GetWeeklySelectorIndex();
+			if (LastWeeklySelectorIndex != CurrentWeeklySelectorIndex)
+			{
+				UpdateWeeklySelector( class'KFCommon_LocalizedStrings'.static.GetWeeklySelectorString(CurrentWeeklySelectorIndex) );
+				LastWeeklySelectorIndex = CurrentWeeklySelectorIndex;
+			}
 		}
     }
 }
@@ -448,6 +469,7 @@ DefaultProperties
 	LastLengthIndex=255
 	LastDifficultyIndex=255
 	LastAllowSeasonalSkinsIndex=255
+	LastWeeklySelectorIndex=255
 
 	ObjectiveClassName=KFGameInfo_Objective
 }

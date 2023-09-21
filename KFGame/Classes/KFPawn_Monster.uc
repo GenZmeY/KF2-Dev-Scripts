@@ -42,6 +42,8 @@ var transient bool bArchLoaded;
 var const array<int> EliteAIType; // can't use EAIType enumerator, use integer instead
 var const array<class<KFPawn_Monster> > ElitePawnClass;
 
+var const array<class<KFPawn_Monster> > MapReplacePawnClass;
+
 /** Custom third person camera offsets */
 var() ViewOffsetData	ThirdPersonViewOffset;
 
@@ -579,6 +581,11 @@ var ParticleSystem WeakPointParticleTemplate;
 var bool  bCanBeKilledByShrinking;
 var float ShrinkEffectModifier;
 
+// Bounty Hunt
+var bool bIsBountyHuntObjective;
+var bool bIsBountyHuntOnLastTier;
+var bool bIsBountyHuntBlockLeaveMap;
+
 /*********************************************************************************************
  * @name	Delegates
 ********************************************************************************************* */
@@ -593,7 +600,8 @@ replication
 	if (bNetDirty)
 		bIsHeadless, bIsPoisoned, bPlayPanicked, bPlayShambling, MaxHeadChunkGoreWhileAlive,
 		RepInflateMatParams, RepInflateMatParam, RepDamageInflateParam, RepBleedInflateMatParam, bDisableGoreMeshWhileAlive,
-        bDisableHeadless, InflateDeathGravity, InflationExplosionTimer, bUseDamageInflation, bUseExplosiveDeath, WeakPoints_TS;
+        bDisableHeadless, InflateDeathGravity, InflationExplosionTimer, bUseDamageInflation, bUseExplosiveDeath, WeakPoints_TS,
+		bIsBountyHuntObjective, bIsBountyHuntOnLastTier, bIsBountyHuntBlockLeaveMap;
 	if ( bNetDirty && bCanCloak )
 		bIsCloakingSpottedByTeam;
 	if ( bNetDirty && bCanRage )
@@ -699,7 +707,12 @@ simulated event ReplicatedEvent(name VarName)
 	case nameof(WeakPoints_TS):
 		SpawnWeakpointVFX();
 		break;
+	case nameof(bIsBountyHuntOnLastTier):
+		break;
+	case nameof(bIsBountyHuntBlockLeaveMap):
+		break;
 	}
+	
 
 	super.ReplicatedEvent( VarName );
 }
@@ -763,6 +776,16 @@ static event class<KFPawn_Monster> GetAIPawnClassToSpawn()
 		{
 			return default.ElitePawnClass[Rand(default.ElitePawnClass.length)];
 		}
+	}
+
+	return default.class;
+}
+
+static event class<KFPawn_Monster> GetAIPawnClassToReplaceMapSpawn()
+{
+	if (default.MapReplacePawnClass.length > 0)
+	{
+		return default.MapReplacePawnClass[Rand(default.MapReplacePawnClass.length)];
 	}
 
 	return default.class;
@@ -848,6 +871,11 @@ simulated event CheckShouldAlwaysBeRelevant()
 	// Set to always relevant if we're the last few remaining
 	KFGRI = KFGameReplicationInfo( WorldInfo.GRI );
 	if( KFGRI != none && KFGRI.AIRemaining <= class'KFGameInfo'.static.GetNumAlwaysRelevantZeds() )
+	{
+		bAlwaysRelevant = true;
+	}
+
+	if (bIsBountyHuntObjective)
 	{
 		bAlwaysRelevant = true;
 	}
@@ -1892,12 +1920,24 @@ simulated function float GetMinBlockFOV()
 /** Reduce affliction power when blocking */
 simulated function AdjustAffliction( out float AfflictionPower )
 {
+	local KFGameInfo KFGI;
+
 	if( Role == ROLE_Authority && bIsBlocking )
 	{
 		AfflictionPower *= DifficultyBlockSettings.AfflictionModifier;
 	}
 
 	super.AdjustAffliction( AfflictionPower );
+
+	if (bIsBountyHuntObjective) // Only on Bounty Hunt Weekly
+	{
+		KFGI = KFGameInfo(WorldInfo.Game);
+
+		if (KFGI != none && KFGI.OutbreakEvent != none)
+		{
+			AfflictionPower -= AfflictionPower * KFGI.OutbreakEvent.ActiveEvent.BountyHuntSpecialZedBuffAfflictionResistance;
+		}
+	}	
 }
 
 /** Used by subclasses to determine if the boss icon can be rendered */
@@ -2338,8 +2378,12 @@ function AdjustDamage(out int InDamage, out vector Momentum, Controller Instigat
 	// NVCHANGE_BEGIN - RLS - Debugging Effects
 
 	// Do extra damage on blowing the head off
-	if( !bCheckingExtraHeadDamage && HitZoneIdx == HZI_Head &&
-        HitZones[HZI_Head].GoreHealth > 0 && InDamage > HitZones[HZI_Head].GoreHealth )
+
+	if (bIsBountyHuntObjective == false
+		&& !bCheckingExtraHeadDamage
+		&& HitZoneIdx == HZI_Head
+		&& HitZones[HZI_Head].GoreHealth > 0
+		&& InDamage > HitZones[HZI_Head].GoreHealth)
 	{
         KFDT = class<KFDamageType>(DamageType);
 
@@ -2349,7 +2393,7 @@ function AdjustDamage(out int InDamage, out vector Momentum, Controller Instigat
             InDamage *= KFDT.default.HeadDestructionDamageScale;
         }
 
-        ExtraHeadDamage = InDamage + HealthMax * 0.25;
+        ExtraHeadDamage = (InDamage + HealthMax * 0.25);
 
         bCheckingExtraHeadDamage = true;
         AdjustDamage( ExtraHeadDamage, Momentum, InstigatedBy, HitLocation, DamageType, HitInfo, DamageCauser );
@@ -2966,7 +3010,7 @@ simulated function UpdateVisualInflation(float InflationAmount)
 /** Called on server when pawn should has been crippled (e.g. Headless) */
 function CauseHeadTrauma(float BleedOutTime=5.f)
 {
-	if ( !bIsHeadless && !bPlayedDeath && !bDisableHeadless )
+	if ( !bIsHeadless && !bPlayedDeath && !bDisableHeadless && !bIsBountyHuntObjective )
 	{
     	if( MyKFAIC != none && KFGameInfo(WorldInfo.Game) != none && MyKFAIC.TimeFirstSawPlayer >= 0 )
     	{
@@ -4202,7 +4246,7 @@ function TakeHitZoneDamage(float Damage, class<DamageType> DamageType, int HitZo
 	if ( HitZoneIdx == HZI_Head )
 	{
 		// Based on head health, calculate number of head chunks we're allowed to remove
-		if( !bPlayedDeath && !bIsHeadless && !bTearOff )
+		if( !bPlayedDeath && !bIsHeadless && !bTearOff && !bIsBountyHuntObjective )
 		{
 			HeadHealthPercentage = GetHeadHealthPercent();
 			if( HeadHealthPercentage > 0.5 )
@@ -4958,6 +5002,40 @@ simulated function ServerSpawnWeakPointVFX(array<WeakPoint> WeakPoints)
 	}
 }
 
+simulated function SetBountyHuntObjective()
+{
+	bIsBountyHuntObjective = true;
+	bAlwaysRelevant = true;
+
+	if (WorldInfo.NetMode == NM_DedicatedServer)
+	{
+		bNetDirty = true;
+		bForceNetUpdate = true;
+	}
+}
+
+simulated function SetBountyHuntOnLastTier()
+{
+	bIsBountyHuntOnLastTier = true;
+
+	if (WorldInfo.NetMode == NM_DedicatedServer)
+	{
+		bNetDirty = true;
+		bForceNetUpdate = true;
+	}	
+}
+
+simulated function SetBountyHuntBlockLeaveMap(bool bCanLeave)
+{
+	bIsBountyHuntBlockLeaveMap = bCanLeave;
+
+	if (WorldInfo.NetMode == NM_DedicatedServer)
+	{
+		bNetDirty = true;
+		bForceNetUpdate = true;
+	}		
+}
+
 /*********************************************************************************************
  * @name   Achievements
  ********************************************************************************************* */
@@ -5165,4 +5243,8 @@ DefaultProperties
 
 	bCanBeKilledByShrinking=true
 	ShrinkEffectModifier=1.0f
+
+	bIsBountyHuntObjective=false
+	bIsBountyHuntOnLastTier=false
+	bIsBountyHuntBlockLeaveMap=false
 }

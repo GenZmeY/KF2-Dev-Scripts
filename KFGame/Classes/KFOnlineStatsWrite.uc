@@ -457,6 +457,10 @@ const KFACHID_SubductionHard					=   301;
 const KFACHID_SubductionHellOnEarth      		=   302;
 const KFACHID_SubductionCollectibles			=   303;
 
+const KFACHID_VolterCastleHard				=   304;
+const KFACHID_VolterCastleHellOnEarth      	=   305;
+const KFACHID_VolterCastleCollectibles		=   306;
+
 /* __TW_ANALYTICS_ */
 var int PerRoundWeldXP;
 var int PerRoundHealXP;
@@ -1195,6 +1199,11 @@ private event AddAfflictionCaused(EAfflictionType Type)
 	SeasonalEventStats_OnAfflictionCaused(Type);
 }
 
+private event AddCollectibleFound(int Limit)
+{
+	SeasonalEventStats_OnCollectibleFound(Limit);
+}
+
 private native function AddToKillObjectives(class<KFPawn_Monster> ZedClass);
 private native function AddToVersusKillObjectives(class<Pawn> KillerClass);
 
@@ -1925,6 +1934,14 @@ final simulated function SeasonalEventStats_OnAfflictionCaused(EAfflictionType T
 	}
 }
 
+final simulated function SeasonalEventStats_OnCollectibleFound(int Limit)
+{
+	if (SeasonalEventIsValid())
+	{
+		SeasonalEvent.OnCollectibleFound(Limit);
+	}
+}
+
 /*********************************************************************************************
 * @name Dailies and daily-specific tracking
 ********************************************************************************************* */
@@ -2069,6 +2086,7 @@ defaultproperties
     //Base Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,SecondaryType=DOST_KnifeDamage,ObjectiveClasses=(KFWeap_Edged_Knife,KFDT_Slashing_Knife,KFDT_Slashing_Knife_Berserker,KFDT_Slashing_Knife_Medic,KFDT_Slashing_Knife_SWAT,KFDT_Slashing_KnifeHeavy,KFDT_Slashing_KnifeHeavy_Berserker,KFDT_Slashing_KnifeHeavy_Medic,KFDT_Slashing_KnifeHeavy_SWAT,KFDT_Piercing_KnifeStab,KFDT_Piercing_KnifeStab_Berserker,KFDT_Piercing_KnifeStab_FieldMedic,KFDT_Piercing_KnifeStab_SWAT,KFDT_Slashing_Knife_Survivalist,KFDT_Piercing_KnifeStab_Survivalist,KFDT_Slashing_KnifeHeavy_Survivalist),CompletionAmount=2500))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Pistol_9mm, KFDT_Ballistic_9mm,KFDT_Bludgeon_9mm),CompletionAmount=4000)) //2500
+	DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_HRG_93R, KFDT_Ballistic_HRG_93R, KFDT_Bludgeon_HRG_93R),CompletionAmount=4000))
 
     //Swat Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_SMG_MP7, KFDT_Ballistic_MP7,KFDT_Bludgeon_MP7),CompletionAmount=5000)) //3000
@@ -2088,6 +2106,7 @@ defaultproperties
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_SCAR, KFDT_Ballistic_SCAR,KFDT_Bludgeon_SCAR),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_AssaultRifle_MKB42, KFDT_Ballistic_MKB42,KFDT_Bludgeon_MKB42),CompletionAmount=10000))
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_LMG_Stoner63A, KFDT_Ballistic_Stoner63A,KFDT_Bludgeon_Stoner63A),CompletionAmount=10000))
+
 
     //Support Weapons
     DailyEvents.Add((ObjectiveType=DOT_WeaponDamage,ObjectiveClasses=(KFWeap_Shotgun_MB500, KFDT_Ballistic_MB500,KFDT_Bludgeon_MB500),CompletionAmount=5000)) //3000
@@ -2333,7 +2352,9 @@ defaultproperties
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-SUBDUCTION),CompletionAmount=1))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-SUBDUCTION),CompletionAmount=2))
 	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-SUBDUCTION),CompletionAmount=3))
-
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CASTLEVOLTER),CompletionAmount=1))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CASTLEVOLTER),CompletionAmount=2))
+	DailyEvents.Add((ObjectiveType=DOT_Maps,SecondaryType=DOST_MapCompletion,ObjectiveClasses=(KF-CASTLEVOLTER),CompletionAmount=3))
 
     //Versus Damage
     //    Per design doc that I have right now, these are x class damage y players, not damage y amount

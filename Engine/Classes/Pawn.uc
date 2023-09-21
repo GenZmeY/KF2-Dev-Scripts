@@ -2543,10 +2543,11 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 
 	if ( damagetype == None )
 	{
-		if ( InstigatedBy == None )
+		/*if ( InstigatedBy == None )
 			`warn("No damagetype for damage with no instigator");
 		else
 			`warn("No damagetype for damage by "$instigatedby.pawn$" with weapon "$InstigatedBy.Pawn.Weapon);
+		*/
 		//scripttrace();
 		DamageType = class'DamageType';
 	}

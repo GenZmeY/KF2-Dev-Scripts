@@ -310,6 +310,12 @@ simulated function UpdateAmmoCounter()
 	WeaponMICs[3].SetScalarParameterValue('opacity', PercentageAmmo);
 }
 
+/** Returns trader filter index based on weapon type (copied from riflebase) */
+static simulated event EFilterTypeUI GetTraderFilter()
+{
+	return FT_Rifle;
+}
+
 defaultproperties
 {
     // FOV

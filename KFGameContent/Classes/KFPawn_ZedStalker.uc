@@ -554,4 +554,8 @@ DefaultProperties
 `if(`notdefined(ShippingPC))
 	DebugRadarTexture=Texture2D'UI_ZEDRadar_TEX.MapIcon_Stalker';
 `endif
+
+	// Only used in Volter Castle for now when the spawn volume has bForceUseMapReplacePawn set to true
+	// If we need to reuse it more we'll have to connect map to zed here
+	MapReplacePawnClass.Add(class'KFPawn_ZedHansClot')
 }

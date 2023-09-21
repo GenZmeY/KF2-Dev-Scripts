@@ -117,6 +117,9 @@ var bool ContaminationModePlayerIsInside;
 var int ContaminationModeLastTimePlayerOutPulsate;
 var bool ContaminationModeLastPulsate;
 
+// Bounty Hunt weekly
+var int BountyHuntCurrentExtraZeds;
+
 cpptext
 {
     virtual UBOOL TestZedTimeVisibility(APawn* P, UNetConnection* Connection, UBOOL bLocalPlayerTest) override;
@@ -269,6 +272,27 @@ reliable client function HideContaminationMode()
 	    {
 		    MyGFxHUD.PlayerStatusContainer.UpdateContaminationModeIconVisible(false);
 	    }   
+    } 
+}
+
+reliable client function DisplayBountyHuntObjective(int Bounties)
+{
+    if (MyGFxHUD != none)
+    {
+        MyGFxHUD.DisplayBountyHuntObjective(Bounties);
+    } 
+}
+
+reliable client function DisplayBountyHuntStatus(int CurrentAliveBounties, int MaxBounties, int DeadBounties, int Dosh, int DoshNoAssist)
+{
+    if (MyGFxHUD != none)
+    {
+        //`Log("CurrentAliveBounties :" $CurrentAliveBounties);
+        //`Log("(MaxBounties - DeadBounties) :" $(MaxBounties - DeadBounties));
+
+        BountyHuntCurrentExtraZeds = (MaxBounties - DeadBounties) - CurrentAliveBounties;
+
+        MyGFxHUD.DisplayBountyHuntStatus(MaxBounties - DeadBounties, Dosh, DoshNoAssist);
     } 
 }
 
@@ -536,15 +560,21 @@ function AdjustDamage(out int InDamage, Controller InstigatedBy, class<DamageTyp
     local KFGameInfo KFGI;
     local float Multiplier, ModifierRange, HealthTop, HealthRange;
     local KFGameReplicationInfo KFGRI;
+    local KFPawn_Monster KFPM;
+    local int BountyHuntZedIt, BountyHuntIt;
+    local float WaveProgress;
 
     super.AdjustDamage(InDamage, InstigatedBy, DamageType, DamageCauser, DamageReceiver);
 
     KFGI = KFGameInfo(WorldInfo.Game);
 
-	if (Pawn != None && KFGI != none && KFGI.OutbreakEvent != none && KFGI.OutbreakEvent.ActiveEvent.bVIPGameMode)
+    if (KFGI != none)
     {
         KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+    }
 
+	if (Pawn != None && KFGI != none && KFGI.OutbreakEvent != none && KFGI.OutbreakEvent.ActiveEvent.bVIPGameMode)
+    {
         // If I am the VIP doing the damage, and I am NOT doing damage to myself
         if (KFGRI != none
             && KFGRI.VIPRepPlayer != none
@@ -596,6 +626,58 @@ function AdjustDamage(out int InDamage, Controller InstigatedBy, class<DamageTyp
             //`Log("Multiplier for VIP OUTPUT DAMAGE: Output: " $Multiplier);
 
             InDamage = int(float(InDamage) * Multiplier);   
+        }
+    }
+
+	if (Pawn != None && KFGRI != none && KFGRI.IsBountyHunt())
+    {
+        KFPM = KFPawn_Monster(DamageCauser);       
+
+        if (KFPM != none && KFPM.bIsBountyHuntObjective)
+        {
+            // Depending on wave progress we tweak the Damage
+
+			if (KFGRI.WaveTotalAICount > 0)
+			{
+                // Don't count current alive Bounty Zeds
+				WaveProgress = float(KFGRI.AIRemaining - KFGI.WeeklyCurrentExtraNumberOfZeds()) / float(KFGRI.WaveTotalAICount);
+			}
+			else
+			{
+				WaveProgress = 0.f;
+			}
+
+            // Find first node of data for the Zed type we checking,.
+            for (BountyHuntZedIt = 0 ; BountyHuntZedIt < KFGI.OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression.Length; ++BountyHuntZedIt)
+            {
+                if (KFGI.OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].ZedType == KFPM.class)
+                {
+                    break;
+                }
+            }
+
+            // Update to the current level
+            for (BountyHuntIt = 0 ; BountyHuntIt < KFGI.OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression.Length; ++BountyHuntIt)
+            {
+                if (WaveProgress >= KFGI.OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression[BountyHuntIt].RemainingZedRatio)
+                {
+                    break;
+                }
+            }
+
+            if (BountyHuntIt == KFGI.OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression.Length)
+            {
+                BountyHuntIt = KFGI.OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression.Length - 1;
+            } 
+
+            //`Log("BOUNTY HUNT : Initial InDamage = " $InDamage);
+
+            //`Log("WaveProgress : " $WaveProgress);
+
+            InDamage += InDamage * KFGI.OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression[BountyHuntIt].DamageBuffRatio;
+
+            //`Log("BOUNTY HUNT : Output Damage: " $KFGI.OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression[BountyHuntIt].DamageBuffRatio);
+            //`Log("BOUNTY HUNT : Final InDamage = " $InDamage);
         }
     }
 }

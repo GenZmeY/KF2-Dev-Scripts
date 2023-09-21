@@ -721,6 +721,7 @@ DefaultProperties
 	PerkIcon=Texture2D'UI_PerkIcons_TEX.UI_PerkIcon_Sharpshooter'
 
 	PrimaryWeaponDef=class'KFWeapDef_Winchester1894'
+
 	KnifeWeaponDef=class'KFWeapDef_Knife_Sharpshooter'
 	GrenadeWeaponDef=class'KFWeapDef_Grenade_Sharpshooter'
 
@@ -741,10 +742,12 @@ DefaultProperties
    	AdditionalOnPerkWeaponNames(1)="KFWeap_Pistol_Dual9mm"
    	AdditionalOnPerkWeaponNames(2)="KFWeap_Revolver_Rem1858"
    	AdditionalOnPerkWeaponNames(3)="KFWeap_Revolver_SW500"
+	AdditionalOnPerkWeaponNames(4)="KFWeap_HRG_93R"
+	AdditionalOnPerkWeaponNames(5)="KFWeap_HRG_93R_Dual"
 	AdditionalOnPerkDTNames(0)="KFDT_Ballistic_9mm"
 	AdditionalOnPerkDTNames(1)="KFDT_Ballistic_SW500"
 	AdditionalOnPerkDTNames(2)="KFDT_Ballistic_Rem1858"
-
+	AdditionalOnPerkDTNames(3)="KFDT_Ballistic_HRG_93R"
 
    	HeadshotDamage=(Name="Headshot Damage",Increment=0.01f,Rank=0,StartingValue=0.0f,MaxValue=0.25f)
    	Recoil=(Name="Recoil",Increment=0.01f,Rank=0,StartingValue=0.0f,MaxValue=0.25f)

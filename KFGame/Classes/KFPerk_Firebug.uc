@@ -634,6 +634,7 @@ DefaultProperties
 	PerkIcon=Texture2D'UI_PerkIcons_TEX.UI_PerkIcon_Firebug'
 
 	PrimaryWeaponDef=class'KFWeapDef_CaulkBurn'
+
 	KnifeWeaponDef=class'KFWeapDef_Knife_Firebug'
 	GrenadeWeaponDef=class'KFWeapDef_Grenade_Firebug'
 

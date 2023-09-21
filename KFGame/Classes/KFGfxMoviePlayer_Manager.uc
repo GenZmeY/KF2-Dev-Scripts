@@ -1872,6 +1872,20 @@ event bool FilterButtonInput(int ControllerId, name ButtonName, EInputEvent Inpu
 				CurrentMenu.Callback_ReadyClicked(true);
 			}
 		}
+		else if (ButtonName == 'XboxTypeS_DPad_Left')
+		{
+			if(CurrentMenu != none)
+			{
+				CurrentMenu.OnDpadPressed(-1);
+			}		
+		}
+		else if (ButtonName == 'XboxTypeS_DPad_Right')
+		{
+			if(CurrentMenu != none)
+			{
+				CurrentMenu.OnDpadPressed(1);
+			}
+		}
 		else if(ButtonName == 'XboxTypeS_RightThumbstick')
 		{
 			if(CurrentMenu != none)
@@ -2276,6 +2290,11 @@ function int GetModeIndex(optional bool bAdjustedIndex = true)
 	}
 
 	return SavedModeIndex;
+}
+
+function int GetWeeklySelectorIndex()
+{
+	return CachedProfile.GetProfileInt(KFID_SavedWeeklySelectorIndex);
 }
 
 function OnLoginOnOtherPlatformDoneAndFriendsReady()

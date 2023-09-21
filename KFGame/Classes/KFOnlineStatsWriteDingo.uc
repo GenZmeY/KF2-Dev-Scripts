@@ -76,4 +76,5 @@ defaultproperties
 	Properties.Add((PropertyId = STATID_ACHIEVE_BarmwichCollectibles, Data = (Type = SDT_Int32, Value1 = 0)))
 	Properties.Add((PropertyId = STATID_ACHIEVE_CrashCollectibles, Data = (Type = SDT_Int32, Value1 = 0)))
 	Properties.Add((PropertyId = STATID_ACHIEVE_SubductionCollectibles, Data = (Type = SDT_Int32, Value1 = 0)))
+	Properties.Add((PropertyId = STATID_ACHIEVE_VolterCastleCollectibles, Data = (Type = SDT_Int32, Value1 = 0)))
 }

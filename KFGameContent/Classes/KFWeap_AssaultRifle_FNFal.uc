@@ -9,6 +9,19 @@
 
 class KFWeap_AssaultRifle_FNFal extends KFWeap_ScopedBase;
 
+simulated state WeaponSingleFiring
+{
+	simulated event EndState( Name NextStateName )
+	{
+		Super.EndState(NextStateName);
+
+		if (WorldInfo.NetMode == NM_Client && bAllowClientAmmoTracking && FireInterval[CurrentFireMode] <= MinFireIntervalToTriggerSync)
+		{
+			SyncCurrentAmmoCount(CurrentFireMode, AmmoCount[CurrentFireMode]);
+		}
+	}
+}
+		
 defaultproperties
 {
 	// Shooting Animations

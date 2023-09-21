@@ -893,27 +893,29 @@ simulated function string GetGrenadeClassPath()
 
 simulated function byte GetGrenadeSelectedIndex() { return CurrentGrenadeClassIndex; }
 
-simulated function byte SetWeaponSelectedIndex(byte idx)
+simulated static function byte GetWeaponSelectedIndex(byte idx)
 {
 	if (idx >= default.PrimaryWeaponPaths.Length && idx < 255)
 	{
-		StartingWeaponClassIndex = 0;
+		return 0;
 	}
-	else if (idx == 255)
+	
+	if (idx == 255)
 	{
-		StartingWeaponClassIndex = `WEAP_IDX_NONE;
-	}
-	else
-	{
-		StartingWeaponClassIndex = idx;
+		return `WEAP_IDX_NONE;
 	}
 
-	ServerUpdateCurrentWeapon(StartingWeaponClassIndex);
-
-	return StartingWeaponClassIndex;
+	return idx;
 }
 
-simulated function byte SetGrenadeSelectedIndex(byte idx)
+simulated function SetWeaponSelectedIndex(byte idx)
+{
+	StartingWeaponClassIndex = static.GetWeaponSelectedIndex(idx);
+
+	ServerUpdateCurrentWeapon(StartingWeaponClassIndex);
+}
+
+simulated function SetGrenadeSelectedIndex(byte idx)
 {
     local KFGameReplicationInfo KFGRI;
 
@@ -953,70 +955,66 @@ simulated function byte SetGrenadeSelectedIndex(byte idx)
 	{
 		UpdateCurrentGrenade();
 	}
-
-	return StartingGrenadeClassIndex;
 }
 
-simulated function byte SetGrenadeSelectedIndexUsingSkills(byte idx, byte InSelectedSkills[`MAX_PERK_SKILLS], bool IsChoosingPrev, bool IsChoosingNext)
+simulated static function byte GetGrenadeSelectedIndexUsingSkills(byte idx, byte InSelectedSkills[`MAX_PERK_SKILLS], bool IsChoosingPrev, bool IsChoosingNext)
 {
-    local KFGameReplicationInfo KFGRI;
 	local bool AmmoVestActive, BigPocketsActive;
-
-    KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
+	local byte SelectedGrenadeIndex;
 
 	AmmoVestActive = false;
 	BigPocketsActive = false;
 
 	if (idx >= default.GrenadeWeaponPaths.Length && idx < 255)
 	{
-		StartingGrenadeClassIndex = 0;
+		SelectedGrenadeIndex = 0;
 	}
 	else if (idx == 255)
 	{
-		StartingGrenadeClassIndex = `WEAP_IDX_NONE;
+		SelectedGrenadeIndex = `WEAP_IDX_NONE;
 	}
 	else
 	{
-		StartingGrenadeClassIndex = idx;
+		SelectedGrenadeIndex = idx;
 
-		if (StartingGrenadeClassIndex == MedicGrenadeIndex || StartingGrenadeClassIndex == FirebugGrenadeIndex)
+		if (SelectedGrenadeIndex == default.MedicGrenadeIndex || SelectedGrenadeIndex == default.FirebugGrenadeIndex)
 		{
 			AmmoVestActive = InSelectedSkills[2] == 1;
 			BigPocketsActive = InSelectedSkills[2] == 2;
 
 			if (IsChoosingPrev)
 			{
-				if (StartingGrenadeClassIndex == FirebugGrenadeIndex)
+				if (SelectedGrenadeIndex == default.FirebugGrenadeIndex)
 				{
 					if (BigPocketsActive == false)
 					{
-						--StartingGrenadeClassIndex;
+						--SelectedGrenadeIndex;
 					}
 				}
 
-				if (StartingGrenadeClassIndex == MedicGrenadeIndex)
+				if (SelectedGrenadeIndex == default.MedicGrenadeIndex)
 				{
 					if (AmmoVestActive == false)
 					{
-						--StartingGrenadeClassIndex;
+						--SelectedGrenadeIndex;
 					}
 				}
 			}
 			else if (IsChoosingNext)
 			{
-				if (StartingGrenadeClassIndex == MedicGrenadeIndex)
+				if (SelectedGrenadeIndex == default.MedicGrenadeIndex)
 				{
 					if (AmmoVestActive == false)
 					{
-						++StartingGrenadeClassIndex;
+						++SelectedGrenadeIndex;
 					}
 				}
 		
-				if (StartingGrenadeClassIndex == FirebugGrenadeIndex)
+				if (SelectedGrenadeIndex == default.FirebugGrenadeIndex)
 				{
 					if (BigPocketsActive == false)
 					{
-						++StartingGrenadeClassIndex;
+						++SelectedGrenadeIndex;
 					}
 				}
 			}
@@ -1024,32 +1022,26 @@ simulated function byte SetGrenadeSelectedIndexUsingSkills(byte idx, byte InSele
 			{
 				if (AmmoVestActive)
 				{
-					StartingGrenadeClassIndex = MedicGrenadeIndex;
+					SelectedGrenadeIndex = default.MedicGrenadeIndex;
 				}
 				else if (BigPocketsActive)
 				{
-					StartingGrenadeClassIndex = FirebugGrenadeIndex;
+					SelectedGrenadeIndex = default.FirebugGrenadeIndex;
 				}
 				else
 				{
-					StartingGrenadeClassIndex = 0;
+					SelectedGrenadeIndex = 0;
 				}
 			}
 
-			if (StartingGrenadeClassIndex > GrenadeWeaponPaths.Length - 1)
+			if (SelectedGrenadeIndex > default.GrenadeWeaponPaths.Length - 1)
 			{
-				StartingGrenadeClassIndex = `WEAP_IDX_NONE;
+				SelectedGrenadeIndex = `WEAP_IDX_NONE;
 			}
 		}
 	}
 
-	// If we are in no gameplay time insta change
-	if (!KFGRI.bWaveIsActive)
-	{
-		UpdateCurrentGrenade();
-	}
-
-	return StartingGrenadeClassIndex;
+	return SelectedGrenadeIndex;
 }
 
 simulated function InitializeGrenades()

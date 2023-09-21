@@ -140,6 +140,7 @@ var databinding string Region;
 //@HSL_END
 
 var databinding bool bNoSeasonalSkins;
+var databinding int WeeklySelectorIndex;
 
 /** Represents a player in the game */
 struct native PlayerResult
@@ -186,4 +187,5 @@ defaultproperties
 	bServerExiled=false
 	//@SABER_END
 	bNoSeasonalSkins=false
+	WeeklySelectorIndex=-1
 }

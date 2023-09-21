@@ -14,7 +14,7 @@ DefaultProperties
 	WeaponClassPath="KFGameContent.KFWeap_HRG_Stunner"
 
 	BuyPrice=1500
-	AmmoPricePerMag=36 
+	AmmoPricePerMag=32 // 36 
     ImagePath="ui_weaponselect_tex.UI_WeaponSelect_AA12"
 
 	IsPlayGoHidden=true;

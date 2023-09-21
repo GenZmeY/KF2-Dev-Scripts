@@ -38,6 +38,8 @@ var bool bHaveGoal;
 /** A randomized distance outside of the target goal to stop at */
 var float GoalOffset;
 
+var bool bUseRandomDirection;
+
 /*********************************************************************************************
 * Initialization
 ********************************************************************************************* */
@@ -47,7 +49,8 @@ static function bool FleeFrom(
 	actor inFleeTarget,
 	optional float inFleeDuration,
 	optional float inFleeDistance=5000,
-	optional bool bShouldStopAtGoal=false )
+	optional bool bShouldStopAtGoal=false,
+	optional bool bHasToUseRandomDirection=false  )
 {
 	local AICommand_Flee Cmd;
 
@@ -60,6 +63,7 @@ static function bool FleeFrom(
 			Cmd.FleeDistance = inFleeDistance;
 			Cmd.FleeDuration = inFleeDuration;
 			Cmd.bStopAtGoal = bShouldStopAtGoal;
+			Cmd.bUseRandomDirection = bHasToUseRandomDirection;
 			AI.PushCommand(Cmd);
 			return true;
 		}
@@ -113,6 +117,84 @@ function Popped()
 	EnableMeleeRangeEventProbing();
 }
 
+function vector GetRandomFleeVector()
+{
+	local vector VectorReference, VectorReferenceRotated, RandVector, HitLocation, HitNormal, Destination, DestinationRotated, AxxisRotation;
+    local Actor HitActor;
+	local int i, NumIterations;
+	local float Angle, LengthFlee;
+	local Quat R;
+	
+	// Start on the bearing of the FleeTarget, check for collision then explore to the sides rotating that vector
+
+	VectorReference = Normal(Pawn.Location - FleeTarget.Location);
+	VectorReference.z = 0.f;
+
+	RandVector = VectorReference;
+
+	LengthFlee = 300.f;
+	//LengthFlee = FleeDistance;
+
+	Destination = Pawn.Location + VectorReference * LengthFlee;
+
+	HitActor = Trace(HitLocation, HitNormal, Destination, Pawn.Location, true,,, TRACEFLAG_Blocking);
+	if (HitActor != none && KFPawnBlockingVolume(HitActor) != none)
+	{
+		//HitActor.DrawDebugLine(Pawn.Location, Destination, 255, 0, 0, true );
+
+		Angle = 15.f * DegToRad;
+
+		NumIterations = 180.f * DegToRad / Angle;
+
+		AxxisRotation.x = 0.f;
+		AxxisRotation.y = 0.f;
+		AxxisRotation.z = 1.f;
+
+		for (i = 1; i < NumIterations; ++i)
+		{
+			// Left
+
+	    	R = QuatFromAxisAndAngle(AxxisRotation, i * Angle);
+    		VectorReferenceRotated = Normal(QuatRotateVector(R, VectorReference));
+
+			DestinationRotated = Pawn.Location + VectorReferenceRotated * LengthFlee;
+
+			HitActor = Trace(HitLocation, HitNormal, DestinationRotated, Pawn.Location, true,,, TRACEFLAG_Blocking);
+			if (HitActor != none && KFPawnBlockingVolume(HitActor) != none)
+			{
+				//Pawn.DrawDebugLine(Pawn.Location, DestinationRotated, 255, 255, 0, true );
+			}
+			else
+			{
+				RandVector = DestinationRotated;
+				break;
+			}
+
+			// Right
+
+	    	R = QuatFromAxisAndAngle(AxxisRotation, - i * Angle);
+    		VectorReferenceRotated = Normal(QuatRotateVector(R, VectorReference));
+
+			DestinationRotated = Pawn.Location + VectorReferenceRotated * LengthFlee;
+
+			HitActor = Trace(HitLocation, HitNormal, DestinationRotated, Pawn.Location, true,,, TRACEFLAG_Blocking);
+			if (HitActor != none && KFPawnBlockingVolume(HitActor) != none)
+			{
+				//Pawn.DrawDebugLine(Pawn.Location, DestinationRotated, 0, 255, 255, true );
+			}
+			else
+			{
+				RandVector = DestinationRotated;
+				break;
+			}			
+		} 
+	}
+
+	//Pawn.DrawDebugLine(Pawn.Location, Pawn.Location + RandVector * LengthFlee, 0, 255, 0, true );
+
+	return Normal(RandVector);
+}
+
 /*********************************************************************************************
 * Hiding state
 ********************************************************************************************* */
@@ -129,6 +211,7 @@ state Fleeing
 	function bool CheckRetreat()
 	{
 		local EPathSearchType OldSearchType;
+		local vector RandVector;
 
 		if( RouteGoal != none && bHaveGoal )
 		{
@@ -154,13 +237,27 @@ state Fleeing
 			AIActionStatus = "Searching for navigable path from ["$FleeTarget$"]";
 
 			Pawn.PathSearchType = PST_Constraint;
-			class'Path_AlongLine'.static.AlongLine( Pawn, Normal(Pawn.Location - FleeTarget.Location) );
-			class'Goal_AwayFromPosition'.static.FleeFrom( Pawn, FleeTarget.Location, FleeDistance );
+
+			if (bUseRandomDirection)
+			{
+				MyKFPawn.SetSprinting( true );
+
+				RandVector = GetRandomFleeVector();
+
+				class'Path_AlongLine'.static.AlongLine( Pawn, RandVector );
+				class'Goal_Random'.static.FindRandom( Pawn );
+			}
+			else
+			{
+				class'Path_AlongLine'.static.AlongLine( Pawn, Normal(Pawn.Location - FleeTarget.Location) );
+				class'Goal_AwayFromPosition'.static.FleeFrom( Pawn, FleeTarget.Location, FleeDistance );
+			}			
 
 			if( FindPathToward( Pawn ) != None )
 			{
 				//Pawn.DrawDebugLine( RouteGoal.Location, Pawn.Location, 255, 80, 80, true );
 				//Pawn.DrawDebugSphere( RouteGoal.Location, 128, 4, 255, 80, 80, true );
+
 				bHaveGoal = true;
 				AIActionStatus = "Attempting to flee from ["$FleeTarget$"] at ["$RouteGoal$"]";
 				Focus = none;
@@ -281,4 +378,5 @@ Begin:
 DefaultProperties
 {
 	bAllowedToAttack=false
+	bUseRandomDirection=false
 }

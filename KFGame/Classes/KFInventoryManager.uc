@@ -543,6 +543,22 @@ simulated function Weapon GetBestWeapon( optional bool bForceADifferentWeapon, o
 {
 	local KFWeapon	W, BestWeapon, BackupGun;
 	local float		Rating, BestRating;
+	local PlayerController PC;
+	
+	PC = PlayerController(Instigator.Controller);
+	if (PC != none && KFPawn(PC.Pawn) != none)
+	{
+		BestWeapon = KFPawn(PC.Pawn).FindBestWeapon(true, allow9mm);
+		if (BestWeapon == none && allow9mm == false)
+		{
+			BestWeapon = KFPawn(PC.Pawn).FindBestWeapon(true, true);
+		}
+
+		if (BestWeapon != none)
+		{
+			return BestWeapon;
+		}
+	}
 
 	ForEach InventoryActors( class'KFWeapon', W )
 	{
@@ -1369,7 +1385,7 @@ simulated function AttemptQuickHeal()
 /** Equip the welder immediately */
 simulated function bool QuickWeld()
 {
-	local KFWeapon KFW;
+	local KFWeapon KFW, PreviousKFW;
 	local KFInterface_Usable UsableTrigger;
 	local KFDoorTrigger DoorTrigger;
 	local KFRepairableActorTrigger RepairableTrigger;
@@ -1382,8 +1398,8 @@ simulated function bool QuickWeld()
 	}
 
 	// make sure player is actually allowed to switch weapons
-	KFW = KFWeapon( Instigator.Weapon );
-	if( KFW != none && !KFW.CanSwitchWeapons() )
+	PreviousKFW = KFWeapon( Instigator.Weapon );
+	if( PreviousKFW != none && !PreviousKFW.CanSwitchWeapons() )
 	{
 		return false;
 	}
@@ -1413,6 +1429,7 @@ simulated function bool QuickWeld()
 				{
 					if( KFW.IsA('KFWeap_Welder') )
 					{
+						KFPC.MyGFxHUD.WeaponSelectWidget.UpdateWeaponGroupOnHUD(PreviousKFW.InventoryGroup);
 						SetCurrentWeapon(KFW);
 						ShowAllHUDGroups();
 						return true;
@@ -2674,7 +2691,8 @@ simulated function int GetAdjustedSellPriceFor(
 
 	// if OwnedItem is a dual, set sell price to that of a single (because we sell one single and keep one single)
 	// Special case for 9mm
-	if( OwnedItem.SingleClassName == 'KFWeap_Pistol_9mm')
+	if( OwnedItem.SingleClassName == 'KFWeap_Pistol_9mm'
+		|| OwnedItem.SingleClassName == 'KFWeap_HRG_93R' )
 	{
 		// @todo: revisit
 		// assume price of single is half the price of dual. might be better to use the actual buy price of the single,
@@ -2712,7 +2730,7 @@ simulated function int GetDisplayedBlocksRequiredFor( const out STraderItem Shop
 
 	// for now, only adjust blocks required for duals, except for dual 9mm since the single 9mm doesn't require any blocks
 	// display half weight of dual if player owns single
-	if( !(ShopItem.SingleClassName == '' || ShopItem.SingleClassName == 'KFWeap_Pistol_9mm') && GetIsOwned(ShopItem.SingleClassName) )
+	if( !(ShopItem.SingleClassName == '' || ShopItem.SingleClassName == 'KFWeap_Pistol_9mm' || ShopItem.SingleClassName == 'KFWeap_HRG_93R') && GetIsOwned(ShopItem.SingleClassName) )
 	{
 		BlocksRequired /= 2;
 	}
@@ -2796,6 +2814,21 @@ simulated event DiscardInventory()
 	{
 		KFP.MyKFWeapon = none;
 	}
+}
+
+simulated function bool Is9mmInInventory()
+{
+	local Inventory Inv;
+
+	for (Inv = InventoryChain; Inv != None; Inv = Inv.Inventory)
+	{
+		if (Inv.Class.name == 'KFWeap_Pistol_9mm' || Inv.Class.name == 'KFWeap_Pistol_Dual9mm')
+		{
+			return true;
+		}
+	}
+
+	return false;
 }
 
 defaultproperties

@@ -55,11 +55,13 @@ function SetMapOptions()
 	local array<string> ServerMapList;
 	local KFGameReplicationInfo KFGRI;
 	local bool IsWeeklyMode;
-	local bool IsBrokenTrader;
-	local bool IsBossRush;
-	local bool IsGunGame;
-	local bool IsContaminationMode;
 	local bool bShouldSkipMaps;
+	local bool bWeeklyNoSanta;
+
+	local bool IsBoom, IsCraniumCracker, IsTinyTerror, IsBobbleZed, IsPoundemonium, IsUpUpAndDecay, IsZedTime, IsBeefcake;
+	local bool IsBloodThirst, IsColiseum, IsArachnophobia, IsScavenger, IsWW, IsAbandon, IsBossRush, IsShrunkenHeads;
+	local bool IsGunGame, /*IsVIP,*/ IsPerkRoulette, IsContaminationMode, IsBountyHunt;
+
 	local name MapName;
 
 	KFGRI = KFGameReplicationInfo(GetPC().WorldInfo.GRI);
@@ -70,13 +72,62 @@ function SetMapOptions()
 	if(KFGRI != none && KFGRI.VoteCollector != none)
 	{
 		ServerMapList  = KFGRI.VoteCollector.MapList;
-		IsWeeklyMode   = KFGRI.bIsWeeklyMode;
-		IsBrokenTrader = KFGRI.CurrentWeeklyIndex == 11;
-		IsBossRush     = KFGRI.CurrentWeeklyIndex == 14;
-		IsGunGame      = KFGRI.CurrentWeeklyIndex == 16;
-		IsContaminationMode = KFGRI.CurrentWeeklyIndex == 19;
 
-		bShouldSkipMaps = IsWeeklyMode && (IsBrokenTrader || IsBossRush || IsGunGame);
+		IsWeeklyMode   = KFGRI.bIsWeeklyMode;
+
+		IsBoom = false;
+		IsCraniumCracker = false;
+		IsTinyTerror = false;
+		IsBobbleZed = false;
+		IsPoundemonium = false;
+		IsUpUpAndDecay = false;
+		IsZedTime = false;
+		IsBeefcake = false;
+		IsBloodThirst = false;
+		IsColiseum = false;
+		IsArachnophobia = false;
+		IsScavenger = false;
+		IsWW = false;
+		IsAbandon = false;
+		IsBossRush = false;
+		IsShrunkenHeads = false;
+		IsGunGame = false;
+		//IsVIP = false;
+		IsPerkRoulette = false;
+		IsContaminationMode = false;
+		IsBountyHunt = false;
+
+		switch (KFGRI.CurrentWeeklyIndex)
+		{
+			case 0:	IsBoom = true;	break;
+			case 1: IsCraniumCracker = true; break;
+			case 2: IsTinyTerror = true; break;
+			case 3: IsBobbleZed = true; break;
+			case 4: IsPoundemonium = true; break;
+			case 5: IsUpUpAndDecay = true; break;
+			case 6: IsZedTime = true; break;
+			case 7: IsBeefcake = true; break;
+			case 8: IsBloodThirst = true; break;
+			case 9: IsColiseum = true; break;
+			case 10: IsArachnophobia = true; break;
+			case 11: IsScavenger = true; break;
+			case 12: IsWW = true; break;
+			case 13: IsAbandon = true; break;
+			case 14: IsBossRush = true; break;
+			case 15: IsShrunkenHeads = true; break;
+			case 16: IsGunGame = true; break;
+			//case 17: IsVIP = true; break;
+			case 18: IsPerkRoulette = true; break;
+			case 19: IsContaminationMode = true; break;
+			case 20: IsBountyHunt = true; break;
+		}
+
+		bShouldSkipMaps = IsWeeklyMode && (IsScavenger || IsBossRush || IsGunGame);
+
+		bWeeklyNoSanta = IsWeeklyMode && (	IsBoom || IsCraniumCracker || IsTinyTerror || IsBobbleZed
+											|| IsPoundemonium || IsUpUpAndDecay || IsZedTime || IsBeefcake
+											|| IsBloodThirst || IsColiseum || IsArachnophobia || IsScavenger
+											|| IsWW || IsAbandon || IsShrunkenHeads || IsPerkRoulette);
 
 		//gfx
 		MapList = CreateArray();
@@ -84,6 +135,11 @@ function SetMapOptions()
 		for (i = 0; i < ServerMapList.length; i++)
 		{
 			MapName = name(ServerMapList[i]);
+
+			if (bWeeklyNoSanta && MapName == MapSantas)
+			{
+				continue;
+			}
 
 			if ( bShouldSkipMaps && ( MapName == MapBiolapse || 
 									  MapName == MapNightmare ||
@@ -108,12 +164,24 @@ function SetMapOptions()
 				}				
 			}
 
-			/* Temporary removal of SteamFrotress for BossRush */
+			if (IsWeeklyMode && IsBountyHunt)
+			{
+				if (MapName == MapBiolapse || 
+					MapName == MapNightmare ||
+					MapName == MapPowerCore ||
+					MapName == MapDescent ||
+					MapName == MapKrampus ||
+					MapName == MapElysium ||
+					MapName == MapSteam)
+				{
+					continue;
+				}				
+			}			
+
 			if (IsWeeklyMode && IsBossRush && MapName == MapSteam)
 			{
 				continue;
 			}
-			/* */
 
 			MapObject = CreateObject("Object");
 			MapObject.SetString("label", class'KFCommon_LocalizedStrings'.static.GetFriendlyMapName(ServerMapList[i]) );

@@ -1671,4 +1671,8 @@ DefaultProperties
     MinSpawnSquadSizeType=EST_Boss
 
     OnDeathAchievementID=KFACHID_DieVolter
+
+	// Only used in Volter Castle for now when the spawn volume has bForceUseMapReplacePawn set to true
+	// If we need to reuse it more we'll have to connect map to zed here (here defaults to this same class)
+	MapReplacePawnClass.Add(class'KFPawn_ZedHans')
 }

@@ -12,24 +12,9 @@ class KFDT_Toxic_MineReconstructorImpactHeavy extends KFDT_Ballistic_Shell
     abstract
     hidedropdown;
 
-
-
-
 static simulated function bool CanDismemberHitZone( name InHitZoneName )
 {
 	return false;
-}
-
-/** Called when damage is dealt to apply additional damage type (e.g. Damage Over Time) */
-static function ApplySecondaryDamage( KFPawn Victim, int DamageTaken, optional Controller InstigatedBy )
-{
-	local class<KFDamageType> ToxicDT;
-
-	ToxicDT = class'KFDT_Ballistic_Assault_Medic'.static.GetMedicToxicDmgType( DamageTaken, InstigatedBy );
-  	if ( ToxicDT != None )
-    { 
-        Victim.ApplyDamageOverTime(DamageTaken, InstigatedBy, ToxicDT);
-    }
 }
 
 defaultproperties
@@ -38,7 +23,6 @@ defaultproperties
 	DoT_Type=DOT_NONE
 
 	EffectGroup=FXG_Toxic
-
 
 	MicrowavePower=50;
 	PoisonPower=60;

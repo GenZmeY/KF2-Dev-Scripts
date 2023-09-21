@@ -110,6 +110,7 @@ enum EAIType
 	AT_EDAR_EMP,
 	AT_EDAR_Laser,
 	AT_EDAR_Rocket,
+	AT_HansClot
 };
 
 /** IDs into the BossAIClassList array */
@@ -234,6 +235,8 @@ static function string ZedTypeToString(EAIType AiTypeToConvert)
 		return "Husk";
 	case AT_BossRandom:
 		return "Hans";
+	case AT_HansClot:
+		return "HansClot";
 	}
 	return "CLOT";
 `endif
@@ -479,7 +482,7 @@ function GetSpawnListFromSquad(byte SquadIdx, out array< KFAISpawnSquad > Squads
                     else
 `endif
                     //Always have the squad type be a boss if we're spawning one in case of override
-					if (OutbreakEvent.ActiveEvent.bBossRushMode)
+					if (OutbreakEvent != none && OutbreakEvent.ActiveEvent.bBossRushMode)
 					{
 						RandBossIndex = Rand(BossRushEnemies.length);
 						TempSpawnList.AddItem( default.AIBossClassList[BossRushEnemies[RandBossIndex]]);

@@ -13,6 +13,7 @@ class KFMission_LocalizedStrings extends Object
 
 var localized string GrantedWeeklyString;
 var localized string WeeklyString;
+var localized string WeeklyCustomString;
 var localized string CurrentWeeklySettingsString;
 
 var localized string SpecialEventString;

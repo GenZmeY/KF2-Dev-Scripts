@@ -32,7 +32,7 @@ var int DoshBuffer;
 
 var int ArmorMagSize; // Percentage of armor bought individually
 
-function Initialize(optional bool bInitOwnedItems = true)
+function Initialize(optional bool bInitializeOwned = true)
 {
 	if( Pawn != none && PlayerReplicationInfo != none )
 	{
@@ -42,10 +42,11 @@ function Initialize(optional bool bInitOwnedItems = true)
 		if( MyKFPRI != none && MyKFIM != none )
 		{
 			// Grab the weapons in our inventory and add them to a stored array called OwnedItemList
-			if (bInitOwnedItems)
+			if (bInitializeOwned)
 			{
 				InitializeOwnedItemList();
 			}
+
 			TotalBlocks = MyKFIM.CurrentCarryBlocks;
 			TotalDosh = MyKFPRI.Score;
 			MaxBlocks = MyKFIM.MaxCarryBlocks;
@@ -989,17 +990,36 @@ function Int GetAutoFillCost()
 @Name - General
 *******************/
 
+function InitializeOwnedGrenade()
+{
+    local bool AllowGrenades;
+	local KFPawn_Human KFP;
+
+    AllowGrenades = KFGameReplicationInfo( WorldInfo.GRI ).bAllowGrenadePurchase;
+
+	KFP = KFPawn_Human( Pawn );
+    if( KFP != none )
+    {
+		// init grenade purchase values
+		GrenadeItem.SpareAmmoCount = MyKFIM.GrenadeCount;
+		GrenadeItem.MaxSpareAmmo = AllowGrenades ? KFP.GetPerk().MaxGrenadeCount : 0;
+		GrenadeItem.AmmoPricePerMagazine = TraderItems.GrenadePrice;
+		GrenadeItem.DefaultItem.WeaponDef = CurrentPerk.GetGrenadeWeaponDef();
+
+		// @temp: fill in stuff that is normally serialized in the archetype
+		GrenadeItem.DefaultItem.AssociatedPerkClasses[0] = CurrentPerk.Class;
+	}
+}
+
 function InitializeOwnedItemList()
 {
    	local Inventory Inv;
    	local KFWeapon KFW;
 	local KFPawn_Human KFP;
-    local bool AllowGrenades;
 
     OwnedItemList.length = 0;
 
 	TraderItems = KFGameReplicationInfo( WorldInfo.GRI ).TraderItems;
-    AllowGrenades = KFGameReplicationInfo( WorldInfo.GRI ).bAllowGrenadePurchase;
 
 	KFP = KFPawn_Human( Pawn );
     if( KFP != none )
@@ -1010,14 +1030,7 @@ function InitializeOwnedItemList()
 	   	ArmorItem.AmmoPricePerMagazine = TraderItems.ArmorPrice * CurrentPerk.GetArmorDiscountMod();
 	   	ArmorItem.DefaultItem.WeaponDef = TraderItems.ArmorDef;
 
-		// init grenade purchase values
-		GrenadeItem.SpareAmmoCount = MyKFIM.GrenadeCount;
-		GrenadeItem.MaxSpareAmmo = AllowGrenades ? KFP.GetPerk().MaxGrenadeCount : 0;
-	   	GrenadeItem.AmmoPricePerMagazine = TraderItems.GrenadePrice;
-	   	GrenadeItem.DefaultItem.WeaponDef = CurrentPerk.GetGrenadeWeaponDef();
-
-		// @temp: fill in stuff that is normally serialized in the archetype
-		GrenadeItem.DefaultItem.AssociatedPerkClasses[0] = CurrentPerk.Class;
+		InitializeOwnedGrenade();
 
 		for ( Inv = MyKFIM.InventoryChain; Inv != none; Inv = Inv.Inventory )
 		{
@@ -1387,7 +1400,8 @@ function RemoveWeaponFromOwnedItemList( optional int OwnedListIdx = INDEX_NONE, 
 
 	// add a single to owned items when removing a dual
 	//if( ItemInfo.DefaultItem.SingleClassName != '' )
-	if( ItemInfo.DefaultItem.SingleClassName == 'KFWeap_Pistol_9mm' )
+	if( ItemInfo.DefaultItem.SingleClassName == 'KFWeap_Pistol_9mm'
+		|| ItemInfo.DefaultItem.SingleClassName == 'KFWeap_HRG_93R' )
 	{
 		// When removing a dual, always add a single to the owned list so that it shows up in the player inventory UI.
 		// If we don't own the single, then also buy it (add it to the transaction list).

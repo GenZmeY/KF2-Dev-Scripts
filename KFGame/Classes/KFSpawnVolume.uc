@@ -109,7 +109,7 @@ enum ESquadType
 	EST_Large,
 	EST_Medium,
 	EST_Small,
-	EST_Crawler,
+	EST_Crawler
 };
 /** If set, players cannot spawn here, only AI (Versus) */
 var() bool bNoPlayers;
@@ -153,6 +153,12 @@ var protected transient float	NextSpawnTime;
 var() float				UnTouchCoolDownTime;
 /** When was the last time a player touched it.  */
 var protected transient	float	LastUnTouchTime;
+
+/** If true, will be used to spawn forcing to use the override pawn list -> MapReplacePawnClass */
+var() bool bForceUseMapReplacePawn;
+
+/** If true, this volume will be disabled for Bounty Hunt Spawn */
+var() bool bDisableForBountyHuntSpawn;
 
 /*********************************************************************************************
 Debug
@@ -502,6 +508,9 @@ DefaultProperties
 	DesirabilityMod=1.f
 	MaxHeightDiffToPlayers=500.f // 5 meters
 	LargestSquadType=EST_Large
+
+	bForceUseMapReplacePawn=false
+	bDisableForBountyHuntSpawn=false
 
 	// Debugging
 	bDebugVisibilityChecks=false

@@ -392,7 +392,7 @@ function NotifyOwnerTakeHit(class<KFDamageType> DamageType, vector HitLoc, vecto
 		KFPOwner.EndSpecialMove();
 
 		// force stumble when damaged from a grapple
-		if ( KFPOwner.CanDoSpecialMove(SM_Stumble) && DamageType.default.StumblePower > 0 )
+		if ( KFPOwner.CanDoSpecialMove(SM_Stumble) && DamageType != none && DamageType.default.StumblePower > 0 )
 		{
 			KFPOwner.DoSpecialMove(SM_Stumble,,, class'KFSM_Stumble'.static.PackBodyHitSMFlags(KFPOwner, HitDir));
 		}

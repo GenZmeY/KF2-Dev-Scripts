@@ -2059,7 +2059,7 @@ final simulated function bool CanReloadWeapon()
 	return TRUE;
 }
 
-function KFWeapon FindBestWeapon()
+function KFWeapon FindBestWeapon(optional bool bCheckHasAmmo = false, optional bool allow9mm = true)
 {
 	local float BestPrimaryRating, BestSecondaryRating, BestMeleeRating;
 	local KFWeapon BestWeapon, BestPrimary, BestSecondary, BestMelee, TempWeapon;
@@ -2070,6 +2070,22 @@ function KFWeapon FindBestWeapon()
 		if (!TempWeapon.bDropOnDeath || !TempWeapon.CanThrow())
 		{
 			continue;
+		}
+
+		if (allow9mm == false)
+		{
+			if (TempWeapon.bIsBackupWeapon && !TempWeapon.IsMeleeWeapon())
+			{
+				continue;
+			}
+		}
+
+		if (bCheckHasAmmo)
+		{
+			if ( TempWeapon.HasAnyAmmo() == false )
+			{
+				continue;
+			}
 		}
 
 		// Collect the best weapons from each inventory group
@@ -2100,7 +2116,8 @@ function KFWeapon FindBestWeapon()
 	}
 
 	// Get our best possible weapon from all 3 categories and throw it
-	BestWeapon = BestPrimary != none ? BestPrimary : (BestSecondary != none ? BestSecondary : BestMelee);
+	BestWeapon = BestPrimary != none ? BestPrimary : (BestMelee != none ? BestMelee : BestSecondary);
+
 	return BestWeapon;
 }
 /**
@@ -2725,6 +2742,13 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 	// NVCHANGE_BEGIN - RLS - Debugging Effects
 	bAllowHeadshot = CanCountHeadshots();
 	OldHealth = Health;
+
+	KFDT = class<KFDamageType>(DamageType);
+    if ( KFDT != None )
+	{
+		KFDT.static.ModifyInstantDamage(self, Damage, InstigatedBy);
+	}
+
 	Super.TakeDamage(Damage, InstigatedBy, HitLocation, Momentum, DamageType, HitInfo, DamageCauser);
 
 	// using the passed in damage type instead of the hitfxinfo since that doesn't get updated when zero damage is done
@@ -2740,7 +2764,6 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 	// damage.  Requires valid DamageCauser, 'None' for DoT, to prevent recursion
 	if ( Health < OldHealth && DamageCauser != None )
 	{
-		KFDT = class<KFDamageType>(DamageType);
         if ( KFDT != None )
 		{
 			KFDT.static.ApplySecondaryDamage(self, Damage, InstigatedBy);

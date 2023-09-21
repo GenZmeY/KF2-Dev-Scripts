@@ -128,6 +128,7 @@ function UpdateWaveCount()
 function UpdateZEDCount()
 {
     local int CurrentZEDCount;
+    local KFPlayerController_WeeklySurvival KFPC_WS;
 
     if( KFGRI == none )
     {
@@ -149,6 +150,16 @@ function UpdateZEDCount()
 
     // # of ZEDs left to kill in this wave.
     CurrentZEDCount = KFGRI.AIRemaining;
+
+    if (KFGRI.IsBountyHunt())
+    {
+        KFPC_WS = KFPlayerController_WeeklySurvival(KFPC);
+        if (KFPC_WS != none) 
+        {
+            CurrentZEDCount += KFPC_WS.BountyHuntCurrentExtraZeds;
+        }
+    }
+
     if(LastZEDCount != CurrentZEDCount)
     {
         SetInt("remainingZEDs" ,CurrentZEDCount);

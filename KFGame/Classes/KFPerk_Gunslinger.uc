@@ -60,9 +60,6 @@ var private const		int 					MaxHeadShotComboCount;
 var private const		float 					HeadShotCountdownIntervall;
 var private const		float					SteadySkillDamageModifier;
 
-/*********************************************************************************************
-* @name	 Perk init and spawning
-******************************************************************************************** */
 /**
  * @brief Weapons and perk skills can affect the jog/sprint speed
  *
@@ -825,6 +822,7 @@ DefaultProperties
 	PerkIcon=Texture2D'UI_PerkIcons_TEX.UI_PerkIcon_Gunslinger'
 
 	PrimaryWeaponDef=class'KFWeapDef_Remington1858Dual'
+
 	KnifeWeaponDef=class'KFWeapDef_Knife_Gunslinger'
 	GrenadeWeaponDef=class'KFWeapDef_Grenade_Gunslinger'
 
@@ -870,11 +868,14 @@ DefaultProperties
    	AdditionalOnPerkWeaponNames(0)="KFWeap_Pistol_9mm"
    	AdditionalOnPerkWeaponNames(1)="KFWeap_Pistol_Dual9mm"
    	AdditionalOnPerkWeaponNames(2)="KFWeap_GrenadeLauncher_HX25"
+	AdditionalOnPerkWeaponNames(3)="KFWeap_HRG_93R"
+	AdditionalOnPerkWeaponNames(4)="KFWeap_HRG_93R_Dual"
    	AdditionalOnPerkDTNames(0)="KFDT_Ballistic_9mm"
    	AdditionalOnPerkDTNames(1)="KFDT_Ballistic_Pistol_Medic"
    	AdditionalOnPerkDTNames(2)="KFDT_Ballistic_Winchester"
    	AdditionalOnPerkDTNames(3)="KFDT_Ballistic_HX25Impact"
    	AdditionalOnPerkDTNames(4)="KFDT_Ballistic_HX25SubmunitionImpact"
+	AdditionalOnPerkDTNames(5)="KFDT_Ballistic_HRG_93R"
 
    	PerkSkills(EGunslingerShootnMove)=(Name="ShootnMove",IconPath="UI_PerkTalent_TEX.Gunslinger.UI_Talents_Gunslinger_Steady",Increment=0.f,Rank=0,StartingValue=2.f,MaxValue=2.f)
 	PerkSkills(EGunslingerQuickSwitch)=(Name="QuickSwitch",IconPath="UI_PerkTalent_TEX.Gunslinger.UI_Talents_Gunslinger_QuickSwitch",Increment=0.f,Rank=0,StartingValue=0.5f,MaxValue=0.5f)

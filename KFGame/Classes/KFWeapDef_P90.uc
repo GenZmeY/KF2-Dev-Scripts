@@ -15,7 +15,7 @@ DefaultProperties
 	WeaponClassPath="KFGameContent.KFWeap_SMG_P90"
 
 	BuyPrice=1100
-	AmmoPricePerMag=40 //50
+	AmmoPricePerMag=36 // 40 //50
 	ImagePath="WEP_UI_P90_TEX.UI_WeaponSelect_FNP90"
 
 	EffectiveRange=70

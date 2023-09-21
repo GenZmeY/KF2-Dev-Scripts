@@ -2800,9 +2800,10 @@ function DoFleeFrom( actor FleeFrom,
 	optional float FleeDuration,
 	optional float FleeDistance,
 	optional bool bShouldStopAtGoal=false,
-	optional bool bFromFear=false )
+	optional bool bFromFear=false,
+	optional bool bUseRandomDirection=false )
 {
-	class'AICommand_Flee'.static.FleeFrom( self, FleeFrom, FleeDuration, FleeDistance, bShouldStopAtGoal );
+	class'AICommand_Flee'.static.FleeFrom( self, FleeFrom, FleeDuration, FleeDistance, bShouldStopAtGoal, bUseRandomDirection );
 }
 
 /*
@@ -5555,6 +5556,11 @@ function HardCoreCheckStuckTimer()
 
 function bool AmIAllowedToSuicideWhenStuck()
 {
+	if (MyKFPawn.bIsBountyHuntObjective)
+	{
+		return false;
+	}
+
 	return true;
 }
 

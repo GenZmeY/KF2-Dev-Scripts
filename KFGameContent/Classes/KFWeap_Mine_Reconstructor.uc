@@ -753,7 +753,7 @@ simulated function int GetChargeLevel()
 
 static simulated event EFilterTypeUI GetTraderFilter()
 {
-    return FT_Flame;
+    return FT_Projectile;
 }
 
 static simulated function float CalculateTraderWeaponStatDamage()

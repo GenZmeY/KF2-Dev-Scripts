@@ -316,12 +316,40 @@ function GiveWeapon( Pawn P )
 	local KFInventoryManager KFIM;
 	local Inventory Inv;
 
+	// Give us the weapon if we do not have it
+	InventoryClass = ItemPickups[ PickupIndex ].ItemClass;
+
 	// Check if we have the weapon
 	KFIM = KFInventoryManager( P.InvManager );
+
+	// For HRG93R and 9mm pistols, if one of the other type is picked just give the one owned
+	if (KFIM.Is9mmInInventory())
+	{
+		if (InventoryClass.name == 'KFWeap_HRG_93R')
+		{
+			InventoryClass = class<Weapon>(DynamicLoadObject(class'KfWeapDef_9mm'.default.WeaponClassPath, class'Class'));
+		}
+		else if (InventoryClass.name == 'KFWeap_HRG_93R_Dual')
+		{
+			InventoryClass = class<Weapon>(DynamicLoadObject(class'KfWeapDef_9mmDual'.default.WeaponClassPath, class'Class'));
+		}
+	}
+	else
+	{
+		if(InventoryClass.name == 'KFWeap_Pistol_9mm')
+		{
+			InventoryClass = class<Weapon>(DynamicLoadObject(class'KFWeapDef_HRG_93R'.default.WeaponClassPath, class'Class'));
+		}
+		else if (InventoryClass.name == 'KFWeap_Pistol_Dual9mm')
+		{
+			InventoryClass = class<Weapon>(DynamicLoadObject(class'KFWeapDef_HRG_93R_Dual'.default.WeaponClassPath, class'Class'));
+		}
+	}
+
 	foreach KFIM.InventoryActors( class'KFWeapon', KFW )
 	{
-		KFWeaponClass = class<KFWeapon>( ItemPickups[PickupIndex].ItemClass );
-		if ( KFW.class == ItemPickups[ PickupIndex ].ItemClass )
+		KFWeaponClass = class<KFWeapon>( InventoryClass );
+		if ( KFW.class == InventoryClass )
 		{
 			// if this isn't a dual-wield class, then we can't carry another
 			if( KFW.DualClass == none )
@@ -338,12 +366,11 @@ function GiveWeapon( Pawn P )
 		}
 	}
 
-	// Give us the weapon if we do not have it
-	InventoryClass = ItemPickups[ PickupIndex ].ItemClass;
 	Inv = KFIM.CreateInventory(InventoryClass, true);
 
 	if( Inv != none )
 	{
+		
         KFW = KFWeapon(Inv);
         if( KFW != none )
         {

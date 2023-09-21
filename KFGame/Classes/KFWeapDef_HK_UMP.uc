@@ -12,7 +12,7 @@ DefaultProperties
     WeaponClassPath="KFGameContent.KFWeap_SMG_HK_UMP"
 
     BuyPrice=1200
-    AmmoPricePerMag=36 //45
+    AmmoPricePerMag=32 // 36 //45
     ImagePath="WEP_UI_HK_UMP_TEX.UI_WeaponSelect_UMP"
 
     EffectiveRange=70

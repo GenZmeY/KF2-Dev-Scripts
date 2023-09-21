@@ -988,6 +988,8 @@ var repnotify Actor TargetingCompRepActor;
 // To force the crosshair for showing up even if there's no spread
 var bool bForceCrosshair;
 
+const MinFireIntervalToTriggerSync = 0.23f;
+
 cpptext
 {
 	// Actor
@@ -6563,6 +6565,11 @@ simulated state WeaponFiring
 		{
 			StopLoopingFireEffects(CurrentFireMode);
 		}
+
+		if (WorldInfo.NetMode == NM_Client && bAllowClientAmmoTracking && FireInterval[CurrentFireMode] <= MinFireIntervalToTriggerSync)
+		{
+			SyncCurrentAmmoCount(CurrentFireMode, AmmoCount[CurrentFireMode]);
+		}
 	}
 
 	/** Override to continue any looping fire anims */
@@ -6604,6 +6611,14 @@ simulated state WeaponFiring
 		}
 
 		return 1.f / ScaledRate;
+	}
+}
+
+unreliable server function SyncCurrentAmmoCount(byte FireMode, byte CurrentAmmoCount)
+{
+	if(AmmoCount[FireMode] != CurrentAmmoCount)
+	{
+		AmmoCount[FireMode] = CurrentAmmoCount;
 	}
 }
 

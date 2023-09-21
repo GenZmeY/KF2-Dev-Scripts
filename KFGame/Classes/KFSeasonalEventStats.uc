@@ -81,3 +81,4 @@ simulated function OnHitTaken();
 simulated function OnHitGiven(class<DamageType> DT);
 simulated function OnWeaponPurchased(class<KFWeaponDefinition> WeaponDef, int Price);
 simulated function OnAfflictionCaused(EAfflictionType Type);
+simulated function OnCollectibleFound(int Limit);

@@ -17,10 +17,10 @@ var localized string NoPasswordString, NoMutatorsString, NotFullString, NotEmpty
 var array<string> FilterStrings;
 
 var config Bool bNoPassword, bNoMutators, bNotFull, bNotEmpty, bUsesStats, bCustom, bDedicated, bVAC_Secure, bInLobby, bInProgress, bOnlyStockMaps, bOnlyCustomMaps, bLimitServerResults, bNoLocalAdmin, bNoSeasonalSkins;
-var config byte SavedGameModeIndex, SavedMapIndex, SavedDifficultyIndex, SavedLengthIndex, SavedPingIndex;
+var config byte SavedGameModeIndex, SavedMapIndex, SavedDifficultyIndex, SavedLengthIndex, SavedPingIndex, SavedWeeklySelectorIndex;
 
 var  Bool bNoPasswordPending, bNoMutatorsPending, bNotFullPending, bNotEmptyPending, bUsesStatsPending, bCustomPending, bDedicatedPending, bVAC_SecurePending, bInLobbyPending, bInProgressPending, bOnlyStockMapsPending, bOnlyCustomMapsPending, bLimitServerResultsPending, bNoLocalAdminPending, bNoSeasonalSkinsPending;
-var  byte SavedGameModeIndexPending, SavedMapIndexPending, SavedDifficultyIndexPending, SavedLengthIndexPending, SavedPingIndexPending;
+var  byte SavedGameModeIndexPending, SavedMapIndexPending, SavedDifficultyIndexPending, SavedLengthIndexPending, SavedPingIndexPending, SavedWeeklySelectorIndexPending;
 
 var transient string CachedMapName, CachedModeName;
 var transient int CachedDifficulty, CachedLength;
@@ -93,6 +93,12 @@ function AdjustSavedFiltersToMode()
 		SavedLengthIndex = 255;
 	}
 	SavedLengthIndexPending = SavedLengthIndex;
+
+	if (SavedGameModeIndex != 1)
+	{
+		SavedWeeklySelectorIndex = 0;
+	}
+	SavedWeeklySelectorIndexPending = SavedWeeklySelectorIndex;
 }
 
 exec native function string GetSelectedMap() const;
@@ -104,6 +110,8 @@ exec native function int GetSelectedGameLength() const;
 //@SABER_BEGIN - Getting current value for ping filtering
 native function int GetMaxPing() const;
 //@SABER_END
+
+exec native function int GetWeeklySelectorIndex() const;
 
 function InitFiltersArray()
 {
@@ -141,6 +149,7 @@ function LocalizeText()
 	LocalizedObject.SetString("difficulty", ServerMenu.DifficultyString);
 	LocalizedObject.SetString("length", ServerMenu.LengthString);
 	LocalizedObject.SetString("ping", ServerMenu.PingString);
+	LocalizedObject.SetString("weeklyIndex", ServerMenu.WeeklyIndexString);
 
 	SetObject("localizedText", LocalizedObject);
 
@@ -150,6 +159,7 @@ function LocalizeText()
 	CreateList("difficultyScrollingList", class'KFCommon_LocalizedStrings'.static.GetDifficultyStringsArray(), SavedDifficultyIndex);
 	CreateList("lengthScrollingList", class'KFCommon_LocalizedStrings'.static.GetLengthStringsArray(), SavedLengthIndex);
 	CreateList("pingScrollingList", ServerMenu.PingOptionStrings, SavedPingIndex);
+	CreateList("weeklyIndexScrollingList", class'KFCommon_LocalizedStrings'.static.GetWeeklySelectorStringsArray(), SavedWeeklySelectorIndex, -1, true, SavedGameModeIndexPending == 1);
 
 	LocalizeCheckBoxes();
 }
@@ -227,7 +237,10 @@ function SetModeMenus(string DifficultyListString, string LengthListString, int 
 	CreateList(LengthListString, class'KFCommon_LocalizedStrings'.static.GetLengthStringsArray(), NewLengthIndex, class'KFGameInfo'.default.GameModes[UseModeIndex].Lengths);
 }
 
-function CreateList( string ListString, array<string> TextArray, int SelectedIndex, optional int MaxListLength)
+function CreateList( string ListString, array<string> TextArray, int SelectedIndex
+					, optional int MaxListLength = -1
+					, optional bool bAnyIsFirst = false
+					, optional bool bEnabled = true)
 {
 	local int i;
 	local GFxObject OptionList;
@@ -252,33 +265,73 @@ function CreateList( string ListString, array<string> TextArray, int SelectedInd
 	{
 		SelectedIndex = 255;
 	}
+
+	if (bAnyIsFirst)
+	{
+		//Add the any choice
+		ItemSlot = CreateObject( "Object" );
+		ItemSlot.SetString("label", class'KFCommon_LocalizedStrings'.default.NoPreferenceString);
+		DataProvider.SetElementObject(0, ItemSlot);		
+	}
+
 	for ( i = 0; i < ListLength; i++ )
 	{
 		ItemSlot = CreateObject( "Object" );
 		TempString = TextArray[i];
 		ItemSlot.SetString("label", TempString );
-		DataProvider.SetElementObject(i, ItemSlot);
-    }
+		DataProvider.SetElementObject(bAnyIsFirst ? i + 1 : i, ItemSlot);
+	}
 
-    //Add the any choice
-	ItemSlot = CreateObject( "Object" );
-	ItemSlot.SetString("label", class'KFCommon_LocalizedStrings'.default.NoPreferenceString);
-	DataProvider.SetElementObject(i, ItemSlot);
+	if (bAnyIsFirst == false)
+	{
+		//Add the any choice
+		ItemSlot = CreateObject( "Object" );
+		ItemSlot.SetString("label", class'KFCommon_LocalizedStrings'.default.NoPreferenceString);
+		DataProvider.SetElementObject(i, ItemSlot);
+	}
+
 	if(SelectedIndex != 255)
 	{
 		OptionList.SetInt("selectedIndex", SelectedIndex);
 	}
+
 	OptionList.SetObject("dataProvider", DataProvider);
-	if(SelectedIndex < ListLength)
+
+	if (bEnabled)
 	{
-		ButtonLabel = TextArray[SelectedIndex];
+		if (bAnyIsFirst)
+		{
+			ButtonLabel = class'KFCommon_LocalizedStrings'.default.NoPreferenceString;
+		}
+		else
+		{
+			if(SelectedIndex < ListLength)
+			{
+				ButtonLabel = TextArray[SelectedIndex];
+			}
+			else
+			{
+				ButtonLabel = "-";
+			}
+		}
 	}
 	else
 	{
 		ButtonLabel = "-";
 	}
+
 	OptionList.GetObject("associatedButton").SetString("label", ButtonLabel);
+
 	OptionList.ActionScriptVoid("invalidateData");
+
+	if (bEnabled )
+	{
+		OptionList.GetObject("associatedButton").SetBool("enabled", true);
+	}
+	else
+	{
+		OptionList.GetObject("associatedButton").SetBool("enabled", false);
+	}
 }
 
 function ModeChanged(int index)
@@ -321,6 +374,11 @@ function PingChanged(int index)
 	SavedPingIndexPending = index;
 }
 
+function WeeklySelectorChanged(int index)
+{
+	SavedWeeklySelectorIndexPending = index;
+}
+
 function ApplyFilters()
 {
 	bNoPassword 	= bNoPasswordPending;
@@ -344,7 +402,10 @@ function ApplyFilters()
 	SavedDifficultyIndex 	= SavedDifficultyIndexPending;
 	SavedLengthIndex 		= SavedLengthIndexPending;
 	SavedPingIndex 			= SavedPingIndexPending;
-	//`log("ApplyFilters:"@bCustom);
+	SavedWeeklySelectorIndex = SavedWeeklySelectorIndexPending;
+	
+	//`Log("ApplyFilters");
+	
 	SaveConfig();
 }
 
@@ -370,7 +431,9 @@ function ClearPendingValues()
 	SavedDifficultyIndexPending 	= SavedDifficultyIndex;
 	SavedLengthIndexPending 		= SavedLengthIndex;
 	SavedPingIndexPending 			= SavedPingIndex;
-	//`log("ClearPendingValues:"@bCustom);
+	SavedWeeklySelectorIndexPending	= SavedWeeklySelectorIndex;
+	
+	//`Log("ClearPendingValues");
 }
 
 function ResetFilters()
@@ -396,6 +459,7 @@ function ResetFilters()
 	SavedDifficultyIndex = 255;
 	SavedLengthIndex = 255;
 	SavedPingIndex = 255;
+	SavedWeeklySelectorIndex = 0;
 	//`log("ResetFilters:"@bCustom);
 
 	ClearPendingValues();

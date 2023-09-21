@@ -59,6 +59,68 @@ struct ContaminationModeData
 
 var ContaminationModeData ContaminationMode;
 
+struct BountyHuntSpecialZedData
+{
+    var() KFPawn_Monster SpecialZed;
+    var() vector SpecialZedLastLocation;
+    var() int MaxHealthReference;
+    var() int LastThresholdApplied;
+    var() bool FledFirstTime;
+    var() KFPlayerController FleeingFrom;
+    var() int LastAttackTime;
+    var() int LastAttackCanFinishSeconds;
+    var() int LastBlockingVolumeFleeTime;
+    var() float FleeMovementDelta;
+    var() int LastFleeMovementDeltaCheckTime;
+    var() int LastWakeupTime;
+
+    structdefaultproperties
+	{
+        SpecialZed = none
+        MaxHealthReference = 0.f
+        LastThresholdApplied = -1
+        FledFirstTime = false
+        FleeingFrom = none
+        LastAttackTime = 0
+        LastAttackCanFinishSeconds = 0
+        LastBlockingVolumeFleeTime = 0
+        FleeMovementDelta = 0.f
+        LastFleeMovementDeltaCheckTime = 0
+        LastWakeupTime = 0
+    }
+};
+
+struct BountyHuntSpawnVolumeData
+{
+    var() KFSpawnVolume SpawnVolume;
+    var() float DistanceToPlayers;
+};
+
+struct BountyHuntData
+{
+    var() int MaxNumberOfSpecialZeds;
+    var() int SpawnedNumberOfSpecialZeds;
+    var() int NumDead;
+    var() int CurrentDosh;
+	var() int CurrentDoshNoAssist;
+    var() array<BountyHuntSpecialZedData> SpecialZedsData;
+    var() bool NextSpawnIsBounty;
+    var() int NumberOfPlayers;
+    var() bool IsOnLastLevel;
+
+    structdefaultproperties
+	{
+        MaxNumberOfSpecialZeds = 0
+        SpawnedNumberOfSpecialZeds = 0
+        NumDead = 0
+        NextSpawnIsBounty = false
+        NumberOfPlayers = 0
+        IsOnLastLevel = false
+    }
+};
+
+var BountyHuntData BountyHunt;
+
 //-----------------------------------------------------------------------------
 // Statics
 static event class<GameInfo> SetGameType(string MapName, string Options, string Portal)
@@ -112,6 +174,7 @@ event PreBeginPlay()
     if (Role == Role_Authority && MyKFGRI != none)
     {
         MyKFGRI.NotifyWeeklyEventIndex(ActiveEventIdx);
+
         if ( OutbreakEvent.ActiveEvent.bUnlimitedWeaponPickups)
         {
             MyKFGRI.NotifyBrokenTrader();
@@ -136,6 +199,8 @@ function CreateOutbreakEvent()
 	//      The beginning of time to reset the loop can be changed in UKFGameEngine::UpdateTimedGameEvents
 
 	local KFGameEngine KGE;
+	local string LocalURL;
+    local int ReadWeeklySelectorIndex;
 
 	super.CreateOutbreakEvent();
 
@@ -144,7 +209,26 @@ function CreateOutbreakEvent()
 	{
 		ActiveEventIdx = KGE.GetWeeklyEventIndex() % OutbreakEvent.SetEvents.Length;
 	}
-	ActiveEventIdx = OutbreakEvent.SetActiveEvent(ActiveEventIdx);
+
+	LocalURL = WorldInfo.GetLocalURL();
+    ReadWeeklySelectorIndex = -1;
+
+	LocalURL = Split(LocalURL, "?");
+
+	ReadWeeklySelectorIndex = GetIntOption(LocalURL, "WeeklySelectorIndex", ReadWeeklySelectorIndex);
+
+    if (ReadWeeklySelectorIndex != -1)
+    {
+        WeeklySelectorIndex = ReadWeeklySelectorIndex;
+    }
+
+    // This will apply WeeklySelectorIndex
+	ActiveEventIdx = OutbreakEvent.SetActiveEvent(ActiveEventIdx, self);
+
+	if (Role == Role_Authority && MyKFGRI != none)
+    {
+		MyKFGRI.NotifyWeeklyEventIndex(ActiveEventIdx);
+	}
 }
 
 function bool UsesModifiedDifficulty()
@@ -184,7 +268,7 @@ function SetPickupItemList()
     local KFPickupFactory_Item ItemFactory;
     local int Idx;
     
-    if (MyKFGRI.IsGunGameMode())
+    if (MyKFGRI != none && MyKFGRI.IsGunGameMode())
     {
         foreach AllActors(class'KFPickupFactory_Item', ItemFactory)
         {
@@ -316,6 +400,16 @@ function float GetAdjustedAIDoshValue( class<KFPawn_Monster> MonsterClass )
 
 protected function ScoreMonsterKill( Controller Killer, Controller Monster, KFPawn_Monster MonsterPawn )
 {
+    if (MyKFGRI.IsBountyHunt())
+    {
+        if (MonsterPawn.bIsBountyHuntObjective)
+        {
+		    BountyHuntScoreAfterKilling(MonsterPawn, Killer);
+
+			return;
+        }
+    }
+
     super.ScoreMonsterKill(Killer, Monster, MonsterPawn);
 
 	if(OutbreakEvent.ActiveEvent.bHealAfterKill)
@@ -457,6 +551,75 @@ function GunGameScoreAssistanceAfterKilling(KFPawn_Monster MonsterPawn , Control
     }
 }
 
+function BountyHuntScoreAfterKilling(KFPawn_Monster MonsterPawn , Controller Killer)
+{
+    local int i;
+    local KFPlayerController_WeeklySurvival KFPC_WS;
+    local array<DamageInfo> DamageHistory;
+    local KFPlayerReplicationInfo DamagerKFPRI;
+    local array<KFPlayerController> Attackers;
+
+    DamageHistory = MonsterPawn.DamageHistory;
+
+    `Log("Killed Bounty : " $MonsterPawn);
+
+    KFPC_WS = KFPlayerController_WeeklySurvival(Killer);
+    if (KFPC_WS != none)
+    {
+		Attackers.AddItem(KFPC_WS);
+
+        `Log("Killed Bounty, Extra Dosh Given To  (Killer) : " $Killer);
+
+        KFPlayerReplicationInfo(Killer.PlayerReplicationInfo).AddDosh(BountyHunt.CurrentDosh, true);
+    }
+
+ 	for (i = 0; i < DamageHistory.Length; i++)
+	{
+		if (DamageHistory[i].DamagerController != none
+			&& DamageHistory[i].DamagerController.bIsPlayer
+			&& DamageHistory[i].DamagerPRI.GetTeamNum() == 0
+			&& DamageHistory[i].DamagerPRI != none)
+		{
+			DamagerKFPRI = KFPlayerReplicationInfo(DamageHistory[i].DamagerPRI);
+			if (DamagerKFPRI != none)
+			{
+                KFPC_WS = KFPlayerController_WeeklySurvival(DamagerKFPRI.Owner);
+                if (KFPC_WS != none && KFPC_WS != Killer)
+                {
+                    if (Attackers.Find(KFPC_WS) < 0)
+                    {
+                        if (KFPC_WS.Pawn.Health > 0)
+                        {
+							Attackers.AddItem(KFPC_WS);
+
+                            `Log("Killed Bounty, Extra Dosh Given To (Assistance) : " $KFPC_WS);
+
+                            KFPlayerReplicationInfo(KFPC_WS.PlayerReplicationInfo).AddDosh(BountyHunt.CurrentDosh, true);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+	// Give also dosh to players that didn't do a thing
+    foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+    {
+        if (KFPC_WS.IsInState('Spectating') == false
+            && KFPC_WS.PlayerReplicationInfo.bOnlySpectator == false)
+        {
+			if (Attackers.Find(KFPC_WS) < 0)
+            {
+				Attackers.AddItem(KFPC_WS);
+                
+				`Log("Killed Bounty, Extra Dosh Given To (No Assistance) : " $KFPC_WS);
+
+                KFPlayerReplicationInfo(KFPC_WS.PlayerReplicationInfo).AddDosh(BountyHunt.CurrentDoshNoAssist, true);
+			}
+        }
+    }
+}
+
 function StartMatch()
 {
     super.StartMatch();
@@ -576,6 +739,11 @@ function Tick(float DeltaTime)
             UpdateContaminationModeTrader();
         }
     }
+
+    if (MyKFGRI.IsBountyHunt())
+    {
+        UpdateBountyHunt(DeltaTime);
+    }
 }
 
 function TickZedTime( float DeltaTime )
@@ -670,6 +838,20 @@ function GrantExtraDoshOnWaveWon()
             }
         }
     }
+
+
+    if (MyKFGRI.IsBountyHunt())
+    {
+	    ExtraDosh = MyKFGRI.BountyHuntExtraDosh();
+        foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+	    {
+            if (KFPC.IsInState('Spectating') == false
+                && KFPC.PlayerReplicationInfo.bOnlySpectator == false)
+            {
+                KFPlayerReplicationInfo(KFPC.PlayerReplicationInfo).AddDosh(ExtraDosh, true);
+            }
+        }
+	}
 }
 
 function ClearZedTimePCTimers()
@@ -701,6 +883,9 @@ function EndOfMatch(bool bVictory)
 
 function StartWave()
 {
+    local int BountyHuntIt, BountyHuntNumPlayerIt, i;
+    local KFPlayerController_WeeklySurvival KFPC_WS;
+
     super.StartWave();
 
     // Stop Global Damage for boss wave
@@ -758,6 +943,107 @@ function StartWave()
         ContaminationMode.DamageCurrentTimer = ContaminationMode.DamageTimer;
         ContaminationMode.ObjectiveHidden = false;
         ContaminationMode.CanUpdate = true;
+    }
+
+    if (MyKFGRI.IsBountyHunt())
+    {
+        BountyHunt.MaxNumberOfSpecialZeds = 0;
+        BountyHunt.SpawnedNumberOfSpecialZeds = 0;
+        BountyHunt.NumDead = 0;
+        BountyHunt.NumberOfPlayers = 0;
+        BountyHunt.SpecialZedsData.Remove(0, BountyHunt.SpecialZedsData.Length);
+        BountyHunt.IsOnLastLevel = false;
+        BountyHunt.NextSpawnIsBounty = false;
+
+        if (WaveNum != WaveMax)
+        {
+            BountyHuntIt = 0;
+
+            // Update to the current level
+            for (BountyHuntIt = 0; BountyHuntIt < OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDataWaves.Length; ++BountyHuntIt)
+            {
+                if (WaveNum == OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDataWaves[BountyHuntIt].Wave)
+                {
+                    break;
+                }
+            }
+
+            if (BountyHuntIt == OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDataWaves.Length)
+            {
+                BountyHuntIt = OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDataWaves.Length - 1;
+            }
+
+            foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+            {
+                if (KFPC_WS.IsInState('Spectating') == false
+                    && KFPC_WS.PlayerReplicationInfo.bOnlySpectator == false)
+                {
+                    BountyHunt.NumberOfPlayers += 1;
+                }
+            }
+
+            for (BountyHuntNumPlayerIt = 0; BountyHuntNumPlayerIt < OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDataWaves[BountyHuntIt].BountyHuntWavePerPlayerZed.Length; ++BountyHuntNumPlayerIt)
+            {
+                if (BountyHunt.NumberOfPlayers == OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDataWaves[BountyHuntIt].BountyHuntWavePerPlayerZed[BountyHuntNumPlayerIt].NumberOfPlayers)
+                {
+                    break;
+                }
+            }
+
+            if (BountyHuntNumPlayerIt == OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDataWaves[BountyHuntIt].BountyHuntWavePerPlayerZed.Length)
+            {
+                BountyHuntNumPlayerIt = OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDataWaves[BountyHuntIt].BountyHuntWavePerPlayerZed.Length - 1;
+            }
+
+            BountyHunt.MaxNumberOfSpecialZeds = OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDataWaves[BountyHuntIt].BountyHuntWavePerPlayerZed[BountyHuntNumPlayerIt].NumberOfZeds;
+            
+            BountyHunt.SpawnedNumberOfSpecialZeds = 0;
+
+            // Update to the current level
+            for (BountyHuntIt = 0; BountyHuntIt < OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDosh.Length; ++BountyHuntIt)
+            {
+                if (BountyHunt.NumberOfPlayers == OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDosh[BountyHuntIt].NumberOfPlayers)
+                {
+                    break;
+                }
+            }
+
+            if (BountyHuntIt == OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDosh.Length)
+            {
+                BountyHuntIt = OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDosh.Length - 1;
+            }
+
+            BountyHunt.CurrentDosh = OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDosh[BountyHuntIt].Dosh;
+			BountyHunt.CurrentDoshNoAssist = OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntDosh[BountyHuntIt].DoshNoAssist;
+
+            foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+            {
+                if (KFPC_WS.Pawn.IsAliveAndWell() == false
+                    || KFPC_WS.PlayerReplicationInfo.bOnlySpectator
+                    || KFPC_WS.IsInState('Spectating'))
+                {
+                    continue;
+                }
+
+                KFPC_WS.DisplayBountyHuntObjective(BountyHunt.MaxNumberOfSpecialZeds);
+            }
+
+            foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+            {
+                KFPC_WS.DisplayBountyHuntStatus(0, BountyHunt.MaxNumberOfSpecialZeds, 0, BountyHunt.CurrentDosh, BountyHunt.CurrentDoshNoAssist);
+            }
+
+            //`Log("BountyHunt.MaxNumberOfSpecialZeds : " $BountyHunt.MaxNumberOfSpecialZeds);
+
+            // Spawn one Bounty Hunt per Player first., respecting BountyHuntMaxCoexistingZeds
+            for (i = 0; i < BountyHunt.NumberOfPlayers; ++i)
+            {
+                if (BountyHunt.SpecialZedsData.Length < OutbreakEvent.ActiveEvent.BountyHuntMaxCoexistingZeds)
+                {
+                    SpawnBountyZed();
+                }
+            }
+        }
     }
 }
 
@@ -1214,11 +1500,26 @@ function NotifyKilled(Controller Killer, Controller Killed, Pawn KilledPawn, cla
     local KFPawn_Monster KFPM;
     local KFPlayerController_WeeklySurvival KFPC_WS_Killer, KFPC_WS_Killed;
     
-    super.NotifyKilled(Killer, Killed, KilledPawn, damageType);
-
     KFPM            = KFPawn_Monster(KilledPawn);
     KFPC_WS_Killer  = KFPlayerController_WeeklySurvival(Killer);
     KFPC_WS_Killed  = KFPlayerController_WeeklySurvival(Killed);
+
+    if (MyKFGRI.IsBountyHunt())
+    {
+        // Special case when we kill last Zed on the wave and there are still Bounty to spawn..
+        if (KFPM != none && KFPM.bIsBountyHuntObjective)
+        {
+            if (MyKFGRI.AIRemaining == 1)
+            {
+               if (BountyHunt.SpawnedNumberOfSpecialZeds < BountyHunt.MaxNumberOfSpecialZeds)
+                {
+                   SpawnBountyZed();
+                }
+            }
+        }
+    }
+
+    super.NotifyKilled(Killer, Killed, KilledPawn, damageType);
 
     if (OutbreakEvent.ActiveEvent.bGunGameMode)
     {       
@@ -1649,7 +1950,7 @@ simulated function RandomPerkWaveStarted()
     {
         if (KFPC_WS.InitialRandomPerk == 255)
         {
-            `Log("PLAYER - RandomPerkWaveStart : " $KFPC_WS);       
+            //`Log("PLAYER - RandomPerkWaveStart : " $KFPC_WS);       
 
             ChooseInitialRandomPerk(KFPC_WS);
         }
@@ -2085,6 +2386,674 @@ function UpdateContaminationMode(float DeltaTime)
                 }
 
                 KFPC_WS.HideContaminationMode();
+            }
+        }
+    }
+}
+
+/*
+ * Weekly 20: Bounty Hunt
+ */
+
+simulated function int WeeklyCurrentExtraNumberOfZeds()
+{
+    if (MyKFGRI.IsBountyHunt())
+    {
+        return BountyHunt.SpecialZedsData.Length;
+    }
+
+	return super.WeeklyCurrentExtraNumberOfZeds();
+}
+
+function SetMonsterDefaults( KFPawn_Monster Monster )
+{
+    local BountyHuntSpecialZedData SpecialZedData;
+    local int i;
+
+    super.SetMonsterDefaults(Monster);
+
+    if (BountyHunt.NextSpawnIsBounty == false)
+    {
+        return;
+    }
+
+    if (Role == Role_Authority && MyKFGRI != none)
+    {
+        if (MyKFGRI.IsBountyHunt())
+        {
+            if (BountyHunt.SpawnedNumberOfSpecialZeds < BountyHunt.MaxNumberOfSpecialZeds)
+            {
+                for (i = 0; i < OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression.Length; ++i)
+                {
+                    if (OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[i].ZedType == Monster.Class)
+                    {
+                        ++BountyHunt.SpawnedNumberOfSpecialZeds;
+
+				        Monster.SetBountyHuntObjective();
+
+                        SpecialZedData.SpecialZed = Monster;
+                        SpecialZedData.MaxHealthReference = Monster.HealthMax;
+
+                        BountyHunt.SpecialZedsData.AddItem(SpecialZedData);
+
+                        //`Log("Monster Converted to Bounty Target : " $Monster);
+                        //`Log("SpawnedNumberOfSpecialZeds : " $BountyHunt.SpawnedNumberOfSpecialZeds);
+                        //`Log("MaxNumberOfSpecialZeds : " $BountyHunt.MaxNumberOfSpecialZeds);
+                        //`Log("NumDead : " $BountyHunt.NumDead);
+
+                        //`Log("Monster . HealthMax : " $Monster.HealthMax);
+                        //`Log("Monster . Health : " $Monster.Health);
+
+                        Monster.HealthMax += Monster.HealthMax * OutbreakEvent.ActiveEvent.BountyHuntSpecialZedBuffHealthRatio;
+                        Monster.Health += Monster.Health * OutbreakEvent.ActiveEvent.BountyHuntSpecialZedBuffHealthRatio;
+
+                        //`Log("Monster . HealthMax : " $Monster.HealthMax);
+                        //`Log("Monster . Health : " $Monster.Health);
+
+                        //`Log("-------");
+
+                        KFAIController(Monster.Controller).BeginCombatCommand(KFAIController(Monster.Controller).GetDefaultCommand(), "Restarting default command", true);
+
+                        // THIS WAKES HIM UP !!!
+                        Monster.TakeDamage(0, none, vect(0,0,0), vect(0,0,0), none);
+
+                        break;
+                    }
+                }
+            }
+        }
+    }
+}
+
+delegate int SortSpawnVolumesDelegate(BountyHuntSpawnVolumeData A, BountyHuntSpawnVolumeData B)
+{
+	if (A.DistanceToPlayers == B.DistanceToPlayers)
+	{
+		return 0;
+	}
+
+	if (A.DistanceToPlayers < B.DistanceToPlayers)
+	{
+		return -1;
+	}
+
+	return 1;
+}
+
+function SpawnBountyZed()
+{
+    local KFSpawnVolume SpawnVolume;
+    local array<BountyHuntSpawnVolumeData> SpawnVolumeDataList;
+    local BountyHuntSpawnVolumeData SpawnVolumeData;
+    local int RangeRandom;
+    local class<KFPawn_Monster> ZedToAdd;
+    local array< class<KFPawn_Monster> > AvailableZeds;
+	local array< class<KFPawn_Monster> > SpawnList;
+    local int i, j, RandNumber, VolumeIndex;
+    local KFAISpawnManager AISpawnManager;
+    local KFPlayerController KFPC;
+    local bool CheckForSpawnVolumeInSpecialMap;
+
+    BountyHunt.NextSpawnIsBounty = true;
+
+    for (i = 0; i < OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression.Length; ++i)
+    {
+        for (j = 0; j < OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[i].BountyHuntSpecialZedPerWave.Length; ++j)
+        {
+            if (OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[i].BountyHuntSpecialZedPerWave[j].Wave == WaveNum)
+            {
+                ZedToAdd = OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[i].ZedType;
+
+                AvailableZeds.AddItem(ZedToAdd);
+            }
+        }
+    }
+
+    if (AvailableZeds.Length > 0)
+    {
+        RandNumber = Rand(AvailableZeds.Length);
+        SpawnList.AddItem(AvailableZeds[RandNumber]);
+
+        AISpawnManager = KFGameInfo(WorldInfo.Game).SpawnManager;
+
+        // Choose SpawnVolume
+
+            // Check for BOSS type only on some maps (where the points are far unreachable)
+
+        CheckForSpawnVolumeInSpecialMap = WorldInfo.GetMapName() == "Airship"
+                                            || WorldInfo.GetMapName() == "CastleVolter"
+                                            || WorldInfo.GetMapName() == "Halloween 2023";
+
+	    for ( VolumeIndex = 0; VolumeIndex < AISpawnManager.SpawnVolumes.Length; VolumeIndex++ )
+        {
+            SpawnVolume = AISpawnManager.SpawnVolumes[VolumeIndex];
+
+            // Explicitly deactivated for the map
+            if (SpawnVolume.bDisableForBountyHuntSpawn)
+            {
+                continue;
+            }
+
+            // Select which ones players can't be seen
+            if (SpawnVolume.IsVisible(false))
+            {
+                continue;
+            }
+
+            // Special check for maps
+            if (CheckForSpawnVolumeInSpecialMap)
+            {
+                if (SpawnVolume.LargestSquadType == EST_Boss)
+                {
+                    continue;
+                }
+            }
+
+            SpawnVolumeData.SpawnVolume = SpawnVolume;
+            SpawnVolumeData.DistanceToPlayers = 0.f;
+
+            foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+            {
+                SpawnVolumeData.DistanceToPlayers += VSize(KFPC.Pawn.Location - SpawnVolume.Location);
+            }
+
+            SpawnVolumeDataList.AddItem(SpawnVolumeData);
+        }
+
+        // Order by distance
+        SpawnVolumeDataList.Sort(SortSpawnVolumesDelegate);
+
+        SpawnVolume = none;
+
+        // Select one that's more or less halfway all players
+        if (SpawnVolumeDataList.Length > 0)
+        {
+            if (SpawnVolumeDataList.Length == 1)
+            {
+                SpawnVolume = SpawnVolumeDataList[0].SpawnVolume;
+            }
+            else
+            {
+                // Make sure doesn't go over range...
+                
+                RangeRandom = SpawnVolumeDataList.Length * 0.5f;
+
+                RandNumber = RangeRandom + Rand(RangeRandom);
+
+                if (RandNumber < SpawnVolumeDataList.Length)
+                {
+                    SpawnVolume = SpawnVolumeDataList[RandNumber].SpawnVolume;
+                }
+                else
+                {
+                    SpawnVolume = SpawnVolumeDataList[SpawnVolumeDataList.Length - 1].SpawnVolume;
+                }
+            }
+        }
+        
+        // Fallback
+        if (SpawnVolume == none)
+        {
+            SpawnVolume = SpawnManager.GetBestSpawnVolume(SpawnList, , , True );
+        }
+
+        SpawnVolume.SpawnWave(SpawnList, false);
+    }
+
+    BountyHunt.NextSpawnIsBounty = false;
+}
+
+function UpdateBountyHunt(float DeltaTime)
+{
+    local KFPawn_Monster Monster;
+    local KFAIController MonsterAI;
+    local KFPlayerController KFPC, KFPC_ToFleeFrom;
+    local KFPlayerController_WeeklySurvival KFPC_WS;
+    local AICommand_SpecialMove AICSM;
+    local float WaveProgress, DistanceToPlayer;
+    local int i, BountyHuntZedIt, BountyHuntIt, NewMaxHealth, CurrentHealthIncrease, BaseHealthUpgrade;
+    local vector HitLocation, HitNormal, Destination;
+    local Actor HitActor;
+    local bool CanSpawnByLimit;
+
+    if (MyKFGRI.bWaveIsActive && WaveNum != WaveMax)
+    {
+		if (MyKFGRI.WaveTotalAICount > 0)
+		{
+            // Don't count current alive Bounty Zeds
+			WaveProgress = float(MyKFGRI.AIRemaining - WeeklyCurrentExtraNumberOfZeds()) / float(MyKFGRI.WaveTotalAICount);
+		}
+		else
+		{
+			WaveProgress = 0.f;
+		}
+
+        // Clean up dead ones
+
+        for (i = BountyHunt.SpecialZedsData.Length - 1; i >= 0; --i)
+        {
+            Monster = BountyHunt.SpecialZedsData[i].SpecialZed;
+
+            if (Monster.IsAliveAndWell() == false)
+            {
+                ++BountyHunt.NumDead;
+                BountyHunt.SpecialZedsData.Remove(i, 1);
+            }
+        }
+
+        // Update behaviour
+
+        for (i = 0 ; i < BountyHunt.SpecialZedsData.Length; ++i)
+        {
+            Monster = BountyHunt.SpecialZedsData[i].SpecialZed;
+
+            // Find first node of data for the Zed type we checking,.
+            for (BountyHuntZedIt = 0 ; BountyHuntZedIt < OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression.Length; ++BountyHuntZedIt)
+            {
+                if (OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].ZedType == Monster.class)
+                {
+                    break;
+                }
+            }
+
+            // Update to the current level
+            for (BountyHuntIt = 0 ; BountyHuntIt < OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression.Length ; ++BountyHuntIt)
+            {
+                if (WaveProgress >= OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression[BountyHuntIt].RemainingZedRatio)
+                {
+                    break;
+                }
+            }
+
+            if (BountyHuntIt == OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression.Length)
+            {
+                BountyHuntIt = OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression.Length - 1;
+            } 
+
+            if (Monster.Controller != none)
+	        {
+                MonsterAI = KFAIController(Monster.Controller);
+
+                // Manger flee AI..
+
+                if (MonsterAI != none)
+                {
+                    //`Log("STATE NAME :  "$MonsterAI.GetStateName());
+
+                    // Wak up call every 3 seconds, in case AI is not reacting to default behaviour...
+                    if (WorldInfo.TimeSeconds > BountyHunt.SpecialZedsData[i].LastWakeupTime + 3.f)  
+                    {
+                        BountyHunt.SpecialZedsData[i].LastWakeupTime = WorldInfo.TimeSeconds;
+
+                        // THIS WAKES HIM UP !!!
+                        Monster.TakeDamage(0, none, vect(0,0,0), vect(0,0,0), none);                      
+                    }
+
+                    // Don't assign orders on last threshold level..
+                    if (BountyHunt.SpecialZedsData[i].LastThresholdApplied == OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression.Length - 1)
+                    {
+                        // NOTHING..., the state change is managed below, it cancels orders and assigns default order
+                    }
+                    else
+                    {
+                        // IF we are not fleeing
+                        if (MonsterAI.FindCommandOfClass(class'AICommand_Flee') == none)
+                        {
+                            foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+                            {
+                                // Check for distance and visibility..
+                                
+                                DistanceToPlayer = VSize(KFPC.Pawn.Location - Monster.Location);
+                                //`Log("DistanceToPlayer : " $DistanceToPlayer);
+
+                                // The first time we flee we need to be super close to player to flee from
+                                // Then we deactivate crossing Blocking Volumes, so it's somehow guaranteed
+                                // The Zed is inside the playable area, and can't leave anymore
+                                if (BountyHunt.SpecialZedsData[i].FledFirstTime == false)
+                                {
+                                    if (DistanceToPlayer < OutbreakEvent.ActiveEvent.BountyHuntDistancePlayerMinFirstFlee)
+                                    {
+                                        KFPC_ToFleeFrom = KFPC;
+                                        break;
+                                    }
+                                }
+                                else
+                                {
+                                    if (DistanceToPlayer < OutbreakEvent.ActiveEvent.BountyHuntDistancePlayerMinFlee)
+                                    {
+                                        if (OutbreakEvent.ActiveEvent.BountyHuntNeedsToSeePlayerToTriggerFlee == false
+                                            || MonsterAI.CanSee(KFPC.Pawn))
+                                        {
+                                            KFPC_ToFleeFrom = KFPC;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (BountyHunt.SpecialZedsData[i].FledFirstTime == false)
+                            {
+                                Monster.bIsSprinting = true;
+                            }
+
+                            // IF we have a valid player to Flee From and Timer from last attack can cancel is okay flee again
+                            if (KFPC_ToFleeFrom != none
+                                && WorldInfo.TimeSeconds > BountyHunt.SpecialZedsData[i].LastAttackTime
+                                    + BountyHunt.SpecialZedsData[i].LastAttackCanFinishSeconds)
+                            {
+                                Monster.SetBountyHuntBlockLeaveMap(false);
+                                
+                                BountyHunt.SpecialZedsData[i].FledFirstTime = true;
+                                BountyHunt.SpecialZedsData[i].FleeingFrom = KFPC_ToFleeFrom;
+                                BountyHunt.SpecialZedsData[i].FleeMovementDelta = 0.f;
+                                BountyHunt.SpecialZedsData[i].LastFleeMovementDeltaCheckTime = WorldInfo.TimeSeconds;
+
+                                AICSM = MonsterAI.FindCommandOfClass( class'AICommand_SpecialMove' );
+                                if( AICSM != none )
+                                {
+                                    AICSM.ClearTimeout();
+                                }
+
+                                // Abort all commands
+                                MonsterAI.AbortCommand(MonsterAI.CommandList);
+
+                                Monster.bIsSprinting = true;
+
+                                //`Log("FLEE!!! :  "$Monster);
+                                
+                                MonsterAI.DoFleeFrom(KFPC_ToFleeFrom, OutbreakEvent.ActiveEvent.BountyHuntTimeBetweenFlee, 50000.f, false, false, true);
+                            }
+                            else if (BountyHunt.SpecialZedsData[i].FledFirstTime && MonsterAI.CommandList == none)
+                            {
+                                // IF not we reset combat if there is no commands
+
+                                BountyHunt.SpecialZedsData[i].FleeingFrom = none;
+
+                                BountyHunt.SpecialZedsData[i].LastAttackTime = WorldInfo.TimeSeconds;
+                                BountyHunt.SpecialZedsData[i].LastAttackCanFinishSeconds = OutbreakEvent.ActiveEvent.BountyHuntTimeCanCancelAttack;
+
+                                //`Log("Restarting Combat on (NO ORDER) !!! :  "$Monster);
+                                //`Log("Restarting Combat on (NO ORDER) -> Issue command: :  " $MonsterAI.GetDefaultCommand());                                   
+                                
+                                MonsterAI.BeginCombatCommand(MonsterAI.GetDefaultCommand(), "Restarting default command", true);
+
+                                // THIS WAKES HIM UP !!!
+                                Monster.TakeDamage(0, none, vect(0,0,0), vect(0,0,0), none);
+                            }
+                        }
+                        else
+                        {
+                            // IF we are fleeing
+
+                            Monster.bIsSprinting = true;
+
+                            if (BountyHunt.SpecialZedsData[i].FleeingFrom != none)
+                            {
+                                DistanceToPlayer = VSize(BountyHunt.SpecialZedsData[i].FleeingFrom.Pawn.Location - Monster.Location);
+                                
+                                //`Log("(FLEEING) DistanceToPlayer : " $DistanceToPlayer);
+
+                                // IF fleeing we cancel when distance to player is above max
+                                if (DistanceToPlayer >= OutbreakEvent.ActiveEvent.BountyHuntDistancePlayerMaxFlee)
+                                {
+                                    BountyHunt.SpecialZedsData[i].FleeingFrom = none;
+
+                                    BountyHunt.SpecialZedsData[i].LastAttackTime = WorldInfo.TimeSeconds;
+                                    BountyHunt.SpecialZedsData[i].LastAttackCanFinishSeconds = OutbreakEvent.ActiveEvent.BountyHuntTimeCanCancelAttack;
+
+                                    MonsterAI.AbortCommand(MonsterAI.FindCommandOfClass(class'AICommand_Flee'));
+
+                                    // End flee as normal
+                                    MonsterAI.NotifyFleeFinished(true);
+
+                                    //`Log("Restarting Combat on (DISTANCE) !!! :  "$Monster);
+                                    
+                                    MonsterAI.BeginCombatCommand(MonsterAI.GetDefaultCommand(), "Restarting default command", true);
+
+                                    // THIS WAKES HIM UP !!!
+                                    Monster.TakeDamage(0, none, vect(0,0,0), vect(0,0,0), none);
+                                }
+                            }
+
+                            // IF we still fleeing..
+                            if (BountyHunt.SpecialZedsData[i].FleeingFrom != none)
+                            {
+                                // We cancel when distance to any player is below allowed for Attack
+                                if (WorldInfo.TimeSeconds > BountyHunt.SpecialZedsData[i].LastAttackTime
+                                    + BountyHunt.SpecialZedsData[i].LastAttackCanFinishSeconds)
+                                {
+                                    foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+                                    {                                    
+                                        DistanceToPlayer = VSize(KFPC.Pawn.Location - Monster.Location);
+                                        //`Log("DistanceToPlayer : " $DistanceToPlayer);
+
+                                        if (DistanceToPlayer < OutbreakEvent.ActiveEvent.BountyHuntDistancePlayerAttack)
+                                        {
+                                            BountyHunt.SpecialZedsData[i].FleeingFrom = none; 
+
+                                            BountyHunt.SpecialZedsData[i].LastAttackTime = WorldInfo.TimeSeconds;
+                                            BountyHunt.SpecialZedsData[i].LastAttackCanFinishSeconds = OutbreakEvent.ActiveEvent.BountyHuntTimeCanCancelAttack;
+
+                                            MonsterAI.AbortCommand(MonsterAI.FindCommandOfClass(class'AICommand_Flee'));
+
+                                            // End flee as normal
+                                            MonsterAI.NotifyFleeFinished(true);
+
+                                            //`Log("Restarting Combat on (DISTANCE CLOSE TO PLAYER) !!! :  "$Monster);
+                                            
+                                            MonsterAI.BeginCombatCommand(MonsterAI.GetDefaultCommand(), "Restarting default command", true);
+
+                                            // THIS WAKES HIM UP !!!
+                                            Monster.TakeDamage(0, none, vect(0,0,0), vect(0,0,0), none);
+                                            
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Check for accumulation of delta move to improve places where Bounty is stuck
+                            BountyHunt.SpecialZedsData[i].FleeMovementDelta += VSize(Monster.Location - BountyHunt.SpecialZedsData[i].SpecialZedLastLocation);
+                            //`Log("FleeMovementDelta :  "$BountyHunt.SpecialZedsData[i].FleeMovementDelta);
+
+                            // Every second we check for movement
+                            if (WorldInfo.TimeSeconds > BountyHunt.SpecialZedsData[i].LastFleeMovementDeltaCheckTime + 1.f)
+                            {
+                                // If we moved less than 1,5 meters ATTACK for 3 seconds !
+                                if (BountyHunt.SpecialZedsData[i].FleeMovementDelta < 150.f)
+                                {
+                                    BountyHunt.SpecialZedsData[i].FleeingFrom = none;
+                                    
+                                    BountyHunt.SpecialZedsData[i].LastAttackTime = WorldInfo.TimeSeconds;
+                                    BountyHunt.SpecialZedsData[i].LastAttackCanFinishSeconds = 3.f;
+
+                                    // Cancel FLEE if any..
+                                    if (MonsterAI.FindCommandOfClass(class'AICommand_Flee') != none)
+                                    {
+                                        MonsterAI.AbortCommand(MonsterAI.FindCommandOfClass(class'AICommand_Flee'));
+
+                                        // End flee as normal
+                                        MonsterAI.NotifyFleeFinished(true);
+                                    }
+
+                                    //`Log("Restarting Combat on (BOUNTY ZED BLOCKED) !!! :  "$Monster);
+                                    
+                                    MonsterAI.BeginCombatCommand(MonsterAI.GetDefaultCommand(), "Restarting default command", true);
+
+                                    // THIS WAKES HIM UP !!!
+                                    Monster.TakeDamage(0, none, vect(0,0,0), vect(0,0,0), none);
+
+                                    Monster.bIsSprinting = true;
+                                }
+
+                                BountyHunt.SpecialZedsData[i].FleeMovementDelta = 0.f;
+                                BountyHunt.SpecialZedsData[i].LastFleeMovementDeltaCheckTime = WorldInfo.TimeSeconds;
+                            }
+
+                            // IF we still fleeing..
+                            if (BountyHunt.SpecialZedsData[i].FleeingFrom != none)
+                            {
+                                // Check for blocking volume in runtime, we do something similar on AICommand_Flee
+                                // but we need more frequency
+                                if (WorldInfo.TimeSeconds > BountyHunt.SpecialZedsData[i].LastBlockingVolumeFleeTime + 0.5f)
+                                {
+                                    BountyHunt.SpecialZedsData[i].LastBlockingVolumeFleeTime = WorldInfo.TimeSeconds;
+
+                                    Destination = Monster.Location + Normal(Monster.Velocity) * 300.f;
+
+                                    HitActor = Trace(HitLocation, HitNormal, Destination, Monster.Location, true,,, TRACEFLAG_Blocking);
+                                    if (HitActor != none && KFPawnBlockingVolume(HitActor) != none)
+                                    {
+                                        //`Log("BLOCKING VOLUME FOUND!!! : " $HitActor);
+
+                                        Monster.SetBountyHuntBlockLeaveMap(false);
+
+                                        BountyHunt.SpecialZedsData[i].FleeMovementDelta = 0.f;
+                                        BountyHunt.SpecialZedsData[i].LastFleeMovementDeltaCheckTime = WorldInfo.TimeSeconds;
+
+                                        MonsterAI.AbortCommand(MonsterAI.CommandList);
+
+                                        //`Log("FLEE!!! :  "$Monster);
+                                
+                                        MonsterAI.DoFleeFrom(BountyHunt.SpecialZedsData[i].FleeingFrom, OutbreakEvent.ActiveEvent.BountyHuntTimeBetweenFlee, 50000.f, false, false, true);
+
+                                        Monster.bIsSprinting = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    BountyHunt.SpecialZedsData[i].SpecialZedLastLocation = Monster.Location;
+                }
+            }
+
+            // Apply On Change Level Buffs..
+
+            if (BountyHunt.SpecialZedsData[i].LastThresholdApplied != BountyHuntIt)
+            {
+                BountyHunt.SpecialZedsData[i].LastThresholdApplied = BountyHuntIt;
+
+                //`Log("Monster : " $Monster);
+                //`Log("Level Change : " $BountyHuntIt);
+                //`Log("WaveProgress : " $WaveProgress);
+
+                //`Log("Monster . HealthMax : " $Monster.HealthMax);
+                //`Log("Monster . MaxHealthReference : " $BountyHunt.SpecialZedsData[i].MaxHealthReference);
+                //`Log("Monster . Health : " $Monster.Health);
+
+                NewMaxHealth = BountyHunt.SpecialZedsData[i].MaxHealthReference;
+
+                BaseHealthUpgrade = BountyHunt.SpecialZedsData[i].MaxHealthReference * OutbreakEvent.ActiveEvent.BountyHuntSpecialZedBuffHealthRatio;
+
+                NewMaxHealth += BaseHealthUpgrade;
+                NewMaxHealth += BountyHunt.SpecialZedsData[i].MaxHealthReference * OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression[BountyHuntIt].HealthBuffRatio;
+
+                CurrentHealthIncrease = NewMaxHealth - Monster.HealthMax;
+
+                Monster.HealthMax = NewMaxHealth;
+                Monster.Health += CurrentHealthIncrease;
+
+                Monster.Health = Clamp(Monster.Health, 0, Monster.HealthMax);
+
+                //`Log("Monster . HealthMax : " $Monster.HealthMax);
+                //`Log("Monster . Health : " $Monster.Health);
+
+                //`Log("Last Level Check (1) : " $BountyHuntIt); 
+                //`Log("Last Level Check (2) : " $OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression.Length - 1); 
+
+                if (BountyHuntIt == OutbreakEvent.ActiveEvent.BountyHuntGame.BountyHuntZedAndProgression[BountyHuntZedIt].BountyHuntZedProgression.Length - 1)
+                {
+                    //`Log("SET Last Level!"); 
+
+                    BountyHunt.IsOnLastLevel = true;
+
+                    if (Monster.bIsBountyHuntOnLastTier == false)
+                    {
+                        Monster.SetBountyHuntOnLastTier();
+                    }
+
+                    // Cancel FLEE if any..
+                    if (MonsterAI.FindCommandOfClass(class'AICommand_Flee') != none)
+                    {
+                        //`Log("STOP FLEE!!! :  "$Monster);
+
+                        MonsterAI.AbortCommand(MonsterAI.FindCommandOfClass(class'AICommand_Flee'));
+
+                        // End flee as normal
+                        MonsterAI.NotifyFleeFinished(true);
+                    }
+
+                    //`Log("Restarting Combat on !!! :  "$Monster);
+
+                    MonsterAI.BeginCombatCommand(MonsterAI.GetDefaultCommand(), "Restarting default command", true);
+
+                    // THIS WAKES HIM UP !!!
+                    Monster.TakeDamage(0, BountyHunt.SpecialZedsData[i].FleeingFrom, vect(0,0,0), vect(0,0,0), none);
+
+                    Monster.bIsSprinting = true;
+
+                    BountyHunt.SpecialZedsData[i].FleeingFrom = none;
+                }   
+
+                //`Log("-------");
+            }
+        }
+
+        // Update UI..
+
+        foreach WorldInfo.AllControllers(class'KFPlayerController_WeeklySurvival', KFPC_WS)
+        {
+            KFPC_WS.DisplayBountyHuntStatus(BountyHunt.SpecialZedsData.Length, BountyHunt.MaxNumberOfSpecialZeds, BountyHunt.NumDead
+                                            , BountyHunt.CurrentDosh, BountyHunt.CurrentDoshNoAssist);
+        }
+
+        // Update Bounty Zeds to spawn..
+
+        if (BountyHunt.SpawnedNumberOfSpecialZeds < BountyHunt.MaxNumberOfSpecialZeds)
+        {
+            // Hard limit of max coexisting..
+
+            CanSpawnByLimit = false;
+
+            if (BountyHunt.SpecialZedsData.Length < OutbreakEvent.ActiveEvent.BountyHuntMaxCoexistingZeds)
+            {
+                CanSpawnByLimit = true;
+            }
+            else if (OutbreakEvent.ActiveEvent.BountyHuntLastLevelStillUsesCoexistingZeds == false)
+            {
+                CanSpawnByLimit = BountyHunt.IsOnLastLevel;
+            }
+
+            if (CanSpawnByLimit)
+            {
+				if (OutbreakEvent.ActiveEvent.BountyHuntUseGradualSpawn)
+				{
+					if (BountyHunt.SpecialZedsData.Length < (1 * BountyHunt.NumberOfPlayers) && WaveProgress <= 0.75f)
+					{
+						SpawnBountyZed();
+					}
+
+					if (WaveNum >= 3 && WaveNum <= 5)
+					{
+						if (BountyHunt.SpecialZedsData.Length < (2 * BountyHunt.NumberOfPlayers) && WaveProgress <= 0.5f)
+						{
+							SpawnBountyZed();
+						}
+					}
+
+					if (WaveNum > 5)
+					{
+						if (BountyHunt.SpecialZedsData.Length < (3 * BountyHunt.NumberOfPlayers) && WaveProgress <= 0.25f)
+						{
+							SpawnBountyZed();
+						}
+					}
+				}
+				else
+				{
+					SpawnBountyZed();
+				}
             }
         }
     }

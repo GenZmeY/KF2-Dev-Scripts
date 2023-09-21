@@ -14,7 +14,7 @@ DefaultProperties
 	WeaponClassPath="KFGameContent.KFWeap_HRG_BarrierRifle"
 
 	BuyPrice=2000
-	AmmoPricePerMag=55
+	AmmoPricePerMag=50 // 55
 	ImagePath="wep_ui_hrg_barrierrifle_tex.UI_WeaponSelect_HRG_BarrierRifle"
 
 	IsPlayGoHidden=true;

@@ -46,7 +46,7 @@ static simulated event EFilterTypeUI GetTraderFilter()
 
 static simulated event EFilterTypeUI GetAltTraderFilter()
 {
-	return FT_Explosive;
+	return FT_Shotgun;
 } 
 
 /** Instead of switch fire mode use as immediate alt fire */

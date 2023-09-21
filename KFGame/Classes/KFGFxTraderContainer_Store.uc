@@ -290,6 +290,8 @@ function SetItemInfo(out GFxObject ItemDataArray, STraderItem TraderItem, int Sl
 /** returns true if this item should not be displayed */
 function bool IsItemFiltered(STraderItem Item, optional bool bDebug)
 {
+	local bool bUses9mm;
+	
 	if(!class'GameEngine'.Static.IsGameFullyInstalled() && Item.WeaponDef.default.IsPlayGoHidden)
 	{
 		if (bDebug)
@@ -340,5 +342,38 @@ function bool IsItemFiltered(STraderItem Item, optional bool bDebug)
 		return true;
 	}
 
+	bUses9mm = Has9mmGun();
+	if (bUses9mm && (Item.ClassName == 'KFWeap_HRG_93r' || Item.ClassName == 'KFWeap_HRG_93r_Dual'))
+	{
+		if (bDebug)
+		{
+			`log("9mm owned, skip HRG_93");
+		}
+		return true;
+	}
+
+	if (!bUses9mm && (Item.ClassName == 'KFWeap_Pistol_9mm' || Item.ClassName == 'KFWeap_Pistol_Dual9mm'))
+	{
+		if (bDebug)
+		{
+			`log("HRG_93R owned, skip 9mm");
+		}
+		return true;
+	}
+
    	return false;
+}
+
+simulated function bool Has9mmGun()
+{
+	local SItemInformation Item;
+
+	foreach KFPC.GetPurchaseHelper().OwnedItemList(Item)
+	{
+		if (Item.DefaultItem.ClassName == 'KFWeap_Pistol_9mm' || Item.DefaultItem.ClassName == 'KFWeap_Pistol_Dual9mm')
+		{
+			return true;
+		}
+	}
+	return false;
 }

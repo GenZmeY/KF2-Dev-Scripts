@@ -673,6 +673,11 @@ function DrawHUD()
 				// Draw last remaining zeds
 				CheckAndDrawRemainingZedIcons();
 
+				if (KFGRI.IsBountyHunt())
+				{
+					CheckAndDrawBountyHudIcons();
+				}
+
 				if (KFGRI.IsContaminationMode())
 				{
 					// While on trader time we let previsualize the next objective icon, so players can get ready
@@ -698,7 +703,19 @@ function DrawHUD()
 
 			Canvas.EnableStencilTest(false);
 		}
-		
+		else
+		{
+			if( !KFGRI.bHidePawnIcons )
+			{			
+				// Draw last remaining zeds
+				CheckAndDrawRemainingZedIcons();
+
+				if (KFGRI.IsBountyHunt())
+				{
+					CheckAndDrawBountyHudIcons();
+				}
+			}
+		}
 	}
 }
 
@@ -1382,6 +1399,7 @@ function CheckAndDrawRemainingZedIcons()
 	local Pawn P;
 	local vector ViewLocation, ViewDir, PawnLocation;
 	local rotator ViewRotation;
+	local KFPawn_Monster Monster;
 
 	if( KFGRI == none
 		|| KFPlayerOwner == none
@@ -1402,20 +1420,109 @@ function CheckAndDrawRemainingZedIcons()
 		if( P.Mesh.SkeletalMesh == none
 			|| !P.Mesh.bAnimTreeInitialised
 			|| P.GetTeamNum() == PlayerOwner.GetTeamNum()
-			|| !P.IsAliveAndWell())
+			|| !P.IsAliveAndWell() )
 			//|| `TimeSince(P.Mesh.LastRenderTime) < 0.2f )
+		{
+			continue;
+		}
+
+		Monster = KFPawn_Monster(P);
+		if (Monster != none && Monster.bIsBountyHuntObjective)
 		{
 			continue;
 		}
 
 		PawnLocation = P.Mesh.GetPosition();
 
-		DrawZedIcon( P, PawnLocation, Normal((PawnLocation + (P.CylinderComponent.CollisionHeight * vect(0, 0, 1))) - ViewLocation) dot ViewDir);
+		DrawZedIcon( P, PawnLocation
+					, Normal((PawnLocation + (P.CylinderComponent.CollisionHeight * vect(0, 0, 1))) - ViewLocation) dot ViewDir
+					, ZedIconColor, 1.f);
 	}
 }
 
+function CheckAndDrawBountyHudIcons()
+{
+	local KFPawn_Monster Monster;
+	local vector ViewLocation, ViewDir, PawnLocation;
+	local rotator ViewRotation;
+	local color ZedColor;
+    local float WaveProgress;
+
+	if( KFGRI == none
+		|| KFPlayerOwner == none
+		|| KFPlayerOwner.PlayerCamera == none
+		|| KFGRI.IsBossWave()
+		|| KFGRI.IsEndlessWave())
+	{
+		return;
+	}
+
+    KFPlayerOwner.PlayerCamera.GetCameraViewPoint( ViewLocation, ViewRotation );
+    ViewDir = vector( ViewRotation );
+
+	if (KFGRI.WaveTotalAICount > 0)
+	{
+		WaveProgress = float(KFGRI.AIRemaining) / float(KFGRI.WaveTotalAICount);
+	}
+	else
+	{
+		WaveProgress = 1.f;
+	}
+
+	foreach WorldInfo.AllPawns( class'KFPawn_Monster', Monster )
+	{
+		if (Monster.bIsBountyHuntObjective == false)
+		{
+			continue;
+		}
+
+		if (Monster.IsAliveAndWell() == false)
+		{
+			continue;
+		}
+
+		if (Monster.Mesh.SkeletalMesh != none
+			&& Monster.Mesh.bAnimTreeInitialised)
+		{
+			PawnLocation = Monster.Mesh.GetPosition();
+		}
+		else
+		{
+			PawnLocation = Monster.Location;
+		}
+
+		ZedColor = ZedIconColor;
+
+		if (Monster.bIsBountyHuntOnLastTier)
+		{
+			// Red  (R = 255, G = 0, B = 0, A = 192)
+			ZedColor.R = 255;
+			ZedColor.G = 0;
+			ZedColor.B = 0;		
+		}
+		else if (WaveProgress < 0.5f)
+		{
+			// Orange  (R = 255, G = 128, B = 0, A = 192)
+			ZedColor.R = 255;
+			ZedColor.G = 128;
+			ZedColor.B = 0;
+		}
+		else
+		{
+			// Yellow  (R = 255, G = 255, B = 0, A = 192)
+			ZedColor.R = 255;
+			ZedColor.G = 255;
+			ZedColor.B = 0;
+		}		
+
+		DrawZedIcon( Monster, PawnLocation
+					, Normal((PawnLocation + (Monster.CylinderComponent.CollisionHeight * vect(0, 0, 1))) - ViewLocation) dot ViewDir
+					, ZedColor, 1.5f);
+	}	
+}
+
 /** Draws a zed icon */
-function DrawZedIcon( Pawn ZedPawn, vector PawnLocation, float NormalizedAngle )
+function DrawZedIcon( Pawn ZedPawn, vector PawnLocation, float NormalizedAngle, color ColorToUse, float SizeMultiplier )
 {
     local vector ScreenPos, TargetLocation;
     local float IconSizeMult;
@@ -1425,7 +1532,7 @@ function DrawZedIcon( Pawn ZedPawn, vector PawnLocation, float NormalizedAngle )
 
     TargetLocation = PawnLocation + ( vect(0,0,2.5f) * ZedPawn.CylinderComponent.CollisionHeight );
     ScreenPos = Canvas.Project( TargetLocation );
-    IconSizeMult = PlayerStatusIconSize * ResModifier * 0.5f;
+    IconSizeMult = PlayerStatusIconSize * ResModifier * 0.5f * SizeMultiplier;
     ScreenPos.X -= IconSizeMult;
     ScreenPos.Y -= IconSizeMult;
 
@@ -1448,9 +1555,8 @@ function DrawZedIcon( Pawn ZedPawn, vector PawnLocation, float NormalizedAngle )
 		ScreenPos = GetClampedScreenPosition(ScreenPos);
 	}
 
-
      // Draw boss icon
-    Canvas.SetDrawColorStruct( ZedIconColor );
+    Canvas.SetDrawColorStruct( ColorToUse );
     Canvas.SetPos( ScreenPos.X, ScreenPos.Y );
     Canvas.DrawTile( GenericZedIconTexture, IconSizeMult, IconSizeMult, 0, 0, 128, 128 );
 }

@@ -212,6 +212,7 @@ var protected const array< class<KFPawn_Monster> >  AITestBossClassList; //List 
 var protected int									BossIndex; //Index into boss array, only preload content for the boss we want - PC builds can handle DLO cost much better
 
 var int AllowSeasonalSkinsIndex;
+var int WeeklySelectorIndex;
 
 /** Class replacements for each zed type */
 struct native SpawnReplacement
@@ -662,6 +663,29 @@ event InitGame( string Options, out string ErrorMessage )
 {
 	local string OptionRead;
 
+	OptionRead = ParseOption(Options, "WeeklySelectorIndex");
+	if (OptionRead != "")
+	{
+		WeeklySelectorIndex = int(OptionRead);
+	}
+	else // If doesn't exist on the Options we default it..
+	{
+		WeeklySelectorIndex = -1;
+	}
+
+	if (WeeklySelectorIndex > 0)
+	{
+		// 0 is default, we move one index to the left so it matches first Weekly Mode
+		KFGameEngine(class'Engine'.static.GetEngine()).SetWeeklyEventIndex(WeeklySelectorIndex - 1);
+	}
+	else if (KFGameEngine(class'Engine'.static.GetEngine()).GetIsForceWeeklyEvent() == false)
+	{
+		// If we didn't force via cmd line and we ask for default, force the intended to make sure we are updated
+		KFGameEngine(class'Engine'.static.GetEngine()).SetWeeklyEventIndex(KFGameEngine(class'Engine'.static.GetEngine()).GetIntendedWeeklyEventIndex());
+	}
+
+	`Log("TEST - InitGame : " $WeeklySelectorIndex);
+
  	Super.InitGame( Options, ErrorMessage );
 
 	if (UsesModifiedDifficulty())
@@ -760,6 +784,7 @@ function UpdateGameSettings()
 			if (KFGameSettings != none)
 			{
 				KFGameSettings.bNoSeasonalSkins = AllowSeasonalSkinsIndex == 1;
+				KFGameSettings.WeeklySelectorIndex = WeeklySelectorIndex;
 			}
 		}
 	}
@@ -917,7 +942,7 @@ event PreLogin(string Options, string Address, const UniqueNetId UniqueId, bool 
 {
 	local bool bSpectator;
 	local bool bPerfTesting;
-	local string DesiredDifficulty, DesiredWaveLength, DesiredGameMode;
+	local string DesiredDifficulty, DesiredWaveLength, DesiredGameMode, DesiredWeeklySelectorIndex;
 
 	// Check for an arbitrated match in progress and kick if needed
 	if (WorldInfo.NetMode != NM_Standalone && bUsingArbitration && bHasArbitratedHandshakeBegun)
@@ -965,8 +990,15 @@ event PreLogin(string Options, string Address, const UniqueNetId UniqueId, bool 
 			ErrorMessage = "Server No longer available. Mismatch DesiredGameMode.";
 			return;
 		}
-	}
 
+		DesiredWeeklySelectorIndex = ParseOption(Options, "WeeklySelectorIndex");
+		if( DesiredWeeklySelectorIndex != "" && int(DesiredWeeklySelectorIndex) != WeeklySelectorIndex)
+		{
+			`log("Got bad weekly selector index"@DesiredWeeklySelectorIndex@"expected"@WeeklySelectorIndex);
+			ErrorMessage = "Server No longer available. Mismatch DesiredWeeklySelectorIndex.";
+			return;
+		}
+	}
 
 	bPerfTesting = ( ParseOption( Options, "AutomatedPerfTesting" ) ~= "1" );
 	bSpectator = bPerfTesting || ( ParseOption( Options, "SpectatorOnly" ) ~= "1" ) || ( ParseOption( Options, "CauseEvent" ) ~= "FlyThrough" );
@@ -1148,6 +1180,9 @@ function InitGRIVariables()
 	MyKFGRI.bVersusGame = bIsVersusGame;
 	MyKFGRI.MaxHumanCount = MaxPlayers;
 	MyKFGRI.NotifyAllowSeasonalSkins(AllowSeasonalSkinsIndex);
+	MyKFGRI.NotifyWeeklySelector(WeeklySelectorIndex);
+
+	`Log("TEST - InitGRIVariables- NotifyWeeklySelector : " $WeeklySelectorIndex);
 
 	SetBossIndex();
 }
@@ -1654,9 +1689,12 @@ function float GetTotalWaveCountScale()
 		return 1.0f;
 	}
 
-	if (OutbreakEvent != none && OutbreakEvent.ActiveEvent.WaveAICountScale.Length > 0)
+	if (OutbreakEvent != none)
 	{
-		return GetLivingPlayerCount() > OutbreakEvent.ActiveEvent.WaveAICountScale.Length ? OutbreakEvent.ActiveEvent.WaveAICountScale[OutbreakEvent.ActiveEvent.WaveAICountScale.Length - 1] : OutbreakEvent.ActiveEvent.WaveAICountScale[GetLivingPlayerCount() - 1];
+		if (OutbreakEvent.ActiveEvent.WaveAICountScale.Length > 0)
+		{
+			return GetLivingPlayerCount() > OutbreakEvent.ActiveEvent.WaveAICountScale.Length ? OutbreakEvent.ActiveEvent.WaveAICountScale[OutbreakEvent.ActiveEvent.WaveAICountScale.Length - 1] : OutbreakEvent.ActiveEvent.WaveAICountScale[GetLivingPlayerCount() - 1];
+		}
 	}
 
 	return 1.0f;
@@ -2231,7 +2269,7 @@ function class<DamageType> GetLastHitByDamageType(class<DamageType> DT, KFPawn_M
 	}
 	else
 	{
-		`warn( "GetLastHitByDamageType() Received non-KFDamageType damagetype:"@DT);
+		//`warn( "GetLastHitByDamageType() Received non-KFDamageType damagetype:"@DT);
 	}
 
 	return RealDT;
@@ -2577,6 +2615,7 @@ protected function DistributeMoneyAndXP(class<KFPawn_Monster> MonsterClass, cons
 			&& DamageHistory[i].DamagerPRI != none )
 		{
 			EarnedDosh = Round( DamageHistory[i].TotalDamage * ScoreDenominator );
+
 			//`log("SCORING: Player" @ DamageHistory[i].DamagerPRI.PlayerName @ "received" @ EarnedDosh @ "dosh for killing a" @ MonsterClass, bLogScoring);
 			DamagerKFPRI = KFPlayerReplicationInfo(DamageHistory[i].DamagerPRI);
 			if( DamagerKFPRI != none )
@@ -2591,26 +2630,32 @@ protected function DistributeMoneyAndXP(class<KFPawn_Monster> MonsterClass, cons
 						DamageHistory[i].DamagePerks[0].static.ModifyAssistDosh( EarnedDosh );
 					}
 				}
-				if (bIsBossKill && !bSplitBossDoshReward)
-				{
-					DamagerKFPRI.AddDosh(GetAdjustedAIDoshValue(MonsterClass), true);
-				}
-				else
-				{
-					DamagerKFPRI.AddDosh(EarnedDosh, true);
-				}
 
+				if (MyKFGRI.IsBountyHunt() == false)
+    			{
+					if (bIsBossKill && !bSplitBossDoshReward)
+					{
+						DamagerKFPRI.AddDosh(GetAdjustedAIDoshValue(MonsterClass), true);
+					}
+					else
+					{
+						DamagerKFPRI.AddDosh(EarnedDosh, true);
+					}
+				}
 
 				if( DamagerKFPRI.Team != none )
 				{
 					//Dosh
-					if (bIsBossKill && !bSplitBossDoshReward)
-					{
-						KFTeamInfo_Human(DamagerKFPRI.Team).AddScore(GetAdjustedAIDoshValue(MonsterClass));
-					}
-					else
-					{
-						KFTeamInfo_Human(DamagerKFPRI.Team).AddScore(EarnedDosh);
+					if (MyKFGRI.IsBountyHunt() == false)
+    				{
+						if (bIsBossKill && !bSplitBossDoshReward)
+						{
+							KFTeamInfo_Human(DamagerKFPRI.Team).AddScore(GetAdjustedAIDoshValue(MonsterClass));
+						}
+						else
+						{
+							KFTeamInfo_Human(DamagerKFPRI.Team).AddScore(EarnedDosh);
+						}
 					}
 
 					if( DamageHistory[i].DamagePerks.Length <= 0 )
@@ -3003,12 +3048,35 @@ function string GetNextMap()
 			 */
 			if (IsWeekly())
 			{
+				MapName = name(GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex]);
+
+				if ((class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 0 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[0]) || // Boom
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 1 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[1]) || // Cranium Cracker
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 2 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[2]) || // Tiny Terror
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 3 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[3]) || // Bobble Zed
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 4 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[4]) || // Poundemonium
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 5 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[5]) || // Up Up and Decay
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 6 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[6]) || // Zed Time
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 7 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[7]) || // Beefcake
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 8 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[8]) || // Bloodthirst
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 9 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[9]) || // Coliseum
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 10 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[10]) || // Arachnophobia
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 11 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[11]) || // Scavenger
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[12]) || // WW
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 13 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[13]) || // Abandon
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 15 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[15]) || // Shrunken Heads
+					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 18 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[18])) // Perk Roulette
+				{
+					if (MapName == MapSantas)
+					{
+						continue;
+					}
+				}
+
 				if ((class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 11 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[11]) || // Scavenger
 					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[14]) || // Boss Rush
 					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 16 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[16])) // Gun Game
 				{
-					MapName = name(GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex]);
-
 					if (MapName == MapBiolapse  || 
 						MapName == MapNightmare ||
 						MapName == MapPowerCore ||
@@ -3021,8 +3089,6 @@ function string GetNextMap()
 
 				if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 19 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[19]) // Contamination
 				{
-					MapName = name(GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex]);
-
 					if (MapName == MapBiolapse  || 
 						MapName == MapNightmare ||
 						MapName == MapPowerCore ||
@@ -3035,13 +3101,27 @@ function string GetNextMap()
 					}
 				}
 
-				/* Temporary removal of SteamFrotress for BossRush */
-				if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[14] &&
-					MapName == MapSteam)
+				if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 20 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[20]) // Bounty Hunt
 				{
-					continue;
+					if (MapName == MapBiolapse  || 
+						MapName == MapNightmare ||
+						MapName == MapPowerCore ||
+						MapName == MapDescent   ||
+						MapName == MapKrampus	||
+						MapName == MapElysium	||
+						MapName == MapSteam)
+					{
+						continue;
+					}
 				}
-				/* */
+
+				if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[14])
+				{
+					if (MapName == MapSteam)
+					{
+						continue;
+					}
+				}
 			}
 
 			if ( IsMapAllowedInCycle(GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex]) )
@@ -4001,6 +4081,16 @@ simulated function ModifyDamageGiven(out int InDamage, optional Actor DamageCaus
  **********************************************/
 simulated function NotifyPlayerStatsInitialized(KFPlayerController_WeeklySurvival KFPC){}
 
+simulated function int WeeklyExtraNumberOfZeds()
+{
+	return 0;
+}
+
+simulated function int WeeklyCurrentExtraNumberOfZeds()
+{
+	return 0;
+}
+
 defaultproperties
 {
 	/** Scoring */
@@ -4047,6 +4137,7 @@ defaultproperties
 	bWaitingToStartMatch=true
 	bDelayedStart=true
 	AllowSeasonalSkinsIndex=0
+	WeeklySelectorIndex=-1
 
 	ActionMusicDelay=5.0
     ForcedMusicTracks(0)=KFMusicTrackInfo'WW_MMNU_Login.TrackInfo' // menu

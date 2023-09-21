@@ -501,6 +501,55 @@ simulated state TargetSearch
     }
 }
 
+simulated function bool TargetValidWithGeometry(Actor Target, vector MuzzleLoc, vector ReferencePosition)
+{
+    local vector HitLocation, HitNormal;
+    local Actor HitActor;
+    local vector DistanceToTarget, DistanceToTrader;
+    local KFTraderTrigger TestTrader;
+    local float ModuloDistanceToTrader, DotValue;
+    local bool bTraderFound;
+    local int IteratorTrader;
+
+    HitActor = Trace(HitLocation, HitNormal, ReferencePosition, MuzzleLoc,,,,TRACEFLAG_Bullet);
+
+    if (HitActor == none || KFPawn_Monster(HitActor) == none)
+    {
+        return false;
+    }
+
+    DistanceToTarget = Target.Location - MuzzleLoc;
+
+    bTraderFound = false;
+
+    for (IteratorTrader=0; IteratorTrader < KFGameInfo(WorldInfo.Game).TraderList.Length; ++ IteratorTrader)
+    {
+        TestTrader = KFGameInfo(WorldInfo.Game).TraderList[IteratorTrader];
+
+        DistanceToTrader = TestTrader.Location - MuzzleLoc;
+
+        ModuloDistanceToTrader = VSize(DistanceToTrader);
+
+        if (ModuloDistanceToTrader < VSize(DistanceToTarget))
+        {
+            DotValue = Normal(DistanceToTrader) Dot Normal(DistanceToTarget);
+
+            if (DotValue > 0.2f)
+            {
+                bTraderFound = true;
+                break;
+            }
+        }
+    }
+
+    if (bTraderFound)
+    {
+        return false;
+    }   
+
+    return true;
+}
+
 simulated state Combat
 {
     simulated function BeginState(name PreviousStateName)
@@ -547,10 +596,6 @@ simulated state Combat
         local rotator MuzzleRot;
         local rotator DesiredRotationRot;
 
-        local vector HitLocation, HitNormal;
-        local TraceHitInfo HitInfo;
-        local Actor HitActor;
-
         local float NewAmmoPercentage;
 
         local bool bIsSpotted;
@@ -584,17 +629,14 @@ simulated state Combat
         {
             if (EnemyTarget != none)
             {
-                // Trace from the Target reference to MuzzleLoc, because MuzzleLoc could be already inside physics, as it's outside the collider of the Drone!
-                HitActor = Trace(HitLocation, HitNormal, EnemyTarget.Mesh.GetBoneLocation('Spine1'), MuzzleLoc,,,,TRACEFLAG_Bullet);
-
                 // Visible by local player or team
 	            bIsSpotted = (EnemyTarget.bIsCloakingSpottedByLP || EnemyTarget.bIsCloakingSpottedByTeam);
 
                /** Search for new enemies if current is dead, cloaked or too far, or something between the drone that's world geometry */
-                if (!EnemyTarget.IsAliveAndWell()
+                if (EnemyTarget.IsAliveAndWell() == false
                     || (EnemyTarget.bIsCloaking && bIsSpotted == false)
                     || VSizeSq(EnemyTarget.Location - Location) > EffectiveRadius * EffectiveRadius
-                    || (HitActor != none && HitActor.bWorldGeometry && KFFracturedMeshGlass(HitActor) == None))
+                    || TargetValidWithGeometry(EnemyTarget, MuzzleLoc, EnemyTarget.Mesh.GetBoneLocation('Spine1')))
                 {
                     EnemyTarget = none;
                     CheckForTargets();
@@ -617,11 +659,9 @@ simulated state Combat
 
             if (Role == ROLE_Authority && ReachedRotation())
             {
-                HitActor = Trace(HitLocation, HitNormal, MuzzleLoc + vector(Rotation) * EffectiveRadius, MuzzleLoc, , , HitInfo, TRACEFLAG_Bullet);
-                
                 if (TurretWeapon != none)
                 {
-                    if (HitActor != none && HitActor.bWorldGeometry == false)
+                    if (TargetValidWithGeometry(EnemyTarget, MuzzleLoc, EnemyTarget.Mesh.GetBoneLocation('Spine1')))
                     {
                         TurretWeapon.CurrentTarget = EnemyTarget;
 
@@ -632,7 +672,7 @@ simulated state Combat
                             SetTurretState(ETS_Empty);
                         }
                     }
-                }
+			    }
             }
         }
 
@@ -848,16 +888,13 @@ simulated function StopIdleSound()
 function CheckForTargets()
 {
     local KFPawn_Monster CurrentTarget;
-    local TraceHitInfo   HitInfo;    
+    local TraceHitInfo   HitInfo;
 
     local float CurrentDistance;
     local float Distance;
 
     local vector MuzzleLoc;
     local rotator MuzzleRot;
-
-	local vector HitLocation, HitNormal;
-    local Actor HitActor;
 
     local bool bIsSpotted;
 
@@ -883,10 +920,7 @@ function CheckForTargets()
             continue;
         }
 
-        // Trace from the Target reference to MuzzleLoc, because MuzzleLoc could be already inside physics, as it's outside the collider of the Drone!
-        HitActor = Trace(HitLocation, HitNormal, CurrentTarget.Mesh.GetBoneLocation('Spine1'), MuzzleLoc,,,,TRACEFLAG_Bullet);
-
-        if (HitActor == none || (HitActor.bWorldGeometry && KFFracturedMeshGlass(HitActor) == None))
+        if (TargetValidWithGeometry(CurrentTarget, MuzzleLoc, CurrentTarget.Mesh.GetBoneLocation('Spine1')) == false)
         {
             continue;
         }
@@ -1148,6 +1182,11 @@ simulated function bool CanInteractWithPawnGrapple()
 simulated function bool CanInteractWithZoneVelocity()
 {
 	return false;
+}
+
+function bool CanBeGrabbed(KFPawn GrabbingPawn, optional bool bIgnoreFalling, optional bool bAllowSameTeamGrab)
+{
+    return false;
 }
 
 simulated function UpdateTurretMeshMaterialColor(float Value)

@@ -15,7 +15,7 @@ DefaultProperties
 	WeaponClassPath="KFGameContent.KFWeap_AssaultRifle_G36C"
 
 	BuyPrice=1600
-	AmmoPricePerMag=36
+	AmmoPricePerMag=32 // 36
 	ImagePath="wep_ui_g36c_tex.UI_WeaponSelect_G36C" 
 
 	IsPlayGoHidden=true;

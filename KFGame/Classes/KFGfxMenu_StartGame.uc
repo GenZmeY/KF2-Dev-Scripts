@@ -33,6 +33,7 @@ var transient int CurrentSearchIndex;
 var const string ModeKey, DifficultyKey, MapKey, WhitelistedKey, InProgressKey, PermissionsKey, ServerTypeKey;
 var const string GameLengthKey;
 var const string AllowSeasonalSkinsKey;
+var const string WeeklySelectorKey;
 
 var KFGFxStartGameContainer_FindGame FindGameContainer;
 var KFGFxStartGameContainer_Options OptionsComponent;
@@ -68,6 +69,7 @@ var localized string MapTitle;
 var localized string MutatorTitle;
 var localized string PermissionsTitle;
 var localized string AllowSeasonalSkinsTitle;
+var localized string WeeklySelectorTitle;
 var localized string ServerTypeString;
 var localized string WhiteListedTitle;
 var localized string InfoTitle;
@@ -208,7 +210,7 @@ static function class<KFGFxSpecialeventObjectivesContainer> GetSpecialEventClass
 		case SEI_Summer:
 			return class'KFGFxSpecialEventObjectivesContainer_Summer2023';
 		case SEI_Fall:
-			return class'KFGFxSpecialEventObjectivesContainer_Fall2022';
+			return class'KFGFxSpecialEventObjectivesContainer_Fall2023';
 		case SEI_Winter:
 			return class'KFGFXSpecialEventObjectivesContainer_Xmas2022';
 	}
@@ -608,6 +610,7 @@ function SendLeaderOptions()
 		SetLobbyData(ModeKey, String(Manager.GetModeIndex()));
 		SetLobbyData(PermissionsKey, String(OptionsComponent.GetPrivacyIndex()));
 		SetLobbyData(AllowSeasonalSkinsKey, String(OptionsComponent.GetAllowSeasonalSkinsIndex()));
+		SetLobbyData(WeeklySelectorKey, String(OptionsComponent.GetWeeklySelectorIndex()));
 	}
 }
 
@@ -640,6 +643,9 @@ function ReceiveLeaderOptions()
 
 	OptionIndex = Int(OnlineLobby.GetLobbyData(0, AllowSeasonalSkinsKey));
 	OverviewContainer.UpdateAllowSeasonalSkins(class'KFCommon_LocalizedStrings'.static.GetAllowSeasonalSkinsString(OptionIndex));
+
+	OptionIndex = Int(OnlineLobby.GetLobbyData(0, WeeklySelectorKey));
+	OverviewContainer.UpdateWeeklySelector(class'KFCommon_LocalizedStrings'.static.GetWeeklySelectorString(OptionIndex));
 }
 
 function ApproveMatchMakingLeave()
@@ -924,6 +930,7 @@ function Callback_CancelSearch()
 function Callback_OptionListOpened(string ListName, int OptionIndex)
 {
 	local string MessageString;
+	local int IntendedWeeklyIndex;
 
 	if (OptionsComponent.bIsSoloGame && ListName == "modeList")
 	{
@@ -938,6 +945,12 @@ function Callback_OptionListOpened(string ListName, int OptionIndex)
 	if(OptionIndex == INDEX_NONE)
 	{
 		return;
+	}
+	
+	if (ListName == "weeklySelectorList" && OptionIndex == 0)
+	{
+		IntendedWeeklyIndex = class'KFGameEngine'.static.GetIntendedWeeklyEventIndexMod(); 
+		OptionIndex = IntendedWeeklyIndex + 1;
 	}
 
 	MessageString = Localize("StartMenuHelperText", ListName$OptionIndex, "KFGame");
@@ -1092,6 +1105,11 @@ function Callback_AllowSeasonalSkins(int Index)
 	OptionsComponent.AllowSeasonalSkinsChanged(Index);
 }
 
+function Callback_WeeklySelector(int Index)
+{
+	OptionsComponent.WeeklySelectorChanged(Index);
+}
+
 function SetLobbyData( string KeyName, string ValueData )
 {
     OnlineLobby.SetLobbyData( KeyName, ValueData );
@@ -1100,14 +1118,25 @@ function SetLobbyData( string KeyName, string ValueData )
 function string MakeMapURL(KFGFxStartGameContainer_Options InOptionsComponent)
 {
 	local string MapName;
-	local int LengthIndex, ModeIndex, AllowSeasonalSkins;
+	local int LengthIndex, ModeIndex, AllowSeasonalSkins, WeeklySelectorIndex, IntendedWeeklyIndex;
+	local string MapURL;
+	local byte CurrentMenuState;
+
+	MapName = "";
 
 	// this is ugly, but effectively makes sure that the player isn't solo with versus selected
 	// or other error cases such as when the game isn't fully installed
 	ModeIndex = InOptionsComponent.GetNormalizedGameModeIndex(Manager.GetModeIndex(true));
 	LengthIndex = InOptionsComponent.GetLengthIndex();
 
-	MapName = InOptionsComponent.GetMapName();
+	CurrentMenuState = GetStartMenuState();
+
+	// In Find a Match we can't choose map, so don't use the options dropwdown
+	if (CurrentMenuState != EMatchmaking)
+	{
+		MapName = InOptionsComponent.GetMapName();
+	}
+
 	if (MapName == "" || MapStringList.Find(MapName) == INDEX_NONE)
 	{
 		if (CurrentConnectMap != "" && MapStringList.Find(CurrentConnectMap) != INDEX_NONE)
@@ -1148,19 +1177,58 @@ function string MakeMapURL(KFGFxStartGameContainer_Options InOptionsComponent)
 	else
 	{
 		AllowSeasonalSkins = 0;
-	}	
+	}
 
-	if (GetStartMenuState() == EMatchmaking
+	if (CurrentMenuState == EMatchmaking
 		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None
 		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_Spring)
 	{
 		AllowSeasonalSkins = 1; // Default if we don't have a season or it's find a match menu
 	}
 
-	return MapName$"?Game="$class'KFGameInfo'.static.GetGameModeClassFromNum( ModeIndex )
+	MapURL = MapName$"?Game="$class'KFGameInfo'.static.GetGameModeClassFromNum( ModeIndex )
 	       $"?Difficulty="$class'KFGameDifficultyInfo'.static.GetDifficultyValue( InOptionsComponent.GetDifficultyIndex() )
 		   $"?GameLength="$LengthIndex
 		   $"?AllowSeasonalSkins="$AllowSeasonalSkins;
+
+	if (ModeIndex == 1) // Only when mode is Weekly
+	{
+		WeeklySelectorIndex = -1;
+
+		// Depending on StartMenu State we takeover with different weekly index selection
+
+		Switch (CurrentMenuState)
+		{
+			case EMatchmaking:
+				// always default on "Find Game"
+				WeeklySelectorIndex = 0;
+				break;
+
+			case ECreateGame:
+			case ESoloGame:
+				// use your selection on "Create Game" and "Play Solo"
+				WeeklySelectorIndex = InOptionsComponent.GetWeeklySelectorIndex();
+
+				// IF index matches default, set to 0 (default)
+				if (WeeklySelectorIndex > 0)
+				{
+					IntendedWeeklyIndex = class'KFGameEngine'.static.GetIntendedWeeklyEventIndexMod();
+					if (IntendedWeeklyIndex == (WeeklySelectorIndex - 1))
+					{
+						WeeklySelectorIndex = 0;
+					}
+				}
+
+				break; 
+		}
+
+		if (WeeklySelectorIndex >= 0)
+		{
+			MapURL $= "?WeeklySelectorIndex="$WeeklySelectorIndex;
+		}
+	}
+
+	return MapURL;
 }
 
 native function bool GetSearchComplete(KFOnlineGameSearch GameSearch);
@@ -1510,6 +1578,8 @@ function BuildServerFilters(OnlineGameInterface GameInterfaceSteam, KFGFxStartGa
 	local string GameTagFilters;
 	local ActiveLobbyInfo LobbyInfo;
 	//local bool bAllowSeasonal;
+	local byte CurrentMenuState;
+	local int WeeklySelectorIndex, IntendedWeeklyIndex;
 
 	Search.ClearServerFilters();
 
@@ -1560,6 +1630,44 @@ function BuildServerFilters(OnlineGameInterface GameInterfaceSteam, KFGFxStartGa
 		if( GameMode >= 0 )
 		{
 			Search.AddGametagFilter( GameTagFilters, 'Mode', string(GameMode) );
+		}
+
+		if (GameMode == 1) // Only when mode is Weekly
+		{
+			WeeklySelectorIndex = -1;
+
+			// Depending on StartMenu State we Search with different weekly index selection
+			CurrentMenuState = GetStartMenuState();
+
+			Switch (EStartMenuState(CurrentMenuState))
+			{
+				/*case EMatchmaking:
+					// We take any weekly, so don't specify
+					WeeklySelectorIndex = 0;
+					break;
+				*/
+				case ECreateGame:
+				case ESoloGame:
+					// use your selection on "Create Game" and "Play Solo"
+					WeeklySelectorIndex = OptionsComponent.GetWeeklySelectorIndex(); 
+
+					// IF index matches default, set to 0 (default)
+					if (WeeklySelectorIndex > 0)
+					{
+						IntendedWeeklyIndex = class'KFGameEngine'.static.GetIntendedWeeklyEventIndexMod();
+						if (IntendedWeeklyIndex == (WeeklySelectorIndex - 1))
+						{
+							WeeklySelectorIndex = 0;
+						}
+					}
+
+					break; 
+			}
+
+			if (WeeklySelectorIndex >= 0)
+			{
+				Search.AddGametagFilter(GameTagFilters, 'WeeklySelectorIndex', string(WeeklySelectorIndex));
+			}
 		}
 
         //For modes that don't use filtered difficulty, don't even attempt to send this (Ex: Weekly)
@@ -1959,6 +2067,7 @@ defaultproperties
 	InProgressKey="InProgress"
 	PermissionsKey="PermissionsKey"
 	AllowSeasonalSkinsKey="AllowSeasonalSkinsKey"
+	WeeklySelectorKey="WeeklySelectorKey"
 
 	SearchDSName=KFGameSearch
 

@@ -97,7 +97,8 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 	//		have the perks so tied into using that, it's easier to just specifically fix commando here.
 	if( KFW != none && !DamageCauser.IsA('KFProj_Grenade'))
 	{
-		if( IsBackupActive() && (IsBackupWeapon( KFW ) || IsDual9mm( KFW )) )
+		if( IsBackupActive()
+			&& (IsBackupWeapon( KFW ) || IsDual9mm( KFW ) || IsHRG93R( KFW ) ) )
 		{
 			`QALog( "Backup Damage" @ KFW @ GetPercentage( InDamage, InDamage * GetSkillValue( PerkSkills[ECommandoBackup] )), bLogPerk );
 			TempDamage += InDamage * GetSkillValue( PerkSkills[ECommandoBackup] );
@@ -692,6 +693,7 @@ DefaultProperties
    	PerkBuildStatID=STATID_Cmdo_Build
 
    	PrimaryWeaponDef=class'KFWeapDef_AR15'
+	
 	KnifeWeaponDef=class'KFweapDef_Knife_Commando'
 	GrenadeWeaponDef=class'KFWeapDef_Grenade_Commando'
 

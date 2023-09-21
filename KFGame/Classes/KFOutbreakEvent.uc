@@ -164,6 +164,51 @@ struct GunGamePerkData
 	var() array<GunGameRespawnLevel> GunGameRespawnLevels;
 };
 
+struct BountyHuntWavePerPlayerZedData
+{
+	var() int NumberOfPlayers;
+	var() int NumberOfZeds;
+};
+
+struct BountyHuntWaveData
+{
+	var() int Wave;
+	var() array<BountyHuntWavePerPlayerZedData> BountyHuntWavePerPlayerZed;
+};
+
+struct BountyHuntSpecialZedPerWaveData
+{
+	var() int Wave;
+};
+
+struct BountyHuntZedProgressionData
+{
+	var() float RemainingZedRatio;
+	var() float HealthBuffRatio;
+	var() float DamageBuffRatio;
+};
+
+struct BountyHuntZedAndProgressionData
+{
+	var() class<KFPawn_Monster> ZedType;
+	var() array<BountyHuntSpecialZedPerWaveData> BountyHuntSpecialZedPerWave;
+	var() array<BountyHuntZedProgressionData> BountyHuntZedProgression;
+};
+
+struct BountyHuntDoshData
+{
+	var() int NumberOfPlayers;
+	var() int Dosh;
+	var() int DoshNoAssist;
+};
+
+struct BountyHuntGameData
+{
+	var() array<BountyHuntWaveData> BountyHuntDataWaves;
+	var() array<BountyHuntZedAndProgressionData> BountyHuntZedAndProgression;
+	var() array<BountyHuntDoshData> BountyHuntDosh;
+};
+
 /** Individual property overrides that drive other behavior to allow for
 *      a large amount of variety in our weekly event mode.
 */
@@ -455,6 +500,8 @@ struct WeeklyOverrides
 
 	var() bool bVIPGameMode;
 
+	var() bool bBountyHunt;
+
 	/** Ignores damage caused by headshots. */
 	var() bool bInvulnerableHeads;
 
@@ -470,6 +517,26 @@ struct WeeklyOverrides
 	/** Contamination mode Extra Dosh */
 	var() int ContaminationModeExtraDosh;
 
+	// Bounty Hunt
+	/** Information about each level in Gun Game Mode */
+	var() BountyHuntGameData BountyHuntGame;
+	var() int BountyHuntExtraDosh;
+	var() bool BountyHuntNeedsToSeePlayerToTriggerFlee;
+	var() float BountyHuntTimeBetweenFlee;
+	var() float BountyHuntTimeBetweenAttack;
+	var() float BountyHuntTimeCanCancelAttack;
+	var() float BountyHuntDistancePlayerMinFirstFlee;
+	var() float BountyHuntDistancePlayerMinFlee;
+	var() float BountyHuntDistancePlayerMaxFlee;
+	var() float BountyHuntDistancePlayerAttack;
+	var() float BountyHuntSpecialZedBuffHealthRatio;
+	var() float BountyHuntSpecialZedBuffAfflictionResistance;
+	var() float BountyHuntMaxCoexistingZeds;
+	var() bool BountyHuntLastLevelStillUsesCoexistingZeds;
+	var() bool BountyHuntUseGradualSpawn;
+
+	var() float HeadshotDamageMultiplier;
+	
 	structdefaultproperties
 	{
 		GameLength = GL_Short
@@ -531,12 +598,28 @@ struct WeeklyOverrides
 		bDisableThrowWeapon = false;
 		bGunGameMode = false;
 		bVIPGameMode = false;
+		bBountyHunt = false;
 		bInvulnerableHeads = false;
 		TraderTimeModifier = 1.f;
 		TimeBetweenWaves = -1.f;
 		bForceShowSkipTrader = false;
 		ContaminationModeZedsToFinish = 0;
 		ContaminationModeExtraDosh = 0;
+		BountyHuntExtraDosh = 0;
+		BountyHuntNeedsToSeePlayerToTriggerFlee = false;
+		BountyHuntTimeBetweenFlee = 10.f;
+		BountyHuntTimeBetweenAttack = 12.f;
+		BountyHuntTimeCanCancelAttack = 5.f;
+		BountyHuntDistancePlayerMinFirstFlee = 100.f;
+		BountyHuntDistancePlayerMinFlee = 1000.f;
+		BountyHuntDistancePlayerMaxFlee = 2200.f;
+		BountyHuntDistancePlayerAttack = 400.f;
+		BountyHuntSpecialZedBuffHealthRatio=0.25f
+		BountyHuntSpecialZedBuffAfflictionResistance=0.5f
+		BountyHuntMaxCoexistingZeds = 6
+		BountyHuntLastLevelStillUsesCoexistingZeds=false
+		BountyHuntUseGradualSpawn = false
+		HeadshotDamageMultiplier = 1.f
 	}
 };
 
@@ -573,7 +656,7 @@ var WeeklyOverrides ActiveEvent;
 /** Stored values of World Info and GRI items incase we need to reset it. */
 var CachedOutbreakInfo CachedItems;
 
-function int SetActiveEvent(int ActiveEventIdx)
+function int SetActiveEvent(int ActiveEventIdx, KFGameInfo GameInfo)
 {
 `if(`notdefined(ShippingPC))
 	local string LocalURL;
@@ -583,7 +666,19 @@ function int SetActiveEvent(int ActiveEventIdx)
 	//Runtime override by URL options for testing purposes
 	LocalURL = WorldInfo.GetLocalURL();
 	LocalURL = Split(LocalURL, "?"); //remove map name
-	ActiveEventIdx = GetIntOption(LocalURL, "ActiveEventIdx", ActiveEventIdx);
+
+	if (GameInfo.WeeklySelectorIndex == -1) // WeeklySelectorIndex overrides the ActiveEventIdx if any
+	{
+		ActiveEventIdx = GetIntOption(LocalURL, "ActiveEventIdx", ActiveEventIdx);
+
+		// Set WeeklySelectorIndex to the value (ActiveEventIdx is not replicated), so all the flow of the game works the same
+		GameInfo.WeeklySelectorIndex = ActiveEventIdx + 1;
+	}
+	else if (GameInfo.WeeklySelectorIndex > 0)
+	{
+		// 0 is default, we move one index to the left so it matches first Weekly Mode
+		ActiveEventIdx = GameInfo.WeeklySelectorIndex - 1;
+	}
 
 	//If our override is out of bounds, see if it's a valid test event
 	if (ActiveEventIdx >= SetEvents.Length)
@@ -599,11 +694,21 @@ function int SetActiveEvent(int ActiveEventIdx)
 		ActiveEvent = SetEvents[ActiveEventIdx];
 	}
 `else
+	if (GameInfo.WeeklySelectorIndex > 0)
+	{
+		// 0 is default, we move one index to the left so it matches first Weekly Mode
+		ActiveEventIdx = GameInfo.WeeklySelectorIndex - 1;
+	}
+
 	if(ActiveEventIdx < SetEvents.length)
 	{
 		ActiveEvent = SetEvents[ActiveEventIdx];
 	}
 `endif
+
+	`Log("TEST - SetActiveEvent : " $ActiveEventIdx);
+
+	KFGameEngine(class'Engine'.static.GetEngine()).SetWeeklyEventIndex(ActiveEventIdx);
 
 	return ActiveEventIdx;
 }
@@ -744,7 +849,14 @@ function ModifyGroundSpeed(KFPawn PlayerPawn, out float GroundSpeed)
 function ReduceDamage(out int Damage, Pawn Injured, Controller InstigatedBy, class<DamageType> DamageType, TraceHitInfo HitInfo)
 {
 	local int HitZoneIdx, WaveNum;
-	local KFPawn InstigatorPawn;
+	local KFPawn InjuredPawn, InstigatorPawn;
+
+	InjuredPawn = KFPawn(Injured);
+
+	if (InjuredPawn != none)
+	{
+		`log(self @ "ReduceDamage=" $ Damage, InjuredPawn.bLogTakeDamage);
+	}
 
 	//Some events can be headshot only.  Do this only if the incoming damage is against a monster-derived class
 	//      and it's one of our custom damage types.  Keeps things like crush damage from being scaled to 0.
@@ -763,6 +875,14 @@ function ReduceDamage(out int Damage, Pawn Injured, Controller InstigatedBy, cla
 		if (HitZoneIdx == HZI_Head && !bool(KFPawn_Monster(Injured).ArmorZoneStatus & 1))
 		{
 			Damage = 0;
+		}
+	}
+	else if (ActiveEvent.HeadshotDamageMultiplier != 1.f && KFPawn_Monster(Injured) != none && KFPawn_Monster(Injured).bIsBountyHuntObjective)
+	{
+		HitZoneIdx = KFPawn_Monster(Injured).HitZones.Find('ZoneName', HitInfo.BoneName);
+		if (HitZoneIdx == HZI_Head)
+		{
+			Damage *= ActiveEvent.HeadshotDamageMultiplier;
 		}
 	}
 
@@ -792,6 +912,11 @@ function ReduceDamage(out int Damage, Pawn Injured, Controller InstigatedBy, cla
 			AdjustDamageReduction(Damage, Injured, InstigatedBy, InstigatorPawn, ActiveEvent.BossRushOverrideParams.PerWaves[WaveNum].ZedsToAdjust);
         }
     }
+
+	if (InjuredPawn != none)
+	{
+		`log(self @ "ReduceDamage (after)=" $ Damage, InjuredPawn.bLogTakeDamage);
+	}
 }
 
 function AdjustDamageReduction(out int Damage, Pawn Injured, Controller InstigatedBy, KFPawn InstigatorPawn, array <StatAdjustments> Adjustments)

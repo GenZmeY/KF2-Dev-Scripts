@@ -245,11 +245,12 @@ function AdjustDamage(out int InDamage, out vector Momentum, Controller Instigat
 /** Reduce affliction/incap strength when healing */
 simulated function AdjustAffliction( out float AfflictionPower )
 {
-    super.AdjustAffliction( AfflictionPower );
     if( bInHuntAndHealMode )
     {
         AfflictionPower *= IncapPowerScaleWhenHealing;
     }
+
+    super.AdjustAffliction( AfflictionPower );
 }
 
 /** Updates shield health and shield health percent */

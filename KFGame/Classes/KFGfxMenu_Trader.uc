@@ -780,6 +780,16 @@ function Callback_PerkChanged(int PerkIndex)
 		{
 			MyKFPC.SetHaveUpdatePerk(true);
 
+			if (KFPerk_Survivalist(MyKFPC.CurrentPerk) != none)
+			{
+				KFPerk_Survivalist(MyKFPC.CurrentPerk).StartingWeaponClassIndex = MyKFPC.SurvivalPerkWeapIndex;
+				KFPerk_Survivalist(MyKFPC.CurrentPerk).StartingGrenadeClassIndex = MyKFPC.SurvivalPerkGrenIndex;
+
+				KFPerk_Survivalist(MyKFPC.CurrentPerk).UpdateCurrentGrenade();
+
+				MyKFPC.GetPurchaseHelper().InitializeOwnedGrenade();
+			}
+
 			// re-initialize and refresh to reflect current carry weight (can change by perk)
 			MyKFPC.GetPurchaseHelper().Initialize(false);
 			RefreshItemComponents();
@@ -792,6 +802,7 @@ function Callback_PerkChanged(int PerkIndex)
 	{
 		PlayerInventoryContainer.UpdateLock();
 	}
+
 	UpdatePlayerInfo();
 
 	// Refresht he UI

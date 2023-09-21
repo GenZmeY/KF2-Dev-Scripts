@@ -14,7 +14,7 @@ DefaultProperties
 	WeaponClassPath="KFGameContent.KFWeap_SMG_G18"
 
 	BuyPrice=1500
-	AmmoPricePerMag=24
+	AmmoPricePerMag=22 // 24
 	ImagePath="WEP_UI_RiotShield_TEX.UI_WeaponSelect_RiotShield"
 
 	IsPlayGoHidden=true;

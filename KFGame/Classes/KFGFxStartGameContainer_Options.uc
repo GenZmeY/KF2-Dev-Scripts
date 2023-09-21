@@ -75,6 +75,7 @@ var GFxObject DifficultyButton;
 var GfxObject MapButton;
 var GFxObject RegionButton;
 var GFxObject AllowSeasonalSkinsButton;
+var GFxObject WeeklySelectorButton;
 
 //==============================================================
 // Initialization
@@ -96,15 +97,19 @@ function GetButtons()
 	MapButton = GetObject("mapButton");
 	RegionButton = GetObject("regionButton");
 	AllowSeasonalSkinsButton = GetObject("allowSeasonalSkinsButton");
+	WeeklySelectorButton = GetObject("weeklySelectorButton");
 }
 
 function UpdateButtonsEnabled()
 {
 	local int AdjustedGameModeIndex;
+	local bool ModeIsWeekly;
 
 	if (bIsSoloGame)
 	{
 		AdjustedGameModeIndex = ParentMenu.Manager.GetModeIndex(false);
+
+		ModeIsWeekly = AdjustedGameModeIndex == EGameMode_Weekly;
 
 		LengthButton.SetBool("enabled", class'KFGameInfo'.default.GameModes[AdjustedGameModeIndex].Lengths > 0);
 		DifficultyButton.SetBool("enabled", class'KFGameInfo'.default.GameModes[AdjustedGameModeIndex].DifficultyLevels > 0);
@@ -112,8 +117,19 @@ function UpdateButtonsEnabled()
 	}
 	else
 	{
+		ModeIsWeekly = ParentMenu.Manager.GetModeIndex() == EGameMode_Weekly;
+
 		LengthButton.SetBool("enabled", class'KFGameInfo'.default.GameModes[ParentMenu.Manager.GetModeIndex()].Lengths > 0);
 		DifficultyButton.SetBool("enabled", class'KFGameInfo'.default.GameModes[ParentMenu.Manager.GetModeIndex()].DifficultyLevels > 0);
+	}
+
+	if (ModeIsWeekly)
+	{
+		WeeklySelectorButton.SetBool("enabled", true);
+	}
+	else
+	{
+		WeeklySelectorButton.SetBool("enabled", false);
 	}
 }
 
@@ -131,6 +147,7 @@ function SetModeMenus(GFxObject TextObject, int ModeIndex, int LengthIndex)
 	Lengths = class'KFGameInfo'.default.GameModes[ModeIndex].Lengths;
 	NewDifficultyIndex = Clamp(NewDifficultyIndex, 0, DifficultyLevels);
 	NewLengthIndex = Clamp(NewLengthIndex, 0, Lengths);
+
 	TextObject.SetObject("difficultyList",	CreateList(class'KFCommon_LocalizedStrings'.static.GetDifficultyStringsArray(), GetDifficultyIndex(), false, false, byte(DifficultyLevels)));
 	TextObject.SetObject("lengthList", 		CreateList(class'KFCommon_LocalizedStrings'.static.GetLengthStringsArray(), LengthIndex, bShowLengthNoPref, false, byte(Lengths)));
 }
@@ -254,7 +271,8 @@ function InitializeGameOptions()
 		TextObject.SetBool("bShowAllowSeasonalSkins", true);
 	}
 
-	TextObject.SetString("allowSeasonalSkins", StartMenu.AllowSeasonalSkinsTitle);	
+	TextObject.SetString("allowSeasonalSkins", StartMenu.AllowSeasonalSkinsTitle);
+	TextObject.SetString("weeklySelector", StartMenu.WeeklySelectorTitle);
 
 	// Since the Mode list can include "ANY" we need to just accept that the selected index could be the length of the supported modes.  Otherwise when "ANY" is selected we push the index to 1.
 	// Also don't include the "ANY" option on Console since PlayGo doesn't support searching multiple game types.  HSL_BB
@@ -264,7 +282,8 @@ function InitializeGameOptions()
 	TextObject.SetObject("mapList",			CreateList(StartMenu.MapStringList, bIsSoloGame ? InitialMapIndex : InitialMapIndex+1, true, true));
 	TextObject.SetObject("difficultyList",	CreateList(class'KFCommon_LocalizedStrings'.static.GetDifficultyStringsArray(), GetDifficultyIndex(), false));
 	TextObject.SetObject("privacyList",		CreateList(class'KFCommon_LocalizedStrings'.static.GetPermissionStringsArray(class'WorldInfo'.static.IsConsoleBuild()), Profile.GetProfileInt(KFID_SavedPrivacyIndex), false));
-	TextObject.SetObject("allowSeasonalSkinsList",	CreateList(class'KFCommon_LocalizedStrings'.static.GetAllowSeasonalSkinsStringsArray(), Profile.GetProfileInt(KFID_SavedAllowSeasonalSkinsIndex), false));
+	TextObject.SetObject("allowSeasonalSkinsList",	CreateList(class'KFCommon_LocalizedStrings'.static.GetAllowSeasonalSkinsStringsArray(), Profile.GetProfileInt(KFID_SavedAllowSeasonalSkinsIndex), false));	
+	TextObject.SetObject("weeklySelectorList",	CreateList(class'KFCommon_LocalizedStrings'.static.GetWeeklySelectorStringsArray(), Profile.GetProfileInt(KFID_SavedWeeklySelectorIndex), false, false));
 
 	if (class'WorldInfo'.static.IsConsoleBuild())
 	{
@@ -287,39 +306,124 @@ function FilterWeeklyMaps(out array<string> List)
 		return;
 	}
 
-	`Log("OPTIONS: Skipping Maps");
-
-	// Scavenger index = 11
-	// BossRush  index = 14
-	// GunGame   index = 16
 	WeeklyIndex = class'KFGameEngine'.static.GetWeeklyEventIndexMod();
-	if (WeeklyIndex == 11 ||  WeeklyIndex == 14 || WeeklyIndex == 16)
-	{
-		`Log("OPTIONS: Inside, removing maps");
 
-		List.RemoveItem("KF-Biolapse");
-		List.RemoveItem("KF-Nightmare");
-		List.RemoveItem("KF-PowerCore_Holdout");
-		List.RemoveItem("KF-TheDescent");
-		List.RemoveItem("KF-KrampusLair");
+	if (ParentMenu.Manager.GetWeeklySelectorIndex() != 0)
+	{
+		WeeklyIndex = ParentMenu.Manager.GetWeeklySelectorIndex() - 1;
 	}
 
-	if (WeeklyIndex == 19)
+	switch (WeeklyIndex)
 	{
-		List.RemoveItem("KF-Biolapse");
-		List.RemoveItem("KF-Nightmare");
-		List.RemoveItem("KF-PowerCore_Holdout");
-		List.RemoveItem("KF-TheDescent");
-		List.RemoveItem("KF-KrampusLair");
-		List.RemoveItem("KF-SantasWorkshop");
-		List.RemoveItem("KF-Elysium");
-	}
+		case 0: // Boom
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
 
-	/* Temporary removal of SteamFrotress for BossRush */
-	if (WeeklyIndex == 14)
-	{
-		List.RemoveItem("KF-SteamFortress");
-	}	
+		case 1: // Cranium Cracker
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 2: // Tiny Terror
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 3: // BobbleZed
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 4: // Poundemonium
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 5: // Up Up And Decay
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 6: // Zed Time
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 7: // Beefcake
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 8: // BloodThirst
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 9: // Coliseum
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 10: // Arachnophobia
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 11: // Scavenger
+			List.RemoveItem("KF-Biolapse");
+			List.RemoveItem("KF-Nightmare");
+			List.RemoveItem("KF-PowerCore_Holdout");
+			List.RemoveItem("KF-TheDescent");
+			List.RemoveItem("KF-KrampusLair");
+			List.RemoveItem("KF-SantasWorkshop");
+		 	break;
+
+		case 12: // WW
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 13: // Abandon
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 14: // Boss Rush
+			List.RemoveItem("KF-Biolapse");
+			List.RemoveItem("KF-Nightmare");
+			List.RemoveItem("KF-PowerCore_Holdout");
+			List.RemoveItem("KF-TheDescent");
+			List.RemoveItem("KF-KrampusLair");
+			List.RemoveItem("KF-SteamFortress");
+			break;
+
+		case 15: // Shrunken Heads
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 16: // GunGame
+			List.RemoveItem("KF-Biolapse");
+			List.RemoveItem("KF-Nightmare");
+			List.RemoveItem("KF-PowerCore_Holdout");
+			List.RemoveItem("KF-TheDescent");
+			List.RemoveItem("KF-KrampusLair");
+			break;
+
+		case 17: // VIP
+			break;
+
+		case 18: // Perk Roulette
+			List.RemoveItem("KF-SantasWorkshop");
+			break;
+
+		case 19: // Contamination Zone
+			List.RemoveItem("KF-Biolapse");
+			List.RemoveItem("KF-Nightmare");
+			List.RemoveItem("KF-PowerCore_Holdout");
+			List.RemoveItem("KF-TheDescent");
+			List.RemoveItem("KF-KrampusLair");
+			List.RemoveItem("KF-SantasWorkshop");
+			List.RemoveItem("KF-Elysium");
+			break;
+
+		case 20: // Bounty Hunt
+			List.RemoveItem("KF-Biolapse");
+			List.RemoveItem("KF-Nightmare");
+			List.RemoveItem("KF-PowerCore_Holdout");
+			List.RemoveItem("KF-TheDescent");
+			List.RemoveItem("KF-KrampusLair");
+			List.RemoveItem("KF-Elysium");
+			List.RemoveItem("KF-SteamFortress");	
+			break;
+	}
 }
 
 function GFxObject CreateList( array<string> TextArray, byte SelectedIndex, bool bAddNoPrefString, optional bool bIsMapList, optional byte MaxLength)
@@ -504,6 +608,22 @@ function AllowSeasonalSkinsChanged( int Index, optional bool bSetText )
 	}
 }
 
+function WeeklySelectorChanged( int Index, optional bool bSetText )
+{
+	if(Index != GetCachedProfile().GetProfileInt(KFID_SavedWeeklySelectorIndex))
+	{
+		SaveConfig();
+		if(bSetText)
+		{
+			WeeklySelectorButton.SetString("infoString", class'KFCommon_LocalizedStrings'.static.GetWeeklySelectorStringsArray()[Index]);
+		}
+
+		GetCachedProfile().SetProfileSettingValueInt(KFID_SavedWeeklySelectorIndex, Index);
+
+		InitializeGameOptions();
+	}	
+}
+
 function SetRegionIndex(int InRegionIndex, optional bool bSetText)
 {
 	local array<String> PlayfabRegionList;
@@ -621,6 +741,11 @@ function int GetPrivacyIndex()
 function int GetAllowSeasonalSkinsIndex()
 {
 	return GetCachedProfile().GetProfileInt(KFID_SavedAllowSeasonalSkinsIndex);
+}
+
+function int GetWeeklySelectorIndex()
+{
+	return GetCachedProfile().GetProfileInt(KFID_SavedWeeklySelectorIndex);
 }
 
 function string GetMapName()

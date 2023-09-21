@@ -97,7 +97,7 @@ defaultproperties
 	AmmoCost(ALTFIRE_FIREMODE)=40
 	WeaponProjectiles(ALTFIRE_FIREMODE)=class'KFProj_HealingDart_MedicBase'
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Dart_Toxic'
-
+	InstantHitDamage(ALTFIRE_FIREMODE)=5
 
 	// BASH_FIREMODE
 	InstantHitDamage(BASH_FIREMODE)=23.0

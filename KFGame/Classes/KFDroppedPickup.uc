@@ -389,6 +389,11 @@ function GiveTo(Pawn P)
     local Inventory NewInventory;
     local KFInventoryManager KFIM;
 	local KFGameReplicationInfo KFGRI;
+	local class<Inventory> NewInventoryClass;
+
+	NewInventoryClass = InventoryClass;
+
+	// For HRG93R and 9mm pistols, if one of the other type is picked just give the one owned
 
 	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
 	if (KFGRI != none && KFGRI.bIsEndlessPaused)
@@ -399,10 +404,33 @@ function GiveTo(Pawn P)
     KFIM = KFInventoryManager(P.InvManager);
     if (KFIM != None)
     {
-        KFWInvClass = class<KFWeapon>(InventoryClass);
+		if (KFIM.Is9mmInInventory())
+		{
+			if (InventoryClass.name == 'KFWeap_HRG_93R')
+			{
+				NewInventoryClass = class<Weapon>(DynamicLoadObject(class'KfWeapDef_9mm'.default.WeaponClassPath, class'Class'));
+			}
+			else if (InventoryClass.name == 'KFWeap_HRG_93R_Dual')
+			{
+				NewInventoryClass = class<Weapon>(DynamicLoadObject(class'KfWeapDef_9mmDual'.default.WeaponClassPath, class'Class'));
+			}
+		}
+		else
+		{
+			if(InventoryClass.name == 'KFWeap_Pistol_9mm')
+			{
+				NewInventoryClass = class<Weapon>(DynamicLoadObject(class'KFWeapDef_HRG_93R'.default.WeaponClassPath, class'Class'));
+			}
+			else if (InventoryClass.name == 'KFWeap_Pistol_Dual9mm')
+			{
+				NewInventoryClass = class<Weapon>(DynamicLoadObject(class'KFWeapDef_HRG_93R_Dual'.default.WeaponClassPath, class'Class'));
+			}
+		}
+
+        KFWInvClass = class<KFWeapon>(NewInventoryClass);
         foreach KFIM.InventoryActors(class'KFWeapon', KFW)
         {
-            if (KFW.Class == InventoryClass)
+            if (KFW.Class == NewInventoryClass)
             {
                 // if this isn't a dual-wield class, then we can't carry another
                 if (KFW.DualClass == none)
@@ -426,7 +454,7 @@ function GiveTo(Pawn P)
 			return;
 		}
 
-        NewInventory = KFIM.CreateInventory(InventoryClass, true);
+        NewInventory = KFIM.CreateInventory(NewInventoryClass, true);
         if (NewInventory != none)
         {
             // Added extra check in case we want to pick up a non-weapon based pickup

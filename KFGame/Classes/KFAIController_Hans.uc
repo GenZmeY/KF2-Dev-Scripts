@@ -1609,11 +1609,12 @@ function DoFleeFrom( actor FleeFrom,
     optional float FleeDuration,
     optional float FleeDistance,
     optional bool bShouldStopAtGoal=false,
-    optional bool bFromFear=false )
+    optional bool bFromFear=false,
+	optional bool bUseRandomDirection=false )
 {
     if( !bFromFear || !MyHansPawn.bInHuntAndHealMode )
     {
-        super.DoFleeFrom( FleeFrom, FleeDuration, FleeDistance, bShouldStopAtGoal, bFromFear );
+        super.DoFleeFrom( FleeFrom, FleeDuration, FleeDistance, bShouldStopAtGoal, bFromFear, bUseRandomDirection );
     }
 }
 

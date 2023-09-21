@@ -20,6 +20,7 @@ struct native WeaponSkinPairs
 var transient array<CustomizationInfo> Characters;
 var transient array<string> FavoriteWeapons;
 var transient array<WeaponSkinPairs> ActiveSkins;
+var transient array<string> KilledHansVolterInMaps;
 var transient bool Dirty;
 
 event FavoriteWeapon(name WeaponName)
@@ -51,6 +52,29 @@ event UnFavoriteWeapon(name WeaponName)
 		FavoriteWeapons.Remove(Index, 1);
 		Dirty = true;
 	}
+}
+
+function bool AddHansVolterKilledInMap(string MapName)
+{
+	if (KilledHansVolterInMaps.Find(MapName) == INDEX_NONE)
+	{
+		KilledHansVolterInMaps.AddItem(MapName);
+
+		while (KilledHansVolterInMaps.Length > 5)
+		{
+			// There's a crash on the save system because the string this generates is huge
+			// We don't need to store more than 5
+			// We are going to cap it then, we remove from the beginning
+
+			KilledHansVolterInMaps.Remove(0, 1);
+		}
+
+		Dirty = true;
+
+		return true;
+	}
+
+	return false;
 }
 
 event Save( byte ControllerId )
@@ -234,6 +258,7 @@ defaultproperties
 	ProfileMappings.Add((Id=KFID_FriendlyHudScale, Name="Friendly HUD Scale", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_FavoriteWeapons, Name="Favorite Weapons", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_GearLoadouts, Name="Gear Loadouts", MappingType=PVMT_RawValue))
+	ProfileMappings.Add((Id=KFID_KilledHansVolterInMaps, Name="Killed Hans Volter In Maps", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_SetGamma, Name="Set Gamma", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_RequiresPushToTalk, Name="RequiresPushToTalk", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_InvertController, Name="controllerInvertedValue", MappingType=PVMT_RawValue))
@@ -258,6 +283,7 @@ defaultproperties
 	ProfileMappings.Add((Id=KFID_SavedLengthIndex, Name="SavedLengthIndex", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_SavedPrivacyIndex, Name="SavedPrivacyIndex", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_SavedAllowSeasonalSkinsIndex, Name="SavedAllowSeasonalSkinsIndex", MappingType=PVMT_RawValue))
+	ProfileMappings.Add((Id=KFID_SavedWeeklySelectorIndex, Name="SavedWeeklySelectorIndex", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_SavedServerTypeIndex, Name="SavedServerTypeIndex", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_SavedInProgressIndex, Name="SavedInProgressIndex", MappingType=PVMT_RawValue))
 	ProfileMappings.Add((Id=KFID_ControllerSoundEnabled, Name="Controller Sound Enabled", MappingType=PVMT_RawValue))
@@ -320,6 +346,7 @@ defaultproperties
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_FriendlyHudScale,Data=(Type=SDT_Float,Value1=0x3f800000)))) // default of 1.0f
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_FavoriteWeapons,Data=(Type=SDT_String,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_GearLoadouts,Data=(Type=SDT_String,Value1=0))))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_KilledHansVolterInMaps,Data=(Type=SDT_String,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SetGamma,Data=(Type=SDT_Int32,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_RequiresPushToTalk,Data=(Type=SDT_Int32,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_InvertController,Data=(Type=SDT_Int32,Value1=0))))
@@ -344,6 +371,7 @@ defaultproperties
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedLengthIndex,Data=(Type=SDT_Int32,Value1=0))))	//default to any
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedPrivacyIndex,Data=(Type=SDT_Int32,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedAllowSeasonalSkinsIndex,Data=(Type=SDT_Int32,Value1=0))))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedWeeklySelectorIndex,Data=(Type=SDT_Int32,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedServerTypeIndex,Data=(Type=SDT_Int32,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SavedInProgressIndex,Data=(Type=SDT_Int32,Value1=0))))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_ControllerSoundEnabled,Data=(Type=SDT_Int32,Value1=0))))
@@ -411,4 +439,7 @@ defaultproperties
 	
 	ProfileMappings.Add((Id=KFID_ViewAccelerationEnabled, Name="View_Acceleration_Enabled", MappingType=PVMT_RawValue))
 	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_ViewAccelerationEnabled,Data=(Type=SDT_Int32,Value1=1))))
+
+	ProfileMappings.Add((Id=KFID_SurvivalStartingSecondaryWeapIdx, Name="Survival Starting Secondary Weapon Index", MappingType=PVMT_RawValue))
+	DefaultSettings.Add((Owner=OPPO_Game,ProfileSetting=(PropertyId=KFID_SurvivalStartingSecondaryWeapIdx,Data=(Type=SDT_Int32,Value1=0))))
 }

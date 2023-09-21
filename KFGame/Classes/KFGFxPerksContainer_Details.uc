@@ -25,12 +25,47 @@ function  LocalizeContainer()
 	GetObject("basicLoadoutTextField").SetString("text", BasicLoadoutString);
 }
 
-function UpdateDetailsInternal(class<KFPerk> PerkClass, KFPlayerController KFPC, byte WeaponIdx, byte GrenadeIdx)
+function bool CanChooseWeapons(KFPlayerController KFPC)
+{
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI = KFGameReplicationInfo(KFPC.WorldInfo.GRI);
+
+	if (KFPC != none)
+	{
+		if (KFPC.Pawn.IsAliveAndWell() == false
+			|| KFPC.PlayerReplicationInfo.bIsSpectator
+			|| KFPC.PlayerReplicationInfo.bOnlySpectator)
+		{
+			return true;
+		}
+	}
+
+	if (KFGRI != none)
+	{
+		if (KFGRI.WaveNum == 0)
+		{
+			if (KFGRI.bWaveStarted)
+			{
+				return false;
+			}
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
+function UpdateDetailsInternal(class<KFPerk> PerkClass, KFPlayerController KFPC, byte WeaponIdx, byte SecondaryWeaponIdx, byte GrenadeIdx)
 {
 	local GFxObject DetailsProvider;
 	local array<string> WeaponNames;
 	local array<string> WeaponSources;
 	local int i;
+	local bool CanIChooseWeapons;
 
 	DetailsProvider = CreateObject( "Object" );
 
@@ -41,9 +76,9 @@ function UpdateDetailsInternal(class<KFPerk> PerkClass, KFPlayerController KFPC,
 		AddWeaponInfo(WeaponNames, WeaponSources, PerkClass.static.GetPrimaryWeaponName(WeaponIdx), PerkClass.static.GetPrimaryWeaponImagePath(WeaponIdx));
 	}
 
-	if(PerkClass.default.SecondaryWeaponDef != none)
+	if(PerkClass.default.SecondaryWeaponPaths.Length > 0)
 	{
-		AddWeaponInfo(WeaponNames, WeaponSources, PerkClass.default.SecondaryWeaponDef.static.GetItemName(), PerkClass.default.SecondaryWeaponDef.static.GetImagePath());
+		AddWeaponInfo(WeaponNames, WeaponSources, PerkClass.static.GetSecondaryWeaponName(SecondaryWeaponIdx), PerkClass.static.GetSecondaryWeaponImagePath(SecondaryWeaponIdx));
 	}
 	if(PerkClass.default.KnifeWeaponDef != none)
 	{
@@ -61,18 +96,22 @@ function UpdateDetailsInternal(class<KFPerk> PerkClass, KFPlayerController KFPC,
 	}
 
 	DetailsProvider.SetString( "EXPAction1", PerkClass.default.EXPAction1 );
-	DetailsProvider.SetString( "EXPAction2", PerkClass.default.EXPAction2 );		
+	DetailsProvider.SetString( "EXPAction2", PerkClass.default.EXPAction2 );
 
-	DetailsProvider.SetBool("ShowPrimaryWeaponSelectors", PerkClass.static.CanChoosePrimaryWeapon());
+	CanIChooseWeapons = CanChooseWeapons(KFPC);
+
+	DetailsProvider.SetBool("ShowPrimaryWeaponSelectors", CanIChooseWeapons && PerkClass.static.CanChoosePrimaryWeapon());
+	DetailsProvider.SetBool("ShowSecondaryWeaponSelectors", CanIChooseWeapons && PerkClass.static.CanChooseSecondaryWeapon());
+
 	DetailsProvider.SetBool("ShowGrenadeSelectors", PerkClass.static.CanChooseGrenade());
 
 	SetObject( "detailsData", DetailsProvider );
 }
 
-function UpdateDetails(class<KFPerk> PerkClass, byte SelectedSkills[`MAX_PERK_SKILLS], bool IsChoosingPrev, bool IsChoosingNext)
+function UpdateDetails(class<KFPerk> PerkClass, byte SelectedSkills[`MAX_PERK_SKILLS], bool IsChoosingPrev, bool IsChoosingNext, bool UpdateUI)
 {
 	local KFPlayerController KFPC;
-	local byte WeaponIdx, GrenadeIdx;
+	local byte WeaponIdx, SecondaryWeaponIdx, GrenadeIdx;
 
 	KFPC = KFPlayerController( GetPC() );  
 
@@ -82,11 +121,15 @@ function UpdateDetails(class<KFPerk> PerkClass, byte SelectedSkills[`MAX_PERK_SK
 	}
 
 	WeaponIdx = 0;
+	SecondaryWeaponIdx = 0;
 	GrenadeIdx = 0;
 
-	UpdateAndGetCurrentWeaponIndexes(PerkClass, KFPC, WeaponIdx, GrenadeIdx, SelectedSkills, IsChoosingPrev, IsChoosingNext);
+	UpdateAndGetCurrentWeaponIndexes(PerkClass, KFPC, WeaponIdx, SecondaryWeaponIdx, GrenadeIdx, SelectedSkills, IsChoosingPrev, IsChoosingNext);
 
-	UpdateDetailsInternal(PerkClass, KFPC, WeaponIdx, GrenadeIdx);
+	if (UpdateUI)
+	{
+		UpdateDetailsInternal(PerkClass, KFPC, WeaponIdx, SecondaryWeaponIdx, GrenadeIdx);
+	}
 }
 
 function AddWeaponInfo(out array<string> WeaponNames, out array<string> WeaponSources, string WeaponName, string WeaponSource)
@@ -123,12 +166,35 @@ function UpdatePassives(Class<KFPerk> PerkClass)
     SetObject( "passivesData", PassivesProvider );
 }
 
-function UpdateAndGetCurrentWeaponIndexes(class<KFPerk> PerkClass, KFPlayerController KFPC, out byte WeaponIdx, out byte GrenadeIdx
+function UpdateAndGetCurrentWeaponIndexes(class<KFPerk> PerkClass, KFPlayerController KFPC, out byte WeaponIdx, out byte SecondaryWeaponIdx, out byte GrenadeIdx
 											, byte SelectedSkills[`MAX_PERK_SKILLS], bool IsChoosingPrev, bool IsChoosingNext)
 {
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI = KFGameReplicationInfo(KFPC.WorldInfo.GRI);
+
+	SecondaryWeaponIdx = PerkClass.static.GetSecondaryWeaponSelectedIndex(KFPC.SurvivalPerkSecondaryWeapIndex);
+
+	if (KFPC.CurrentPerk.Class.Name == PerkClass.Name)
+	{
+		KFPC.CurrentPerk.StartingSecondaryWeaponClassIndex = SecondaryWeaponIdx;
+	}
+
 	if (PerkClass.Name == 'KFPerk_Survivalist')
 	{
-		WeaponIdx = KFPC.CurrentPerk.SetWeaponSelectedIndex(KFPC.SurvivalPerkWeapIndex);
-		GrenadeIdx = KFPC.CurrentPerk.SetGrenadeSelectedIndexUsingSkills(KFPC.SurvivalPerkGrenIndex, SelectedSkills, IsChoosingPrev, IsChoosingNext);
+		WeaponIdx = PerkClass.static.GetWeaponSelectedIndex(KFPC.SurvivalPerkWeapIndex);
+		GrenadeIdx = PerkClass.static.GetGrenadeSelectedIndexUsingSkills(KFPC.SurvivalPerkGrenIndex, SelectedSkills, IsChoosingPrev, IsChoosingNext);
+
+		if (KFPC.CurrentPerk.Class.Name == PerkClass.Name)
+		{
+			KFPerk_Survivalist(KFPC.CurrentPerk).StartingWeaponClassIndex = WeaponIdx;
+			KFPerk_Survivalist(KFPC.CurrentPerk).StartingGrenadeClassIndex = GrenadeIdx;
+
+			// If we are in no gameplay time insta change
+			if (!KFGRI.bWaveIsActive)
+			{
+				KFPerk_Survivalist(KFPC.CurrentPerk).UpdateCurrentGrenade();
+			}
+		}
 	}
 }

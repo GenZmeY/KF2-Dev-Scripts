@@ -118,7 +118,7 @@ function float GetDamageModifier()
 
 defaultproperties
 {
-    DissipationRate=10
+    DissipationRate=50
     bNeedsTick=true
 
     MaxStack=3
@@ -126,7 +126,7 @@ defaultproperties
     EffectAppliedByStack=0.3f
     
     ApplyEffectVel= 1.0f // % per second
-    RemoveEffectVel= 1.0f // % per second
+    RemoveEffectVel= 0.9f // % per second
 
     CurrentStack=0
     CurrentEffectApplied=0.0f

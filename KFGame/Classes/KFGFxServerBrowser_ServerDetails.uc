@@ -66,6 +66,7 @@ function SetDetails(KFOnlineGameSettings ServerResult)
 	local int Ping, PlayerCount;
 	local KFOnlineGameSettings TempOnlingGamesSettings;
 	local bool bShowSeasonalSkins;
+	local KFWeeklyOutbreakInformation WeeklyInfo;
 
 	if(ServerResult != none)
 	{
@@ -103,6 +104,22 @@ function SetDetails(KFOnlineGameSettings ServerResult)
 		TempObj.SetString("ping",          		(Ping < 0) ? ("-") : (String(Ping)) );
 		TempObj.SetString("difficulty",         Class'KFCommon_LocalizedStrings'.static.GetDifficultyString(TempOnlingGamesSettings.difficulty));
 		TempObj.SetString("mode",           	class'KFCommon_LocalizedStrings'.static.GetGameModeString(TempOnlingGamesSettings.Mode) );
+
+		// If weekly we add the weekly type
+		if (TempOnlingGamesSettings.Mode == 1)
+		{
+			if (TempOnlingGamesSettings.WeeklySelectorIndex > 0)
+			{
+				WeeklyInfo = class'KFMission_LocalizedStrings'.static.GetWeeklyOutbreakInfoByIndex(TempOnlingGamesSettings.WeeklySelectorIndex - 1);
+			}
+			else
+			{
+				WeeklyInfo = class'KFMission_LocalizedStrings'.static.GetCurrentWeeklyOutbreakInfo();
+			}
+
+			TempObj.SetString("weeklyForced", WeeklyInfo.FriendlyName);
+		}
+
 		TempObj.SetString("map",           		TempOnlingGamesSettings.MapName);
 
 		TempObj.SetString("mapImagePath",       GetMapSource(TempOnlingGamesSettings.MapName));

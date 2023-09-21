@@ -476,7 +476,7 @@ simulated function TriggerAltExplosion()
 	if (Role == ROLE_Authority)
 	{
 		MuzzleLocation = GetMuzzleLoc();
-		Trace( HitLocation, HitNormal, MuzzleLocation + vect(0, 0, -1) * 250000, MuzzleLocation);
+		Trace( HitLocation, HitNormal, MuzzleLocation + vect(0, 0, -1) * 250000, MuzzleLocation,,,,TRACEFLAG_BULLET);
 		// Move a bit from hit location
 		HitLocation = HitLocation + (vect(0,0,1) * 128.f);
 

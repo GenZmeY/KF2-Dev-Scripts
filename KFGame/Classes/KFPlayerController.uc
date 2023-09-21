@@ -115,6 +115,8 @@ var	private const bool	bPerkStatsLoaded;
 var public byte SavedPerkIndex;
 /** Index of the weapon chosen for the survival perk */
 var public byte SurvivalPerkWeapIndex;
+/** Index of the secondary weapon chosen for the survival perk */
+var public byte SurvivalPerkSecondaryWeapIndex;
 /** Index of the grenade chosen for the survival perk */
 var public byte SurvivalPerkGrenIndex;
 
@@ -1673,6 +1675,7 @@ function OnReadProfileSettingsComplete(byte LocalUserNum,bool bWasSuccessful)
 		bDisableAutoUpgrade 			 = Profile.GetProfileBool(KFID_DisableAutoUpgrade);
 		bHideRemotePlayerHeadshotEffects = Profile.GetProfileBool(KFID_HideRemoteHeadshotEffects);
 		SurvivalPerkWeapIndex            = byte(Profile.GetProfileInt(KFID_SurvivalStartingWeapIdx));
+		SurvivalPerkSecondaryWeapIndex	 = byte(Profile.GetProfileInt(KFID_SurvivalStartingSecondaryWeapIdx));
 		SurvivalPerkGrenIndex            = byte(Profile.GetProfileInt(KFID_SurvivalStartingGrenIdx));
 
 		KFPRI = KFPlayerReplicationInfo(PlayerReplicationInfo);
@@ -2860,6 +2863,12 @@ public function bool CanUseContaminationMode()
 {
 	return KFGameReplicationInfo(WorldInfo.GRI) != none
 			&& KFGameReplicationInfo(WorldInfo.GRI).IsContaminationMode();		
+}
+
+public function bool CanUseBountyHunt()
+{
+	return KFGameReplicationInfo(WorldInfo.GRI) != none
+			&& KFGameReplicationInfo(WorldInfo.GRI).IsBountyHunt();		
 }
 
 /*********************************************************************************************
@@ -7657,6 +7666,12 @@ function AddAfflictionCaused(EAfflictionType Type)
 }
 native reliable client private function ClientAddAfflictionCaused(EAfflictionType Type);
 
+function AddCollectibleFound(int Limit)
+{
+	ClientAddCollectibleFound(Limit);
+}
+native reliable client private function ClientAddCollectibleFound(int Limit);
+
 function AddZedAssist(class<KFPawn_Monster> MonsterClass)
 {
 	ClientAddZedAssist(MonsterClass);
@@ -12038,6 +12053,8 @@ reliable client function ForceMonsterHeadExplode(KFPawn_Monster Victim)
 
 simulated function InitPerkLoadout()
 {
+	CurrentPerk.SetSecondaryWeaponSelectedIndex(SurvivalPerkSecondaryWeapIndex);
+
 	if (CurrentPerk.IsA('KFPerk_Survivalist'))
 	{
 		CurrentPerk.SetWeaponSelectedIndex(SurvivalPerkWeapIndex);

@@ -39,7 +39,8 @@ enum ESharedContentUnlock
 	SCU_G36C,
 	SCU_HVStormCannon,
 	SCU_ZedMKIII,
-	SCU_Saiga12
+	SCU_Saiga12,
+	SCU_MG3
 };
 
 
@@ -398,4 +399,8 @@ defaultproperties
 		Name=KFWeap_Shotgun_S12,
 		IconPath="WEP_UI_Saiga12_TEX.UI_WeaponSelect_Saiga12",
 		ID=9666)}
+	SharedContentList(SCU_MG3)={(
+		Name=KFWeap_LMG_MG3,
+		IconPath="WEP_UI_MG3_TEX.UI_WeaponSelect_MG3",
+		ID=9755)}
 }

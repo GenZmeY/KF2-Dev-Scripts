@@ -386,6 +386,7 @@ var repnotify int VIPRepMaxHealth;
 var repnotify KFPlayerReplicationInfo VIPRepPlayer;
 
 var bool bAllowSeasonalSkins;
+var int WeeklySelectorIndex;
 
 /************************************
  *  Steam heartbeat
@@ -421,11 +422,11 @@ replication
 		TraderVolume, TraderVolumeCheckType, bTraderIsOpen, NextTrader, WaveNum, bWaveIsEndless, GunGameWavesCurrent, bWaveGunGameIsFinal, AIRemaining, WaveTotalAICount, bWaveIsActive, MaxHumanCount, bGlobalDamage, 
 		CurrentObjective, PreviousObjective, PreviousObjectiveResult, PreviousObjectiveXPResult, PreviousObjectiveVoshResult, MusicIntensity, ReplicatedMusicTrackInfo, MusicTrackRepCount,
 		bIsUnrankedGame, GameSharedUnlocks, bHidePawnIcons, ConsoleGameSessionGuid, GameDifficulty, GameDifficultyModifier, BossIndex, bWaveStarted, NextObjective, bIsBrokenTrader, bIsWeeklyMode,
-		CurrentWeeklyIndex, bIsEndlessPaused, bForceSkipTraderUI, VIPRepCurrentHealth, VIPRepMaxHealth, VIPRepPlayer; //@HSL - JRO - 3/21/2016 - PS4 Sessions
+		bIsEndlessPaused, bForceSkipTraderUI, VIPRepCurrentHealth, VIPRepMaxHealth, VIPRepPlayer; //@HSL - JRO - 3/21/2016 - PS4 Sessions
 	if ( bNetInitial )
 		GameLength, WaveMax, bCustom, bVersusGame, TraderItems, GameAmmoCostScale, bAllowGrenadePurchase, MaxPerkLevel, bTradersEnabled, bForceShowSkipTrader, bAllowSeasonalSkins;
 	if ( bNetInitial || bNetDirty )
-		PerksAvailableData;
+		CurrentWeeklyIndex, WeeklySelectorIndex, PerksAvailableData;
 	if ( bNetInitial && Role == ROLE_Authority )
 		ServerAdInfo;
 
@@ -1376,7 +1377,7 @@ simulated function DisplayDebug(HUD HUD, out float YL, out float YPos)
                     TotalClots++;
                     NumAlphas++;
                 }
-                else if( KFPM.IsA('KFPawn_ZedClot_Cyst') )
+                else if( KFPM.IsA('KFPawn_ZedClot_Cyst') || KFPM.IsA('KFPawn_ZedHansClot') )
                 {
                     TotalClots++;
                     NumUnders++;
@@ -2312,10 +2313,16 @@ simulated function NotifyWeeklyEventIndex(int EventIndex)
 simulated function NotifyAllowSeasonalSkins(int AllowSeasonalSkinsIndex)
 {
 	bAllowSeasonalSkins = (AllowSeasonalSkinsIndex == 0);
-	
-	`Log("NotifyAllowSeasonalSkins: AllowSeasonalSkins: "$bAllowSeasonalSkins);
+	bNetDirty = true;
+}
+
+simulated function NotifyWeeklySelector(int WeeklySelectorIndex_)
+{
+	WeeklySelectorIndex = WeeklySelectorIndex_;
 
 	bNetDirty = true;
+
+	`Log("TEST - NotifyWeeklySelector : " $WeeklySelectorIndex);
 }
 
 /** VIP weekly */
@@ -2449,6 +2456,27 @@ simulated function int ContaminationModeExtraDosh()
 	return 0;
 }
 
+simulated function bool IsBountyHunt()
+{
+	return bIsWeeklyMode && CurrentWeeklyIndex == 20;
+}
+
+simulated function int BountyHuntExtraDosh()
+{
+	local KFGameInfo KFGI;
+
+	if (IsBountyHunt())
+	{
+		KFGI = KFGameInfo(WorldInfo.Game);
+		if (KFGI != none && KFGI.OutbreakEvent != none)
+		{
+			return KFGI.OutbreakEvent.ActiveEvent.BountyHuntExtraDosh;
+		}
+	}
+
+	return 0;
+}
+
 defaultproperties
 {
 	TraderItemsPath="GP_Trader_ARCH.DefaultTraderItems"
@@ -2471,6 +2499,7 @@ defaultproperties
 	bIsWeeklyMode=false
 	bForceShowSkipTrader=false
 	bAllowSeasonalSkins=true
+	WeeklySelectorIndex=-1
 	bForceSkipTraderUI=false
 	GunGameWavesCurrent=1
 	bWaveGunGameIsFinal=false

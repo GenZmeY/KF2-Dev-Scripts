@@ -36,6 +36,11 @@ function InitOnlineLobby()
 	OnlineLobby = GetPC().OnlineSub.GetLobbyInterface();
 	}
 }
+
+function OnDpadPressed(int Right)
+{
+}
+
 function OnR3Pressed()
 {
 	local KFPlayerController KFPC;
@@ -514,6 +519,16 @@ function Callback_OnLoadoutPrevWeaponPressed()
 function Callback_OnLoadoutNextWeaponPressed()
 {
 	Manager.PerksMenu.OnNextWeaponPressed();
+}
+
+function Callback_OnLoadoutPrevSecondaryWeaponPressed()
+{
+	Manager.PerksMenu.OnPrevSecondaryWeaponPressed();
+}
+
+function Callback_OnLoadoutNextSecondaryWeaponPressed()
+{
+	Manager.PerksMenu.OnNextSecondaryWeaponPressed();
 }
 
 function Callback_OnLoadoutPrevGrenadePressed()

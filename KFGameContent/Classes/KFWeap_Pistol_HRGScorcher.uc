@@ -28,9 +28,14 @@ simulated function AltFireMode()
 	StartFire(ALTFIRE_FIREMODE);
 }
 
-static simulated event EFilterTypeUI GetAltTraderFilter()
+static simulated event EFilterTypeUI GetTraderFilter()
 {
 	return FT_Pistol;
+}
+
+static simulated event EFilterTypeUI GetAltTraderFilter()
+{
+	return FT_Flame;
 }
 
 defaultproperties

@@ -44,8 +44,14 @@ var bool bReadingPlayfabStoreData;
 var private{private} const int SeasonalEventId;
 var private const int LoadedSeasonalEventId;
 
-/** Week index of the year - Used as index into weekly event */
+/** Week index of the year - Used as index into weekly event, this is the Intended one, the one the system time should apply */
+var private int IntendedWeeklyEventIndex;
+
+/** Week index of the year - Used as index into weekly event, this is the one used by the game, it starts as the system time one but can be overriden later */
 var private int WeeklyEventIndex;
+
+// If we forced via cmd line
+var private bool IsForceWeeklyEvent;
 
 
 /************************************************************************************
@@ -469,8 +475,12 @@ function ClearOnlineDelegates()
 
 /** Static because these are both called on default object */
 native static function int GetSeasonalEventID();
+native static function int GetIntendedWeeklyEventIndex();
+native static function int GetIntendedWeeklyEventIndexMod();
 native static function int GetWeeklyEventIndex();
 native static function int GetWeeklyEventIndexMod();
+native static function SetWeeklyEventIndex(int index);
+native static function bool GetIsForceWeeklyEvent();
 native static function bool IsSalesEventActive();
 native static function bool IsSalesEventChecked();
 /***********************************************************************************
@@ -649,7 +659,9 @@ DefaultProperties
 	KFFontScale=0.65f
 	SeasonalEventId=-1
 	LoadedSeasonalEventId=-1
+	IntendedWeeklyEventIndex=-1
     WeeklyEventIndex=-1
+	IsForceWeeklyEvent=false
 	LocalLoginStatus=LS_LoggedIn
 	SafeFrameScale=1.0
 

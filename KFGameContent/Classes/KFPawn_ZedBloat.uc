@@ -407,4 +407,8 @@ DefaultProperties
     MinSpawnSquadSizeType=EST_Large
 
     bIsBloatClass=true
+
+	// Only used in Volter Castle for now when the spawn volume has bForceUseMapReplacePawn set to true
+	// If we need to reuse it more we'll have to connect map to zed here
+	MapReplacePawnClass.Add(class'KFPawn_ZedHansClot')
 }

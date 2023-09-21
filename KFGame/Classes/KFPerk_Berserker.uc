@@ -1020,6 +1020,7 @@ DefaultProperties
 	SmallRadiusSizeSQ=40000
 
 	PrimaryWeaponDef=class'KFWeapDef_Crovel'
+
 	KnifeWeaponDef=class'KFweapDef_Knife_Berserker'
 	GrenadeWeaponDef=class'KFWeapDef_Grenade_Berserker'
 

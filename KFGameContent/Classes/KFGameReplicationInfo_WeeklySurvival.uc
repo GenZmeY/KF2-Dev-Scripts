@@ -68,7 +68,9 @@ function ChooseNextObjective(int NextWaveNum)
 
 	if (IsContaminationMode() == false)
 	{
-		super.ChooseNextObjective(NextWaveNum);		
+		super.ChooseNextObjective(NextWaveNum);
+
+		return;
 	}
 
     KFMI = KFMapInfo(WorldInfo.GetMapInfo());

@@ -31,6 +31,7 @@ var localized string BackString;
 var localized string ApplyString;
 var localized string ResetString;
 var localized string PingString;
+var localized string WeeklyIndexString;
 var localized string LengthString;
 var localized string DifficultyString;
 var localized string MapString;
@@ -261,6 +262,12 @@ function Callback_PingFilter(int FilterIndex)
 {
 	`log("Ping" @ FilterIndex, bLogServerBrowser);
 	FiltersContainer.PingChanged(FilterIndex);
+}
+
+function Callback_WeeklySelectorChanged(int FilterIndex)
+{
+	`log("WeeklySelector" @ FilterIndex, bLogServerBrowser);
+	FiltersContainer.WeeklySelectorChanged(FilterIndex);	
 }
 
 function CallBack_SearchTabChanged(int TabIndex)

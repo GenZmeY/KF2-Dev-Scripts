@@ -11,18 +11,6 @@ class KFDT_Piercing_HRG_Vampire_CrystalSpike extends KFDT_Piercing
 	abstract
 	hidedropdown;
 
-/** Called when damage is dealt to apply additional damage type (e.g. Damage Over Time) */
-static function ApplySecondaryDamage( KFPawn Victim, int DamageTaken, optional Controller InstigatedBy )
-{
-	local class<KFDamageType> ToxicDT;
-
-	ToxicDT = class'KFDT_Ballistic_Assault_Medic'.static.GetMedicToxicDmgType( DamageTaken, InstigatedBy );
-  	if ( ToxicDT != None )
-    {
-        Victim.ApplyDamageOverTime(DamageTaken, InstigatedBy, ToxicDT);
-    }
-}
-
 defaultproperties
 {
 	KDamageImpulse=1500

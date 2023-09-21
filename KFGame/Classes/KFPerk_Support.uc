@@ -40,6 +40,11 @@ var	private	const array<Name>					AdditionalOnPerkDTNames;
 
 var	private const int						    DoorRepairXP[4];            // Door repair XP per-difficulty
 
+
+// Resistance to damage taken when Fortitude skill is active
+var private const float FortitudeDamageResistance;
+var private const float APDamageModifier;
+
 enum ESupportPerkSkills
 {
 	ESupportHighCapMags,
@@ -52,6 +57,7 @@ enum ESupportPerkSkills
 	ESupportConcussionRounds,
 	ESupportPerforate,
 	ESupportBarrage,
+
 };
 
 /*********************************************************************************************
@@ -177,11 +183,42 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 			TempDamage += InDamage * GetSkillValue( PerkSkills[ESupportSalvo] );
 			`QALog( GetFuncName() @ "+ Salvo Damage =" @ TempDamage, bLogPerk );
 		}
+
+		if ( IsAPShotActive() )
+		{
+			TempDamage += InDamage * APDamageModifier;
+			`QALog( GetFuncName() @ "+ Armor Piercing Damage =" @ TempDamage, bLogPerk );
+		}
 	}
 
 	`QALog( "Total Damage Given" @ Damagetype @ KFW @ GetPercentage( InDamage, Round(TempDamage) ), bLogPerk );
 	InDamage = Round( TempDamage );
 }
+
+/**
+ * @brief Modifies the damage taken
+ *
+ * @param InDamage damage
+ * @param DamageType the damage type used (optional)
+ */
+function ModifyDamageTaken( out int InDamage, optional class<DamageType> DamageType, optional Controller InstigatedBy )
+{
+	local float TempDamage;
+
+	if( InDamage <= 0 )
+	{
+		return;
+	}
+
+	TempDamage = InDamage;
+
+	if( IsFortitudeActive() )
+	{
+		TempDamage -= TempDamage * FortitudeDamageResistance;
+		`QALog( "Fortitude Damage Resistance =" @ FortitudeDamageResistance, bLogPerk );
+	}
+}
+
 
 /** Welding Proficiency - faster welding/unwelding */
 /**
@@ -563,14 +600,27 @@ simulated function float GetZedTimeModifier( KFWeapon W )
 	// Blast Brawlers use a different state for shooting (combining melee + firing). Needs a special case for this
 	// FAMAS uses alt fire as common firing. Another special case added 
 	// HRG Ballistic Bouncer uses a special state of charging when shooting
-	if( IsWeaponOnPerk( W,, self.class ) && CouldBarrageActive() && 
-		(ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE ||
-			(StateName == 'MeleeChainAttacking' && IsBlastBrawlers(W)) ||
-			(IsFAMAS(W) && StateName == 'FiringSecondaryState')) || 
-			(IsHRGBallisticBouncer(W) && StateName == 'MineReconstructorCharge'))
+	if (IsWeaponOnPerk( W,, self.class ) )
 	{
-		return BarrageFiringRate;
-	}
+		if( CouldBarrageActive() && 
+			(ZedTimeModifyingStates.Find( StateName ) != INDEX_NONE ||
+				(StateName == 'MeleeChainAttacking' && IsBlastBrawlers(W)) ||
+				(IsFAMAS(W) && StateName == 'FiringSecondaryState')) || 
+				(IsHRGBallisticBouncer(W) && StateName == 'MineReconstructorCharge'))
+		{
+			return BarrageFiringRate;
+		}
+
+		if( IsPerforateActive() && ( IsWeaponOnPerk( W,, self.class ) ) )
+		{
+			StateName = W.GetStateName();
+
+			if( StateName == 'Reloading' )
+			{
+				return 1.f;
+			}
+		}
+	}	
 
 	return 0.f;
 }
@@ -812,6 +862,7 @@ DefaultProperties
 	InteractIcon=Texture2D'UI_World_TEX.Support_Supplier_HUD'
 
 	PrimaryWeaponDef=class'KFWeapDef_MB500'
+
 	KnifeWeaponDef=class'KFWeapDef_Knife_Support'
 	GrenadeWeaponDef=class'KFWeapDef_Grenade_Support'
 
@@ -875,4 +926,7 @@ DefaultProperties
    	AdditionalOnPerkDTNames(0)="KFDT_Ballistic_Shotgun_Medic"
    	AdditionalOnPerkDTNames(1)="KFDT_Ballistic_DragonsBreath"
    	AdditionalOnPerkDTNames(2)="KFDT_Ballistic_NailShotgun"
+
+	FortitudeDamageResistance=0.1f
+	APDamageModifier=0.05f
 }

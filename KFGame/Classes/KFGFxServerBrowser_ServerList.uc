@@ -271,7 +271,7 @@ function BuildServerFilters(KFGFxServerBrowser_Filters Filters, OnlineGameSearch
 {
 	local string GametagSearch;
 	local string MapName;
-	local int Mode, Difficulty, Length;
+	local int Mode, Difficulty, Length, WeeklySelectorIndex;
 	local bool DisableSeasonalSkins;
 
 	Search.ClearServerFilters();
@@ -344,7 +344,14 @@ function BuildServerFilters(KFGFxServerBrowser_Filters Filters, OnlineGameSearch
 		//`log("adding custom filter");	
 		Search.TestAddBoolGametagFilter(GametagSearch, Filters.bCustom, 'bCustom', 0);
 	}
-	
+
+	WeeklySelectorIndex = Filters.GetWeeklySelectorIndex();
+	if (Mode == 1 && WeeklySelectorIndex != 0) // // Only when mode is Weekly, 0 means "ANY", 1 is "DEFAULT", then the weeklies
+	{
+		WeeklySelectorIndex = WeeklySelectorIndex - 1; // move back to index range
+
+		Search.AddGametagFilter(GametagSearch, 'WeeklySelectorIndex', string(WeeklySelectorIndex));
+	}	
 
 	if (Len(GametagSearch) > 0)
 	{
@@ -832,7 +839,7 @@ function string BuildJoinURL()
 function string BuildJoinFiltersRequestURL()
 {
 	local string FiltersURL;
-	local int GameDifficulty;
+	local int GameDifficulty, WeeklySelectorIndex, IntendedWeeklyIndex;
 
 	GameDifficulty = ServerMenu.FiltersContainer.GetSelectedDifficulty();
 
@@ -851,9 +858,31 @@ function string BuildJoinFiltersRequestURL()
 		FiltersURL $= "?GameLength="$ServerMenu.FiltersContainer.SavedLengthIndex;
 	}
 
+	WeeklySelectorIndex = ServerMenu.FiltersContainer.SavedWeeklySelectorIndex;
+
+	if (ServerMenu.FiltersContainer.SavedGameModeIndex == 1
+		&& WeeklySelectorIndex != 0) // 0 means "ANY", 1 is "DEFAULT", then the weeklies
+	{
+		WeeklySelectorIndex = WeeklySelectorIndex - 1; // move back to index range
+
+		// IF index matches default, set to 0 (default)
+		if (WeeklySelectorIndex >= 1)
+		{
+			IntendedWeeklyIndex = class'KFGameEngine'.static.GetIntendedWeeklyEventIndexMod();
+			if (IntendedWeeklyIndex == (WeeklySelectorIndex - 1))
+			{
+				WeeklySelectorIndex = 0;
+			}
+		}
+
+		if (WeeklySelectorIndex >= 0)
+		{
+			FiltersURL $= "?WeeklySelectorIndex=" $WeeklySelectorIndex;
+		}
+	}
+
 	return FiltersURL;
 }
-
 
 function OnRefreshServerDetails()
 {
@@ -934,6 +963,7 @@ function UpdateListDataProvider()
 	local KFOnlineGameSearch LatestGameSearch;
 	local int Ping, PlayerCount;
 	local KFOnlineGameSettings TempOnlineGamesSettings;
+	local KFWeeklyOutbreakInformation WeeklyInfo;
 
 	LatestGameSearch = KFOnlineGameSearch(SearchDataStore.GetActiveGameSearch());
 
@@ -989,7 +1019,23 @@ function UpdateListDataProvider()
 				TempObj.SetString("ping",          		(Ping < 0) ? ("-") : (String(Ping)) );
 				TempObj.SetString("difficulty",          Class'KFCommon_LocalizedStrings'.static.GetDifficultyString(TempOnlineGamesSettings.difficulty));
 				
-				TempObj.SetString("mode",           	class'KFCommon_LocalizedStrings'.static.GetGameModeString(TempOnlineGamesSettings.Mode) );
+				TempObj.SetString("mode",           	class'KFCommon_LocalizedStrings'.static.GetGameModeString(TempOnlineGamesSettings.Mode));
+
+				// If weekly we show the icon of the weekly type
+				if (IsWeeklyModeIndex(TempOnlineGamesSettings.Mode))
+				{
+					if (TempOnlineGamesSettings.WeeklySelectorIndex > 0)
+					{
+						WeeklyInfo = class'KFMission_LocalizedStrings'.static.GetWeeklyOutbreakInfoByIndex(TempOnlineGamesSettings.WeeklySelectorIndex - 1);
+					}
+					else
+					{
+						WeeklyInfo = class'KFMission_LocalizedStrings'.static.GetCurrentWeeklyOutbreakInfo();
+					}
+
+					TempObj.SetString("weeklyType", "img://"$WeeklyInfo.IconPath);
+				}
+
 				TempObj.SetString("map",           		TempOnlineGamesSettings.MapName);
 				TempObj.SetBool("locked",           	TempOnlineGamesSettings.bRequiresPassword);
 				TempObj.SetBool("serverExiled",           	TempOnlineGamesSettings.bServerExiled);
@@ -1011,6 +1057,11 @@ function UpdateListDataProvider()
 		}    
 		SetObject("dataProvider", DataProvider);
 	}
+}
+
+function bool IsWeeklyModeIndex(int ModeIndex)
+{
+	return ModeIndex == 1;
 }
 
 function bool IsEndlessModeIndex(int ModeIndex)

@@ -10,18 +10,6 @@
 class KFDT_Bleeding_HRG_Vampire_BloodSuck extends KFDT_Bleeding
 	abstract;
 
-/** Called when damage is dealt to apply additional damage type (e.g. Damage Over Time) */
-static function ApplySecondaryDamage( KFPawn Victim, int DamageTaken, optional Controller InstigatedBy )
-{
-	local class<KFDamageType> ToxicDT;
-
-	ToxicDT = class'KFDT_Ballistic_Assault_Medic'.static.GetMedicToxicDmgType( DamageTaken, InstigatedBy );
-  	if ( ToxicDT != None )
-    {
-        Victim.ApplyDamageOverTime(DamageTaken, InstigatedBy, ToxicDT);
-    }
-}
-
 defaultproperties
 {
 	//physics

@@ -1247,9 +1247,183 @@ defaultproperties
                                             (SpawnEntry=AT_Bloat,NewClass=(class'KFGameContent.KFPawn_ZedDAR_Rocket'),PercentChance=0.2)
                                             
                     )}
-
-    
     )}
+
+	// Bounty Hunt
+    SetEvents[20]={(
+                EventDifficulty=2,
+                GameLength=GL_Normal,
+				OverrideAmmoPickupModifier=2.0f,
+                WaveAICountScale=(0.8f, 0.7f, 0.6f, 0.6f, 0.5f, 0.5f), // This is per player-count, if more players than slots uses last value
+				bBountyHunt=true,
+				BountyHuntExtraDosh=200,
+
+                // Navigation parameters
+				BountyHuntNeedsToSeePlayerToTriggerFlee=false, //DEFAULT: false
+				BountyHuntTimeBetweenFlee=10.f, //DEFAULT: 10f				// (seconds) Time the Flee AI Order is active
+				BountyHuntTimeBetweenAttack=12.f, //DEFAULT 12f				// (seconds) Seconds between a new Attack Order can be issued using proximity to any player (BountyHuntDistancePlayerAttack)
+				BountyHuntTimeCanCancelAttack=1f,	//DEFAULT 5.f			// (seconds) Seconds after Attack is issued we can cancel it (to flee if the distance BountyHuntDistancePlayerMinFlee is okay)
+				BountyHuntDistancePlayerMinFirstFlee=2000.f, //DEFAULT 100f	// (cm) Minimal Distance between Player and Zed when Zed decides to Flee first time (then we block crossing Blocking Volumes)
+ 			    BountyHuntDistancePlayerMinFlee=2000.f, //DEFAULT 1000f     // (cm) Minimal Distance between Player and Zed when Zed decides to Flee
+				BountyHuntDistancePlayerMaxFlee=20000.f, // DEFAULT 2200F   // (cm) Distance between Player and Zed when Zed stops Fleeing (use to cancel a Flee)
+                BountyHuntDistancePlayerAttack=80.f, // DEFAULT 400f       // (cm) Distance between Player and Zed when Zed decides to Attack 
+
+                // BZ stat parameters
+                BountyHuntSpecialZedBuffHealthRatio=0.1f, // EXTRA 10% health for all Bounty Zeds
+                BountyHuntSpecialZedBuffAfflictionResistance=5f, // EXTRA 500% affliction resistance for all Bounty Zeds
+				HeadshotDamageMultiplier=0.25f,
+				
+                BountyHuntMaxCoexistingZeds=3,
+				BountyHuntLastLevelStillUsesCoexistingZeds=false,
+			    BountyHuntUseGradualSpawn=false,
+                BountyHuntGame=
+                {(
+                    BountyHuntDataWaves= // Amount of Zeds is TOTAL, NOT NumberOfZeds per player
+                    {(
+                        (Wave=1
+                            , BountyHuntWavePerPlayerZed =
+                                 {(
+                                        (NumberOfPlayers=1, NumberOfZeds=1) 
+                                    ,   (NumberOfPlayers=2, NumberOfZeds=2) 
+                                    ,   (NumberOfPlayers=3, NumberOfZeds=3) 
+                                    ,   (NumberOfPlayers=4, NumberOfZeds=4) 
+                                    ,   (NumberOfPlayers=5, NumberOfZeds=5) 
+                                    ,   (NumberOfPlayers=6, NumberOfZeds=5) 
+                                 )}),
+                        (Wave=2
+                            , BountyHuntWavePerPlayerZed =
+                                 {(
+                                        (NumberOfPlayers=1, NumberOfZeds=2)
+                                    ,   (NumberOfPlayers=2, NumberOfZeds=3) 
+                                    ,   (NumberOfPlayers=3, NumberOfZeds=4) 
+                                    ,   (NumberOfPlayers=4, NumberOfZeds=5) 
+                                    ,   (NumberOfPlayers=5, NumberOfZeds=6) 
+                                    ,   (NumberOfPlayers=6, NumberOfZeds=6) 
+                                 )}),
+                        (Wave=3
+                            , BountyHuntWavePerPlayerZed =
+                                 {(
+                                        (NumberOfPlayers=1, NumberOfZeds=3) 
+                                    ,   (NumberOfPlayers=2, NumberOfZeds=4) 
+                                    ,   (NumberOfPlayers=3, NumberOfZeds=5) 
+                                    ,   (NumberOfPlayers=4, NumberOfZeds=6) 
+                                    ,   (NumberOfPlayers=5, NumberOfZeds=7) 
+                                    ,   (NumberOfPlayers=6, NumberOfZeds=7) 
+                                 )}),
+                        (Wave=4
+                            , BountyHuntWavePerPlayerZed =
+                                 {(
+                                        (NumberOfPlayers=1, NumberOfZeds=3) 
+                                    ,   (NumberOfPlayers=2, NumberOfZeds=5) 
+                                    ,   (NumberOfPlayers=3, NumberOfZeds=6) 
+                                    ,   (NumberOfPlayers=4, NumberOfZeds=7) 
+                                    ,   (NumberOfPlayers=5, NumberOfZeds=7) 
+                                    ,   (NumberOfPlayers=6, NumberOfZeds=8) 
+                                 )}),
+                        (Wave=5
+                            , BountyHuntWavePerPlayerZed =
+                                 {(
+                                        (NumberOfPlayers=1, NumberOfZeds=4) 
+                                    ,   (NumberOfPlayers=2, NumberOfZeds=6) 
+                                    ,   (NumberOfPlayers=3, NumberOfZeds=7) 
+                                    ,   (NumberOfPlayers=4, NumberOfZeds=8) 
+                                    ,   (NumberOfPlayers=5, NumberOfZeds=8) 
+                                    ,   (NumberOfPlayers=6, NumberOfZeds=8) 
+                                 )}),
+                        (Wave=6
+                            , BountyHuntWavePerPlayerZed =
+                                 {(
+                                        (NumberOfPlayers=1, NumberOfZeds=5) 
+                                    ,   (NumberOfPlayers=2, NumberOfZeds=7) 
+                                    ,   (NumberOfPlayers=3, NumberOfZeds=8) 
+                                    ,   (NumberOfPlayers=4, NumberOfZeds=9) 
+                                    ,   (NumberOfPlayers=5, NumberOfZeds=9) 
+                                    ,   (NumberOfPlayers=6, NumberOfZeds=9) 
+                                 )}),
+                        (Wave=7
+                            , BountyHuntWavePerPlayerZed =
+                                 {(
+                                        (NumberOfPlayers=1, NumberOfZeds=6) 
+                                    ,   (NumberOfPlayers=2, NumberOfZeds=8) 
+                                    ,   (NumberOfPlayers=3, NumberOfZeds=9) 
+                                    ,   (NumberOfPlayers=4, NumberOfZeds=10) 
+                                    ,   (NumberOfPlayers=5, NumberOfZeds=12) 
+                                    ,   (NumberOfPlayers=6, NumberOfZeds=12) 
+                                 )})
+                    )},
+
+                    // Zed Stats progression related to remaining AI zeds
+                    BountyHuntZedAndProgression=
+                    {(
+                        (   ZedType=class'KFGameContent.KFPawn_ZedGorefastDualBlade',
+							BountyHuntSpecialZedPerWave =
+							{(
+								(Wave=2), (Wave=3), (Wave=4), (Wave=5)
+							)},
+                            BountyHuntZedProgression =
+                            {(
+                                (RemainingZedRatio=1.f, HealthBuffRatio=1f, DamageBuffRatio=0.f), // +100% H // +0% DMG
+                                (RemainingZedRatio=0.75f, HealthBuffRatio=1.5f, DamageBuffRatio=0.1f), // +150% H // +10% DMG
+                                (RemainingZedRatio=0.5f, HealthBuffRatio=2f, DamageBuffRatio=0.2f), // +200% H / +20% DMG
+                                (RemainingZedRatio=0.3f, HealthBuffRatio=2.5f, DamageBuffRatio=0.3f), // +250% H // +30% DMG
+                                (RemainingZedRatio=0.1f, HealthBuffRatio=3f, DamageBuffRatio=3.f) // +300%H // +300% DMG
+                            )}
+                        ),
+                        (   ZedType=class'KFGameContent.KFPawn_ZedClot_AlphaKing',
+							BountyHuntSpecialZedPerWave =
+							{(
+								(Wave=1), (Wave=3)
+							)},
+                            BountyHuntZedProgression =
+                            {(
+                                (RemainingZedRatio=1.f, HealthBuffRatio=5f, DamageBuffRatio=0.f), // +500% H // +0% DMG
+                                (RemainingZedRatio=0.75f, HealthBuffRatio=5.1f, DamageBuffRatio=0.1f), // +510% H // +10% DMG
+                                (RemainingZedRatio=0.5f, HealthBuffRatio=5.2f, DamageBuffRatio=0.2f), // +520% H / +20% DMG
+                                (RemainingZedRatio=0.3f, HealthBuffRatio=5.3f, DamageBuffRatio=0.5f), // +530% H // +50% DMG
+                                (RemainingZedRatio=0.1f, HealthBuffRatio=5.5f, DamageBuffRatio=3.f) // +550% H // +300% DMG
+                            )}
+                        ),
+                        (   ZedType=class'KFGameContent.KFPawn_ZedFleshpoundMini',
+							BountyHuntSpecialZedPerWave =
+							{(
+								(Wave=6), (Wave=7)
+							)},
+                            BountyHuntZedProgression =
+                            {(
+                                (RemainingZedRatio=1.f, HealthBuffRatio=0.f, DamageBuffRatio=0.f), // +0% H // +0% DMG
+                                (RemainingZedRatio=0.75f, HealthBuffRatio=0.0f, DamageBuffRatio=0.01f), // +0% H // +1% DMG
+                                (RemainingZedRatio=0.5f, HealthBuffRatio=0.0f, DamageBuffRatio=0.02f), // +0% H // +2% DMG
+                                (RemainingZedRatio=0.3f, HealthBuffRatio=0.01f, DamageBuffRatio=0.03f), // +1% H // +3% DMG
+                                (RemainingZedRatio=0.1f, HealthBuffRatio=0.05f, DamageBuffRatio=0.1f) // +5% H // +10% DMG
+                            )}
+                        ),
+                        (   ZedType=class'KFGameContent.KFPawn_ZedScrake',
+							BountyHuntSpecialZedPerWave =
+							{(
+								(Wave=4), (Wave=5), (Wave=6), (Wave=7)
+							)},
+                            BountyHuntZedProgression =
+                            {(
+                                (RemainingZedRatio=1.f, HealthBuffRatio=0.01f, DamageBuffRatio=0.f), // +1% H // +0% DMG
+                                (RemainingZedRatio=0.75f, HealthBuffRatio=0.02f, DamageBuffRatio=0.05f), // +2% H // +5% DMG
+                                (RemainingZedRatio=0.5f, HealthBuffRatio=0.03f, DamageBuffRatio=0.05f), // +3% H // +5% DMG
+                                (RemainingZedRatio=0.3f, HealthBuffRatio=0.04f, DamageBuffRatio=0.05f), // +4% H // +5% DMG
+                                (RemainingZedRatio=0.1f, HealthBuffRatio=0.05f, DamageBuffRatio=0.25f) // +5% H // +25% DMG
+                            )}
+                        )
+                    )},
+                    BountyHuntDosh=
+                    {(
+                        (NumberOfPlayers=1, Dosh=300, DoshNoAssist=250),
+                        (NumberOfPlayers=2, Dosh=250, DoshNoAssist=200),
+                        (NumberOfPlayers=3, Dosh=200, DoshNoAssist=150),
+                        (NumberOfPlayers=4, Dosh=150, DoshNoAssist=100),
+                        (NumberOfPlayers=5, Dosh=130, DoshNoAssist=80),
+                        (NumberOfPlayers=6, Dosh=130, DoshNoAssist=80)
+                    )}
+                )}
+    )}
+
     //Test events from here down.  These don't end up in the regular rotation.
     //      The override ID starts from one higher than the last SetEvents entry above.
     //      Ex: Big head = 7, Horde = 8

@@ -256,7 +256,10 @@ static function bool IsValidPullClass(KFPawn PullPawn)
 
 	MonsterPawn = KFPawn_Monster(PullPawn);
 
-	if (PullPawn.class == class'KFPawn_ZedBloatKingSubspawn' ||  MonsterPawn != none && MonsterPawn.IsABoss())
+	if (PullPawn.class == class'KFPawn_ZedBloatKingSubspawn'
+		|| MonsterPawn != none && MonsterPawn.IsABoss()
+		|| PullPawn.class == class'KFPawn_HRG_Warthog'
+		|| PullPawn.class == class'KFPawn_AutoTurret')
 	{
 		return false;
 	}

@@ -50,6 +50,9 @@ var protected bool						bGunGamePlayerOnLastGun;
 
 var transient array<KFBarmwichBonfireVolume> BonfireVolumes;
 
+// Trader Time modifier for Castle Volter map in the last round
+var float CastleVolterTraderModifier;
+
 /** Whether this game mode should play music from the get-go (lobby) */
 static function bool ShouldPlayMusicAtStart()
 {
@@ -926,6 +929,7 @@ function StartWave()
 
 	WaveStarted();
 	MyKFGRI.NotifyWaveStart();
+
 	MyKFGRI.AIRemaining = SpawnManager.WaveTotalAI;
 	MyKFGRI.WaveTotalAICount = SpawnManager.WaveTotalAI;
 
@@ -1469,7 +1473,17 @@ function DoTraderTimeCleanup();
 /** Handle functionality for opening trader */
 function OpenTrader()
 {
-    MyKFGRI.OpenTrader(TimeBetweenWaves);
+	local int UpdatedTimeBetweenWaves;
+
+    UpdatedTimeBetweenWaves = TimeBetweenWaves;
+
+	// In castle volter the trader needs to have a special time
+	if (WorldInfo.GetMapName(true) == "KF-CastleVolter" && WaveNum == (WaveMax - 1) )
+	{
+		UpdatedTimeBetweenWaves = UpdatedTimeBetweenWaves * CastleVolterTraderModifier;
+	}
+
+    MyKFGRI.OpenTrader(UpdatedTimeBetweenWaves);
 	NotifyTraderOpened();
 }
 
@@ -1924,7 +1938,8 @@ DefaultProperties
 	MaxGameDifficulty=3
 	bWaveStarted=false
 	bGunGamePlayerOnLastGun=false
-	
+	CastleVolterTraderModifier = 1.0f;
+
 	ObjectiveSpawnDelay=5
 
 	SpawnManagerClasses(0)=class'KFGame.KFAISpawnManager_Short'
@@ -1962,6 +1977,7 @@ DefaultProperties
 	AIClassList(AT_EDAR_EMP)=class'KFGameContent.KFPawn_ZedDAR_Emp'
 	AIClassList(AT_EDAR_Laser)=class'KFGameContent.KFPawn_ZedDAR_Laser'
 	AIClassList(AT_EDAR_Rocket)=class'KFGameContent.KFPawn_ZedDAR_Rocket'
+	AIClassList(AT_HansClot)=class'KFGameContent.KFPawn_ZedHansClot'
 
 	NonSpawnAIClassList(0)=class'KFGameContent.KFPawn_ZedBloatKingSubspawn'
 

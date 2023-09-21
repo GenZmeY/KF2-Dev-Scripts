@@ -200,6 +200,11 @@ simulated function bool CanActivateObjectiveByWeekly()
 	{
 		if (KFGameInfo(WorldInfo.Game).OutbreakEvent != none)
 		{
+			if (KFGameInfo(WorldInfo.Game).OutbreakEvent.ActiveEvent.bBossRushMode)
+			{
+				return false;
+			}
+
 			if (KFGameInfo(WorldInfo.Game).OutbreakEvent.ActiveEvent.bGunGameMode)
 			{
 				return false;
@@ -209,18 +214,33 @@ simulated function bool CanActivateObjectiveByWeekly()
 			{
 				return false;
 			}
+
+			if (KFGameInfo(WorldInfo.Game).OutbreakEvent.ActiveEvent.bBountyHunt)
+			{
+				return false;
+			}
 		}	
 	}
 	else 
 	{
 		if (KFGameReplicationInfo(WorldInfo.GRI) != none && KFGameReplicationInfo(WorldInfo.GRI).bIsWeeklyMode)
 		{
+			if (KFGameReplicationInfo(WorldInfo.GRI).CurrentWeeklyIndex == 14)
+			{
+				return false;
+			}
+
 			if (KFGameReplicationInfo(WorldInfo.GRI).CurrentWeeklyIndex == 16)
 			{
 				return false;
 			}
 
 			if (KFGameReplicationInfo(WorldInfo.GRI).CurrentWeeklyIndex == 17)
+			{
+				return false;
+			}
+			
+			if (KFGameReplicationInfo(WorldInfo.GRI).CurrentWeeklyIndex == 20)
 			{
 				return false;
 			}			

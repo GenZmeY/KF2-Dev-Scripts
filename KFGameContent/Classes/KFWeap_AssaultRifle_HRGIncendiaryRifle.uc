@@ -10,7 +10,7 @@ class KFWeap_AssaultRifle_HRGIncendiaryRifle extends KFWeap_AssaultRifle_M16M203
 
 static simulated event EFilterTypeUI GetTraderFilter()
 {
-	return FT_Rifle;
+	return FT_Assault;
 }
 
 static simulated event EFilterTypeUI GetAltTraderFilter()

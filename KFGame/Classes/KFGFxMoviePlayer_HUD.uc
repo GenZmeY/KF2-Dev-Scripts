@@ -74,6 +74,8 @@ var KFGFxWidget_MapCounterText MapCounterTextWidget;
 var KFGFxWidget_GunGame GunGameWidget;
 // Widget that displays vip mode texts
 var KFGFxWidget_VIP VIPWidget;
+// Widget that displays bounty hunt mode texts
+var KFGFxWidget_BountyHunt BountyHuntWidget;
 
 var KFPlayerController KFPC;
 
@@ -111,6 +113,9 @@ var transient bool                  bLastGunGameVisibility;
 
 // VIP variables
 var transient bool                  bLastVIPVisibility;
+
+// Bounty Hunt variables
+var transient bool					bLastBountyHuntVisibility;
 
 /** On creation of the HUD */
 function Init(optional LocalPlayer LocPlay)
@@ -372,6 +377,13 @@ event bool WidgetInitialized(name WidgetName, name WidgetPath, GFxObject Widget)
             SetWidgetPathBinding( Widget, WidgetPath );
         }
         break;
+	case 'BountyHuntContainer':
+		if (BountyHuntWidget == none)
+		{
+			BountyHuntWidget = KFGFxWidget_BountyHunt(Widget);
+            SetWidgetPathBinding( Widget, WidgetPath );
+		}
+		break;
     }
    
     return true;
@@ -400,12 +412,15 @@ function UpdateWeaponSelect()
 /** Update all the unique HUD pieces */
 function TickHud(float DeltaTime)
 {
-    local bool bGunGameVisibility, bVIPModeVisibility;
+    local KFGameReplicationInfo KFGRI;
+    local bool bGunGameVisibility, bVIPModeVisibility, bBountyHuntVisibility;
 
     if(KFPC == none || KFPC.WorldInfo.TimeSeconds - LastUpdateTime < UpdateInterval )
     {
         return;
     }
+
+    KFGRI=KFGameReplicationInfo(KFPC.WorldInfo.GRI);
 	
 	if (WaveInfoWidget != none)
 	{
@@ -498,6 +513,26 @@ function TickHud(float DeltaTime)
             bLastVIPVisibility = bVIPModeVisibility;
         }
     }
+
+	if (BountyHuntWidget != none)
+	{
+		bBountyHuntVisibility = KFPC.CanUseBountyHunt();
+
+        if (KFGRI.bWaveIsActive == false)
+        {
+            bBountyHuntVisibility = false;
+        }
+		else if (KFGRI.WaveNum == KFGRI.WaveMax)
+		{
+			bBountyHuntVisibility = false;
+		}
+
+        if (bBountyHuntVisibility != bLastBountyHuntVisibility)
+        {
+			BountyHuntWidget.UpdateBountyHuntVisibility(bBountyHuntVisibility);
+			bLastBountyHuntVisibility = bBountyHuntVisibility;
+		}
+	}
 }
 
 function UpdateObjectiveActive()
@@ -1001,6 +1036,36 @@ simulated function DisplayObjectiveResults()
 	}
 }
 
+simulated function DisplayBountyHuntObjective(int Bounties)
+{
+  	local KFGameReplicationInfo KFGRI;
+	local GFxObject ObjectiveObject;
+    local string BountyHuntString;
+
+    KFGRI=KFGameReplicationInfo(KFPC.WorldInfo.GRI);
+
+	ObjectiveObject=CreateObject("Object");
+
+    ObjectiveObject.SetString("titleString", Localize("Objectives", "BountyHuntObjective", "KFGame"));
+
+    if (KFGRI.IsBountyHunt())
+    {
+        ObjectiveObject.SetString("nameString", Localize("Objectives", "BountyHuntObjective", "KFGame"));
+
+        BountyHuntString = Localize("Objectives", "BountyHuntObjectiveDescription", "KFGame")@Bounties@Localize("Objectives", "BountyHuntDescriptionAdd", "KFGame");
+
+        ObjectiveObject.SetString("descString", BountyHuntString);
+
+        ObjectiveObject.SetString("iconPath", "img://"$PathName(Texture2D'WeeklyObjective_UI.BountyHunt'));
+    }
+
+    ObjectiveObject.SetBool("isBonus", false);
+
+    KFGRI.PreviousObjectiveResult=INDEX_NONE;
+    PriorityMessageContainer.SetObject("objectiveMessage", ObjectiveObject);
+    LastMessageType=GMT_Null;
+}
+
 simulated function DisplayNewObjective()
 {
 	local KFGameReplicationInfo KFGRI;
@@ -1022,7 +1087,6 @@ simulated function DisplayNewObjective()
             ObjectiveObject.SetString("nameString", Localize("Objectives", "ContaminationModeObjective", "KFGame"));
             ObjectiveObject.SetString("descString", Localize("Objectives", "ContaminationModeDescription", "KFGame"));
 
-            // TODO :: CHANGE ICON
 		    ObjectiveObject.SetString("iconPath", "img://"$PathName(ObjectiveInterface.GetIcon()));
 	    }
         else
@@ -1246,6 +1310,14 @@ function HideContaminationMode()
         {
             WaveInfoWidget.ObjectiveContainer.ClearObjectiveUI();
         }
+    }
+}
+
+function DisplayBountyHuntStatus(int Bounties, int Dosh, int DoshNoAssist)
+{
+    if (BountyHuntWidget != none)
+    {
+		BountyHuntWidget.SetData(Bounties, Dosh, DoshNoAssist);
     }
 }
 
@@ -1613,6 +1685,7 @@ DefaultProperties
 
     bLastGunGameVisibility=true
     bLastVIPVisibility=true
+	bLastBountyHuntVisibility=true
 
     WidgetBindings.Add((WidgetName="ObjectiveContainer",WidgetClass=class'KFGFxHUD_ObjectiveConatiner'))
     WidgetBindings.Add((WidgetName="SpectatorInfoWidget",WidgetClass=class'KFGFxHUD_SpectatorInfo'))
@@ -1640,6 +1713,7 @@ DefaultProperties
     WidgetBindings.Add((WidgetName="counterMapTextWidget", WidgetClass=class'KFGFxWidget_MapCounterText'))
     WidgetBindings.ADD((WidgetName="GunGameContainer", WidgetClass=class'KFGFxWidget_GunGame'));
     WidgetBindings.ADD((WidgetName="VIPContainer", WidgetClass=class'KFGFxWidget_VIP'));
+	WidgetBindings.ADD((WidgetName="BountyHuntContainer", WidgetClass=class'KFGFxWidget_BountyHunt'));
 
 	SpecialWaveIconPath(AT_Clot)="UI_Endless_TEX.ZEDs.UI_ZED_Endless_Cyst"
 	SpecialWaveIconPath(AT_SlasherClot)="UI_Endless_TEX.ZEDs.UI_ZED_Endless_Slasher"
@@ -1653,6 +1727,7 @@ DefaultProperties
 	SpecialWaveIconPath(AT_Bloat)="UI_Endless_TEX.ZEDs.UI_ZED_Endless_Bloat"
 	SpecialWaveIconPath(AT_Siren)="UI_Endless_TEX.ZEDs.UI_ZED_Endless_Siren"
 	SpecialWaveIconPath(AT_Husk)="UI_Endless_TEX.ZEDs.UI_ZED_Endless_Husk"
+	SpecialWaveIconPath(AT_HansClot)="UI_Endless_TEX.ZEDs.UI_ZED_Endless_Cyst"
 
 	SpecialWaveLocKey(AT_SlasherClot)="KFPawn_ZedClot_Slasher"
 	SpecialWaveLocKey(AT_Clot)="KFPawn_ZedClot_Cyst"
@@ -1665,5 +1740,6 @@ DefaultProperties
 	SpecialWaveLocKey(AT_GoreFast)="KFPawn_ZedGorefast"
 	SpecialWaveLocKey(AT_Bloat)="KFPawn_ZedBloat"
 	SpecialWaveLocKey(AT_FleshPound)="KFPawn_ZedFleshpound"
+	SpecialWaveLocKey(AT_HansClot)="KFPawn_ZedClot_Cyst"
 
 }

@@ -9,11 +9,6 @@
 
 class KFWeap_Pistol_DualHRGWinterbite extends KFWeap_DualBase;
 
-static simulated event EFilterTypeUI GetAltTraderFilter()
-{
-    return FT_Flame;
-}
-
 defaultproperties
 {
 	//Content

@@ -79,6 +79,11 @@ function LocalizeText()
 {
 	local GFxObject TextObject;
 	local WorldInfo WI;
+	local bool bIsCustomWeekly;
+	local int IntendedWeeklyIndex, WeeklyIndex;
+	local KFPlayerController KFPC;
+
+	KFPC = KFPlayerController(GetPC());
 
     WI = class'WorldInfo'.static.GetWorldInfo();
 
@@ -90,7 +95,34 @@ function LocalizeText()
 	TextObject.SetString("xp", 			XPString);
 	TextObject.SetString("teamAwards", 	TeamAwardsString);
 
-	TextObject.SetString("dropTitle", 	ItemDropTitleString);
+	IntendedWeeklyIndex = class'KFGameEngine'.static.GetIntendedWeeklyEventIndexMod();
+	WeeklyIndex = -1;
+
+	if (KFPC.WorldInfo.NetMode == NM_Client)
+	{
+		if (KFGameReplicationInfo(WI.GRI) != none)
+		{
+			WeeklyIndex = KFGameReplicationInfo(WI.GRI).CurrentWeeklyIndex;
+		}
+	}
+	else
+	{
+		WeeklyIndex = class'KFGameEngine'.static.GetWeeklyEventIndexMod();
+	}
+
+	if (WeeklyIndex != -1)
+	{
+		bIsCustomWeekly = IntendedWeeklyIndex != WeeklyIndex;
+	}
+
+	if (bIsCustomWeekly)
+	{
+		TextObject.SetString("dropTitle", "");
+	}
+	else
+	{
+		TextObject.SetString("dropTitle", ItemDropTitleString);
+	}
 
 	if(WI != none &&  WI.NetMode != NM_Standalone )
     {

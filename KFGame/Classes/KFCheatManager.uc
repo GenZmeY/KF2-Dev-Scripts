@@ -5063,6 +5063,10 @@ function class<KFPawn_Monster> LoadMonsterByName(string ZedName, optional bool b
 	{
 		SpawnClass = class<KFPawn_Monster>(DynamicLoadObject("KFGameContent.KFPawn_ZedHusk_New"$VersusSuffix, class'Class'));
 	}
+	else if (Left(ZedName, 5) ~= "HansC")
+	{
+		SpawnClass = class<KFPawn_Monster>(DynamicLoadObject("KFGameContent.KFPawn_ZedHansClot" $ VersusSuffix, class'Class'));
+	}	
 	else if( Left(ZedName, 2) ~= "Ha" )
 	{
 		SpawnClass = class<KFPawn_Monster>(DynamicLoadObject("KFGameContent.KFPawn_ZedHans"$VersusSuffix, class'Class'));

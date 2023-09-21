@@ -315,10 +315,22 @@ function class<KFDamageType> GetBumpAttackDamageType()
  */
 simulated function AdjustAffliction(out float AfflictionPower)
 {
+	local KFGameInfo KFGI;
+
 	if ( bIsEnraged )
 	{
 		AfflictionPower *= 0.25f;
 	}
+
+	if (bIsBountyHuntObjective) // Only on Bounty Hunt Weekly
+	{
+		KFGI = KFGameInfo(WorldInfo.Game);
+
+		if (KFGI != none && KFGI.OutbreakEvent != none)
+		{
+			AfflictionPower -= AfflictionPower * KFGI.OutbreakEvent.ActiveEvent.BountyHuntSpecialZedBuffAfflictionResistance;
+		}
+	}	
 }
 
 /** Track the fleshpound's speed and play the appropriate cues */
@@ -610,4 +622,8 @@ End Object
     OnDeathAchievementID=KFACHID_ItsOnlyAFleshWound
 
 	ZEDCowboyHatAttachName=Hat_Attach
+
+	// Only used in Volter Castle for now when the spawn volume has bForceUseMapReplacePawn set to true
+	// If we need to reuse it more we'll have to connect map to zed here
+	MapReplacePawnClass.Add(class'KFPawn_ZedHansClot')	
 }
