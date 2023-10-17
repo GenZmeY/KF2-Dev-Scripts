@@ -47,6 +47,7 @@ var int ZedativeDamage;
 var class<KFDamageType> ZedativeDamageType;
 var class<KFDamageType> ZedativeHealingType;
 var int ZedativeEffectRadius;
+var float DartAmmoCostModifier;
 
 enum EMedicPerkSkills
 {
@@ -324,11 +325,6 @@ simulated function ModifyDamageGiven( out int InDamage, optional Actor DamageCau
 	InDamage = Round(TempDamage);
 }
 
-static function float GetHealRechargeMod()
-{
-	return GetSkillValue( default.PerkSkills[EMedicAcidicCompound] );
-}
-
 /** Takes the weapons primary damage and calculates the poisoning over time value */
 /**
  * @brief  Takes the weapons primary damage and calculates the bleeding over time value
@@ -339,7 +335,7 @@ static function ModifyToxicDmg( out int ToxicDamage )
 {
 	local float TempDamage;
 
-	TempDamage = float(ToxicDamage) * GetHealRechargeMod();
+	TempDamage = float(ToxicDamage) * GetSkillValue( default.PerkSkills[EMedicAcidicCompound] );
 	ToxicDamage = FCeil( TempDamage );
 }
 
@@ -588,6 +584,14 @@ static function float GetZedativeEffectRadius()
 	return default.ZedativeEffectRadius;
 }
 
+simulated function float GetDartAmmoCostModifier()
+{
+	if (IsAcidicCompoundActive())
+	{
+		return DartAmmoCostModifier;
+	}
+	return Super.GetDartAmmoCostModifier();
+}
 /*********************************************************************************************
 * @name	 HUD / UI
 ********************************************************************************************* */
@@ -639,6 +643,7 @@ simulated function LogPerkSkills()
 	}
 }
 
+
 DefaultProperties
 {
 	PerkIcon=Texture2D'UI_PerkIcons_TEX.UI_PerkIcon_Medic'
@@ -671,6 +676,8 @@ DefaultProperties
 	AAExplosionDamageType=class'KFDT_Toxic_MedicGrenade'
 
 	ToxicDmgTypeClass=class'KFDT_Toxic_AcidicRounds'
+
+	DartAmmoCostModifier=0.8f
 
 		// explosion
 	Begin Object Class=KFGameExplosion Name=ExploTemplate0

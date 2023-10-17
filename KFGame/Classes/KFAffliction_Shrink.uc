@@ -163,7 +163,7 @@ function KillOwner()
 
 defaultproperties
 {
-    DissipationRate=10 //20
+    DissipationRate=200 //20
     bNeedsTick=true
 
     MaxEffect=10.f;
@@ -171,7 +171,7 @@ defaultproperties
     EffectAppliedByStack=1.0f
     
     ApplyEffectVel=100.0f // % per second
-    RemoveEffectVel=0.5f // % per second
+    RemoveEffectVel=0.25f // % per second
 
     CurrentEffect=0.0f
     CurrentEffectApplied=0.0f

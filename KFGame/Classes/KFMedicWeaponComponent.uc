@@ -144,8 +144,8 @@ function StartHealRecharge()
 	if (Role == ROLE_Authority)
 	{
 		InstigatorPerk = KFW.GetPerk();
-		UsedHealRechargeTime =
-			HealFullRechargeSeconds * KFW.static.GetUpgradeHealRechargeMod(KFW.CurrentWeaponUpgradeIndex);
+		UsedHealRechargeTime = HealFullRechargeSeconds;
+		UsedHealRechargeTime *= KFW.static.GetUpgradeHealRechargeMod(KFW.CurrentWeaponUpgradeIndex);
 
         InstigatorPerk.ModifyHealerRechargeTime(UsedHealRechargeTime);
         HealRechargePerSecond = KFW.MagazineCapacity[ALTFIRE_FIREMODE] / UsedHealRechargeTime;

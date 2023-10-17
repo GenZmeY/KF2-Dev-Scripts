@@ -417,7 +417,6 @@ function StartHealRecharge()
 
 		UsedHealRechargeTime = HealFullRechargeSeconds;
 		UsedHealRechargeTime *= static.GetUpgradeHealRechargeMod(CurrentWeaponUpgradeIndex);
-		UsedHealRechargeTime *= InstigatorPerk.GetHealRechargeMod();
 
 		InstigatorPerk.ModifyHealerRechargeTime(UsedHealRechargeTime);
 		// Set the healing recharge rate whenever we start charging

@@ -485,7 +485,7 @@ defaultproperties
 	LastAmmoCount=-1
 
     NumAltBullets=5
-    SpreadWidthDegrees=30
+    SpreadWidthDegrees=20
     StartingAltBulletPosition=0.0f
 	SpreadMaxOffset=(X=1.2f, Y=1.5f)
 }

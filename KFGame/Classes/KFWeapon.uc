@@ -4663,7 +4663,7 @@ function int AddSecondaryAmmo(int Amount)
  *
  * @param	bAmmoSync	- If performing a sync the lowest value is typically the most correct
  */
-reliable client function ClientForceAmmoUpdate(byte NewAmmoCount, int NewSpareAmmoCount, optional bool bAmmoSync)
+reliable client function ClientForceAmmoUpdate(int NewAmmoCount, int NewSpareAmmoCount, optional bool bAmmoSync)
 {
 	if ( Role < ROLE_Authority )
 	{
@@ -6614,7 +6614,7 @@ simulated state WeaponFiring
 	}
 }
 
-unreliable server function SyncCurrentAmmoCount(byte FireMode, byte CurrentAmmoCount)
+unreliable server function SyncCurrentAmmoCount(byte FireMode, int CurrentAmmoCount)
 {
 	if(AmmoCount[FireMode] != CurrentAmmoCount)
 	{

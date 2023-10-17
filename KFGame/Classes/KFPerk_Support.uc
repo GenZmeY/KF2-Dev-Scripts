@@ -216,6 +216,8 @@ function ModifyDamageTaken( out int InDamage, optional class<DamageType> DamageT
 	{
 		TempDamage -= TempDamage * FortitudeDamageResistance;
 		`QALog( "Fortitude Damage Resistance =" @ FortitudeDamageResistance, bLogPerk );
+
+		InDamage = Round(TempDamage);
 	}
 }
 
@@ -928,5 +930,5 @@ DefaultProperties
    	AdditionalOnPerkDTNames(2)="KFDT_Ballistic_NailShotgun"
 
 	FortitudeDamageResistance=0.1f
-	APDamageModifier=0.05f
+	APDamageModifier=0.1f
 }

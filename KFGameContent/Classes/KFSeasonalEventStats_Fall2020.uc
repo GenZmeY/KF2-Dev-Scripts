@@ -44,10 +44,15 @@ private event GrantEventItems()
 	}
 }
 
-simulated function OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT)
+simulated function OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT, bool bKiller)
 {
 	local int ObjIdx;
 	
+	if (bKiller == false)
+	{
+		return;
+	}
+
 	// Kill 2000 zeds on any map
 	ObjIdx = 0;
 	if (bObjectiveIsValidForMap[ObjIdx] != 0)

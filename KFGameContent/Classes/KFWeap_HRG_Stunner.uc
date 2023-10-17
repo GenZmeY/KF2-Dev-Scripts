@@ -104,7 +104,7 @@ defaultproperties
 	FiringStatesArray(DEFAULT_FIREMODE)=WeaponFiring
 	WeaponFireTypes(DEFAULT_FIREMODE)=EWFT_Projectile
 	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Bullet_HRG_Stunner'
-	InstantHitDamage(DEFAULT_FIREMODE)=60.0 //65.0
+	InstantHitDamage(DEFAULT_FIREMODE)=80.0 //65.0
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_HRG_Stunner'
 	PenetrationPower(DEFAULT_FIREMODE)=2.0
 	FireInterval(DEFAULT_FIREMODE)=0.15

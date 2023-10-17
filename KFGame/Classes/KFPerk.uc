@@ -1316,7 +1316,6 @@ native function bool CanRepairDoors();
 function bool RepairArmor( Pawn HealTarget );
 function bool IsToxicDmgActive() { return false; }
 static function class<KFDamageType> GetToxicDmgTypeClass(){ return default.ToxicDmgTypeClass; }
-static function float GetHealRechargeMod();
 static function ModifyToxicDmg( out int ToxicDamage );
 simulated function float GetSirenScreamStrength(){ return 1.f; }
 simulated function bool IsHealingSurgeActive(){ return false; }
@@ -1327,7 +1326,7 @@ simulated function bool GetHealingShieldActive(){ return false; }
 simulated function bool IsZedativeActive(){ return false; }
 function bool CouldBeZedToxicCloud( class<KFDamageType> KFDT ){ return false; }
 function ToxicCloudExplode( Controller Killer, Pawn ZedKilled );
-
+simulated function float GetDartAmmoCostModifier() { return 1.0f; }
 
 /** Firebug functions */
 simulated function bool IsFlarotovActive(){ return false; }

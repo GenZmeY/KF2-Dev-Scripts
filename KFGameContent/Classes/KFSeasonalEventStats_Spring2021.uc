@@ -75,9 +75,14 @@ simulated function OnBossDied()
 	}
 }
 
-simulated function OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT)
+simulated function OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT, bool bKiller)
 {
 	local int ObjIdx;
+
+	if (bKiller == false)
+	{
+		return;
+	}
 
 	// E.D.A.R kills
 	ObjIdx = 2;

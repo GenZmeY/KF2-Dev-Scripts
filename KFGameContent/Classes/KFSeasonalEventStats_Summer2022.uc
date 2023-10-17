@@ -61,9 +61,14 @@ simulated event OnGameWon(class<GameInfo> GameClass, int Difficulty, int GameLen
 	}
 }
 
-simulated function OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT)
+simulated function OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT, bool bKiller)
 {
 	local int ObjIdx;
+
+	if (bKiller == false)
+	{
+		return;
+	}
 
 	// Kill 1500 Zeds on any map or mode
 	ObjIdx = 0;

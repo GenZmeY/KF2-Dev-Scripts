@@ -1945,8 +1945,9 @@ simulated function final BuyAmmo( float AmountPurchased, EItemType ItemType, opt
 {
 	local STraderItem WeaponItem;
 	local KFWeapon KFW;
-	local byte MagAmmoCount;
+	local int MagAmmoCount;
 
+	// Keep 255 because what else?
 	MagAmmoCount = 255;
 
 	if ( ItemType == EIT_Weapon )
@@ -1973,7 +1974,7 @@ simulated function final BuyAmmo( float AmountPurchased, EItemType ItemType, opt
 }
 
 /** Receive weapon ammo */
-reliable server final private function ServerBuyAmmo(int AmountPurchased, byte ClientAmmoCount, byte ItemIndex, bool bSecondaryAmmo)
+reliable server final private function ServerBuyAmmo(int AmountPurchased, int ClientAmmoCount, byte ItemIndex, bool bSecondaryAmmo)
 {
 	local STraderItem WeaponItem;
 	local KFWeapon KFW;

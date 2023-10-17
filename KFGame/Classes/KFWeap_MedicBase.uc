@@ -214,6 +214,8 @@ simulated function AltFireMode()
 /** @see KFWeapon::ConsumeAmmo */
 simulated function ConsumeAmmo( byte FireModeNum )
 {
+	local KFPerk Perk;
+	local float DartAmmoCostModifier;
     // If its not the healing fire mode, return
     if( FireModeNum != ALTFIRE_FIREMODE )
     {
@@ -231,11 +233,14 @@ simulated function ConsumeAmmo( byte FireModeNum )
 	// If AmmoCount is being replicated, don't allow the client to modify it here
 	if (Role == ROLE_Authority || bAllowClientAmmoTracking)
 	{
+		Perk = GetPerk();
+		DartAmmoCostModifier = Perk != none ? Perk.GetDartAmmoCostModifier() : 1.0f;
+
         // Don't consume ammo if magazine size is 0 (infinite ammo with no reload)
 		if (MagazineCapacity[1] > 0 && AmmoCount[1] > 0)
 		{
 			// Reduce ammo amount by heal ammo cost
-            AmmoCount[1] = Max(AmmoCount[1] - AmmoCost[1], 0);
+            AmmoCount[1] = Max(AmmoCount[1] - AmmoCost[1] * DartAmmoCostModifier, 0);
 		}
 	}
 }
@@ -411,7 +416,6 @@ function StartHealRecharge()
 
 		UsedHealRechargeTime = HealFullRechargeSeconds;
 		UsedHealRechargeTime *= static.GetUpgradeHealRechargeMod(CurrentWeaponUpgradeIndex);
-		UsedHealRechargeTime *= InstigatorPerk.GetHealRechargeMod();
 
         InstigatorPerk.ModifyHealerRechargeTime( UsedHealRechargeTime );
 		// Set the healing recharge rate whenever we start charging

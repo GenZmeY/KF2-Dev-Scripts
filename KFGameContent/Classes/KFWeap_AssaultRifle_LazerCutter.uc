@@ -972,7 +972,7 @@ defaultproperties
 	FlameSprayArchetype = SprayActor_Flame'WEP_Laser_Cutter_ARCH.WEP_Laser_Cutter_Flame'
 
 	ChargeTimePerLevel = 0.7f;
-	ChargeConsumeTime = 0.082f; //Consumes 25 on full charge
+	ChargeConsumeTime = 0.084f; //Consumes 25 on full charge
 	OverchargeConsumeTime = 0; //Setting to 0 or below deactivates ammo consumption while holding a charge
 
 	// Shooting Animations

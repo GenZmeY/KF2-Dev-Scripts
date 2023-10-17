@@ -44,8 +44,13 @@ private event GrantEventItems()
 	}
 }
 
-simulated function OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT)
+simulated function OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT, bool bKiller)
 {
+	if (bKiller == false)
+	{
+		return;
+	}
+
 	if (bObjectiveIsValidForMap[2] != 0)
 	{
 		IncrementSeasonalEventStat(2, 1);

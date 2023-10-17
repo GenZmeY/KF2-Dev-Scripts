@@ -1014,17 +1014,21 @@ reliable server event PushV()
 simulated function bool GetAllowSeasonalSkins()
 {
 	local KFGameReplicationInfo KFGRI;
-	local bool bIsWWLWeekly, bIsAllowSeasonalSkins; // Situations that shouldn't allow seasonal overrides
+	local bool bIsWWLWeekly, bIsCastleVolter, bIsAllowSeasonalSkins; // Situations that shouldn't allow seasonal overrides
 
 	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
 
 	bIsWWLWeekly = KFGRI != none && KFGRI.bIsWeeklyMode && KFGRI.CurrentWeeklyIndex == 12;
+
+	bIsCastleVolter = Caps(WorldInfo.GetMapName(true)) == "KF-CASTLEVOLTER";
+
 	bIsAllowSeasonalSkins = KFGRI != none && KFGRI.bAllowSeasonalSkins;
-	//`Log("GetAllowSeasonalSkins: AllowSeasonalSkins: "$bIsAllowSeasonalSkins$" WWLWeekly "$bIsWWLWeekly);
-	if(bIsWWLWeekly || bIsAllowSeasonalSkins == false)
+	
+	if(bIsWWLWeekly || bIsCastleVolter || bIsAllowSeasonalSkins == false)
 	{
 		return false;
 	}
+
 	return true;
 }
 
@@ -7255,8 +7259,12 @@ simulated event InitializeStats()
 	local class<KFOnlineStatsRead> StatsReadClass;
 	local class<KFOnlineStatsWrite> StatsWriteClass;
 
-	if ( StatsRead == none && WorldInfo.NetMode != NM_DedicatedServer )
+	`Log("InitializeStats()");
+
+	if ( ( StatsRead == none || StatsWrite == none ) && WorldInfo.NetMode != NM_DedicatedServer )
 	{
+		`Log("InitializeStats() - Create objects");
+
 		// BWJ - 1-4-17 - Different stats read for dingo
 		if( WorldInfo.IsConsoleBuild( CONSOLE_Durango ) )
 		{
@@ -7638,7 +7646,23 @@ native reliable client private function ClientNotifyHitGiven(class<DamageType> D
 /** Kill stat */
 function AddZedKill( class<KFPawn_Monster> MonsterClass, byte Difficulty, class<DamageType> DT, bool bKiller )
 {
+	local KFPlayerController KFPC;
+
 	ClientAddZedKill( MonsterClass, Difficulty, DT, bKiller );
+
+	if (bKiller)
+	{
+		foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+		{
+			if (KFPC != none
+				&& KFPC != self
+				&& KFPC.IsInState('Spectating') == false
+				&& KFPC.PlayerReplicationInfo.bOnlySpectator == false)
+			{
+				KFPC.AddZedKill(MonsterClass, Difficulty, DT, false);
+			}
+		}
+	}
 }
 native reliable client private function ClientAddZedKill( class<KFPawn_Monster> MonsterClass, byte Difficulty, class<DamageType> DT, bool bKiller );
 
@@ -7666,9 +7690,25 @@ function AddAfflictionCaused(EAfflictionType Type)
 }
 native reliable client private function ClientAddAfflictionCaused(EAfflictionType Type);
 
-function AddCollectibleFound(int Limit)
+function AddCollectibleFound(int Limit, optional bool bBroadcast = true)
 {
+	local KFPlayerController KFPC;
+
 	ClientAddCollectibleFound(Limit);
+
+	if (bBroadcast)
+	{
+		foreach WorldInfo.AllControllers(class'KFPlayerController', KFPC)
+		{
+			if (KFPC != none
+				&& KFPC != self
+				&& KFPC.IsInState('Spectating') == false
+				&& KFPC.PlayerReplicationInfo.bOnlySpectator == false)
+			{
+				KFPC.AddCollectibleFound(Limit, false);
+			}
+		}
+	}
 }
 native reliable client private function ClientAddCollectibleFound(int Limit);
 

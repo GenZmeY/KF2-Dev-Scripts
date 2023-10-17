@@ -51,7 +51,9 @@ var protected bool						bGunGamePlayerOnLastGun;
 var transient array<KFBarmwichBonfireVolume> BonfireVolumes;
 
 // Trader Time modifier for Castle Volter map in the last round
+var float CastleVolterTraderLastWaveModifier;
 var float CastleVolterTraderModifier;
+var bool bIsCastleVolterMap;
 
 /** Whether this game mode should play music from the get-go (lobby) */
 static function bool ShouldPlayMusicAtStart()
@@ -76,6 +78,8 @@ event PreBeginPlay()
 event PostBeginPlay()
 {
 	super.PostBeginPlay();
+
+	bIsCastleVolterMap = Caps(WorldInfo.GetMapName(true)) == "KF-CASTLEVOLTER";
 
 	TimeBetweenWaves = GetTraderTime();
 
@@ -1130,6 +1134,11 @@ function WaveStarted()
 	UpdateGameSettings();
 
 	bWaveStarted = true;
+
+	if (bIsCastleVolterMap)
+	{
+		TimeBetweenWaves = GetTraderTime();
+	}
 }
 
 /** Do something when there are no AIs left */
@@ -1473,17 +1482,7 @@ function DoTraderTimeCleanup();
 /** Handle functionality for opening trader */
 function OpenTrader()
 {
-	local int UpdatedTimeBetweenWaves;
-
-    UpdatedTimeBetweenWaves = TimeBetweenWaves;
-
-	// In castle volter the trader needs to have a special time
-	if (WorldInfo.GetMapName(true) == "KF-CastleVolter" && WaveNum == (WaveMax - 1) )
-	{
-		UpdatedTimeBetweenWaves = UpdatedTimeBetweenWaves * CastleVolterTraderModifier;
-	}
-
-    MyKFGRI.OpenTrader(UpdatedTimeBetweenWaves);
+    MyKFGRI.OpenTrader(TimeBetweenWaves);
 	NotifyTraderOpened();
 }
 
@@ -1929,6 +1928,27 @@ function ClearActorFromBonfire(Actor Other)
 	}
 }
 
+function float GetTraderTime()
+{
+	local float TraderTime;
+	TraderTime = Super.GetTraderTime();
+
+	// In castle volter the trader needs to have a special time
+	if (bIsCastleVolterMap)
+	{
+		if ( WaveNum == (WaveMax - 1) && !bIsEndlessGame )
+		{
+			TraderTime *= CastleVolterTraderLastWaveModifier;
+		}
+		else
+		{
+			TraderTime *= CastleVolterTraderModifier;
+		}
+	}
+
+	return TraderTime;
+}
+
 DefaultProperties
 {
 	TimeBetweenWaves=60			//This is going to be a difficulty setting later
@@ -1938,7 +1958,10 @@ DefaultProperties
 	MaxGameDifficulty=3
 	bWaveStarted=false
 	bGunGamePlayerOnLastGun=false
-	CastleVolterTraderModifier = 1.0f;
+
+	CastleVolterTraderLastWaveModifier = 2.5f
+	CastleVolterTraderModifier = 1.17f
+	bIsCastleVolterMap = false;
 
 	ObjectiveSpawnDelay=5
 

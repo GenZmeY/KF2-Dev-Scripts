@@ -42,10 +42,10 @@ defaultproperties
 	bReloadFromMagazine=true
 
 	// Recoil
-	maxRecoilPitch=250
-	minRecoilPitch=200
-	maxRecoilYaw=100
-	minRecoilYaw=-100
+	maxRecoilPitch=160
+	minRecoilPitch=140
+	maxRecoilYaw=60
+	minRecoilYaw=-60
 	RecoilRate=0.01
 	RecoilMaxYawLimit=500
 	RecoilMinYawLimit=65035
@@ -61,7 +61,7 @@ defaultproperties
 	WeaponFireTypes(DEFAULT_FIREMODE)=EWFT_InstantHit
 	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Bullet_Pistol9mm'
 	FireInterval(DEFAULT_FIREMODE)=+0.08 //0.175
-	InstantHitDamage(DEFAULT_FIREMODE)=12.f //15
+	InstantHitDamage(DEFAULT_FIREMODE)=15.f //15
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_HRG_93R'
 	Spread(DEFAULT_FIREMODE)=0.015
 	FireOffset=(X=20,Y=4.0,Z=-3)

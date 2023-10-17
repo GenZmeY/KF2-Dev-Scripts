@@ -2321,8 +2321,6 @@ simulated function NotifyWeeklySelector(int WeeklySelectorIndex_)
 	WeeklySelectorIndex = WeeklySelectorIndex_;
 
 	bNetDirty = true;
-
-	`Log("TEST - NotifyWeeklySelector : " $WeeklySelectorIndex);
 }
 
 /** VIP weekly */

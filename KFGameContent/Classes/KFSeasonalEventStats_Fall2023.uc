@@ -116,23 +116,20 @@ simulated function OnTryCompleteObjective(int ObjectiveIndex, int EventIndex)
 }
 
 // Kill Hans Volter in 5 different maps
-simulated function OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT)
+simulated function OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT, bool bKiller)
 {
 	local int ObjIdx;
 	local KFProfileSettings Profile;
 
 	ObjIdx = 0;
 
-	if (Outer.IsEventObjectiveComplete(ObjIdx))
-	{
-		return;
-	}
-
 	if (bObjectiveIsValidForMap[ObjIdx] != 0)
 	{
 		if (MonsterClass == class'KFPawn_ZedHansBase'
 			|| MonsterClass == class'KFPawn_ZedHans')
 		{
+			// This event can be heard no matter is bKiller true | false, we count for every player on the objective
+
 			if (Outer.GetSeasonalEventStatValue(ObjIdx) < HansVolterKillsRequired) // If we still didn't reach the limit..
 			{
 				Profile = KFProfileSettings(Outer.MyKFPC.OnlineSub.PlayerInterface.GetProfileSettings(Outer.MyKFPC.StoredLocalUserNum));

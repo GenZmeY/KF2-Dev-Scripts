@@ -198,14 +198,6 @@ function TickHud(float DeltaTime)
 	local int bStatusWarning, bStatusNotification;
 	local string StatusMessage;
 	local GFxObject DataObject;
-	local KFGameReplicationInfo KFGRI;
-
-	KFGRI=KFGameReplicationInfo(KFPC.WorldInfo.GRI);
-
-	if (KFGRI.IsContaminationMode())
-	{
-		return;
-	}
 
 	if (CurrentObjectiveInterface != none)
 	{

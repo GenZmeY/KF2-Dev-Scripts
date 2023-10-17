@@ -1130,7 +1130,7 @@ private event AddToHitsGiven(class<DamageType> DT)
 private event AddToKills( class<KFPawn_Monster> MonsterClass, byte Difficulty, class<DamageType> DT, bool bKiller )
 {
 	// seasonal event hook
-	SeasonalEventStats_OnZedKilled(MonsterClass, Difficulty, DT);
+	SeasonalEventStats_OnZedKilled(MonsterClass, Difficulty, DT, bKiller);
 
 	if (!bKiller)
 	{
@@ -1878,11 +1878,11 @@ final simulated function SeasonalEventStats_OnHitGiven(class<DamageType> DT)
 	}
 }
 
-final simulated function SeasonalEventStats_OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT)
+final simulated function SeasonalEventStats_OnZedKilled(class<KFPawn_Monster> MonsterClass, int Difficulty, class<DamageType> DT, bool bKiller)
 {
 	if (SeasonalEventIsValid())
 	{
-		SeasonalEvent.OnZedKilled(MonsterClass, Difficulty, DT);
+		SeasonalEvent.OnZedKilled(MonsterClass, Difficulty, DT, bKiller);
 	}
 }
 

@@ -376,7 +376,7 @@ defaultproperties
 	WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Bullet_G18'
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Ballistic_G18'
 	FireInterval(DEFAULT_FIREMODE)=+.05455 // 1100 RPM
-	Spread(DEFAULT_FIREMODE)=0.06
+	Spread(DEFAULT_FIREMODE)=0.045
 	InstantHitDamage(DEFAULT_FIREMODE)=28
 	FireOffset=(X=30,Y=6.5,Z=-4)
 

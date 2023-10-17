@@ -15,7 +15,7 @@ defaultproperties
 {
 	WeaponClassPath="KFGameContent.KFWeap_AssaultRifle_FAMAS"
 
-	BuyPrice=1200
+	BuyPrice=1000
 
 	AmmoPricePerMag=25
 	SecondaryAmmoMagPrice=15 //13

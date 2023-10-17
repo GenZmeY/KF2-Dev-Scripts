@@ -518,14 +518,17 @@ function TickHud(float DeltaTime)
 	{
 		bBountyHuntVisibility = KFPC.CanUseBountyHunt();
 
-        if (KFGRI.bWaveIsActive == false)
+        if (KFGRI != none)
         {
-            bBountyHuntVisibility = false;
+            if (KFGRI.bWaveIsActive == false)
+            {
+                bBountyHuntVisibility = false;
+            }
+            else if (KFGRI.WaveNum == KFGRI.WaveMax)
+            {
+                bBountyHuntVisibility = false;
+            }
         }
-		else if (KFGRI.WaveNum == KFGRI.WaveMax)
-		{
-			bBountyHuntVisibility = false;
-		}
 
         if (bBountyHuntVisibility != bLastBountyHuntVisibility)
         {

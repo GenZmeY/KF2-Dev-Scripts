@@ -656,7 +656,7 @@ var WeeklyOverrides ActiveEvent;
 /** Stored values of World Info and GRI items incase we need to reset it. */
 var CachedOutbreakInfo CachedItems;
 
-function int SetActiveEvent(int ActiveEventIdx, KFGameInfo GameInfo)
+function int SetActiveEvent(int ActiveEventIdx, optional KFGameInfo GameInfoForWeeklyIndex = none)
 {
 `if(`notdefined(ShippingPC))
 	local string LocalURL;
@@ -667,17 +667,21 @@ function int SetActiveEvent(int ActiveEventIdx, KFGameInfo GameInfo)
 	LocalURL = WorldInfo.GetLocalURL();
 	LocalURL = Split(LocalURL, "?"); //remove map name
 
-	if (GameInfo.WeeklySelectorIndex == -1) // WeeklySelectorIndex overrides the ActiveEventIdx if any
+	// WeeklySelectorIndex overrides the ActiveEventIdx if any
+	if (GameInfoForWeeklyIndex == none || GameInfoForWeeklyIndex.WeeklySelectorIndex == -1)
 	{
 		ActiveEventIdx = GetIntOption(LocalURL, "ActiveEventIdx", ActiveEventIdx);
 
 		// Set WeeklySelectorIndex to the value (ActiveEventIdx is not replicated), so all the flow of the game works the same
-		GameInfo.WeeklySelectorIndex = ActiveEventIdx + 1;
+		if (GameInfoForWeeklyIndex != none)
+		{
+			GameInfoForWeeklyIndex.WeeklySelectorIndex = ActiveEventIdx + 1;
+		}
 	}
-	else if (GameInfo.WeeklySelectorIndex > 0)
+	else if (GameInfoForWeeklyIndex != none && GameInfoForWeeklyIndex.WeeklySelectorIndex > 0)
 	{
 		// 0 is default, we move one index to the left so it matches first Weekly Mode
-		ActiveEventIdx = GameInfo.WeeklySelectorIndex - 1;
+		ActiveEventIdx = GameInfoForWeeklyIndex.WeeklySelectorIndex - 1;
 	}
 
 	//If our override is out of bounds, see if it's a valid test event
@@ -694,10 +698,10 @@ function int SetActiveEvent(int ActiveEventIdx, KFGameInfo GameInfo)
 		ActiveEvent = SetEvents[ActiveEventIdx];
 	}
 `else
-	if (GameInfo.WeeklySelectorIndex > 0)
+	if (GameInfoForWeeklyIndex != none && GameInfoForWeeklyIndex.WeeklySelectorIndex > 0)
 	{
 		// 0 is default, we move one index to the left so it matches first Weekly Mode
-		ActiveEventIdx = GameInfo.WeeklySelectorIndex - 1;
+		ActiveEventIdx = GameInfoForWeeklyIndex.WeeklySelectorIndex - 1;
 	}
 
 	if(ActiveEventIdx < SetEvents.length)
@@ -706,9 +710,11 @@ function int SetActiveEvent(int ActiveEventIdx, KFGameInfo GameInfo)
 	}
 `endif
 
-	`Log("TEST - SetActiveEvent : " $ActiveEventIdx);
-
-	KFGameEngine(class'Engine'.static.GetEngine()).SetWeeklyEventIndex(ActiveEventIdx);
+	// Override this only if we can force a new index via GameInfo
+	if (GameInfoForWeeklyIndex != none)
+	{
+		KFGameEngine(class'Engine'.static.GetEngine()).SetWeeklyEventIndex(ActiveEventIdx);
+	}
 
 	return ActiveEventIdx;
 }

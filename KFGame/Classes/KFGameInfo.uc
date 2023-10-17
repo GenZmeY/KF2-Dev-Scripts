@@ -684,8 +684,6 @@ event InitGame( string Options, out string ErrorMessage )
 		KFGameEngine(class'Engine'.static.GetEngine()).SetWeeklyEventIndex(KFGameEngine(class'Engine'.static.GetEngine()).GetIntendedWeeklyEventIndex());
 	}
 
-	`Log("TEST - InitGame : " $WeeklySelectorIndex);
-
  	Super.InitGame( Options, ErrorMessage );
 
 	if (UsesModifiedDifficulty())
@@ -1181,8 +1179,6 @@ function InitGRIVariables()
 	MyKFGRI.MaxHumanCount = MaxPlayers;
 	MyKFGRI.NotifyAllowSeasonalSkins(AllowSeasonalSkinsIndex);
 	MyKFGRI.NotifyWeeklySelector(WeeklySelectorIndex);
-
-	`Log("TEST - InitGRIVariables- NotifyWeeklySelector : " $WeeklySelectorIndex);
 
 	SetBossIndex();
 }

@@ -166,7 +166,8 @@ function StartHealRecharge()
 	if (Role == ROLE_Authority)
 	{
 		InstigatorPerk = GetPerk();
-		UsedHealRechargeTime = HealFullRechargeSeconds * static.GetUpgradeHealRechargeMod(CurrentWeaponUpgradeIndex);
+		UsedHealRechargeTime = HealFullRechargeSeconds;
+		UsedHealRechargeTime *= static.GetUpgradeHealRechargeMod(CurrentWeaponUpgradeIndex);
 
 		InstigatorPerk.ModifyHealerRechargeTime(UsedHealRechargeTime);
 		// Set the healing recharge rate whenever we start charging
