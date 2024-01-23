@@ -145,18 +145,12 @@ simulated function SetActive(bool bActive)
 function SetCompleted(bool bComplete)
 {
 	local GFxObject DataObject;
-	local KFGameReplicationInfo KFGRI;
 
-	KFGRI=KFGameReplicationInfo(KFPC.WorldInfo.GRI);
+	DataObject = CreateObject("Object");
 
-	if (KFGRI.IsContaminationMode() == false)
-	{
-		DataObject = CreateObject("Object");
-
-		DataObject.SetBool("bComplete", bComplete);
-		DataObject.SetString("completeString", bComplete ? Localize("Objectives", "SuccessString", "KFGame") : "");
-		SetObject("completeStatus", DataObject);
-	}
+	DataObject.SetBool("bComplete", bComplete);
+	DataObject.SetString("completeString", bComplete ? Localize("Objectives", "SuccessString", "KFGame") : "");
+	SetObject("completeStatus", DataObject);
 
 	if (!bComplete)
 	{
@@ -272,15 +266,6 @@ function ClearObjectiveUI()
 //pass a value from 0-1
 function SetCurrentProgress(float CurrentProgress)
 {
-	local KFGameReplicationInfo KFGRI;
-
-	KFGRI=KFGameReplicationInfo(KFPC.WorldInfo.GRI);
-
-	if (KFGRI.IsContaminationMode())
-	{
-		return;
-	}
-
 	if (LastProgress != CurrentProgress)
 	{
 		CurrentProgress = FClamp(CurrentProgress, 0, 1);

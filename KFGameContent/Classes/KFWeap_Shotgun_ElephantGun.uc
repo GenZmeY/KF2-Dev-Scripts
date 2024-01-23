@@ -168,7 +168,7 @@ defaultproperties
 	FireInterval(ALTFIRE_FIREMODE)=0.25 // 240 RPM
 	NumPellets(ALTFIRE_FIREMODE)=24
 	Spread(ALTFIRE_FIREMODE)=0.19
-	AmmoCost(ALTFIRE_FIREMODE)=4
+	AmmoCost(ALTFIRE_FIREMODE)=1
 	DoubleBarrelKickMomentum=1000
 	FallingMomentumReduction=0.5
 

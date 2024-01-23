@@ -126,4 +126,6 @@ defaultproperties
 	MonsterArchPath="ZED_ARCH.ZED_CrawlerKing_Archetype"
 	ControllerClass=class'KFAIController_ZedCrawlerKing'
 	DifficultySettings=class'KFDifficulty_CrawlerKing'
+	
+	ElitePawnClass.Empty
 }

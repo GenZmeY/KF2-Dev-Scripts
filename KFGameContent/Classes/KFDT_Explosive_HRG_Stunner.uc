@@ -20,8 +20,8 @@ defaultproperties
 	KDeathUpKick=1000
 	KDeathVel=300
 
-	StunPower=160
-	StumblePower=40
+	StunPower=200
+	StumblePower=100
 
 	//Perk
 	ModifierPerkList(0)=class'KFPerk_SWAT'	

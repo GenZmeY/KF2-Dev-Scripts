@@ -32,8 +32,6 @@ var transient bool bIsFullyCharged;
 
 var const WeaponFireSndInfo FullyChargedSound;
 
-var float SelfDamageReductionValue;
-
 var float FullChargedTimerInterval;
 var float FXScalingFactorByCharge, ChargePercentage;
 var float MinScale, MaxScale;
@@ -289,7 +287,7 @@ simulated function BeginFire(Byte FireModeNum)
 
 simulated function StartFire(byte FiremodeNum)
 {
-	if (IsTimerActive('RefireCheckTimer') || bBlocked)
+	if (bBlocked)
 	{
 		return;
 	}
@@ -308,8 +306,6 @@ simulated function StartFire(byte FiremodeNum)
 	{
 		bBlocked = false;
 	}
-
-
 }
 
 simulated function RefireCheckTimer()
@@ -513,6 +509,7 @@ simulated state MineReconstructorCharge extends WeaponFiring
 		global.Tick(DeltaTime);
 
 		if(bIsFullyCharged) return;
+		if(PendingFire(ALTFIRE_FIREMODE)) return;
 
 		// Don't charge unless we're holding down the button
 		if (PendingFire(CurrentFireMode))
@@ -803,6 +800,11 @@ simulated function AltFireMode()
 		return;
 	}
 
+	if (PendingFire(DEFAULT_FIREMODE))
+	{
+		return;
+	}
+
 	StartFire(ALTFIRE_FIREMODE);
 }
 
@@ -831,11 +833,8 @@ state WeaponSingleFiring
 	}
 }
 
-
-
 defaultproperties
 {
-	SelfDamageReductionValue=0.1f
     //Gameplay Props
     MaxChargeTime=1.2
     AmmoIncreasePerCharge=1
@@ -906,6 +905,7 @@ defaultproperties
 	WeaponFireTypes(DEFAULT_FIREMODE)=EWFT_Projectile
     WeaponProjectiles(DEFAULT_FIREMODE)=class'KFProj_Mine_Reconstructor'
 	FireInterval(DEFAULT_FIREMODE)=+0.2 //+0.33 
+	Spread(DEFAULT_FIREMODE)=0.0
 	InstantHitDamage(DEFAULT_FIREMODE)=120
 	PenetrationPower(DEFAULT_FIREMODE)=0.0;
 	InstantHitDamageTypes(DEFAULT_FIREMODE)=class'KFDT_Toxic_MineReconstructorImpact'
@@ -915,6 +915,7 @@ defaultproperties
 	FiringStatesArray(ALTFIRE_FIREMODE)=WeaponSingleFiring
 	WeaponFireTypes(ALTFIRE_FIREMODE)=EWFT_Custom
 	FireInterval(ALTFIRE_FIREMODE)=+0.15 //+0.25
+	Spread(ALTFIRE_FIREMODE)=0.0
 	AmmoCost(ALTFIRE_FIREMODE)=0
 
 	// BASH_FIREMODE

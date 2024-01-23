@@ -185,6 +185,11 @@ function bool CurrentPickupIsAmmo()
 	return false;
 }
 
+function bool CurrentPickupIsCash()
+{
+	return false;
+}
+
 /**
   * Make pickup mesh and associated effects hidden.
   */

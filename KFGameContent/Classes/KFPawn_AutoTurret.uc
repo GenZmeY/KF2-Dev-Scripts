@@ -22,7 +22,6 @@ enum ETurretState
 };
 
 var SkeletalMeshComponent TurretMesh;
-var Controller InstigatorController;
 
 /** Speed to rise the drone in Z axis after thrown */
 var const float DeployZSpeed;
@@ -164,6 +163,8 @@ simulated event PreBeginPlay()
 
     if (Role == ROLE_Authority)
     {
+        SetCollisionType(COLLIDE_NoCollision);
+
         Weapon = Spawn(WeaponClass, self);
         TurretWeapon = KFWeap_AutoTurretWeapon(Weapon);
         MyKFWeapon = TurretWeapon;
@@ -390,6 +391,7 @@ simulated state Deploy
     {
 		local float CurrentHeight;
         local vector LocationNext;
+        local bool bTraceOk;
 
         super.Tick(DeltaTime);
 
@@ -404,7 +406,12 @@ simulated state Deploy
         LocationNext.z += Velocity.z * DeltaTime;
 
         // If we are going to collide stop
-        if (!FastTrace(LocationNext, Location, vect(25,25,25)))
+        
+        SetCollisionType(COLLIDE_CustomDefault);
+        bTraceOk = FastTrace(LocationNext, Location, vect(25,25,25));
+        SetCollisionType(COLLIDE_NoCollision);
+
+        if (!bTraceOk)
         {
             SetTurretState(ETS_TargetSearch);
             return;
@@ -507,7 +514,9 @@ simulated function bool TargetValidWithGeometry(Actor Target, vector MuzzleLoc, 
     local bool bTraderFound;
     local int IteratorTrader;
 
+    SetCollisionType(COLLIDE_CustomDefault);
     HitActor = Trace(HitLocation, HitNormal, ReferencePosition, MuzzleLoc,,,,TRACEFLAG_Bullet);
+    SetCollisionType(COLLIDE_NoCollision);
 
     if (HitActor == none || KFPawn_Monster(HitActor) == none)
     {
@@ -804,6 +813,8 @@ function CheckForTargets()
 
     TurretWeapon.GetMuzzleLocAndRot(MuzzleLoc, MuzzleRot);
     
+    SetCollisionType(COLLIDE_CustomDefault);
+
     foreach CollidingActors(class'KFPawn_Monster', CurrentTarget, EffectiveRadius, Location, true,, HitInfo)
     {
         // Visible by local player or team
@@ -833,6 +844,8 @@ function CheckForTargets()
             CurrentDistance = Distance;
         }
     }
+
+    SetCollisionType(COLLIDE_NoCollision);
 
     if (EnemyTarget != none)
     {
@@ -882,14 +895,18 @@ simulated function CheckEnemiesWithinExplosionRadius()
 
     //DrawDebugSphere(CheckExplosionLocation, ExplosiveRadius, 10, 255, 255, 0 );
 
+    SetCollisionType(COLLIDE_CustomDefault);
+
     foreach CollidingActors(class'KFPawn_Monster', KFPM, ExplosiveRadius, CheckExplosionLocation, true,,)
     {
         if(KFPM != none && KFPM.IsAliveAndWell())
         {
             SetTurretState(ETS_Detonate);
-            return;
+            break;
         }
     }
+
+    SetCollisionType(COLLIDE_NoCollision);
 }
 
 simulated function StartIdleAnim()
@@ -996,6 +1013,12 @@ simulated function UpdateRotation(float DeltaTime)
             }
         }
     }
+    else
+    {
+        NewRotation = Rotation;
+        NewRotation.Roll = 0.0f;
+        SetRotation(NewRotation);
+    }
 }
 
 simulated function RotateByTime(rotator NewRotation, float Time)
@@ -1070,11 +1093,6 @@ function bool CanAITargetThisPawn(Controller TargetingController)
 }
 
 simulated function bool CanInteractWithPawnGrapple()
-{
-	return false;
-}
-
-simulated function bool CanInteractWithZoneVelocity()
 {
 	return false;
 }

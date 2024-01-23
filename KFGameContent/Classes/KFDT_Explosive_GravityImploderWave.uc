@@ -23,6 +23,7 @@ defaultproperties
 
 	KnockdownPower=400
 
+	SelfDamageReductionValue=0.075f 
 	//Perk
 	ModifierPerkList(0)=class'KFPerk_Demolitionist'	
 	WeaponDef=class'KFWeapDef_GravityImploder'

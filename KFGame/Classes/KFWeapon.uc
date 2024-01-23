@@ -1768,49 +1768,60 @@ function SetOriginalValuesFromPickup( KFWeapon PickedUpWeapon )
  */
 function bool DenyPickupQuery(class<Inventory> ItemClass, Actor Pickup)
 {
-	local bool bDenyPickUp;
+	if (ItemClass == class || (DualClass != none && ItemClass == DualClass))
+	{
+		return DenyPickupQuery_Internal(ItemClass, Pickup);
+	}
+
+	return false;
+}
+
+function bool DenyPickupQuery_Internal(class<Inventory> ItemClass, Actor Pickup)
+{
+	local bool bDenyPickUp, bIsProjectile;
 	local KFPlayerController KFPC;
 	local class<KFWeapon> KFWeapClass;
 
-	if (ItemClass == class)
+	KFWeapClass = class<KFWeapon>(ItemClass);
+	bIsProjectile = Pickup.IsA('Projectile');
+	
+	// don't do this ammo check if the player is trying to pick up the second dual weapon
+	if (bIsProjectile ||
+			KFWeapClass == none || default.DualClass == none || 
+			(ItemClass == class && KFWeapClass.default.DualClass != default.DualClass))
 	{
-		KFWeapClass = class<KFWeapon>(ItemClass);
-		// don't do this ammo check if the player is trying to pick up the second dual weapon
-		if (KFWeapClass == none || KFWeapClass.default.DualClass == none || KFWeapClass.default.DualClass != default.DualClass)
+		// Unless ammo is full, allow the pickup to handle giving ammo
+		// @note: projectile pickups can only refill primary ammo
+
+		if (CanRefillSecondaryAmmo() && !bIsProjectile)
 		{
-			// Unless ammo is full, allow the pickup to handle giving ammo
-			// @note: projectile pickups can only refill primary ammo
-			if (CanRefillSecondaryAmmo() && !Pickup.IsA('Projectile'))
+			bDenyPickUp = ((SpareAmmoCount[0] + AmmoCount[0]) >= GetMaxAmmoAmount(0) && AmmoCount[1] >= MagazineCapacity[1]);
+		}
+		else
+		{
+			if (KFProj_RicochetStickBullet(Pickup) == none || KFProj_RicochetStickBullet(Pickup).bPickupCanBeDenied)
 			{
-				bDenyPickUp = ((SpareAmmoCount[0] + AmmoCount[0]) >= GetMaxAmmoAmount(0) && AmmoCount[1] >= MagazineCapacity[1]);
+				bDenyPickUp = ((SpareAmmoCount[0] + AmmoCount[0]) >= GetMaxAmmoAmount(0));
 			}
 			else
 			{
-				if (KFProj_RicochetStickBullet(Pickup) == none || KFProj_RicochetStickBullet(Pickup).bPickupCanBeDenied)
-				{
-					bDenyPickUp = ((SpareAmmoCount[0] + AmmoCount[0]) >= GetMaxAmmoAmount(0));
-				}
-				else
-				{
-					bDenyPickUp = false;
-				}
+				bDenyPickUp = false;
 			}
 		}
+	}
 
-		if (bDenyPickUp)
+	if (bDenyPickUp)
+	{
+		KFPC = KFPlayerController(Instigator.Controller);
+		//show non critical message for deny pickup
+		if (KFPC != None)
 		{
-			KFPC = KFPlayerController(Instigator.Controller);
-			//show non critical message for deny pickup
-			if (KFPC != None)
-			{
-				KFPC.ReceiveLocalizedMessage(class'KFLocalMessage_Game', (MagazineCapacity[0] == 0) ? GMT_AlreadyCarryingWeapon : GMT_AmmoIsFull);
-			}
+			KFPC.ReceiveLocalizedMessage(class'KFLocalMessage_Game', (MagazineCapacity[0] == 0) ? GMT_AlreadyCarryingWeapon : GMT_AmmoIsFull);
 		}
 	}
 
 	return bDenyPickUp;
 }
-
 function NotifyPickedUp()
 {
 	ClientNotifyPickedUp();
@@ -6568,7 +6579,7 @@ simulated state WeaponFiring
 
 		if (WorldInfo.NetMode == NM_Client && bAllowClientAmmoTracking && FireInterval[CurrentFireMode] <= MinFireIntervalToTriggerSync)
 		{
-			SyncCurrentAmmoCount(CurrentFireMode, AmmoCount[CurrentFireMode]);
+			SyncCurrentAmmoCount(CurrentFireMode, AmmoCount[GetAmmoType(CurrentFireMode)]);
 		}
 	}
 
@@ -6614,11 +6625,11 @@ simulated state WeaponFiring
 	}
 }
 
-unreliable server function SyncCurrentAmmoCount(byte FireMode, int CurrentAmmoCount)
+reliable server function SyncCurrentAmmoCount(byte FireMode, int CurrentAmmoCount)
 {
-	if(AmmoCount[FireMode] != CurrentAmmoCount)
+	if(AmmoCount[GetAmmoType(CurrentFireMode)] != CurrentAmmoCount)
 	{
-		AmmoCount[FireMode] = CurrentAmmoCount;
+		AmmoCount[GetAmmoType(CurrentFireMode)] = CurrentAmmoCount;
 	}
 }
 
@@ -7128,6 +7139,7 @@ simulated function TimeWeaponReloading()
 	local name AnimName;
 	local float AnimLength, AnimRate;
 	local float AmmoTimer, StatusTimer;
+	local KFPlayerController KFPC;
 
 	ReloadStatus = GetNextReloadStatus();
 
@@ -7146,8 +7158,8 @@ simulated function TimeWeaponReloading()
 	if ( AnimLength > 0.f )
 	{
 		MakeNoise(0.5f,'PlayerReload'); // AI
-
-		if ( Instigator.IsFirstPerson() )
+		KFPC = KFPlayerController(Instigator.Controller);
+		if ( Instigator.IsFirstPerson() || (KFPC != none && KFPC.IsBossCameraMode()))
 		{
 			PlayAnimation(AnimName, AnimLength);
 		}

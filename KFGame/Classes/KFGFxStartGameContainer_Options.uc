@@ -260,9 +260,9 @@ function InitializeGameOptions()
 	TextObject.SetString("length",StartMenu.LengthTitle);
 	TextObject.SetString("privacy",StartMenu.PermissionsTitle);
 	TextObject.SetString("inProgress", InProgressString);
-
-	if (class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None
-		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_Spring)
+	
+	if (class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins() == SEI_None
+		|| class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins() == SEI_Spring)
 	{
 		TextObject.SetBool("bShowAllowSeasonalSkins", false);
 	}
@@ -313,50 +313,12 @@ function FilterWeeklyMaps(out array<string> List)
 		WeeklyIndex = ParentMenu.Manager.GetWeeklySelectorIndex() - 1;
 	}
 
+	List.RemoveItem("KF-SantasWorkshop");
+
 	switch (WeeklyIndex)
 	{
 		case 0: // Boom
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
-		case 1: // Cranium Cracker
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
-		case 2: // Tiny Terror
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
-		case 3: // BobbleZed
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
-		case 4: // Poundemonium
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
-		case 5: // Up Up And Decay
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
-		case 6: // Zed Time
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
-		case 7: // Beefcake
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
-		case 8: // BloodThirst
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
-		case 9: // Coliseum
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
-		case 10: // Arachnophobia
-			List.RemoveItem("KF-SantasWorkshop");
+			List.RemoveItem("KF-SteamFortress");
 			break;
 
 		case 11: // Scavenger
@@ -365,16 +327,7 @@ function FilterWeeklyMaps(out array<string> List)
 			List.RemoveItem("KF-PowerCore_Holdout");
 			List.RemoveItem("KF-TheDescent");
 			List.RemoveItem("KF-KrampusLair");
-			List.RemoveItem("KF-SantasWorkshop");
 		 	break;
-
-		case 12: // WW
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
-		case 13: // Abandon
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
 
 		case 14: // Boss Rush
 			List.RemoveItem("KF-Biolapse");
@@ -385,10 +338,6 @@ function FilterWeeklyMaps(out array<string> List)
 			List.RemoveItem("KF-SteamFortress");
 			break;
 
-		case 15: // Shrunken Heads
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
 		case 16: // GunGame
 			List.RemoveItem("KF-Biolapse");
 			List.RemoveItem("KF-Nightmare");
@@ -397,20 +346,12 @@ function FilterWeeklyMaps(out array<string> List)
 			List.RemoveItem("KF-KrampusLair");
 			break;
 
-		case 17: // VIP
-			break;
-
-		case 18: // Perk Roulette
-			List.RemoveItem("KF-SantasWorkshop");
-			break;
-
 		case 19: // Contamination Zone
 			List.RemoveItem("KF-Biolapse");
 			List.RemoveItem("KF-Nightmare");
 			List.RemoveItem("KF-PowerCore_Holdout");
 			List.RemoveItem("KF-TheDescent");
 			List.RemoveItem("KF-KrampusLair");
-			List.RemoveItem("KF-SantasWorkshop");
 			List.RemoveItem("KF-Elysium");
 			break;
 

@@ -2821,6 +2821,12 @@ function AdjustDamage(out int InDamage, out vector Momentum, Controller Instigat
 	`log(self@GetFuncName()@"Starting Damage="$InDamage@"Momentum="$Momentum@"Zone="$HitInfo.BoneName@"DamageType="$DamageType, bLogTakeDamage);
 
 	// Allow current weapon state to reduce damage
+	KFDT = class<KFDamageType>(DamageType);
+	if (KFDT != none && Instigator != none && DamageCauser != none && DamageCauser.Instigator == Instigator)
+	{
+		InDamage *= KFDT.default.SelfDamageReductionValue;
+	}
+
 	if ( MyKFWeapon != None )
 	{
 		MyKFWeapon.AdjustDamage(InDamage, DamageType, DamageCauser);
@@ -2863,7 +2869,6 @@ function AdjustDamage(out int InDamage, out vector Momentum, Controller Instigat
 	}
 
 	// Check non lethal damage
-	KFDT = class<KFDamageType>(DamageType);
 	if ( InDamage >= Health && KFDT != none && KFDT.default.bNonLethalDamage )
 	{
 		InDamage = Health - 1;
@@ -3154,12 +3159,15 @@ function class<KFPerk> GetUsedWeaponPerk( Controller DamagerController, Actor Da
 			KFW = KFWeapon(KFPC.Pawn.Weapon);
 			if( KFW != none )
 			{
-					WeaponPerk = class'KFPerk'.static.GetPerkFromDamageCauser( KFW, InstigatorPerkClass );
+				WeaponPerk = class'KFPerk'.static.GetPerkFromDamageCauser( KFW, InstigatorPerkClass );
 			}
 		}
 	}
 
-	if( WeaponPerk == none && KFW != none && ( class'KFPerk'.static.IsBackupWeapon( KFW ) || class'KFPerk'.static.IsDoshinegun( KFW ) ))
+	if( WeaponPerk == none && KFW != none
+		&& (	class'KFPerk'.static.IsBackupWeapon( KFW ) ||
+				class'KFPerk'.static.IsDoshinegun( KFW ) ||
+				class'KFPerk'.static.IsMineReconstructor( KFW ) ))
 	{
 		WeaponPerk = InstigatorPerkClass;
 	}
@@ -5011,7 +5019,7 @@ reliable server final function ServerDoSpecialMove(ESpecialMove NewMove, optiona
 /**
  * Request to abort/stop current SpecialMove
  */
-simulated final event EndSpecialMove(optional ESpecialMove SpecialMoveToEnd, optional bool bForceNetSync)
+simulated event EndSpecialMove(optional ESpecialMove SpecialMoveToEnd, optional bool bForceNetSync)
 {
 	if ( SpecialMoveHandler != None )
 	{
@@ -5575,11 +5583,6 @@ simulated function StopLocustVFX()
 }
 
 simulated function bool CanInteractWithPawnGrapple()
-{
-	return true;
-}
-
-simulated function bool CanInteractWithZoneVelocity()
 {
 	return true;
 }

@@ -248,6 +248,9 @@ var bool bCanEnrage;
 // If applies radial impulse an it affect the affliction power as well?
 var bool bCanApplyRadialCalculationtoAffliction;
 
+/** Reduction for the amount of damage dealt to the instigator */
+var float SelfDamageReductionValue;
+
 /**
  * Take the primary HitDirection and modify it to add more spread.
  * Use the BloodSpread property to calculate the spread amount
@@ -478,4 +481,6 @@ Defaultproperties
 	bCanEnrage=true
 
 	bCanApplyRadialCalculationtoAffliction=true
+
+	SelfDamageReductionValue = 1.0f
 }

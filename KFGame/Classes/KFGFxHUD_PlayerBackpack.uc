@@ -366,4 +366,5 @@ DefaultProperties
     LastWeight=-1
     bLastDoshVisibility=true
     LastGrenadeIndex=0
+    LastSecondaryAmmo=255
 }

@@ -31,6 +31,12 @@ var localized string SelectCosmeticsString;
 var localized string SelectEmotesString;
 var localized string SelectKeysAndTicketsString;
 
+var localized string SearchText;
+var localized string ClearSearchText;
+var localized string NoItemsString;
+
+var int SearchMaxChars;
+
 var array<int> FilterIndexConversion;
 var array<int> ItemTypeIndexConversion;
 var array<int> MarketItemTypeIndexConversion;
@@ -43,6 +49,9 @@ var array<int> ConsoleFeaturedItemIDs;
 var int MaxFeaturedItems;
 
 var KFGFxMenu_Store StoreMenu;
+
+var transient string SearchKeyword;
+var Array<ItemProperties> FilteredItemsArray;
 
 enum EStore_Filter
 {
@@ -105,6 +114,14 @@ function LocalizeText()
 	
 	LocalizedObject.SetString("thankYouString",		ThankYouString);
 	
+	LocalizedObject.SetString("searchTitle",                SearchText);
+	LocalizedObject.SetString("searchText",                 SearchText$"...");
+
+	LocalizedObject.SetBool("bIsConsoleBuild", 				class'WorldInfo'.static.IsConsoleBuild());
+	LocalizedObject.SetInt("searchMaxChars",                SearchMaxChars);
+
+	LocalizedObject.SetString("noItemsText", 				NoItemsString);
+
 	SetObject("localizedText", LocalizedObject);
 }
 
@@ -175,10 +192,10 @@ function SendItems(const out Array<ItemProperties> StoreItemArray)
 {
 	local int i, ItemCount, j;
 	local GFxObject DataProvider;
-	local Array<ItemProperties> FilteredItemsArray;
 	local ItemProperties TempItemProps; //since we can't push elements of an array
 	local bool AlreadyFiltered;
 
+	FilteredItemsArray.Length = 0;
 	ItemCount = 0;
 	DataProvider = CreateArray();
 	
@@ -288,13 +305,20 @@ function SendItems(const out Array<ItemProperties> StoreItemArray)
 		}
 	}
 
-	if (CurrentStoreFilter == EStore_Featured)
+	if (SearchKeyword != "" && CurrentStoreFilter != EStore_Featured)
 	{
-		SetObject("storeItemFeaturedData", DataProvider);
+		StoreSearch(SearchKeyword);
 	}
 	else
 	{
-		SetObject("storeItemData", DataProvider);
+		if (CurrentStoreFilter == EStore_Featured)
+		{
+			SetObject("storeItemFeaturedData", DataProvider);
+		}
+		else
+		{
+			SetObject("storeItemData", DataProvider);
+		}
 	}
 }
 
@@ -410,6 +434,57 @@ function bool IsItemValidForThisPlatform(string ItemName)
 	return true;
 }
 
+
+function StoreSearch(string searchStr, bool bForceInitIfClear = false)
+{
+	local int i, j, ItemCounter;
+	local array<string> SearchKeywords;
+	local bool Accepted;
+	local GFxObject DataProvider;
+
+	SearchKeyword = searchStr;
+
+	if (searchStr == "")
+	{	
+		if (bForceInitIfClear && CurrentStoreFilter != EStore_Featured)
+		{
+			SendItems(StoreMenu.OnlineSub.ItemPropertiesList);
+		}
+
+		return;
+	}
+
+	ItemCounter = 0;
+	DataProvider = CreateArray();
+
+	SearchKeywords = SplitString( searchStr, " ", true);
+	
+	for (i = 0; i < FilteredItemsArray.Length; ++i)
+	{
+		Accepted = true;
+		for (j = 0; j < SearchKeywords.Length; ++j)
+		{
+			if (InStr(Locs(FilteredItemsArray[i].Name), Locs(SearchKeywords[j])) == -1)
+			{
+				Accepted = false;
+				break;
+			}
+		}
+
+		if (Accepted)
+		{
+			DataProvider.SetElementObject(ItemCounter, CreateStoreItem(FilteredItemsArray[i]));
+			++ItemCounter;
+		}
+	}
+
+	// Ignore featured items
+	if (CurrentStoreFilter != EStore_Featured)
+	{
+		SetObject("storeItemData", DataProvider);
+	}
+}
+
 DefaultProperties
 {
 	//defaults
@@ -447,19 +522,41 @@ DefaultProperties
 
 	XboxFilterExceptions[0]="Wasteland Bundle" // Wasteland Outfit Bundle
 
-	FeaturedItemIDs[0]=7619			//Whatsnew Gold Ticket
-	FeaturedItemIDs[1]=9749
-	FeaturedItemIDs[2]=9747
-	FeaturedItemIDs[3]=9716
-	FeaturedItemIDs[4]=9718
-	FeaturedItemIDs[5]=9720
+	FeaturedItemIDs[0]=6185			//Whatsnew Gold Ticket
+	FeaturedItemIDs[1]=6670
+	FeaturedItemIDs[2]=8462
+	FeaturedItemIDs[3]=4857
+	FeaturedItemIDs[4]=9747
+	FeaturedItemIDs[5]=5286
+	FeaturedItemIDs[6]=7967
+	FeaturedItemIDs[7]=7968
+	FeaturedItemIDs[8]=9369
+	FeaturedItemIDs[9]=8190
+	FeaturedItemIDs[10]=8469
+	FeaturedItemIDs[11]=9125
+	FeaturedItemIDs[12]=8959
+	FeaturedItemIDs[13]=9471
+	FeaturedItemIDs[14]=9557
+	FeaturedItemIDs[15]=9655
+	FeaturedItemIDs[16]=9749
 
-	ConsoleFeaturedItemIDs[0]=7783	//Whatsnew Gold Ticket PSN
-	ConsoleFeaturedItemIDs[1]=9749
-	ConsoleFeaturedItemIDs[2]=9747
-	ConsoleFeaturedItemIDs[3]=9716
-	ConsoleFeaturedItemIDs[4]=9718
-	ConsoleFeaturedItemIDs[5]=9720
+	ConsoleFeaturedItemIDs[0]=6185		//Whatsnew Gold Ticket PSN
+	ConsoleFeaturedItemIDs[1]=6670
+	ConsoleFeaturedItemIDs[2]=8462
+	ConsoleFeaturedItemIDs[3]=4857
+	ConsoleFeaturedItemIDs[4]=9747
+	ConsoleFeaturedItemIDs[5]=5286
+	ConsoleFeaturedItemIDs[6]=7967
+	ConsoleFeaturedItemIDs[7]=7968
+	ConsoleFeaturedItemIDs[8]=9369
+	ConsoleFeaturedItemIDs[9]=8190
+	ConsoleFeaturedItemIDs[10]=8469
+	ConsoleFeaturedItemIDs[11]=9125
+	ConsoleFeaturedItemIDs[12]=8959
+	ConsoleFeaturedItemIDs[13]=9471
+	ConsoleFeaturedItemIDs[14]=9557
+	ConsoleFeaturedItemIDs[15]=9655
+	ConsoleFeaturedItemIDs[16]=9749
 
 	MaxFeaturedItems=5
 }

@@ -172,6 +172,8 @@ struct native ObjectiveAnnouncementInfo
 /** Used to determine if a player can be considered for achievements */
 var bool bIsAchievementPlayer;
 
+var bool bHasEverPossessed;
+
 /*********************************************************************************************
  * @name UT Variables
 ********************************************************************************************* */
@@ -761,6 +763,8 @@ var	bool bAllowSeasonalSkins;
 
 var bool bFriendlyUIEnabled;
 
+var bool bLoggedOut;
+
 cpptext
 {
 	virtual UBOOL Tick( FLOAT DeltaSeconds, ELevelTick TickType );
@@ -1024,7 +1028,7 @@ simulated function bool GetAllowSeasonalSkins()
 
 	bIsAllowSeasonalSkins = KFGRI != none && KFGRI.bAllowSeasonalSkins;
 	
-	if(bIsWWLWeekly || bIsCastleVolter || bIsAllowSeasonalSkins == false)
+	if (bIsWWLWeekly || bIsCastleVolter || bIsAllowSeasonalSkins == false)
 	{
 		return false;
 	}
@@ -1036,8 +1040,11 @@ simulated event name GetSeasonalStateName()
 {
 	local int EventId, MapModifiedEventId;
 	local KFMapInfo KFMI;
+	local KFGameReplicationInfo KFGRI;
+
+	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
 	
-	EventId = class'KFGameEngine'.static.GetSeasonalEventID();
+	EventId = class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins();
 
 	MapModifiedEventId = SEI_None;
 
@@ -1049,18 +1056,23 @@ simulated event name GetSeasonalStateName()
 
 	bAllowSeasonalSkins = GetAllowSeasonalSkins();
 
-	`Log("GetSeasonalStateName: "$EventId$" AllowSeasonalSkins: "$bAllowSeasonalSkins);
-
 	if (MapModifiedEventId == SEI_None)
 	{
 		if (bAllowSeasonalSkins == false)
 		{
 			EventId = SEI_None;
 		}
+
+		if (bAllowSeasonalSkins)
+		{
+			if (KFGRI != none && KFGRI.SeasonalSkinsIndex != -1)
+			{
+				EventId = KFGRI.SeasonalSkinsIndex;
+			}
+		}	
 	}
 	else
 	{
-		`Log("GetSeasonalStateName: ModifySeasonalEventId: "$MapModifiedEventId);
 		EventId = MapModifiedEventId;
 	}
 
@@ -1227,6 +1239,8 @@ simulated function ReceivedGameClass(class<GameInfo> GameClass)
 event Possess(Pawn aPawn, bool bVehicleTransition)
 {
 	local KFPlayerReplicationInfo KFPRI;
+
+	bHasEverPossessed = true;
 
 	if( aPawn != none && aPawn.IsAliveAndWell() )
 	{
@@ -7259,12 +7273,8 @@ simulated event InitializeStats()
 	local class<KFOnlineStatsRead> StatsReadClass;
 	local class<KFOnlineStatsWrite> StatsWriteClass;
 
-	`Log("InitializeStats()");
-
-	if ( ( StatsRead == none || StatsWrite == none ) && WorldInfo.NetMode != NM_DedicatedServer )
+	if ( StatsRead == none && WorldInfo.NetMode != NM_DedicatedServer )
 	{
-		`Log("InitializeStats() - Create objects");
-
 		// BWJ - 1-4-17 - Different stats read for dingo
 		if( WorldInfo.IsConsoleBuild( CONSOLE_Durango ) )
 		{
@@ -7291,6 +7301,11 @@ simulated event InitializeStats()
 			ReadStats();
 		}
 	}
+}
+
+simulated function bool HasStatsWrite()
+{
+	return StatsWrite != none;
 }
 
 simulated function LogStatValue(int StatId)
@@ -8385,6 +8400,13 @@ function DrawDebugMap( out Canvas Canvas )
                     ElementColor.B=255;
                     ElementColor.A = 255;
                 }
+				else if ( KFGRI.PickupInfos[i].PickupType == 3 )
+				{
+					ElementColor.R=255;
+                    ElementColor.G=255;
+                    ElementColor.B=0;
+                    ElementColor.A = 255;
+				}
                 else
                 {
                     Continue;
@@ -12245,6 +12267,8 @@ defaultproperties
     //Allow PC-based things to be properly ticked, but skip the rest of the tick in native
     bAlwaysTick=true
 
+	bHasEverPossessed = false
+
 	MatchStatsClass=Class'EphemeralMatchStats'
     InputClass=class'KFGame.KFPlayerInput'
    	CheatClass=class'KFGame.KFCheatManager'
@@ -12448,4 +12472,6 @@ defaultproperties
 	bAllowSeasonalSkins = false
 
 	bFriendlyUIEnabled = true
+
+	bLoggedOut = false
 }

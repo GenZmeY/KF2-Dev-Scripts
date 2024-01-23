@@ -579,6 +579,11 @@ simulated function PurchaseError(bool bCannotAfford, bool bCannotCarry)
 // ActionScript Callbacks - Trader and Player Inventory
 //==============================================================
 
+function Callback_Log(String Text)
+{
+	`Log("From script: " $Text);
+}
+
 function Callback_BuyOrSellItem()
 {
 	local STraderItem ShopItem;

@@ -28,6 +28,7 @@ var transient int CachedDifficulty, CachedLength;
 var transient array<string> MapList;
 
 var int NumDifficultyStrings;
+var int MaxNumberMapList;
 
 // if you change this also update ServerBrowserFilterContainer.as -> NUM_OF_FILTERS
 
@@ -55,15 +56,24 @@ enum EFilter_Key
 function Initialize( KFGFxObject_Menu NewParentMenu )
 {
 	super.Initialize( NewParentMenu );
+	
 	ServerMenu = KFGFxMenu_ServerBrowser(NewParentMenu);
+	
 	if (SavedGameModeIndex < 0 || SavedGameModeIndex >= class'KFGameInfo'.default.GameModes.length)
 	{
 		SavedGameModeIndex = 255;
 	}
+	
 	SavedGameModeIndexPending = SavedGameModeIndex;
+	
 	NumDifficultyStrings = class'KFCommon_LocalizedStrings'.static.GetDifficultyStringsArray().Length;
+	
 	AdjustSavedFiltersToMode();
-	ServerMenu.Manager.StartMenu.GetMapList(MapList, SavedGameModeIndexPending);
+
+	MaxNumberMapList = -1;
+
+	UpdateMapList();
+
 	InitFiltersArray();
 	LocalizeText();
 	ClearPendingValues();
@@ -88,6 +98,7 @@ function AdjustSavedFiltersToMode()
 		SavedDifficultyIndex = 255;
 	}
 	SavedDifficultyIndexPending = SavedDifficultyIndex;
+	
 	if (SavedLengthIndex >= class'KFGameInfo'.default.GameModes[GetUsableGameMode(SavedGameModeIndex)].Lengths)
 	{
 		SavedLengthIndex = 255;
@@ -174,8 +185,8 @@ function LocalizeCheckBoxes()
 	bShowAllowSeasonalSkins = true;
 
 	if (ServerMenu.Manager.StartMenu.GetStartMenuState() == EMatchmaking
-		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None
-		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_Spring)
+		|| class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins() == SEI_None
+		|| class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins() == SEI_Spring)
 	{
 		bShowAllowSeasonalSkins = false; // Default if we don't have a season or it's find a match menu
 	}
@@ -237,8 +248,10 @@ function SetModeMenus(string DifficultyListString, string LengthListString, int 
 	CreateList(LengthListString, class'KFCommon_LocalizedStrings'.static.GetLengthStringsArray(), NewLengthIndex, class'KFGameInfo'.default.GameModes[UseModeIndex].Lengths);
 }
 
-function CreateList( string ListString, array<string> TextArray, int SelectedIndex
-					, optional int MaxListLength = -1
+function CreateList( string ListString
+					, array<string> TextArray
+					, int SelectedIndex
+					, optional int MaxListLength = 0
 					, optional bool bAnyIsFirst = false
 					, optional bool bEnabled = true)
 {
@@ -250,9 +263,11 @@ function CreateList( string ListString, array<string> TextArray, int SelectedInd
 	local int ListLength;
 
 	OptionList = GetObject(ListString);
+
 	DataProvider = OptionList.GetObject("dataProvider");
 
 	//`log("MaxListLength:"$MaxListLength$", Length:"$TextArray.length);
+
 	if (MaxListLength > 0)
 	{
 		ListLength = Min(MaxListLength, TextArray.length);
@@ -261,6 +276,7 @@ function CreateList( string ListString, array<string> TextArray, int SelectedInd
 	{
 		ListLength = TextArray.length;
 	}
+
 	if (MaxListLength >= ListLength)
 	{
 		SelectedIndex = 255;
@@ -334,6 +350,47 @@ function CreateList( string ListString, array<string> TextArray, int SelectedInd
 	}
 }
 
+function UpdateMapList()
+{
+	ServerMenu.Manager.StartMenu.GetMapList(MapList, SavedGameModeIndexPending);
+
+	if (MapList.Length > MaxNumberMapList)
+	{
+		MaxNumberMapList = MapList.Length + 1;
+	}
+}
+
+function ClearExtraMaps()
+{
+	local int i;
+	local GFxObject OptionList;
+	local GFxObject DataProvider;
+	local GFxObject TempObj;
+
+	OptionList = GetObject("mapScrollingList");
+
+	DataProvider = OptionList.GetObject("dataProvider");
+
+	for ( i = 0 ; i < MaxNumberMapList; i++ )
+	{
+		TempObj = DataProvider.GetElementObject(i);
+		if (TempObj == none)
+		{
+			break;
+		}
+
+		DataProvider.SetElementObject(i, none);
+	}
+
+	OptionList.SetInt("selectedIndex", 0);
+
+	OptionList.SetObject("dataProvider", DataProvider);
+
+	OptionList.GetObject("associatedButton").SetString("label", "-");
+
+	OptionList.ActionScriptVoid("invalidateData");
+}
+
 function ModeChanged(int index)
 {
 	if (index >= 0 && index < class'KFGameInfo'.default.GameModes.length)
@@ -345,7 +402,13 @@ function ModeChanged(int index)
 		SavedGameModeIndexPending = 255;
 	}
 
-	ServerMenu.Manager.StartMenu.GetMapList(MapList, SavedGameModeIndexPending);
+	// Reset Saved Map
+	SavedMapIndexPending = 255;
+
+	UpdateMapList();
+
+	// Reset Map Filter List (we need to do because the previous ElementObject are still there, we have to clear their state and then feed with new data)
+	ClearExtraMaps();
 
 	//`log("Adjusting difficulty");
 	AdjustSavedFiltersToMode();
@@ -464,6 +527,9 @@ function ResetFilters()
 
 	ClearPendingValues();
 	SaveConfig();
+
+	UpdateMapList();
+
 	//reinit values
 	LocalizeCheckBoxes();
 	LocalizeText();

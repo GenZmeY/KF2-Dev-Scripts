@@ -24,6 +24,8 @@ defaultproperties
 	KnockdownPower = 150
 	StumblePower = 400
 
+	SelfDamageReductionValue = 0.25f
+
 	//Perk
 	ModifierPerkList(0) = class'KFPerk_Demolitionist'
 

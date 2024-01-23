@@ -7480,6 +7480,9 @@ final function UIInteraction GetUIController()
  */
 native final function bool IsPlayerMuted(const out UniqueNetId Sender);
 
+native final function bool IsClientMinimized();
+native final function bool IsClientInForeground();
+
 `if(`__TW_)
 native final function bool ShouldReplicateVoicePacketFrom(const out UniqueNetId Sender);
 native final function bool ShouldReplicateVoicePacketTo(const out UniqueNetId Receiver);

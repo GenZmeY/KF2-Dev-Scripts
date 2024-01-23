@@ -315,6 +315,9 @@ function GiveWeapon( Pawn P )
 	local class<KFWeapon> KFWeaponClass;
 	local KFInventoryManager KFIM;
 	local Inventory Inv;
+	local bool bIsSecondatyPistol;
+	local bool bIs9mmInInventory;
+	local bool bIsHRG93InInventory;
 
 	// Give us the weapon if we do not have it
 	InventoryClass = ItemPickups[ PickupIndex ].ItemClass;
@@ -322,27 +325,40 @@ function GiveWeapon( Pawn P )
 	// Check if we have the weapon
 	KFIM = KFInventoryManager( P.InvManager );
 
-	// For HRG93R and 9mm pistols, if one of the other type is picked just give the one owned
-	if (KFIM.Is9mmInInventory())
+	bIsSecondatyPistol = InventoryClass.name == 'KFWeap_HRG_93R'         || 
+							InventoryClass.name == 'KFWeap_HRG_93R_Dual' || 
+							InventoryClass.name == 'KFWeap_Pistol_9mm'   || 
+							InventoryClass.name == 'KFWeap_Pistol_Dual9mm';
+
+	if (bIsSecondatyPistol)
 	{
-		if (InventoryClass.name == 'KFWeap_HRG_93R')
+		bIs9mmInInventory = KFIM.Is9mmInInventory();
+		bIsHRG93InInventory = KFIM.IsHRG93InInventory();
+		if (!(bIs9mmInInventory && bIsHRG93InInventory))
 		{
-			InventoryClass = class<Weapon>(DynamicLoadObject(class'KfWeapDef_9mm'.default.WeaponClassPath, class'Class'));
-		}
-		else if (InventoryClass.name == 'KFWeap_HRG_93R_Dual')
-		{
-			InventoryClass = class<Weapon>(DynamicLoadObject(class'KfWeapDef_9mmDual'.default.WeaponClassPath, class'Class'));
-		}
-	}
-	else
-	{
-		if(InventoryClass.name == 'KFWeap_Pistol_9mm')
-		{
-			InventoryClass = class<Weapon>(DynamicLoadObject(class'KFWeapDef_HRG_93R'.default.WeaponClassPath, class'Class'));
-		}
-		else if (InventoryClass.name == 'KFWeap_Pistol_Dual9mm')
-		{
-			InventoryClass = class<Weapon>(DynamicLoadObject(class'KFWeapDef_HRG_93R_Dual'.default.WeaponClassPath, class'Class'));
+			// For HRG93R and 9mm pistols, if one of the other type is picked just give the one owned
+			if (KFIM.Is9mmInInventory())
+			{
+				if (InventoryClass.name == 'KFWeap_HRG_93R')
+				{
+					InventoryClass = class<Weapon>(DynamicLoadObject(class'KfWeapDef_9mm'.default.WeaponClassPath, class'Class'));
+				}
+				else if (InventoryClass.name == 'KFWeap_HRG_93R_Dual')
+				{
+					InventoryClass = class<Weapon>(DynamicLoadObject(class'KfWeapDef_9mmDual'.default.WeaponClassPath, class'Class'));
+				}
+			}
+			else
+			{
+				if(InventoryClass.name == 'KFWeap_Pistol_9mm')
+				{
+					InventoryClass = class<Weapon>(DynamicLoadObject(class'KFWeapDef_HRG_93R'.default.WeaponClassPath, class'Class'));
+				}
+				else if (InventoryClass.name == 'KFWeap_Pistol_Dual9mm')
+				{
+					InventoryClass = class<Weapon>(DynamicLoadObject(class'KFWeapDef_HRG_93R_Dual'.default.WeaponClassPath, class'Class'));
+				}
+			}
 		}
 	}
 

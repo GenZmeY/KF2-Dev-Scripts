@@ -28,9 +28,6 @@ var bool bCannonballConvertedToTimeBomb;
 /** flag indicating that the player released the button and the cannonbal can't be configured as a timed bomb **/
 var bool bForceStandardCannonbal;
 
-/** Reduction for the amount of damage dealt to the weapon owner (including damage by the explosion) */
-var float SelfDamageReductionValue;
-
 /** Amount of time we hold the fire button on this fire state, used in BlunderbussDeployAndDetonate **/
 var transient float FireHoldTime;
 
@@ -369,16 +366,6 @@ simulated function HandleProjectileImpact(byte ProjectileFireMode, ImpactInfo Im
 	}
 }
 
-function AdjustDamage(out int InDamage, class<DamageType> DamageType, Actor DamageCauser)
-{
-	super.AdjustDamage(InDamage, DamageType, DamageCauser);
-
-	if (Instigator != none && DamageCauser != none && DamageCauser.Instigator == Instigator)
-	{
-		InDamage *= SelfDamageReductionValue;
-	}
-}
-
 simulated function KFProjectile SpawnAllProjectiles(class<KFProjectile> KFProjClass, vector RealStartLoc, vector AimDir)
 {
 	local KFPerk InstigatorPerk;
@@ -467,7 +454,6 @@ defaultproperties
 	bIsBackupWeapon=false
 
 	// Gameplay
-	SelfDamageReductionValue=0.5f //0.75f
 	TimedDetonationThresholdTime=0.01f
 
 	// FOV

@@ -27,6 +27,8 @@ defaultproperties
 	KDeathVel=200
 	StumblePower=200
 	
+	SelfDamageReductionValue=0.075f
+
 	ModifierPerkList(0)=class'KFPerk_Demolitionist'
 	
 	WeaponDef=class'KFWeapDef_GravityImploder'

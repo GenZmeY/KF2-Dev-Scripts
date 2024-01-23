@@ -337,11 +337,18 @@ simulated function Stick( vector StuckLocation, vector StuckNormal )
 	local KFProj_Mine_Reconstructor PukeMine;
 	local rotator RandRot;
 
-	if( Role != ROLE_Authority ) return;
+	if( Role != ROLE_Authority )
+	{
+		return;
+	}
 
 	//we added a scapegoat that fixes the problem of hitwall not calling always in client, so we need to check it in case it comes
 	//to not call it twice
-	if(bSticked == true) return;
+	if(bSticked == true)
+	{
+		return;
+	}
+
 	RotationRate = rot(0,0,0);
 
     // Modify the collision so it can be detonated by the player
@@ -351,7 +358,6 @@ simulated function Stick( vector StuckLocation, vector StuckNormal )
 	bCollideComplex = false;
 	bBounce = false;
 	SetPhysics( PHYS_None );
-	SetOwner( none );
 
 	// Optimize for network
 	NetUpdateFrequency = 10;
@@ -410,7 +416,11 @@ reliable client function StickInClient(vector StuckLocation, vector StuckNormal)
 
 	//we added a scapegoat that fixes the problem of hitwall not calling always in client, so we need to check it in case it comes
 	//to not call it twice
-	if(bSticked == true) return;
+	if(bSticked == true)
+	{
+		return;
+	}
+	
 	RotationRate = rot(0,0,0);
 	SetLocation(StuckLocation);
     // Modify the collision so it can be detonated by the player
@@ -419,7 +429,6 @@ reliable client function StickInClient(vector StuckLocation, vector StuckNormal)
 	CylinderComponent.SetActorCollision( true, false );
 	bCollideComplex = false;
 	bBounce = false;
-	SetOwner( none );
 
 	// Optimize for network
 	NetUpdateFrequency = 0.25f;
@@ -541,7 +550,6 @@ simulated function bool ValidTouch( Pawn Other )
 	}
 	else
 	{
-
 		if(bCantDetonateOnFullHP)
 		{
 			if(Other.GetTeamNum() == TeamNum &&  Other.Health >= Other.HealthMax )
@@ -558,6 +566,7 @@ simulated function bool ValidTouch( Pawn Other )
 		// Make sure not touching through wall
 		return FastTrace( Other.Location, Location,, true );
 	}
+
 	return FastTrace( Other.Location, Location,, true );
 }
 
@@ -565,6 +574,35 @@ simulated function bool ValidTouch( Pawn Other )
 simulated event Touch( Actor Other, PrimitiveComponent OtherComp, vector HitLocation, vector HitNormal )
 {
 	local Pawn P;
+
+	// If touched by ballistic bouncer, explode
+	if (KFProj_HRG_BallisticBouncer(Other) != none
+		|| KFProj_BloatPukeMine(Other) != none)
+	{
+		if (KFProj_BloatPukeMine(Other) != none)
+		{
+			// Force Touch, as by itself doesn't detect the Mine..
+			KFProj_BloatPukeMine(Other).Touch(self, none, HitLocation, HitNormal);
+		}
+
+		if (`TimeSince(CreationTime) >= 0.1f)
+		{
+			if ( WorldInfo.NetMode != NM_DedicatedServer )
+			{
+				// Use ImpactEffectManager to handle material based impacts
+				`ImpactEffectManager.PlayImpactEffects(HitLocation, Instigator,, ImpactEffects);
+			}
+
+			if (ExplosionTemplate != None && Role == ROLE_Authority)
+			{
+				TriggerExplosion(HitLocation, HitNormal, Other);
+			}
+
+			Shutdown();	// cleanup/destroy projectile
+
+			return;	
+		}
+	}
 
 	// If touched by an enemy pawn, explode
 	P = Pawn( Other );
@@ -886,9 +924,9 @@ defaultproperties
 
 		// Camera Shake
 		CamShake=CameraShake'WEP_Mine_Reconstructor_Arch.Camera_Shake'
-		CamShakeInnerRadius=0
-		CamShakeOuterRadius=0
-		CamShakeFalloff=1.f
+		CamShakeInnerRadius=100
+		CamShakeOuterRadius=450
+		CamShakeFalloff=1.5f
 		bOrientCameraShakeTowardsEpicenter=true
 	End Object
 	ExplosionTemplate=ExploTemplate0

@@ -50,7 +50,8 @@ defaultproperties
 	ModifierPerkList(0) = class'KFPerk_Firebug'
     ModifierPerkList(1)=class'KFPerk_Demolitionist'
     
-	
+	SelfDamageReductionValue=0.1f
+
 	WeaponDef=class'KFWeapDef_HuskCannon'
 	BurnDamageType = class'KFDT_HuskCannonDot'
 

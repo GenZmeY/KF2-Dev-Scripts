@@ -63,7 +63,6 @@ function LocalizeMenu()
     SetObject("localizedText", TextObject);
 }
 
-
 function bool PopulateData()
 {
     local GFxObject DataObject;
@@ -71,6 +70,13 @@ function bool PopulateData()
     local int i;
 	local int CurrentProgressValue, MaxProgressValue;
 	local float ProgressCompletePercentage;
+
+    if (KFPC.HasStatsWrite() == false)
+    {
+        // If stats are not ready, retry in one second
+        KFPC.SetTimer(1.f, false, nameof(PopulateData), self);
+        return false;
+    }
 
     if(HasObjectiveStatusChanged())
     {

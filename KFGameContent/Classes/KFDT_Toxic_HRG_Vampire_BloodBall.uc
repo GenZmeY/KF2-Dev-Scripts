@@ -21,6 +21,8 @@ defaultproperties
 	DoT_Duration=2.0 //1.0
 	DoT_Interval=0.5 //1.0
 	DoT_DamageScale=0.1
+	
+	SelfDamageReductionValue=0.1f
 
 	ModifierPerkList(0)=class'KFPerk_FieldMedic'
 	WeaponDef=class'KFWeapDef_HRG_Vampire'

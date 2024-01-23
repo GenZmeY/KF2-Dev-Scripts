@@ -17,7 +17,7 @@ simulated state WeaponSingleFiring
 
 		if (WorldInfo.NetMode == NM_Client && bAllowClientAmmoTracking && FireInterval[CurrentFireMode] <= MinFireIntervalToTriggerSync)
 		{
-			SyncCurrentAmmoCount(CurrentFireMode, AmmoCount[CurrentFireMode]);
+			SyncCurrentAmmoCount(CurrentFireMode, AmmoCount[GetAmmoType(CurrentFireMode)]);
 		}
 	}
 }

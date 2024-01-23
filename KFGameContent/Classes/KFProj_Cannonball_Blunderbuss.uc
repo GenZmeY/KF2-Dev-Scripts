@@ -398,6 +398,13 @@ defaultproperties
     DampenFactorParallel=0
 	WallHitDampenFactor=0.5
 	WallHitDampenFactorParallel=0.5
+
+	ExtraLineCollisionOffsets.Add((Y=-30))
+	ExtraLineCollisionOffsets.Add((Y=30))
+	ExtraLineCollisionOffsets.Add((Z=-30))
+	ExtraLineCollisionOffsets.Add((Z=30))
+	// Since we're still using an extent cylinder, we need a line at 0
+	ExtraLineCollisionOffsets.Add(())
 	
 	bNetTemporary=False
 	NetPriority=5

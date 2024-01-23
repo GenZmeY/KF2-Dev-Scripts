@@ -1079,7 +1079,7 @@ function CallOutCloakingExpired()
 /** Handle cloaking materials */
 simulated function UpdateGameplayMICParams()
 {
-	local int i;
+	local int i, NumRepeats;
 	local bool bIsSpotted;
 	local bool bWasCloaked;
 	local KFCharacterInfo_Monster MonsterInfo;
@@ -1096,7 +1096,8 @@ simulated function UpdateGameplayMICParams()
 		bIsSpotted = (bIsCloakingSpottedByLP || bIsCloakingSpottedByTeam);
 		if ((!bIsCloaking || IsImpaired()) && CharacterMICs[0].Parent != MonsterInfo.Skins[0])
 		{
-			for (i = 0; i < MonsterInfo.Skins.Length; ++i)
+			NumRepeats = Min(CharacterMICs.Length, MonsterInfo.Skins.Length);
+			for (i = 0; i < NumRepeats; ++i)
 			{
 				bWasCloaked = bWasCloaked ||
 							  (CharacterMICs[i].Parent == MonsterInfo.CloakedSkins[i]) ||
@@ -1126,6 +1127,8 @@ simulated function UpdateGameplayMICParams()
 		}
 		else if (bIsCloaking && bIsSpotted && CharacterMICs[0].Parent != MonsterInfo.SpottedSkins[0])
 		{
+			NumRepeats = Min(CharacterMICs.Length, MonsterInfo.SpottedSkins.Length);
+
 			for (i = 0; i < MonsterInfo.SpottedSkins.Length; ++i)
 			{
 				CharacterMICs[i].SetParent(MonsterInfo.SpottedSkins[i]);
@@ -1148,6 +1151,8 @@ simulated function UpdateGameplayMICParams()
 		}
 		else if (bIsCloaking && !bIsSpotted && CharacterMICs[0].Parent != MonsterInfo.CloakedSkins[0])
 		{
+			NumRepeats = Min(CharacterMICs.Length, MonsterInfo.CloakedSkins.Length);
+
 			for (i = 0; i < MonsterInfo.CloakedSkins.Length; ++i)
 			{
 				CharacterMICs[i].SetParent(MonsterInfo.CloakedSkins[i]);

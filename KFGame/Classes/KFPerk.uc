@@ -547,6 +547,17 @@ static function bool IsDoshinegun( KFWeapon KFW )
 }
 
 /**
+ * @brief Return if a weapon is Mine Reconstructor
+ *
+ * @param KFW Weapon to check
+ * @return true if mine reconstructor weapon
+ */
+static function bool IsMineReconstructor( KFWeapon KFW )
+{
+	return KFW != none && KFW.Class.Name == 'KFWeap_Mine_Reconstructor';
+}
+
+/**
  * @brief Return if a weapon is Crossboom (special case for high rounds perk)
  *
  * @param KFW Weapon to check
@@ -899,6 +910,10 @@ function SetPlayerDefaults(Pawn PlayerPawn)
 
 	// apply all other pawn changes
 	ApplySkillsToPawn();
+}
+
+function SetWaveDefaults()
+{
 }
 
 /** On perk customization or change, modify owning pawn based on perk selection */
@@ -1338,6 +1353,7 @@ function bool CouldBeZedShrapnel( class<KFDamageType> KFDT ){ return false; }
 simulated function bool ShouldShrapnel(){ return  false; }
 simulated function float GetSplashDamageModifier(){ return 1.f; }
 simulated function bool IsRangeActive(){ return false; }
+simulated function float GetRangeGroundFireDurationMod(){ return 1.f; }
 
 /** Demo functions */
 simulated function bool IsOnContactActive(){ return false; }

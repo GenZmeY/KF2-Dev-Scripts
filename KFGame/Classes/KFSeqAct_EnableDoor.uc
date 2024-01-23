@@ -1,13 +1,14 @@
 //=============================================================================
-// KFSeqAct_DisableDoor
+// KFSeqAct_EnableDoor
 //=============================================================================
-// Disables one or more KFDoorActors, meaning they can't be interacted
+// Enables one or more KFDoorActors, meaning they can be interacted
 // with or damaged
 //=============================================================================
 // Killing Floor 2
-// Copyright (C) 2018 Tripwire Interactive LLC
 //=============================================================================
-class KFSeqAct_DisableDoor extends SequenceAction;
+
+
+class KFSeqAct_EnableDoor extends SequenceAction;
 
 event Activated()
 {
@@ -19,8 +20,7 @@ event Activated()
 		foreach LinkedVariables(class'SeqVar_Object',ObjVar,"KFDoorActor(s)")
 		{
 			Door = KFDoorActor(ObjVar.GetObjectValue());
-			Door.SetInteractive(false);
-			Door.CloseDoor();
+			Door.SetInteractive(true);
 		}
 	}
 }
@@ -28,9 +28,9 @@ event Activated()
 defaultProperties
 {
 	ObjCategory="Killing Floor"
-	ObjName="Disable Door"
+	ObjName="Enable Door"
 
-	InputLinks(0)=(LinkDesc="Disable")
+	InputLinks(0)=(LinkDesc="Enable")
 	VariableLinks(0)=(ExpectedType=class'SeqVar_Object',LinkDesc="KFDoorActor(s)",PropertyName="")
 	bCallHandler=false
 }

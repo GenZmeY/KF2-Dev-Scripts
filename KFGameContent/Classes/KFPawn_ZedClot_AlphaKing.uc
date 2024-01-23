@@ -230,4 +230,6 @@ defaultproperties
 
 	bCanRage=true
 	EnragedSoundEvent=AkEvent'WW_ZED_Clot_Alpha.Play_Alpha_Clot_Special_Enrage'
+
+	ElitePawnClass.Empty
 }

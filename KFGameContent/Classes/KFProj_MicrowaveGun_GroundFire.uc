@@ -8,6 +8,36 @@
 //=============================================================================
 class KFProj_MicrowaveGun_GroundFire extends KFProj_GroundFire;
 
+simulated protected function PrepareExplosionActor(GameExplosionActor GEA)
+{
+	local KFExplosionActorLingering KFE_GroundFire;
+	local KFPlayerController KFPC;
+	local KFPerk InstigatorPerk;
+
+	super.PrepareExplosionActor(GEA);
+
+	KFE_GroundFire = KFExplosionActorLingering( GEA );
+	if( KFE_GroundFire != none )
+	{
+		if (Instigator != none && Instigator.Controller != none)
+		{
+			KFPC = KFPlayerController(Instigator.Controller);
+			if (KFPC != none)
+			{
+				InstigatorPerk = KFPC.GetPerk();
+				if (InstigatorPerk  != none && InstigatorPerk.IsRangeActive())
+				{
+					KFE_GroundFire.MaxTime = KFE_GroundFire.default.MaxTime * InstigatorPerk.GetRangeGroundFireDurationMod();
+					KFE_GroundFire.FadeOutTime = KFE_GroundFire.MaxTime * 0.25f;
+
+					KFE_GroundFire.LoopingParticleEffect=ParticleSystem'WEP_3P_Molotov_EMIT.FX_Molotov_ground_fire_01';
+					//KFE_GroundFire.LoopingParticleEffect=ParticleSystem'WEP_Flamethrower_EMIT.FX_Ground_fire_Splash_01';
+				}
+			}
+		}
+	}
+}
+
 defaultproperties
 {
 	bWarnAIWhenFired=true

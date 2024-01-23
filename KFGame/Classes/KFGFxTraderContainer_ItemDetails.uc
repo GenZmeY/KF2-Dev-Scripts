@@ -29,7 +29,7 @@ var localized string UpgradeCostString, UpgradeString;
 var GFxObject DetailsContainer;
 
 /** Max stat values used to calculate stat bars */
-const WeaponStatMax_Damage = 820.f;
+const WeaponStatMax_Damage = 990.f;
 const WeaponStatMax_FireRate = 800.f;
 const WeaponStatMax_Penetration = 4.f;
 const WeaponStatMax_Range = 100.f;

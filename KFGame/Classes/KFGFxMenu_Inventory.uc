@@ -157,7 +157,7 @@ struct InventoryHelper
 	var bool IsKey;
 };
 
-struct WeaponSkinListCacheState
+struct GenericCacheState
 {
 	var array<InventoryHelper> SearchCache;
 
@@ -165,27 +165,19 @@ struct WeaponSkinListCacheState
 
 	var bool NeedToRegenerate;
 
-	var EInventoryWeaponType_Filter WeaponTypeFilter;
-	var int PerkIndexFilter;
-	var ItemRarity RarityFilter;
-
 	structdefaultproperties
 	{
 		NeedToRegenerate = false
-
-		WeaponTypeFilter = EInvWT_None
-		PerkIndexFilter = 0
-		RarityFilter = ITR_NONE
 	}
 };
 
-var WeaponSkinListCacheState WeaponSkinListCache;
+var GenericCacheState WeaponSkinListCache;
 
-var array<InventoryHelper> CosmeticSkinListSearchCache;
+var GenericCacheState CosmeticSkinListCache;
 
-var array<InventoryHelper> CraftingListSearchCache;
+var GenericCacheState CraftingListCache;
 
-var array<InventoryHelper> ItemListSearchCache;
+var GenericCacheState ItemListCache;
 
 struct ByTypeItemsHelper
 {
@@ -460,13 +452,12 @@ function InitInventory()
 					HelperItem.ItemDefinition 	= onlineSub.CurrentInventory[i].Definition;
 					HelperItem.ItemCount 		= onlineSub.CurrentInventory[i].Quantity;
 
-					if (TempItemDetailsHolder.Type == ITP_WeaponSkin)
+					switch (TempItemDetailsHolder.Type)
 					{
-						HelperItem.Rarity 		= TempItemDetailsHolder.Rarity;
-						HelperItem.Quality 		= TempItemDetailsHolder.Quality;
-
+					case ITP_WeaponSkin:
 						if (bool(OnlineSub.CurrentInventory[i].NewlyAdded))
 						{
+							// We need to sort again
 							WeaponSkinListCache.NeedToRegenerate = true;
 						}
 
@@ -477,12 +468,17 @@ function InitInventory()
 
 						if (ItemID != INDEX_NONE)
 						{
+							HelperItem.Rarity 		= WeaponSkinListCache.SearchCache[ItemID].Rarity;
+							HelperItem.Quality 		= WeaponSkinListCache.SearchCache[ItemID].Quality;
 							HelperItem.WeaponDef 	= WeaponSkinListCache.SearchCache[ItemID].WeaponDef;
 							HelperItem.Price 		= WeaponSkinListCache.SearchCache[ItemID].Price;
 							HelperItem.SkinType 	= WeaponSkinListCache.SearchCache[ItemID].SkinType;
 						}
 						else
 						{
+							HelperItem.Rarity 		= TempItemDetailsHolder.Rarity;
+							HelperItem.Quality 		= TempItemDetailsHolder.Quality;
+
 							// Skin Type
 
 							// Get right part of the string without from the first "| "
@@ -513,17 +509,24 @@ function InitInventory()
 
 							WeaponSkinListCache.SearchCache.AddItem(HelperItem);
 						}
-					}
-					else if (TempItemDetailsHolder.Type == ITP_CharacterSkin)
-					{
+
+						break;
+
+					case ITP_CharacterSkin:
+						if (bool(OnlineSub.CurrentInventory[i].NewlyAdded))
+						{
+							// We need to sort again
+							CosmeticSkinListCache.NeedToRegenerate = true;
+						}
+
 						// Search on the cache, to speed up
-						ItemID = CosmeticSkinListSearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
+						ItemID = CosmeticSkinListCache.SearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
 
 						if (ItemID != INDEX_NONE)
 						{
-							HelperItem.Rarity 		= CosmeticSkinListSearchCache[ItemID].Rarity;
-							HelperItem.CosmeticType = CosmeticSkinListSearchCache[ItemID].CosmeticType;
-							HelperItem.SkinType 	= CosmeticSkinListSearchCache[ItemID].SkinType;
+							HelperItem.Rarity 		= CosmeticSkinListCache.SearchCache[ItemID].Rarity;
+							HelperItem.CosmeticType = CosmeticSkinListCache.SearchCache[ItemID].CosmeticType;
+							HelperItem.SkinType 	= CosmeticSkinListCache.SearchCache[ItemID].SkinType;
 						}
 						else
 						{
@@ -561,18 +564,25 @@ function InitInventory()
 								HelperItem.SkinType 	= CrC(SkinType);
 							}
 
-							CosmeticSkinListSearchCache.AddItem(HelperItem);
+							CosmeticSkinListCache.SearchCache.AddItem(HelperItem);
 						}
-					}
-					else if (TempItemDetailsHolder.Type == ITP_CraftingComponent)
-					{
-						ItemId = CraftingListSearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
+
+						break;
+
+					case ITP_CraftingComponent:
+						if (bool(OnlineSub.CurrentInventory[i].NewlyAdded))
+						{
+							// We need to sort again
+							CraftingListCache.NeedToRegenerate = true;
+						}
+
+						ItemId = CraftingListCache.SearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
 
 						if (ItemID != INDEX_NONE)
 						{
-							HelperItem.CraftingType 		= CraftingListSearchCache[ItemID].CraftingType;
-							HelperItem.CraftingRarity 		= CraftingListSearchCache[ItemID].CraftingRarity;
-							HelperItem.CraftingTicketType 	= CraftingListSearchCache[ItemID].CraftingTicketType;
+							HelperItem.CraftingType 		= CraftingListCache.SearchCache[ItemID].CraftingType;
+							HelperItem.CraftingRarity 		= CraftingListCache.SearchCache[ItemID].CraftingRarity;
+							HelperItem.CraftingTicketType 	= CraftingListCache.SearchCache[ItemID].CraftingTicketType;
 						}
 						else
 						{
@@ -674,16 +684,23 @@ function InitInventory()
 								}
 							}
 
-							CraftingListSearchCache.AddItem(HelperItem);
+							CraftingListCache.SearchCache.AddItem(HelperItem);
 						}
-					}
-					else if (TempItemDetailsHolder.Type == ITP_KeyCrate)
-					{
-						ItemId = ItemListSearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
+
+						break;
+
+					case ITP_KeyCrate:
+						if (bool(OnlineSub.CurrentInventory[i].NewlyAdded))
+						{
+							// We need to sort again
+							ItemListCache.NeedToRegenerate = true;
+						}
+
+						ItemId = ItemListCache.SearchCache.Find('ItemDefinition', HelperItem.ItemDefinition);
 
 						if (ItemID != INDEX_NONE)
 						{
-							HelperItem.IsKey = ItemListSearchCache[ItemID].IsKey;
+							HelperItem.IsKey = ItemListCache.SearchCache[ItemID].IsKey;
 						}
 						else
 						{
@@ -705,11 +722,14 @@ function InitInventory()
 								HelperItem.IsKey = false;
 							}
 
-							ItemListSearchCache.AddItem(HelperItem);
+							ItemListCache.SearchCache.AddItem(HelperItem);
 						}
+						
+						break;
 					}
 
 					ByTypeItems[TempItemDetailsHolder.Type].ItemsOnType.AddItem(HelperItem);
+
 					HelperIndex = ByTypeItems[TempItemDetailsHolder.Type].ItemsOnType.Length - 1;
 				}
 				else
@@ -757,37 +777,108 @@ function InitInventory()
 
 	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_WeaponSkins)
 	{
-		// If need to refresh... we regenerate the list, if not reuse our Cache
+		// Cache for Weapon Skin List only if no more filters are used, the reordering for those should be fast enough
 
-		if (WeaponSkinListCache.NeedToRegenerate
-			|| WeaponSkinListCache.WeaponTypeFilter != CurrentWeaponTypeFilter
-			|| WeaponSkinListCache.PerkIndexFilter != CurrentPerkIndexFilter
-			|| WeaponSkinListCache.RarityFilter != CurrentRarityFilter
-			|| ByTypeItems[ITP_WeaponSkin].ItemsOnType.Length != WeaponSkinListCache.OrderedCache.Length)
+		if (CurrentWeaponTypeFilter == EInvWT_None
+			&& CurrentPerkIndexFilter == KFPC.PerkList.Length
+			&& CurrentRarityFilter == ITR_NONE)
 		{
-			WeaponSkinListCache.NeedToRegenerate = false;
+			if (WeaponSkinListCache.NeedToRegenerate
+				|| ByTypeItems[ITP_WeaponSkin].ItemsOnType.Length != WeaponSkinListCache.OrderedCache.Length)
+			{
+				WeaponSkinListCache.NeedToRegenerate = false;
 
-			WeaponSkinListCache.WeaponTypeFilter = CurrentWeaponTypeFilter;
-			WeaponSkinListCache.PerkIndexFilter = CurrentPerkIndexFilter;
-			WeaponSkinListCache.RarityFilter = CurrentRarityFilter;
+				ByTypeItems[ITP_WeaponSkin].ItemsOnType.Sort(SortWeaponSkinList);
 
-			// We want to order by Price - Weapon Def - Rarity - Quality
+				WeaponSkinListCache.OrderedCache = ByTypeItems[ITP_WeaponSkin].ItemsOnType;
 
+				/*`Log("----------");
+
+				for (i = 0 ; i < ByTypeItems[ITP_WeaponSkin].ItemsOnType.Length; i++)
+				{
+					`Log("ID : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].ItemDefinition);
+					`Log("Weapon Def : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].WeaponDef);
+					`Log("Price : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].Price);
+					`Log("Full Name : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].FullName);
+					`Log("Skin : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].SkinType);
+					`Log("Rarity : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].Rarity);
+					`Log("Quality : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].Quality);
+					`Log("----------");
+				}
+
+				`Log("----------");*/
+			}
+			else
+			{
+				//`Log("USING WEAPON SKIN LIST CACHE!!!");
+
+				ByTypeItems[ITP_WeaponSkin].ItemsOnType = WeaponSkinListCache.OrderedCache;
+			}
+		}
+		else
+		{
 			ByTypeItems[ITP_WeaponSkin].ItemsOnType.Sort(SortWeaponSkinList);
+		}
+	}
 
-			WeaponSkinListCache.OrderedCache = ByTypeItems[ITP_WeaponSkin].ItemsOnType;
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_Cosmetics)
+	{
+		// Cache for Cosmetic Skin List only if no more filters are used, the reordering for those should be fast enough
+
+		if (CurrentRarityFilter == ITR_NONE)
+		{
+			if (CosmeticSkinListCache.NeedToRegenerate
+				|| ByTypeItems[ITP_CharacterSkin].ItemsOnType.Length != CosmeticSkinListCache.OrderedCache.Length)
+			{
+				CosmeticSkinListCache.NeedToRegenerate = false;
+
+				ByTypeItems[ITP_CharacterSkin].ItemsOnType.Sort(SortCosmeticsList);
+
+				CosmeticSkinListCache.OrderedCache = ByTypeItems[ITP_CharacterSkin].ItemsOnType;
+
+				/*`Log("----------");
+
+				for (i = 0 ; i < ByTypeItems[ITP_CharacterSkin].ItemsOnType.Length; i++)
+				{
+					`Log("Cosmetic Name : " $ByTypeItems[ITP_CharacterSkin].ItemsOnType[i].CosmeticType);
+					`Log("Skin : " $ByTypeItems[ITP_CharacterSkin].ItemsOnType[i].SkinType);
+					`Log("Rarity : " $ByTypeItems[ITP_CharacterSkin].ItemsOnType[i].Rarity);
+					`Log("----------");
+				}
+
+				`Log("----------");*/
+			}
+			else
+			{
+				//`Log("USING COSMETIC SKIN LIST CACHE!!!");
+
+				ByTypeItems[ITP_CharacterSkin].ItemsOnType = CosmeticSkinListCache.OrderedCache;
+			}
+		}
+		else
+		{
+			ByTypeItems[ITP_CharacterSkin].ItemsOnType.Sort(SortCosmeticsList);			
+		}
+	}
+
+	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_CraftingMats)
+	{
+		if (CraftingListCache.NeedToRegenerate
+			|| ByTypeItems[ITP_CraftingComponent].ItemsOnType.Length != CraftingListCache.OrderedCache.Length)
+		{
+			CraftingListCache.NeedToRegenerate = false;
+
+			ByTypeItems[ITP_CraftingComponent].ItemsOnType.Sort(SortCraftingList);
+
+			CraftingListCache.OrderedCache = ByTypeItems[ITP_CraftingComponent].ItemsOnType;
 
 			/*`Log("----------");
 
-			for (i = 0 ; i < ByTypeItems[ITP_WeaponSkin].ItemsOnType.Length; i++)
+			for (i = 0 ; i < ByTypeItems[ITP_CraftingComponent].ItemsOnType.Length; i++)
 			{
-				`Log("ID : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].ItemDefinition);
-				`Log("Weapon Def : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].WeaponDef);
-				`Log("Price : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].Price);
-				`Log("Full Name : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].FullName);
-				`Log("Skin : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].SkinType);
-				`Log("Rarity : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].Rarity);
-				`Log("Quality : " $ByTypeItems[ITP_WeaponSkin].ItemsOnType[i].Quality);
+				`Log("Crafting Type : " $ByTypeItems[ITP_CraftingComponent].ItemsOnType[i].CraftingType);
+				`Log("Rarity : " $ByTypeItems[ITP_CraftingComponent].ItemsOnType[i].CraftingRarity);
+				`Log("Ticket Type : " $ByTypeItems[ITP_CraftingComponent].ItemsOnType[i].CraftingTicketType);
 				`Log("----------");
 			}
 
@@ -795,60 +886,40 @@ function InitInventory()
 		}
 		else
 		{
-			//`Log("USING SKIN LIST CACHE!!!");
+			//`Log("USING CRAFTING LIST CACHE!!!");
 
-			ByTypeItems[ITP_WeaponSkin].ItemsOnType = WeaponSkinListCache.OrderedCache;
+			ByTypeItems[ITP_CraftingComponent].ItemsOnType = CraftingListCache.OrderedCache;			
 		}
-	}
-
-	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_Cosmetics)
-	{
-		ByTypeItems[ITP_CharacterSkin].ItemsOnType.Sort(SortCosmeticsList);
-
-		/*`Log("----------");
-
-		for (i = 0 ; i < ByTypeItems[ITP_CharacterSkin].ItemsOnType.Length; i++)
-		{
-			`Log("Cosmetic Name : " $ByTypeItems[ITP_CharacterSkin].ItemsOnType[i].CosmeticType);
-			`Log("Skin : " $ByTypeItems[ITP_CharacterSkin].ItemsOnType[i].SkinType);
-			`Log("Rarity : " $ByTypeItems[ITP_CharacterSkin].ItemsOnType[i].Rarity);			
-			`Log("----------");
-		}
-
-		`Log("----------");*/
-	}
-
-	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_CraftingMats)
-	{
-		ByTypeItems[ITP_CraftingComponent].ItemsOnType.Sort(SortCraftingList);
-
-		/*`Log("----------");
-
-		for (i = 0 ; i < ByTypeItems[ITP_CraftingComponent].ItemsOnType.Length; i++)
-		{
-			`Log("Crafting Type : " $ByTypeItems[ITP_CraftingComponent].ItemsOnType[i].CraftingType);
-			`Log("Rarity : " $ByTypeItems[ITP_CraftingComponent].ItemsOnType[i].CraftingRarity);
-			`Log("Ticket Type : " $ByTypeItems[ITP_CraftingComponent].ItemsOnType[i].CraftingTicketType);			
-			`Log("----------");
-		}
-
-		`Log("----------");*/
 	}
 
 	if (CurrentInventoryFilter == EInv_All || CurrentInventoryFilter == EInv_Consumables)
 	{
-		// Consumables is the type for the "Items" category on the UI
-		ByTypeItems[ITP_KeyCrate].ItemsOnType.Sort(SortItemList);
-
-		/*`Log("----------");
-
-		for (i = 0 ; i < ByTypeItems[ITP_KeyCrate].ItemsOnType.Length; i++)
+		if (ItemListCache.NeedToRegenerate
+			|| ByTypeItems[ITP_KeyCrate].ItemsOnType.Length != ItemListCache.OrderedCache.Length)
 		{
-			`Log("Is Key : " $ByTypeItems[ITP_KeyCrate].ItemsOnType[i].IsKey);
-			`Log("----------");
-		}
+			ItemListCache.NeedToRegenerate = false;
 
-		`Log("----------");*/
+			// Consumables is the type for the "Items" category on the UI
+			ByTypeItems[ITP_KeyCrate].ItemsOnType.Sort(SortItemList);
+
+			ItemListCache.OrderedCache = ByTypeItems[ITP_KeyCrate].ItemsOnType;
+
+			/*`Log("----------");
+
+			for (i = 0 ; i < ByTypeItems[ITP_KeyCrate].ItemsOnType.Length; i++)
+			{
+				`Log("Is Key : " $ByTypeItems[ITP_KeyCrate].ItemsOnType[i].IsKey);
+				`Log("----------");
+			}
+
+			`Log("----------");*/
+		}
+		else
+		{
+			//`Log("USING ITEMS LIST CACHE!!!");
+
+			ByTypeItems[ITP_KeyCrate].ItemsOnType = ItemListCache.OrderedCache;
+		}
 	}
 
 	//`Log("--------------------------------");
@@ -898,10 +969,15 @@ function bool DoesMatchFilter(ItemProperties InventoryItem)
 			return false;
 		}
 
-		// doesn't match filter if the perk id doesn't match (unless it's set to any or survivalist)
-		if (CurrentPerkIndexFilter != KFPC.PerkList.length && !(CurrentPerkIndexFilter == InventoryItem.PerkId || CurrentPerkIndexFilter == InventoryItem.AltPerkId) && KFPC.PerkList[CurrentPerkIndexFilter].PerkClass != class'KFPerk_Survivalist') //perk
+		// Skip perk check for 9mm
+		if (!(InventoryItem.WeaponType == 0 && Is9mm(InventoryItem)))
 		{
-			return false;
+			// doesn't match filter if the perk id doesn't match (unless it's set to any or survivalist)
+			if (CurrentPerkIndexFilter != KFPC.PerkList.length
+				&& !(CurrentPerkIndexFilter == InventoryItem.PerkId || CurrentPerkIndexFilter == InventoryItem.AltPerkId))
+			{
+				return false;
+			}
 		}
 	}
 
@@ -915,6 +991,13 @@ function bool DoesMatchFilter(ItemProperties InventoryItem)
 	}
 
 	return true;
+}
+
+function bool Is9mm(ItemProperties InventoryItem)
+{
+	local int ItemID;
+	ItemID = class'KFWeaponSkinList'.default.Skins.Find('Id', InventoryItem.Definition);
+	return class'KFWeaponSkinList'.default.Skins[ItemID].WeaponDef != none && class'KFWeaponSkinList'.default.Skins[ItemID].WeaponDef.name == 'KFWeapDef_9mm';
 }
 
 function OnItemExhangeTimeOut()
@@ -1905,7 +1988,6 @@ function Callback_PerkTypeFilterChanged(int NewFilterIndex)
 	CurrentPerkIndexFilter = NewFilterIndex;
 	InitInventory();
 }
-
 
 function CallBack_RequestCosmeticCraftInfo()
 {

@@ -1180,8 +1180,8 @@ function string MakeMapURL(KFGFxStartGameContainer_Options InOptionsComponent)
 	}
 
 	if (CurrentMenuState == EMatchmaking
-		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None
-		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_Spring)
+		|| class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins() == SEI_None
+		|| class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins() == SEI_Spring)
 	{
 		AllowSeasonalSkins = 1; // Default if we don't have a season or it's find a match menu
 	}
@@ -1598,17 +1598,6 @@ function BuildServerFilters(OnlineGameInterface GameInterfaceSteam, KFGFxStartGa
 
 	// We don't want to force a search with the Seasonal Skins filter, we find any available server
 	// then we do a takeover, that's when we change the server settings
-
-	//bAllowSeasonal = OptionsComponent.GetAllowSeasonalSkinsIndex() == 0;
-
-	//if (GetStartMenuState() == EMatchmaking
-	//		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None
-	//		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_Spring)
-	//{
-	//	bAllowSeasonal = true; // Default if we don't have a season or it's find a match menu
-	//}
-
-	//Search.TestAddBoolGametagFilter(GameTagFilters, bAllowSeasonal == false, 'bNoSeasonalSkins', 1);
 
 	if (OptionsComponent.GetMakeNewServer() || bAttemptingServerCreate )
 	{

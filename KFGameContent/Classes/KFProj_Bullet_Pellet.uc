@@ -45,4 +45,13 @@ defaultproperties
 
 	AmbientSoundPlayEvent=none
     AmbientSoundStopEvent=none
+
+	
+	bWaitForEffects=false
+	ProjEffectsFadeOutDuration=0.25
+	bSyncToOriginalLocation=true
+	bSyncToThirdPersonMuzzleLocation=true
+	bRotationFollowsVelocity=true
+	bNoReplicationToInstigator=false
+	bUseClientSideHitDetection=true
 }

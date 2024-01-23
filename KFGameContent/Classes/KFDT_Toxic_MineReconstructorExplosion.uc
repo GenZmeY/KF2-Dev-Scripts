@@ -36,6 +36,8 @@ defaultproperties
 	DoT_Duration=4.0 //5.0 //1.7
 	DoT_Interval=1.0 //1.0 //0.4
 	DoT_DamageScale=0.1 //1.5
+	
+	SelfDamageReductionValue=0.1f
 
 	ModifierPerkList(0)=class'KFPerk_FieldMedic'
 	WeaponDef=class'KFWeapDef_Mine_Reconstructor'

@@ -317,6 +317,28 @@ simulated event Touch( Actor Other, PrimitiveComponent OtherComp, vector HitLoca
 {
 	local Pawn P;
 
+	// If touched by ballistic bouncer, explode
+	if (KFProj_HRG_BallisticBouncer(Other) != none)
+	{
+		// Make sure not touching through wall
+		if (`TimeSince(CreationTime) >= 0.1f && FastTrace( Other.Location, Location,, true ))
+		{
+			TriggerExplosion( Location, vect(0,0,1), KFProj_HRG_BallisticBouncer(Other) );
+			return;
+		}
+	}
+
+	// If touched by mine reconstructor, explode
+	if (KFProj_Mine_Reconstructor(Other) != none)
+	{
+		// Make sure not touching through wall
+		if (`TimeSince(CreationTime) >= 0.1f && FastTrace( Other.Location, Location,, true ))
+		{
+			TriggerExplosion( Location, vect(0,0,1), KFProj_Mine_Reconstructor(Other) );
+			return;
+		}
+	}	
+
 	// If touched by an enemy pawn, explode
 	P = Pawn( Other );
 	if( P != None )

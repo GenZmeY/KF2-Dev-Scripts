@@ -868,7 +868,7 @@ simulated function bool DrawFriendlyHumanPlayerInfo( KFPawn_Human KFPH )
 	}
 
 	//Draw player name (Top)
-	FontScale = class'KFGameEngine'.Static.GetKFFontScale() * FriendlyHudScale;
+	FontScale = class'KFGameEngine'.Static.GetKFFontScale() * ResModifier;
 	Canvas.Font = class'KFGameEngine'.Static.GetKFCanvasFont();
 
 	// drop shadow for player name text
@@ -992,7 +992,7 @@ simulated function bool DrawScriptedPawnInfo(KFPawn_Scripted KFPS, float Normali
 	}
 
 	//Draw health bar
-	FontScale = class'KFGameEngine'.Static.GetKFFontScale() * FriendlyHudScale;
+	FontScale = class'KFGameEngine'.Static.GetKFFontScale() * ResModifier;
 	Percentage = FMin(float(KFPS.Health) / float(KFPS.HealthMax), 1);
 
 	// Make sure that the entire health bar is on screen

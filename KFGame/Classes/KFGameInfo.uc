@@ -213,6 +213,7 @@ var protected int									BossIndex; //Index into boss array, only preload conte
 
 var int AllowSeasonalSkinsIndex;
 var int WeeklySelectorIndex;
+var int SeasonalSkinsIndex;
 
 /** Class replacements for each zed type */
 struct native SpawnReplacement
@@ -427,6 +428,8 @@ var KFOutbreakEvent OutbreakEvent;
 
 /** Type of outbreak event to be used. */
 var class<KFOutbreakEvent> OutbreakEventClass;
+
+var array<KFPlayerController> PlayersDelayedSuicideMessage;
 
 /************************************************************************************
 * @name		Kismet Monster Properties
@@ -720,6 +723,16 @@ event InitGame( string Options, out string ErrorMessage )
 	else // If doesn't exist on the Options we default it..
 	{
 		AllowSeasonalSkinsIndex = 0;
+	}
+
+	OptionRead = ParseOption(Options, "SeasonalSkinsIndex");
+	if (OptionRead != "")
+	{
+		SeasonalSkinsIndex = int(OptionRead);
+		if (SeasonalSkinsIndex < 0 || SeasonalSkinsIndex > 4)
+		{
+			SeasonalSkinsIndex = -1;
+		}
 	}
 
 	if( OnlineSub != none && OnlineSub.GetLobbyInterface() != none )
@@ -1080,11 +1093,21 @@ event PostLogin( PlayerController NewPlayer )
 function Logout( Controller Exiting )
 {
 	local int OldNumSpectators;
+	local KFPlayerController KFPC;
 
 	OldNumSpectators = NumSpectators;
 
+	KFPC = KFPlayerController(Exiting);
+
+	if (KFPC != none)
+	{
+		KFPC.bLoggedOut = true;
+	}
+
 	Super.Logout( Exiting );
 
+	MyKFGRI.VoteCollector.ServerNotifyDisconnect();
+	
 	// Delay this by 1.5 seconds so there aren't multiple calls if everyone joins/leaves at the same time
 	if( PlayfabInter != None && PlayfabInter.IsRegisteredWithPlayfab() )
 	{
@@ -1179,6 +1202,7 @@ function InitGRIVariables()
 	MyKFGRI.MaxHumanCount = MaxPlayers;
 	MyKFGRI.NotifyAllowSeasonalSkins(AllowSeasonalSkinsIndex);
 	MyKFGRI.NotifyWeeklySelector(WeeklySelectorIndex);
+	MyKFGRI.NotifySeasonalSkinsIndex(SeasonalSkinsIndex);
 
 	SetBossIndex();
 }
@@ -2277,8 +2301,29 @@ function BroadCastLastManStanding()
 	BroadcastLocalized(self, class'KFLocalMessage_Priority', GMT_LastPlayerStanding, none );
 }
 
+function BroadCastSuicide()
+{
+	local KFPlayerController KFPC;
+
+	if (PlayersDelayedSuicideMessage.Length != 0)
+	{
+		KFPC = PlayersDelayedSuicideMessage[0];
+		
+		if (KFPC.bLoggedOut == false)
+		{
+			BroadcastLocalized( self, class'KFLocalMessage_Game', KMT_Suicide, none, KFPC.PlayerReplicationInfo );
+		}
+
+		PlayersDelayedSuicideMessage.Remove(0, 1);
+	}
+}
+
 function BroadcastDeathMessage(Controller Killer, Controller Other, class<DamageType> damageType)
 {
+	local KFPlayerController KFPC;
+
+	KFPC = KFPlayerController(Other);
+
 	if( Killer == none )
 	{
 		// If a zed died from no killer, it's very likely that they killed themselves. Skip the death message.
@@ -2291,7 +2336,19 @@ function BroadcastDeathMessage(Controller Killer, Controller Other, class<Damage
 	else if( Killer == Other )
 	{
 		// Suicide
-		BroadcastLocalized( self, class'KFLocalMessage_Game', KMT_Suicide, none, Other.PlayerReplicationInfo );
+		if (KFPC != none && damageType == class'DmgType_Suicided')
+		{
+			// The Logout message comes after the Death, don't ask me why, we have to
+			// delay so we can react properly to a Logout situation (to change UI or hide death notification)
+			PlayersDelayedSuicideMessage.AddItem(KFPC);
+
+			SetTimer(0.5f, false, nameOf(BroadCastSuicide));
+			return;
+		}
+		else
+		{
+			BroadcastLocalized( self, class'KFLocalMessage_Game', KMT_Suicide, none, Other.PlayerReplicationInfo );
+		}
 	}
 	else
 	{
@@ -2305,6 +2362,7 @@ function BroadcastDeathMessage(Controller Killer, Controller Other, class<Damage
 			BroadcastLocalized( self, class'KFLocalMessage_PlayerKills', KMT_PlayerKillPlayer, Killer.PlayerReplicationInfo, Other.PlayerReplicationInfo );
 		}
 	}
+
 	if (Other != none && Other.GetTeamNum() != 255)
 	{
 		//do timer to double check group didnt get wasted by hans' nade spam or something like that
@@ -3046,24 +3104,14 @@ function string GetNextMap()
 			{
 				MapName = name(GameMapCycles[ActiveMapCycle].Maps[MapCycleIndex]);
 
-				if ((class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 0 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[0]) || // Boom
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 1 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[1]) || // Cranium Cracker
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 2 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[2]) || // Tiny Terror
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 3 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[3]) || // Bobble Zed
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 4 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[4]) || // Poundemonium
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 5 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[5]) || // Up Up and Decay
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 6 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[6]) || // Zed Time
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 7 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[7]) || // Beefcake
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 8 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[8]) || // Bloodthirst
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 9 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[9]) || // Coliseum
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 10 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[10]) || // Arachnophobia
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 11 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[11]) || // Scavenger
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[12]) || // WW
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 13 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[13]) || // Abandon
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 15 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[15]) || // Shrunken Heads
-					(class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 18 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[18])) // Perk Roulette
+				if (MapName == MapSantas)
 				{
-					if (MapName == MapSantas)
+					continue;
+				}
+
+				if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 0 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[0]) // Boom
+				{
+					if (MapName == MapSteam)
 					{
 						continue;
 					}
@@ -3090,8 +3138,7 @@ function string GetNextMap()
 						MapName == MapPowerCore ||
 						MapName == MapDescent   ||
 						MapName == MapKrampus	||
-						MapName == MapElysium	||
-						MapName == MapSantas)
+						MapName == MapElysium)
 					{
 						continue;
 					}
@@ -3111,7 +3158,7 @@ function string GetNextMap()
 					}
 				}
 
-				if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[14])
+				if (class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 14 || OutbreakEvent.ActiveEvent == OutbreakEvent.SetEvents[14]) // Boss Rush
 				{
 					if (MapName == MapSteam)
 					{
@@ -3285,6 +3332,7 @@ event MakeReservations(const string URLOptions, const UniqueNetId PlayerId, out 
 event PlayerController Login(string Portal, string Options, const UniqueNetID UniqueID, out string ErrorMessage)
 {
 	local PlayerController SpawnedPC;
+	local KFPlayerController KFPC;
 	local string PlayerfabPlayerId;
 
 	SeatPlayer(UniqueID);
@@ -3301,6 +3349,13 @@ event PlayerController Login(string Portal, string Options, const UniqueNetID Un
 		{
 			PlayfabInter.ServerNotifyPlayerJoined(PlayerfabPlayerId);
 		}
+	}
+
+	KFPC = KFPlayerController(SpawnedPC);
+
+	if (KFPC != none)
+	{
+		KFPC.bLoggedOut = false;
 	}
 
 	return SpawnedPC;
@@ -4134,6 +4189,7 @@ defaultproperties
 	bDelayedStart=true
 	AllowSeasonalSkinsIndex=0
 	WeeklySelectorIndex=-1
+	SeasonalSkinsIndex=-1
 
 	ActionMusicDelay=5.0
     ForcedMusicTracks(0)=KFMusicTrackInfo'WW_MMNU_Login.TrackInfo' // menu

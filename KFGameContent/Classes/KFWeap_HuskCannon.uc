@@ -32,7 +32,6 @@ var transient bool bIsFullyCharged;
 
 var const WeaponFireSndInfo FullyChargedSound;
 
-var float SelfDamageReductionValue;
 
 var float FullChargedTimerInterval;
 
@@ -377,16 +376,6 @@ simulated function int GetChargeFXLevel()
 	}
 }
 
-function AdjustDamage(out int InDamage, class<DamageType> DamageType, Actor DamageCauser)
-{
-	super.AdjustDamage(InDamage, DamageType, DamageCauser);
-
-	if (Instigator != none && DamageCauser != none && DamageCauser.Instigator == Instigator ) //self
-	{
-		InDamage *= SelfDamageReductionValue;
-	}
-}
-
 // increase the instant hit damage based on the charge level
 simulated function int GetModifiedDamage(byte FireModeNum, optional vector RayDir)
 {
@@ -403,7 +392,6 @@ simulated function int GetModifiedDamage(byte FireModeNum, optional vector RayDi
 
 defaultproperties
 {
-	SelfDamageReductionValue=0.1f
     //Gameplay Props
     MaxChargeTime=1.0
     ValueIncreaseTime=0.2

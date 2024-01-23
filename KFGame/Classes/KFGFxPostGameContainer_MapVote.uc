@@ -55,99 +55,68 @@ function SetMapOptions()
 	local array<string> ServerMapList;
 	local KFGameReplicationInfo KFGRI;
 	local bool IsWeeklyMode;
-	local bool bShouldSkipMaps;
-	local bool bWeeklyNoSanta;
-
-	local bool IsBoom, IsCraniumCracker, IsTinyTerror, IsBobbleZed, IsPoundemonium, IsUpUpAndDecay, IsZedTime, IsBeefcake;
-	local bool IsBloodThirst, IsColiseum, IsArachnophobia, IsScavenger, IsWW, IsAbandon, IsBossRush, IsShrunkenHeads;
-	local bool IsGunGame, /*IsVIP,*/ IsPerkRoulette, IsContaminationMode, IsBountyHunt;
-
+	local bool IsBoom, IsScavenger, IsBossRush, IsGunGame, IsContaminationMode, IsBountyHunt;
 	local name MapName;
 
 	KFGRI = KFGameReplicationInfo(GetPC().WorldInfo.GRI);
 
-	bShouldSkipMaps = false;
 	Counter = 0;
 
-	if(KFGRI != none && KFGRI.VoteCollector != none)
+	if (KFGRI != none && KFGRI.VoteCollector != none)
 	{
-		ServerMapList  = KFGRI.VoteCollector.MapList;
+		ServerMapList = KFGRI.VoteCollector.MapList;
 
-		IsWeeklyMode   = KFGRI.bIsWeeklyMode;
+		IsWeeklyMode = KFGRI.bIsWeeklyMode;
 
 		IsBoom = false;
-		IsCraniumCracker = false;
-		IsTinyTerror = false;
-		IsBobbleZed = false;
-		IsPoundemonium = false;
-		IsUpUpAndDecay = false;
-		IsZedTime = false;
-		IsBeefcake = false;
-		IsBloodThirst = false;
-		IsColiseum = false;
-		IsArachnophobia = false;
 		IsScavenger = false;
-		IsWW = false;
-		IsAbandon = false;
 		IsBossRush = false;
-		IsShrunkenHeads = false;
 		IsGunGame = false;
-		//IsVIP = false;
-		IsPerkRoulette = false;
 		IsContaminationMode = false;
 		IsBountyHunt = false;
 
 		switch (KFGRI.CurrentWeeklyIndex)
 		{
-			case 0:	IsBoom = true;	break;
-			case 1: IsCraniumCracker = true; break;
-			case 2: IsTinyTerror = true; break;
-			case 3: IsBobbleZed = true; break;
-			case 4: IsPoundemonium = true; break;
-			case 5: IsUpUpAndDecay = true; break;
-			case 6: IsZedTime = true; break;
-			case 7: IsBeefcake = true; break;
-			case 8: IsBloodThirst = true; break;
-			case 9: IsColiseum = true; break;
-			case 10: IsArachnophobia = true; break;
+			case 0: IsBoom = true; break;
 			case 11: IsScavenger = true; break;
-			case 12: IsWW = true; break;
-			case 13: IsAbandon = true; break;
 			case 14: IsBossRush = true; break;
-			case 15: IsShrunkenHeads = true; break;
 			case 16: IsGunGame = true; break;
-			//case 17: IsVIP = true; break;
-			case 18: IsPerkRoulette = true; break;
 			case 19: IsContaminationMode = true; break;
 			case 20: IsBountyHunt = true; break;
 		}
 
-		bShouldSkipMaps = IsWeeklyMode && (IsScavenger || IsBossRush || IsGunGame);
-
-		bWeeklyNoSanta = IsWeeklyMode && (	IsBoom || IsCraniumCracker || IsTinyTerror || IsBobbleZed
-											|| IsPoundemonium || IsUpUpAndDecay || IsZedTime || IsBeefcake
-											|| IsBloodThirst || IsColiseum || IsArachnophobia || IsScavenger
-											|| IsWW || IsAbandon || IsShrunkenHeads || IsPerkRoulette);
-
-		//gfx
 		MapList = CreateArray();
 
 		for (i = 0; i < ServerMapList.length; i++)
 		{
 			MapName = name(ServerMapList[i]);
 
-			if (bWeeklyNoSanta && MapName == MapSantas)
+			if (IsWeeklyMode)
 			{
-				continue;
+				if (MapName == MapSantas)
+				{
+					continue;
+				}
 			}
 
-			if ( bShouldSkipMaps && ( MapName == MapBiolapse || 
-									  MapName == MapNightmare ||
-									  MapName == MapPowerCore ||
-									  MapName == MapDescent ||
-									  MapName == MapKrampus))
+			if (IsWeeklyMode && IsBoom)
 			{
-				continue;
+				if (MapName == MapSteam)
+				{
+					continue;
+				}				
+			}
+
+			if (IsWeeklyMode && (IsScavenger || IsBossRush || IsGunGame))
+			{
+				if (MapName == MapBiolapse || 
+					MapName == MapNightmare ||
+					MapName == MapPowerCore ||
+					MapName == MapDescent ||
+					MapName == MapKrampus)
+				{
+					continue;
+				}
 			}
 
 			if (IsWeeklyMode && IsContaminationMode)
@@ -178,9 +147,12 @@ function SetMapOptions()
 				}				
 			}			
 
-			if (IsWeeklyMode && IsBossRush && MapName == MapSteam)
+			if (IsWeeklyMode && IsBossRush)
 			{
-				continue;
+				if (MapName == MapSteam)
+				{
+					continue;
+				}
 			}
 
 			MapObject = CreateObject("Object");

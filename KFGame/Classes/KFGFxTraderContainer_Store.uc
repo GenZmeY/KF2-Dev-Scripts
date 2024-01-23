@@ -102,36 +102,36 @@ function RefreshWeaponListByPerk(byte FilterIndex, const out array<STraderItem> 
 			{
 				continue; // Skip this item if it's in our inventory
 			}
-			else if ( ItemList[i].AssociatedPerkClasses.length > 0 && ItemList[i].AssociatedPerkClasses[0] != none && TargetPerkClass != class'KFPerk_Survivalist'
-				&& (FilterIndex >= KFPC.PerkList.Length || ItemList[i].AssociatedPerkClasses.Find(TargetPerkClass) == INDEX_NONE ) )
+			
+			if ( ItemList[i].AssociatedPerkClasses.length > 0
+						&& ItemList[i].AssociatedPerkClasses[0] != none
+						&& (FilterIndex >= KFPC.PerkList.Length || ItemList[i].AssociatedPerkClasses.Find(TargetPerkClass) == INDEX_NONE ) )
 			{
 				continue; // filtered by perk
 			}
-			else
+
+			if(ItemList[i].AssociatedPerkClasses.length > 0)
 			{
-				if(ItemList[i].AssociatedPerkClasses.length > 0)
+				switch (ItemList[i].AssociatedPerkClasses.Find(TargetPerkClass))
 				{
-					switch (ItemList[i].AssociatedPerkClasses.Find(TargetPerkClass))
-					{
-						case 0: //primary perk
-							if(OnPerkWeapons.length == 0 && MyTraderMenu.SelectedList == TL_Shop)
+					case 0: //primary perk
+						if(OnPerkWeapons.length == 0 && MyTraderMenu.SelectedList == TL_Shop)
+						{
+							if(GetInt( "currentSelectedIndex" ) == 0)
 							{
-								if(GetInt( "currentSelectedIndex" ) == 0)
-								{
-									MyTraderMenu.SetTraderItemDetails(i);
-								}
+								MyTraderMenu.SetTraderItemDetails(i);
 							}
-							OnPerkWeapons.AddItem(ItemList[i]);
-							break;
-					
-						case 1: //secondary perk
-							SecondaryWeapons.AddItem(ItemList[i]);
-							break;
-					
-						default: //off perk
-							OffPerkWeapons.AddItem(ItemList[i]);
-							break;
-					}
+						}
+						OnPerkWeapons.AddItem(ItemList[i]);
+						break;
+				
+					case 1: //secondary perk
+						SecondaryWeapons.AddItem(ItemList[i]);
+						break;
+				
+					default: //off perk
+						OffPerkWeapons.AddItem(ItemList[i]);
+						break;
 				}
 			}
 		}

@@ -283,8 +283,8 @@ function BuildServerFilters(KFGFxServerBrowser_Filters Filters, OnlineGameSearch
 
 	DisableSeasonalSkins = Filters.bNoSeasonalSkins;
 
-	if (class'KFGameEngine'.static.GetSeasonalEventID() == SEI_None
-		|| class'KFGameEngine'.static.GetSeasonalEventID() == SEI_Spring)
+	if (class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins() == SEI_None
+		|| class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins() == SEI_Spring)
 	{
 		DisableSeasonalSkins = false;
 	}
@@ -997,7 +997,7 @@ function UpdateListDataProvider()
 
 				TempObj.SetString("serverName",    		TempOnlineGamesSettings.OwningPlayerName);
 
-				PlayerCount = TempOnlineGamesSettings.NumPublicConnections-TempOnlineGamesSettings.NumOpenPublicConnections;
+				PlayerCount = TempOnlineGamesSettings.NumPublicConnections - TempOnlineGamesSettings.NumOpenPublicConnections;
 
 				if (PlayerCount < 0)
 				{

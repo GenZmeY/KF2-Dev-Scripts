@@ -475,6 +475,7 @@ function ClearOnlineDelegates()
 
 /** Static because these are both called on default object */
 native static function int GetSeasonalEventID();
+native static function int GetSeasonalEventIDForZedSkins();
 native static function int GetIntendedWeeklyEventIndex();
 native static function int GetIntendedWeeklyEventIndexMod();
 native static function int GetWeeklyEventIndex();

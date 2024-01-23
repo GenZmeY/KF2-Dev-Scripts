@@ -90,8 +90,15 @@ function ShowLeavePartyPopUp()
 function ConfirmLeaveParty()
 {
 	local KFPlayerController KFPC;
-
+	local KFPawn KFP;
     KFPC = KFPlayerController(GetPC());
+
+	// For killing Special Movement Sounds before going to menu
+	KFP = KFPawn(KFPC.Pawn);
+	if (KFP != none && KFP.IsDoingSpecialMove())
+	{
+		KFP.EndSpecialMove();
+	}
 
 	if(OnlineLobby != none)
 	{

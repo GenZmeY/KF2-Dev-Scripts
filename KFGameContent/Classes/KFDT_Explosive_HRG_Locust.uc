@@ -37,4 +37,7 @@ defaultproperties
 
 	bCausesFracture=false
 	bCanPlayDeadHitEffects=false
+
+	SelfDamageReductionValue = 0f;
+
 }

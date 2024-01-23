@@ -387,6 +387,7 @@ var repnotify KFPlayerReplicationInfo VIPRepPlayer;
 
 var bool bAllowSeasonalSkins;
 var int WeeklySelectorIndex;
+var int SeasonalSkinsIndex;
 
 /************************************
  *  Steam heartbeat
@@ -426,7 +427,7 @@ replication
 	if ( bNetInitial )
 		GameLength, WaveMax, bCustom, bVersusGame, TraderItems, GameAmmoCostScale, bAllowGrenadePurchase, MaxPerkLevel, bTradersEnabled, bForceShowSkipTrader, bAllowSeasonalSkins;
 	if ( bNetInitial || bNetDirty )
-		CurrentWeeklyIndex, WeeklySelectorIndex, PerksAvailableData;
+		CurrentWeeklyIndex, WeeklySelectorIndex, SeasonalSkinsIndex, PerksAvailableData;
 	if ( bNetInitial && Role == ROLE_Authority )
 		ServerAdInfo;
 
@@ -856,7 +857,7 @@ exec reliable client function ShowPreGameServerWelcomeScreen()
 {
 	local KFPlayerController KFPC;
 
-	if( WorldInfo.NetMode != NM_DedicatedServer )
+	if( WorldInfo.NetMode != NM_Client )
 	{
 		return;
 	}
@@ -1558,10 +1559,15 @@ function UpdatePickupList()
                 {
                     PickupInfos[i].PickupType = 2;
                 }
-                else
+				else if (KFGameInfo.AllPickupFactories[j].CurrentPickupIsCash())
+				{
+                    PickupInfos[i].PickupType = 3;
+				}
+				else
                 {
                     PickupInfos[i].PickupType = -1;
                 }
+
                 bNetDirty = true;
                 i++;
             }
@@ -1831,7 +1837,7 @@ simulated function PlayNewMusicTrack( optional bool bGameStateChanged, optional 
     }
 
     // loop if we're designated to loop or this is the boss wave
-    if( bLoop || (!bEndlessMode && IsBossWave()))
+    if( bLoop || (!bEndlessMode && (IsBossWave() || class'KFGameEngine'.static.GetWeeklyEventIndexMod() == 12)))
     {
         NextMusicTrackInfo = CurrentMusicTrackInfo;
     }
@@ -2319,7 +2325,12 @@ simulated function NotifyAllowSeasonalSkins(int AllowSeasonalSkinsIndex)
 simulated function NotifyWeeklySelector(int WeeklySelectorIndex_)
 {
 	WeeklySelectorIndex = WeeklySelectorIndex_;
+	bNetDirty = true;
+}
 
+simulated function NotifySeasonalSkinsIndex(int SeasonalSkinsIndex_)
+{
+	SeasonalSkinsIndex = SeasonalSkinsIndex_;
 	bNetDirty = true;
 }
 
@@ -2498,6 +2509,7 @@ defaultproperties
 	bForceShowSkipTrader=false
 	bAllowSeasonalSkins=true
 	WeeklySelectorIndex=-1
+	SeasonalSkinsIndex=-1
 	bForceSkipTraderUI=false
 	GunGameWavesCurrent=1
 	bWaveGunGameIsFinal=false

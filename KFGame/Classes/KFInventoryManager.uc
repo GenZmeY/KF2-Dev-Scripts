@@ -2765,6 +2765,7 @@ simulated function bool GetIsOwned( name ClassName )
 {
 	local int i;
 	local Inventory Inv;
+	local KFPlayerController KFPC;
 
 	ForEach InventoryActors(class'Inventory', Inv)
 	{
@@ -2783,7 +2784,22 @@ simulated function bool GetIsOwned( name ClassName )
 			return true;
 		}
 	}
-
+	
+	if (WorldInfo.NetMode == NM_Client)
+	{
+		KFPC = KFPlayerController( Instigator.Controller );
+		if (KFPC != none)
+		{
+			for (i = 0; i < KFPC.GetPurchaseHelper().OwnedItemList.Length; ++i)
+			{
+				if (KFPC.GetPurchaseHelper().OwnedItemList[i].DefaultItem.ClassName == ClassName)
+				{
+					return true;
+				}
+			}
+		}
+	}
+	
 	`log("GetIsOwned: ClassName="$ClassName @ "false", bLogInventory);
 	return false;
 }
@@ -2830,6 +2846,21 @@ simulated function bool Is9mmInInventory()
 	}
 
 	return false;
+}
+
+simulated function bool IsHRG93InInventory()
+{
+	local Inventory Inv;
+
+	for (Inv = InventoryChain; Inv != None; Inv = Inv.Inventory)
+	{
+		if (Inv.Class.name == 'KFWeap_HRG_93R' || Inv.Class.name == 'KFWeap_HRG_93R_Dual')
+		{
+			return true;
+		}
+	}
+
+	return false; 
 }
 
 defaultproperties

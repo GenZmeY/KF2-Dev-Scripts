@@ -268,6 +268,12 @@ function SpecialMoveEnded(Name PrevMove, Name NextMove)
 	Super.SpecialMoveEnded(PrevMove, NextMove);
 }
 
+function AnimEndNotify(AnimNodeSequence SeqNode, float PlayedTime, float ExcessTime)
+{
+	// By default end this special move.
+	KFPOwner.EndSpecialMove(SM_RecoverFromRagdoll);
+}
+
 defaultproperties
 {
 	Handle=KFSM_RecoverFromRagdoll

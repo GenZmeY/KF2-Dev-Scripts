@@ -8,6 +8,27 @@
 //=============================================================================
 class KFPawn_ZedGorefastDualBlade extends KFPawn_ZedGorefast;
 
+var protected AKEvent StopWhirlwindEvent;
+
+/**
+	Whirlwind attack can be parried but the initial sfx is not stopped.
+	As we don't have an event to stop it, it has been assigned to the 
+	'hips' bone so it can be stopped.
+ */
+function bool NotifyAttackParried(Pawn InstigatedBy, byte InParryStrength)
+{
+	local bool Result;
+
+	Result = Super.NotifyAttackParried(InstigatedBy, InParryStrength);
+
+	if (StopWhirlwindEvent != none)
+	{
+		PlayAkEvent( StopWhirlwindEvent );
+	}
+
+	return Result;
+}
+
 defaultproperties
 {
 	LocalizationKey=KFPawn_ZedGorefastDualBlade
@@ -106,6 +127,7 @@ defaultproperties
 	// Block Settings
 	MinBlockFOV=0.1f
 
+	StopWhirlwindEvent = AkEvent'WW_ZED_GoreFast_2.Stop_Gorefast_2_Whirl';
 
-
+	ElitePawnClass.Empty
 }

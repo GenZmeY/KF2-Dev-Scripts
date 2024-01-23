@@ -741,10 +741,10 @@ static function int IndexOverrideReplaceSpawnWithElite()
 	WI = class'WorldInfo'.static.GetWorldInfo();
 	KFGRI = KFGameReplicationInfo(WI.GRI);
 
-	// We only use this feature in this weekly for now, we pregenerate the Random so we can replace the Zed with Elite version
+	// We pregenerate the Random so we can replace the Zed with Elite version
 	// And use the Weekly SpawnReplacementList to replace correctly
 
-	if (KFGRI.IsContaminationMode())
+	if (KFGRI.bIsWeeklyMode)
 	{
 		if (default.ElitePawnClass.length > 0
 			&& default.DifficultySettings != none
@@ -757,7 +757,7 @@ static function int IndexOverrideReplaceSpawnWithElite()
 	return -1;
 }
 
-/** Gets the actual classes used for spawning. Can be overridden to replace this monster with another */
+/** Gets the actual classes used for spawning. */
 static event class<KFPawn_Monster> GetAIPawnClassToSpawn()
 {
 	local WorldInfo WI;
@@ -766,9 +766,7 @@ static event class<KFPawn_Monster> GetAIPawnClassToSpawn()
 	WI = class'WorldInfo'.static.GetWorldInfo();
 	KFGRI = KFGameReplicationInfo(WI.GRI);
 
-	// We already generated the random for this mode when calling IndexOverrideReplaceSpawnWithElite, so no need to roll the dice again
-
-	if (KFGRI.IsContaminationMode() == false)
+	if (KFGRI.bIsWeeklyMode == false)
 	{
 		if (default.ElitePawnClass.length > 0
 			&& default.DifficultySettings != none
@@ -4907,7 +4905,7 @@ static function string GetLocalizedName()
 static function string GetSeasonalLocalizationSuffix()
 {
 	//Remove any year information, just get 1s digit
-	switch (class'KFGameEngine'.static.GetSeasonalEventID() % 10)
+	switch (class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins() % 10)
 	{
 	case SEI_Spring:
 		return "_Spring";

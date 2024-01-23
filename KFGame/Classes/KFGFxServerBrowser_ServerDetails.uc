@@ -75,7 +75,7 @@ function SetDetails(KFOnlineGameSettings ServerResult)
 		TempObj = CreateObject("Object");
 		TempObj.SetString("serverName",    		TempOnlingGamesSettings.OwningPlayerName);        
 
-		PlayerCount = TempOnlingGamesSettings.NumPublicConnections-TempOnlingGamesSettings.NumOpenPublicConnections;
+		PlayerCount = TempOnlingGamesSettings.NumPublicConnections - TempOnlingGamesSettings.NumOpenPublicConnections;
 
 		if (PlayerCount < 0)
 		{
@@ -95,8 +95,8 @@ function SetDetails(KFOnlineGameSettings ServerResult)
 		TempObj.SetBool("ranked",           	TempOnlingGamesSettings.bUsesStats);
 		TempObj.SetBool("seasonalSkins",       	TempOnlingGamesSettings.bNoSeasonalSkins == false);
 
-		bShowSeasonalSkins = class'KFGameEngine'.static.GetSeasonalEventID() != SEI_None
-							&& class'KFGameEngine'.static.GetSeasonalEventID() != SEI_Spring;
+		bShowSeasonalSkins = class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins() != SEI_None
+							&& class'KFGameEngine'.static.GetSeasonalEventIDForZedSkins() != SEI_Spring;
 
 		TempObj.SetBool("showSeasonalSkins",    bShowSeasonalSkins);
 

@@ -191,7 +191,7 @@ function UpdateAndGetCurrentWeaponIndexes(class<KFPerk> PerkClass, KFPlayerContr
 			KFPerk_Survivalist(KFPC.CurrentPerk).StartingGrenadeClassIndex = GrenadeIdx;
 
 			// If we are in no gameplay time insta change
-			if (!KFGRI.bWaveIsActive)
+			if (!KFGRI.bWaveIsActive || KFPC.PlayerReplicationInfo.bIsSpectator)
 			{
 				KFPerk_Survivalist(KFPC.CurrentPerk).UpdateCurrentGrenade();
 			}

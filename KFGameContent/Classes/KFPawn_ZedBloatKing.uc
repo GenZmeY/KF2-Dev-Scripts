@@ -580,6 +580,17 @@ simulated function string GetIconPath()
 	return "ZED_Patriarch_UI.ZED-VS_Icon_Boss";
 }
 
+simulated event EndSpecialMove(optional ESpecialMove SpecialMoveToEnd, optional bool bForceNetSync)
+{
+	// Wait for the anim to finish
+	if ( SpecialMove == SM_RecoverFromRagdoll && SpecialMoveToEnd != SM_RecoverFromRagdoll)
+	{
+		return;
+	}
+
+	Super.EndSpecialMove(SpecialMoveToEnd, bForceNetSync);
+}
+
 defaultproperties
 {
     LocalizationKey=KFPawn_ZedBloatKing

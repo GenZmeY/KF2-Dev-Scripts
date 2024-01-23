@@ -170,7 +170,9 @@ function SearchInventoryForNewItem()
 	local int ItemIndex, InventoryIndex;
 	local CurrentInventoryEntry TempInventoryDetailsHolder;
 	local ItemProperties TempItemDetailsHolder;
-
+	local int i, IndexInReward;
+	local array<int> NewlyAddedItems, RewardIDs;
+	local KFGameReplicationInfo KFGRI;
 
 	ItemIndex = INDEX_NONE;
 	InventoryIndex = INDEX_NONE;
@@ -181,12 +183,49 @@ function SearchInventoryForNewItem()
 		return;
 	}
 
-	InventoryIndex = OnlineSub.CurrentInventory.Find('NewlyAdded', 1);
+	// If weekly check for weekly rewards,..
+    KFGRI = KFGameReplicationInfo(GetPC().Worldinfo.GRI);
+    if(KFGRI != none)
+    {
+		if (KFGRI.bIsWeeklyMode)
+		{
+			// Gather all newly added items
+			for (i = 0; i < OnlineSub.CurrentInventory.Length; ++i)
+			{
+				if (OnlineSub.CurrentInventory[i].NewlyAdded != 0)
+				{
+					NewlyAddedItems.AddItem(i);
+				}
+			}
+
+			// If more than 1, we prioritise the weekly if any..
+			if (NewlyAddedItems.Length > 1)
+			{
+				RewardIDs = class'KFOnlineStatsWrite'.static.GetWeeklyOutbreakRewards(class'KFGameEngine'.static.GetIntendedWeeklyEventIndexMod());
+
+				for (i = 0; i < NewlyAddedItems.length; i++)
+				{
+					TempInventoryDetailsHolder = OnlineSub.CurrentInventory[NewlyAddedItems[i]];
+					IndexInReward = RewardIDs.Find(TempInventoryDetailsHolder.Definition);
+
+					if (IndexInReward != INDEX_NONE)
+					{
+						InventoryIndex = NewlyAddedItems[i];
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	if(InventoryIndex == INDEX_NONE)
+	{
+		InventoryIndex = OnlineSub.CurrentInventory.Find('NewlyAdded', 1);
+	}
 
 	if(InventoryIndex != INDEX_NONE)
 	{
 		TempInventoryDetailsHolder = OnlineSub.CurrentInventory[InventoryIndex];
-
 
 		ItemIndex = OnlineSub.ItemPropertiesList.Find('Definition', TempInventoryDetailsHolder.Definition);
 

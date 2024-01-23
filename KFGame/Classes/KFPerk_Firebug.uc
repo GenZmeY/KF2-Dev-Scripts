@@ -512,6 +512,16 @@ simulated function bool IsRangeActive()
 }
 
 /**
+ * @brief Returns mod to Ground Fire Duration modification
+ *
+ * @return float
+ */
+simulated function float GetRangeGroundFireDurationMod()
+{
+	return 1.2f;
+}
+
+/**
  * @brief Checks if the Splash Damage skill is active
  *
  * @return true/false

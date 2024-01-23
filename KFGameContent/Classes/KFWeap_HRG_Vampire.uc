@@ -71,8 +71,6 @@ var const WeaponFireSndInfo BloodSuctionLoopNoAmmoAndBloodBallChargedSound;
 
 var bool bIsSprayDisabled;
 
-var float SelfDamageReductionValue;
-
 var float FullChargedTimerInterval;
 var float ChargePercentage;
 
@@ -1339,7 +1337,6 @@ defaultproperties
     //BLOOD BALL
 	ChargingSound=(DefaultCue = AkEvent'WW_WEP_HRG_Vampire.Play_WEP_HRG_Vampire_SuckBlood_Loop_3P', FirstPersonCue=AkEvent'WW_WEP_HRG_Vampire.Play_WEP_HRG_Vampire_SuckBlood_Loop_1P')
 	ChargedSound=(DefaultCue = AkEvent'WW_WEP_HRG_Vampire.Play_WEP_HRG_Vampire_SuckBlood_Charged_3P', FirstPersonCue=AkEvent'WW_WEP_HRG_Vampire.Play_WEP_HRG_Vampire_SuckBlood_Charged_1P')
-	SelfDamageReductionValue=0.1f
    
     //MaxChargeTime=0.6 //0.8
 	MinDamageWhileChargingThreshold=0.12 //10% of MaxChargeTime

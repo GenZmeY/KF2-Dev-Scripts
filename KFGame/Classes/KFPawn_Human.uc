@@ -1363,7 +1363,7 @@ event TakeDamage(int Damage, Controller InstigatedBy, vector HitLocation, vector
 
 	`log(GetFuncName()@"Damage AFTER ="$ActualDamageTaken$" DamageType: "$DamageType$" DamageCauser: "$DamageCauser, bLogTakeDamage);
 
-	KFGRI = KFGameReplicationInfo(KFGameInfo(WorldInfo.Game).GameReplicationInfo);
+	KFGRI = KFGameReplicationInfo(WorldInfo.GRI);
 
 	if( (ActualDamageTaken > 0 || OldArmor - Armor > 0) && IsAliveAndWell() && !KFGRI.bTraderIsOpen )
 	{

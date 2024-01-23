@@ -85,6 +85,18 @@ function SetPlayerDefaults( Pawn PlayerPawn )
 			NewArmor += OwnerPawn.default.MaxArmor * GetSKillValue( PerkSkills[ESWAT_HeavyArmor] );
 		}
 
+		OwnerPawn.AddArmor( Round( NewArmor ) );
+	}
+}
+
+function SetWaveDefaults()
+{
+	local float NewArmor;
+
+	super.SetWaveDefaults();
+
+	if( OwnerPawn.Role == ROLE_Authority )
+	{
 		if( IsBodyArmorActive() )
 		{
 			NewArmor += OwnerPawn.default.MaxArmor * GetSKillValue( PerkSkills[ESWAT_BodyArmor] );

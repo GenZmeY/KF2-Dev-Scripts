@@ -36,7 +36,7 @@ defaultproperties
 	ProjFlightTemplate=ParticleSystem'WEP_Frost_Shotgun_Axe_EMIT.FX_FrostFang_Tracer_01'
 	ProjFlightTemplateZedTime=ParticleSystem'WEP_Frost_Shotgun_Axe_EMIT.FX_FrostFang_Tracer_Zedtime_01'
 	ImpactEffects=KFImpactEffectInfo'WEP_Frost_Shotgun_Axe_ARCH.WEP_FrostFang_Projectile_Impact'
-	oFrozenSound=AkEvent'WW_WEP_SA_CompoundBow.Play_Arrow_Impact_Cryo'
+	oFrozenSound=AkEvent'WW_WEP_FrostFang.Play_FrostFang_Frozen_Impact'
 	AssociatedPerkClass=class'KFPerk_Support'
 }
 

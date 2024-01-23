@@ -21,4 +21,6 @@ defaultproperties
 	ObliterationHealthThreshold = 0
 	ObliterationDamageThreshold = 1
 	bIgnoreAggroOnDamage=true
+
+	bAnyPerk = true
 }

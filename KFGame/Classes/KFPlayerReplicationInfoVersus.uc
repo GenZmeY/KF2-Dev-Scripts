@@ -257,6 +257,20 @@ reliable client function ShowKickVote(PlayerReplicationInfo PRI, byte VoteDurati
 	super.ShowKickVote(PRI, VoteDuration, bShowChoices && (PRI.GetTeamNum() == GetTeamNum()));
 }
 
+reliable client function ShowSkipTraderVote(PlayerReplicationInfo PRI, byte VoteDuration, bool bShowChoices)
+{
+	super.ShowSkipTraderVote(PRI, VoteDuration, bShowChoices && (PRI.GetTeamNum() != GetTeamNum()));
+}
+
+// Override for not allowing skip trader as enemy
+simulated function RequestSkiptTrader(PlayerReplicationInfo PRI)
+{
+	if (GetTeamNum() != 255)
+	{
+		super.RequestSkiptTrader(PRI);
+	}
+}
+
 defaultproperties
 {
 	bReplicateInstigator=false

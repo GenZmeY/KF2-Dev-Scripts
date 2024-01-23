@@ -33,4 +33,6 @@ defaultproperties
 	WeaponDef=class'KFWeapDef_HRG_Locust'
 
 	SpreadOnTouchDamage=25
+	
+	SelfDamageReductionValue=0.f
 }

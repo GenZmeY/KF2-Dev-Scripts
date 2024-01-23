@@ -605,7 +605,7 @@ simulated private function OpenSwingingDoor(Pawn P)
 }
 
 /** To close the door, just reverse the animation */
-simulated private function CloseDoor()
+simulated function CloseDoor()
 {
 	if( bIsDestroyed || !bLocalIsDoorOpen || !bCanCloseDoor)
 	{

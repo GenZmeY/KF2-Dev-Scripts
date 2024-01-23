@@ -1083,7 +1083,7 @@ function bool ShouldConcludePauseGameVote()
 reliable server function ConcludeVotePauseGame()
 {
 	local array<KFPlayerReplicationInfo> PRIs;
-	local int i, NumPRIs;
+	local int i;
 	local KFGameInfo KFGI;
 	local KFGameReplicationInfo KFGRI;
 
@@ -1099,7 +1099,6 @@ reliable server function ConcludeVotePauseGame()
 			PRIs[i].HidePauseGameVote();			
 		}
 
-		NumPRIs = PRIs.Length;
 		SetTimer( 0.f, true, nameof(UpdatePauseGameTimer), self );
 
 		if( NoVotes > 0)
@@ -1108,7 +1107,7 @@ reliable server function ConcludeVotePauseGame()
 			SetTimer( KFGI.TimeBetweenFailedVotes, false, nameof(ClearFailedVoteFlag), self );
 			KFGI.BroadcastLocalized(KFGI, class'KFLocalMessage', KFGRI.bIsEndlessPaused ? LMT_ResumeVoteFailed : LMT_PauseVoteFailed);
 		}
-		else if( YesVotes >= NumPRIs )
+		else if( YesVotes >= KFGameInfo(WorldInfo.Game).NumPlayers )
 		{
 
 			//pause game
@@ -1156,6 +1155,17 @@ reliable server function ResetPauseGameVote()
 	for (i = 0; i < PRIs.Length; i++)
 	{
 		PRIs[i].bAlreadyStartedASkipTraderVote = false;
+	}
+}
+
+function ServerNotifyDisconnect()
+{
+	local KFGameReplicationInfo KFGRI;
+	KFGRI = Outer;
+
+	if (bIsPauseGameVoteInProgress && KFGRI.bIsEndlessPaused && (YesVotes + NoVotes >=  KFGameInfo(WorldInfo.Game).NumPlayers))
+	{
+		ConcludeVotePauseGame();
 	}
 }
 

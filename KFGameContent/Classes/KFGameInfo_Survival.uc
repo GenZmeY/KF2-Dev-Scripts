@@ -1087,6 +1087,12 @@ function WaveStarted()
 		}
 
 		`QALog("Player Name:" @ KFPC.PlayerReplicationInfo.PlayerName @ "Dosh" @ KFPC.PlayerReplicationInfo.Score, bLogScoring);
+
+		if (KFPC.IsInState('Spectating') == false
+        	&& KFPC.PlayerReplicationInfo.bOnlySpectator == false)
+		{
+			KFPC.GetPerk().SetWaveDefaults();
+		}
 	}
 
 

@@ -452,6 +452,15 @@ event PlayerInput( float DeltaTime )
 	RawJoyVector.y = RawJoyLookUp;
 	RawJoyLookMagnitude = VSize2d( RawJoyVector );
 
+    // Avoid having controller influence view rotation when using keyboard and mouse
+	if (!bUsingGamepad)
+	{
+		CurrTurn = 0;
+		CurrLookUp = 0;
+		aLookUp = 0;
+		aTurn = 0;
+	}
+
 	// PlayerInput shouldn't take timedilation into account
 	DeltaTime /= WorldInfo.TimeDilation;
 	if (Outer.bDemoOwner && WorldInfo.NetMode == NM_Client)

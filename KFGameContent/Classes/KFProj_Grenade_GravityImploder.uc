@@ -54,7 +54,12 @@ simulated state VortexState
 		{
 			foreach CollidingActors(class'Actor', Victim, VortexRadius, Location, true,, HitInfo)
 			{
-				if (KFPawn_Human(Victim) == none && Victim.CollisionComponent != none && !Victim.bWorldGeometry)
+				if (KFPawn_Human(Victim) == none
+					&& Victim.CollisionComponent != none
+					&& !Victim.bWorldGeometry
+					&& KFPawn_Scripted(Victim) == none
+					&& KFPawn_AutoTurret(Victim) == none
+					&& KFPawn_HRG_Warthog(Victim) == none)
 				{
 					Victim.CollisionComponent.AddRadialImpulse(Location, VortexRadius, VortexImpulseStrength, RIF_Constant, true);
 				}

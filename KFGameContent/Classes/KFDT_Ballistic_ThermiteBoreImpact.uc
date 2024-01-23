@@ -49,6 +49,8 @@ defaultproperties
 
 	BurnDamageType=class'KFDT_Fire_ThermiteImpactDoT'
 
+	SelfDamageReductionValue=0.05f //0.25f
+
 	ModifierPerkList(0)=class'KFPerk_FireBug'
 
 	WeaponDef=class'KFWeapDef_ThermiteBore'

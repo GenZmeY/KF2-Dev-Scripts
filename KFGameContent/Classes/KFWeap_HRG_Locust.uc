@@ -48,9 +48,6 @@ var AkComponent       IronsightsComponent;
 var AkEvent            IronsightsZoomInSound;
 var AkEvent           IronsightsZoomOutSound;
 
-/** Reduction for the amount of damage dealt to the weapon owner (including damage by the explosion) */
-var() float SelfDamageReductionValue;
-
 /**
 * Toggle between DEFAULT and ALTFIRE
 */
@@ -527,19 +524,6 @@ simulated state WeaponBurstFiring
 	}
 }
 
-/**
-	Reduce the damage received and apply it to the shield
- */
-function AdjustDamage(out int InDamage, class<DamageType> DamageType, Actor DamageCauser)
-{
-	super.AdjustDamage(InDamage, DamageType, DamageCauser);
-
-	if (Instigator != none && DamageCauser.Instigator == Instigator)
-	{
-		InDamage *= SelfDamageReductionValue;
-	}
-}
-
 defaultproperties
 {
 	ForceReloadTime=0.4f
@@ -680,5 +664,4 @@ defaultproperties
 	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.15f), (Stat=EWUS_Damage1, Scale=1.15f), (Stat=EWUS_Weight, Add=1)))
 	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.3f), (Stat=EWUS_Damage1, Scale=1.3f), (Stat=EWUS_Weight, Add=2)))
 
-	SelfDamageReductionValue = 0f;
 }

@@ -924,6 +924,16 @@ simulated function StartFire(byte FireModeNum)
 	Super.StartFire(FireModeNum);
 }
 
+function bool DenyPickupQuery(class<Inventory> ItemClass, Actor Pickup)
+{
+	if (ItemClass == class || ItemClass == SingleClass)
+	{
+		return DenyPickupQuery_Internal(ItemClass, Pickup);
+	}
+
+	return false;
+}
+
 defaultproperties
 {
 	InventoryGroup=IG_Primary

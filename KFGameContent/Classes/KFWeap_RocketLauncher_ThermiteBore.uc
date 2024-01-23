@@ -15,9 +15,6 @@ var array<KFProj_Rocket_ThermiteBore> DeployedHarpoons;
 /** Same as DeployedHarpoons.Length, but replicated because harpoons are only tracked on server */
 var int NumDeployedHarpoons;
 
-/** Reduction for the amount of damage dealt to the weapon owner (including damage by the explosion) */
-var float SelfDamageReductionValue;
-
 var(Animations) const editconst name DetonateAnim;
 var(Animations) const editconst name DetonateAnimLast;
 var(Animations) const editconst name DetonateAnimIron;
@@ -74,16 +71,6 @@ simulated function name GetReloadAnimName(bool bTacticalReload)
 	else
 	{
 		return (bTacticalReload) ? ReloadEmptyMagEliteAnim : ReloadEmptyMagAnim;
-	}
-}
-
-function AdjustDamage(out int InDamage, class<DamageType> DamageType, Actor DamageCauser)
-{
-	super.AdjustDamage(InDamage, DamageType, DamageCauser);
-
-	if (Instigator != none && DamageCauser != none && DamageCauser.Instigator == Instigator)
-	{
-		InDamage *= SelfDamageReductionValue;
 	}
 }
 
@@ -314,8 +301,6 @@ defaultproperties
 	WeaponFireWaveForm=ForceFeedbackWaveform'FX_ForceFeedback_ARCH.Gunfire.Medium_Recoil'
 
 	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.125f), (Stat=EWUS_Weight, Add=1)))
-
-	SelfDamageReductionValue=0.05f //0.25f
 
 	DetonateAnim=Alt_Fire
 	DetonateAnimLast=Alt_Fire_Last

@@ -11,9 +11,6 @@ class KFWeap_GravityImploder extends KFWeapon;
 
 `define GRAVITYIMPLODER_MIC_LED_INDEX 1
 
-/** Reduction for the amount of damage dealt to the weapon owner (including damage by the explosion) */
-var float SelfDamageReductionValue;
-
 /** Weapons material colors for each fire mode. */
 var LinearColor DefaultFireMaterialColor;
 var LinearColor AltFireMaterialColor;
@@ -68,17 +65,6 @@ simulated function BeginFire( Byte FireModeNum )
 simulated function AltFireMode()
 {
 	StartFire(ALTFIRE_FIREMODE);
-}
-
-// Reduce damage to self
-function AdjustDamage(out int InDamage, class<DamageType> DamageType, Actor DamageCauser)
-{
-	super.AdjustDamage(InDamage, DamageType, DamageCauser);
-
-	if (Instigator != none && DamageCauser != none && DamageCauser.Instigator == Instigator)
-	{
-		InDamage *= SelfDamageReductionValue;
-	}
 }
 
 defaultproperties
@@ -179,9 +165,7 @@ defaultproperties
 	bHasFlashlight=false
 
 	WeaponFireWaveForm=ForceFeedbackWaveform'FX_ForceFeedback_ARCH.Gunfire.Medium_Recoil'
-
-	SelfDamageReductionValue=0.075f //0.f
-    
+   
 	bLastFireWasAlt=false
 	DefaultFireMaterialColor	= (R = 0.965f,G = 0.2972f, B = 0.0f)
 	AltFireMaterialColor		= (R = 0.0f,  G = 0.9631f, B = 0.96581f)

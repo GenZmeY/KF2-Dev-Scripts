@@ -123,7 +123,7 @@ defaultproperties
 	PenetrationPower(ALTFIRE_FIREMODE)=0
 	FireInterval(ALTFIRE_FIREMODE)=0.5
 	Spread(ALTFIRE_FIREMODE)=0.025
-	AmmoCost(ALTFIRE_FIREMODE)=5 //3
+	AmmoCost(ALTFIRE_FIREMODE)=3 //3
 
 	// Shotgun
 	NumPellets(ALTFIRE_FIREMODE)=1

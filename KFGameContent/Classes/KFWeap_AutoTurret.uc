@@ -270,18 +270,6 @@ function SetOriginalValuesFromPickup( KFWeapon PickedUpWeapon )
 			// charge alerts (beep, light) need current instigator
 			WeaponPawn.Instigator = Instigator;
 			WeaponPawn.SetOwner(self);
-
-			if (Instigator.Controller != none)
-			{
-				if (KFPawn_HRG_Warthog(KFPC.DeployedTurrets[i]) != none)
-				{
-					KFPawn_HRG_Warthog(KFPC.DeployedTurrets[i]).InstigatorController = Instigator.Controller;
-				}
-				else if (KFPawn_Autoturret(KFPC.DeployedTurrets[i]) != none)
-				{
-					KFPawn_Autoturret(KFPC.DeployedTurrets[i]).InstigatorController = Instigator.Controller;
-				}
-			}
 		}
 	}
 }

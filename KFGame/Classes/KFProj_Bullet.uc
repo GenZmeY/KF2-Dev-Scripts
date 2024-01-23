@@ -89,7 +89,10 @@ simulated function ProcessTouch(Actor Other, Vector HitLocation, Vector HitNorma
 						PenetrationPower -= KFP.PenetrationResistance;
 					}
 
-					bPassThrough = TRUE;
+					if (PenetrationPower > 0)
+					{
+						bPassThrough = TRUE;
+					}
 				}
 			}
 			else

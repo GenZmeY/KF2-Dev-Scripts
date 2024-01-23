@@ -22,4 +22,6 @@ defaultproperties
     WeaponDef=class'KFWeapDef_ChiappaRhino'
 
     ModifierPerkList(0)=class'KFPerk_Gunslinger'
+
+    bAnyPerk = true
 }

@@ -19,9 +19,6 @@ var array<KFProj_Rocket_SealSqueal> DeployedHarpoons;
 /** Same as DeployedHarpoons.Length, but replicated because harpoons are only tracked on server */
 var int NumDeployedHarpoons;
 
-/** Reduction for the amount of damage dealt to the weapon owner (including damage by the explosion) */
-var float SelfDamageReductionValue;
-
 /** Camera shake when detonating the harpoons */
 var	CameraAnim	DetonateCameraAnim;
 var float DetonateCameraAnimPlayRate;
@@ -81,15 +78,6 @@ simulated function name GetReloadAnimName(bool bTacticalReload)
 	}
 }
 
-function AdjustDamage(out int InDamage, class<DamageType> DamageType, Actor DamageCauser)
-{
-	super.AdjustDamage(InDamage, DamageType, DamageCauser);
-
-	if (Instigator != none && DamageCauser != none && DamageCauser.Instigator == Instigator)
-	{
-		InDamage *= SelfDamageReductionValue;
-	}
-}
 
 /*********************************************************************************************
  * State WeaponDetonating
@@ -337,8 +325,6 @@ defaultproperties
 
 	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.15f), (Stat=EWUS_Weight, Add=1)))
 	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.3f), (Stat=EWUS_Weight, Add=2)))
-
-	SelfDamageReductionValue=0.25f
 
 	DetonateCameraAnim=CameraAnim'WEP_1P_Seal_Squeal_ANIM.Shoot_MB500'
 	DetonateCameraAnimPlayRate=2.0f

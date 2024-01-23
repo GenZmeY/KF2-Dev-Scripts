@@ -427,8 +427,8 @@ defaultproperties
 
     DistortTrailParticle = none
     WhiteTrailParticle = none
-    BlueTrailParticle = none
-    RedTrailParticle = none
+    // BlueTrailParticle = none
+    // RedTrailParticle = none
 	
     FoldedTrailParticleSystem=ParticleSystem'WEP_Scythe_EMIT.FX_Scythe_Custom_R_01'
     UnfoldedTrailParticleSystem=ParticleSystem'WEP_Scythe_EMIT.FX_Scythe_Custom_Unfold_01';

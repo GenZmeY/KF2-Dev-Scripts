@@ -307,7 +307,35 @@ function CheckForEmptyStore()
 	}
 }
 
+function Callback_StoreSearch(string searchStr)
+{
+	MainContainer.StoreSearch(searchStr, true);
+}
 
+function Callback_Log(string str)
+{
+	`Log("From AS: " $str);
+}
+
+function Callback_OpenKeyboard()
+{
+	OnlineSub = Class'GameEngine'.static.GetOnlineSubsystem();
+	OnlineSub.PlayerInterface.AddKeyboardInputDoneDelegate(KeyboardInputComplete);
+	OnlineSub.PlayerInterface.ShowKeyboardUI(0, "Search", "Search");
+}
+
+function KeyboardInputComplete(bool bWasSuccessful)
+{
+	local byte bWasCancelled;
+	local string UserInput;
+
+	OnlineSub = Class'GameEngine'.static.GetOnlineSubsystem();
+	UserInput = OnlineSub.PlayerInterface.GetKeyboardInputResults(bWasCancelled);
+
+	Callback_StoreSearch(UserInput);
+
+	OnlineSub.PlayerInterface.ClearKeyboardInputDoneDelegate(KeyboardInputComplete);
+}
 
 defaultproperties
 {

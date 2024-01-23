@@ -316,6 +316,9 @@ simulated state ImplodingState
 				&& Victim != Instigator
 				&& KFP != None 
 				&& KFPawn_Human(Victim) == none // No player's character
+				&& KFPawn_Scripted(Victim) == none
+				&& KFPawn_AutoTurret(Victim) == none
+				&& KFPawn_HRG_Warthog(Victim) == none
 				&& (KFPM == none || VortexTime < VortexDuration*KFPM.GetVortexAttractionModifier()) )
 			{
 				KFP.GetBoundingCylinder(ColRadius, ColHeight);

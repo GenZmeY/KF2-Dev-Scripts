@@ -9,8 +9,6 @@
 
 class KFWeap_HRG_Crossboom extends KFWeap_ScopedBase;
 
-/** Reduction for the amount of damage dealt to the weapon owner (including damage by the explosion) */
-var() float SelfDamageReductionValue;
 
 /** Return true if this weapon should play the fire last animation for this shoot animation */
 simulated function bool ShouldPlayFireLast(byte FireModeNum)
@@ -47,19 +45,6 @@ simulated function AltFireMode()
 {
 	// StartFire - StopFire called from KFPlayerInput
 	StartFire(ALTFIRE_FIREMODE);
-}
-
-/**
-	Reduce the damage received and apply it to the shield
- */
-function AdjustDamage(out int InDamage, class<DamageType> DamageType, Actor DamageCauser)
-{
-	super.AdjustDamage(InDamage, DamageType, DamageCauser);
-
-	if (Instigator != none && DamageCauser.Instigator == Instigator)
-	{
-		InDamage *= SelfDamageReductionValue;
-	}
 }
 
 defaultproperties
@@ -186,6 +171,4 @@ defaultproperties
 
 	WeaponUpgrades[1]=(Stats=((Stat=EWUS_Damage0, Scale=1.15f), (Stat=EWUS_Damage1, Scale=1.15f), (Stat=EWUS_Weight, Add=1)))
 	WeaponUpgrades[2]=(Stats=((Stat=EWUS_Damage0, Scale=1.3f), (Stat=EWUS_Damage1, Scale=1.3f), (Stat=EWUS_Weight, Add=2)))
-
-	SelfDamageReductionValue = 0.25f;
 }

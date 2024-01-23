@@ -249,7 +249,13 @@ function bool isPlayerFromSteam(UniqueNetId PlayerID)
 {
 	local PlayerReplicationInfo CurrentPRI;
 	CurrentPRI = KFPC.GetPRIFromNetId(PlayerID);
-	return !class'WorldInfo'.static.IsEOSBuild() && CurrentPRI.PlayfabPlayerId == "";
+	
+	`Log("isPlayerFromSteam");
+	`Log("!class'WorldInfo'.static.IsEOSBuild(): " $(!class'WorldInfo'.static.IsEOSBuild()));
+	
+	`Log("CurrentPRI.PlayfabPlayerId: " $(CurrentPRI != none ? CurrentPRI.PlayfabPlayerId : "CurrentPRI was NULL"));
+
+	return !class'WorldInfo'.static.IsEOSBuild() && CurrentPRI != none && CurrentPRI.PlayfabPlayerId == "";
 }
 
 function AddStringOptionToList(string OptionKey, int ItemIndex, string Option, out GFxObject DataProvider)

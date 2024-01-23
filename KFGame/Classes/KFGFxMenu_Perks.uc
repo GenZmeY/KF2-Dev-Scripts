@@ -231,6 +231,8 @@ event OnClose()
 				Manager.CachedProfile.SetProfileSettingValueInt( KFID_SurvivalStartingWeapIdx, KFPC.SurvivalPerkWeapIndex );
 				Manager.CachedProfile.SetProfileSettingValueInt( KFID_SurvivalStartingSecondaryWeapIdx, KFPC.SurvivalPerkSecondaryWeapIndex );
 				Manager.CachedProfile.SetProfileSettingValueInt( KFID_SurvivalStartingGrenIdx, KFPC.SurvivalPerkGrenIndex );
+				
+				KFPC.CurrentPerk.SetWeaponSelectedIndex(KFPC.SurvivalPerkWeapIndex);
 			}
 
   			bModifiedPerk = false;
