@@ -166,7 +166,7 @@ defaultproperties
 	InstantHitDamageTypes(ALTFIRE_FIREMODE)=class'KFDT_Ballistic_ElephantGun'
 	PenetrationPower(ALTFIRE_FIREMODE)=4.0
 	FireInterval(ALTFIRE_FIREMODE)=0.25 // 240 RPM
-	NumPellets(ALTFIRE_FIREMODE)=24
+	NumPellets(ALTFIRE_FIREMODE)=6
 	Spread(ALTFIRE_FIREMODE)=0.19
 	AmmoCost(ALTFIRE_FIREMODE)=1
 	DoubleBarrelKickMomentum=1000
